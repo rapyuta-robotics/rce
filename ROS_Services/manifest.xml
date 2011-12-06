@@ -1,0 +1,18 @@
+<package>
+  <description brief="barcodeService">
+
+    Package containing all necessary services to scan and analyse a
+	barcode, i.e. from a picture to a synset descriping the object.
+
+  </description>
+  <author>dominique hunziker</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/barcodeService</url>
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+
