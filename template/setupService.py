@@ -34,7 +34,7 @@ _USAGE="setupService.py 'path/packageName' [ 'ServiceName_1' 'ServiceName_2' ]"
 _VALID_CHARS=ascii_letters+digits+'/_-'
 
 # First check that enough arguments are supplied.
-if len(sys.argv) <= 0:
+if len(sys.argv) < 2:
 	print(_USAGE)
 	exit(0)
 
@@ -73,7 +73,7 @@ if 	not os.path.isfile(os.path.join(templatePath, 'initNode.py')) or \
 if not os.path.exists(packageName):
 	subprocess.call(['roscreate-pkg', packageName, 'rospy', 'std_msgs', 'sensor_msgs'])
 
-# Create subdirectories if they not already exist	
+# Create subdirectories if they do not already exist	
 for directory in ['nodes', 'srv']:
 	pathName=os.path.join(packagePath, packageName, directory)
 	
@@ -148,6 +148,7 @@ for serviceName in sys.argv[2:]:
 	# Create config file
 	shutil.copyfile(os.path.join(templatePath, 'Service.conf'), os.path.join(pathName, '{0}.conf'.format(lowerName)))
 	
+	# Display a short message about what to do next
 	print('Edit the files {0}, {1}, {2}, {3} and {4}.'.format(	os.path.join(packageName, 'srv', 'Query{0}.srv'.format(upperName)),
 																os.path.join(packageName, 'src', '{0}s'.format(upperName), '{0}Base.py'.format(upperName)),
 																os.path.join(packageName, 'nodes', '{0}.py'.format(upperName)),
