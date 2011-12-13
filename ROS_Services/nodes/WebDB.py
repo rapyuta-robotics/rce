@@ -22,9 +22,9 @@
 #       
 #       
 
-import roslib; roslib.load_manifest('barcodeService')
-import barcodeService.msg
-import barcodeService.srv
+import roslib; roslib.load_manifest('ROS_Services')
+import ROS_Services.msg
+import ROS_Services.srv
 
 import convert
 from initNode import initNode, Request
@@ -44,9 +44,9 @@ class WebDBRequest(Request):
 			for key in entry:
 				entry[key]=convert.time_PyToROS(entry[key])
 			
-			entryList.append(barcodeService.msg.DBEntry(**entry))
+			entryList.append(ROS_Services.msg.DBEntry(**entry))
 		
-		self._result=barcodeService.srv.QueryWebDBResponse(entryList)
+		self._result=ROS_Services.srv.QueryWebDBResponse(entryList)
 
 if __name__ == '__main__':
 	initNode('WebDB', WebDBRequest)

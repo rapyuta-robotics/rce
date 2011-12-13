@@ -1,3 +1,3 @@
-barcodeService/DBEntry[]  data
+ROS_Services/DBEntry[]  data
 ---
-string[]                  synset
+string[]                synset

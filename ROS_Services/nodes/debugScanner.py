@@ -22,11 +22,12 @@
 #       
 #       
 
+
 from __future__ import print_function
 
 # ROS specific imports
-import roslib; roslib.load_manifest('barcodeService')
-from barcodeService.srv import *
+import roslib; roslib.load_manifest('ROS_Services')
+from ROS_Services.srv import *
 import rospy
 
 from sensor_msgs.msg import Image
@@ -44,16 +45,15 @@ except ImportError:
 
 def getImage(path):
 	if os.path.isfile(path):
-		pil = PIL.Image.open(path)
-		return convert.image_PyToROS(pil)
+		return PIL.Image.open(path)
 	else:
 		return None
 
-def run(path):
+def run(img):
 	rospy.wait_for_service('Scanner')
 	try:
 		query = rospy.ServiceProxy('Scanner', QueryScanner)
-		response = query(getImage(path))
+		response = query(convert.image_PyToROS(img))
 		return response.gtin
 	except rospy.ServiceException as e:
 		print('Service call failed: {0}'.format(e))
@@ -64,7 +64,7 @@ def main():
 		return 0
 	
 	print('run...')
-	print(run(sys.argv[1]))
+	print(run(getImage(sys.argv[1])))
 
 if __name__ == '__main__':
 	main()

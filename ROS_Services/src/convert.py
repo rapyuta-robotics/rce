@@ -23,7 +23,7 @@
 #       
 
 # ROS specific imports
-import roslib; roslib.load_manifest('barcodeService')
+import roslib; roslib.load_manifest('ROS_Services')
 import sensor_msgs.msg
 import rospy
 

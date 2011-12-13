@@ -1,0 +1,1 @@
+Replace $ROS_ROOT/core/roslib/src/roslib/packages.py with the given file

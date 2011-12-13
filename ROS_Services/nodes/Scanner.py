@@ -22,8 +22,8 @@
 #       
 #       
 
-import roslib; roslib.load_manifest('barcodeService')
-import barcodeService.srv
+import roslib; roslib.load_manifest('ROS_Services')
+import ROS_Services.srv
 
 from initNode import initNode, Request
 
@@ -41,7 +41,7 @@ class ScannerRequest(Request):
 		else:
 			gtin=''
 		
-		self._result=barcodeService.srv.QueryScannerResponse(gtin)
+		self._result=ROS_Services.srv.QueryScannerResponse(gtin)
 
 if __name__ == '__main__':
 	initNode('Scanner', ScannerRequest)

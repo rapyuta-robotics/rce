@@ -25,8 +25,8 @@
 from __future__ import print_function
 
 # ROS specific imports
-import roslib; roslib.load_manifest('barcodeService')
-import barcodeService.srv
+import roslib; roslib.load_manifest('ROS_Services')
+import ROS_Services.srv
 import rospy
 
 # Request specific imports
@@ -167,7 +167,7 @@ def initNode(name, requestClass):
 	rospy.init_node('{0}Server'.format(upperName))
 	
 	try:
-		filePath=roslib.packages.find_resource('barcodeService', '{0}.conf'.format(lowerName))[0]
+		filePath=roslib.packages.find_resource('ROS_Services', '{0}.conf'.format(lowerName))[0]
 	except IndexError:
 		rospy.logfatal('Could not find configuration file.')
 		return
@@ -208,6 +208,6 @@ def initNode(name, requestClass):
 		return
 	
 	# now launch ROS Service 'upperName'
-	QueryWork=getattr(barcodeService.srv, 'Query{0}'.format(upperName))
+	QueryWork=getattr(ROS_Services.srv, 'Query{0}'.format(upperName))
 	s=rospy.Service(upperName, QueryWork, requestClass.run)
 	rospy.spin()

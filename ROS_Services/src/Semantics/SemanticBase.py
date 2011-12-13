@@ -26,6 +26,11 @@ from __future__ import print_function
 
 from Worker import ObjectWorker
 
+class SemanticError(Exception):
+	""" General Exception in connection with a Semantic.
+	"""
+	pass
+
 class SemanticBase(ObjectWorker):
 	""" Generic base class for all Semantics interfaces. You should not
 		instantiate this class directly.

@@ -38,18 +38,17 @@ class ObjectWorker(object):
 	"""
 	
 	CONF_FIELDS=[]
-	DATA_FIELDS=[]
+	DATA_FIELDS={}
 	
 	def __init__(self, **kargs):
 		""" The given arguments have to be keyworded arguments. Relevant
 			arguments are data, target, debug, info, warning, error, fatal.
 			The value for a key should be a callable object except for data.
 			If no value for a possible key can be found None is assigned.
-			The values should be callable.
 			The data for the worker should be in a dictionary which is the
-			value of the key data. This dictionary should contains at least
-			the keys in the list DATA_FIELDS, else an error message is
-			dispatched.
+			value of the keyworded argument data. This dictionary should
+			contains at least the keys in the list DATA_FIELDS, else an
+			error message is dispatched.
 		"""
 		if len(self.__class__.DATA_FIELDS) != 0:
 			try:

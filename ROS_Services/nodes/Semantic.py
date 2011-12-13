@@ -22,8 +22,8 @@
 #       
 #       
 
-import roslib; roslib.load_manifest('barcodeService')
-import barcodeService.srv
+import roslib; roslib.load_manifest('ROS_Services')
+import ROS_Services.srv
 
 from initNode import initNode, Request
 
@@ -36,7 +36,7 @@ class SemanticRequest(Request):
 			This method is used fuse the collected data from the workers
 			into the return object QuerySemanticResponse.
 		"""
-		self._result=barcodeService.srv.QuerySemanticResponse(self._rawData[0])
+		self._result=ROS_Services.srv.QuerySemanticResponse(self._rawData[0])
 
 if __name__ == '__main__':
 	initNode('Semantic', SemanticRequest)

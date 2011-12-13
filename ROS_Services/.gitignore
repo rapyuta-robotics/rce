@@ -1,1 +1,7 @@
 *.pyc
+*.so
+build/
+msg_gen/
+srv_gen/
+additional.conf
+src/ROS_Services

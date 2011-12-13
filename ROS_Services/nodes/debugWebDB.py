@@ -25,8 +25,8 @@
 from __future__ import print_function
 
 # ROS specific imports
-import roslib; roslib.load_manifest('barcodeService')
-from barcodeService.srv import *
+import roslib; roslib.load_manifest('ROS_Services')
+from ROS_Services.srv import *
 import rospy
 
 # main specific imports
