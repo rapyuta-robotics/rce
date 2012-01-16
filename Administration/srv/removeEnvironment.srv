@@ -1,0 +1,4 @@
+string envID
+---
+uint8 status
+string msg
