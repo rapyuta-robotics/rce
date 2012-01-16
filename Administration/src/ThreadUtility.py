@@ -107,6 +107,9 @@ class ThreadManager(object):
             terminated. It should be a list.
         """
         for priority in [2,1,0]:
+            if priority not in priorityLevel:
+                continue
+            
             with self.lock:
                 threads = list(self.data[priority])
             
@@ -118,7 +121,7 @@ class ThreadManager(object):
     
     def removeThread(self, thread):
         """ Callback function for thread to remove itself from the
-        ThreadManager.
+            ThreadManager.
         """
         with self.lock:
             for priority in [2,1,0]:
@@ -166,13 +169,13 @@ class ManagedThread(threading.Thread):
     
     def threadMethod(self):
         """ This method has to be overwritten in the subclass. Else a
-        NotImplementedError is raised.
+            NotImplementedError is raised.
         """
         raise NotImplementedError('The method threadMethod is not implemented for the class {0}'.format(self.__class__.__name__))
     
     def registerThreadMngr(self, threadMngr):
         """ Internal method to register the used threadMngr for this
-        thread.
+            thread.
         """
         with self.managedlock:
             self.threadMngr = threadMngr

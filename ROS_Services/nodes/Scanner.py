@@ -24,24 +24,22 @@
 
 import roslib; roslib.load_manifest('ROS_Services')
 import ROS_Services.srv
+from ROS_Services.msg import Barcode
 
 from initNode import initNode, Request
 
 class ScannerRequest(Request):
-	""" This class is used to represent a request to the Scanner service.
-	"""
-	
-	def fuseData(self):
-		""" Overwrites the necessary method from the base class.
-			This method is used fuse the collected data from the workers
-			into the return object QueryScannerResponse.
-		"""
-		if len(self._rawData) == 1:
-			gtin=self._rawData[0]
-		else:
-			gtin=''
-		
-		self._result=ROS_Services.srv.QueryScannerResponse(gtin)
+    """ This class is used to represent a request to the Scanner service.
+    """
+    
+    def fuseData(self):
+        """ Overwrites the necessary method from the base class.
+            This method is used fuse the collected data from the workers
+            into the return object QueryScannerResponse.
+        """
+        barcodes = [Barcode(gtin=str(gtin), type=str(type)) for (type, gtin) in self._rawData]
+        
+        self._result=ROS_Services.srv.QueryScannerResponse(barcodes)
 
 if __name__ == '__main__':
-	initNode('Scanner', ScannerRequest)
+    initNode('Scanner', ScannerRequest)

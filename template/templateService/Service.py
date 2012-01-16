@@ -27,16 +27,16 @@ import convert
 from initNode import initNode, Request
 
 class %Service%Request(Request):
-	
-	def fuseData(self):
-		###
-		### Add your code here.
-		###
-		### The collected data from the Workers can be found in self._rawData
-		### which is a of type list.
-		###
-		
-		self._result=%Package%.srv.Query%Service%Response( ### Edit ### )
+    
+    def fuseData(self):
+        ###
+        ### Add your code here.
+        ###
+        ### The collected data from the Workers can be found in self._rawData
+        ### which is a of type list.
+        ###
+        
+        self._result=%Package%.srv.Query%Service%Response( ### Edit ### )
 
 if __name__ == '__main__':
-	initNode('%Service%', %Service%Request)
+    initNode('%Service%', %Service%Request)

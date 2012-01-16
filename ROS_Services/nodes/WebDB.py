@@ -30,23 +30,23 @@ import convert
 from initNode import initNode, Request
 
 class WebDBRequest(Request):
-	""" This class is used to represent a request to the WebDB service.
-	"""
-	
-	def fuseData(self):
-		""" Overwrites the necessary method from the base class.
-			This method is used fuse the collected data from the workers
-			into the return object QueryWebDBResponse.
-		"""
-		entryList=[]
-		
-		for entry in self._rawData:
-			for key in entry:
-				entry[key]=convert.time_PyToROS(entry[key])
-			
-			entryList.append(ROS_Services.msg.DBEntry(**entry))
-		
-		self._result=ROS_Services.srv.QueryWebDBResponse(entryList)
+    """ This class is used to represent a request to the WebDB service.
+    """
+    
+    def fuseData(self):
+        """ Overwrites the necessary method from the base class.
+            This method is used fuse the collected data from the workers
+            into the return object QueryWebDBResponse.
+        """
+        entryList=[]
+        
+        for entry in self._rawData:
+            for key in entry:
+                entry[key]=convert.time_PyToROS(entry[key])
+            
+            entryList.append(ROS_Services.msg.DBEntry(**entry))
+        
+        self._result=ROS_Services.srv.QueryWebDBResponse(entryList)
 
 if __name__ == '__main__':
-	initNode('WebDB', WebDBRequest)
+    initNode('WebDB', WebDBRequest)

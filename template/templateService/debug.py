@@ -28,29 +28,29 @@ from %Package%.srv import Query%Service%
 import rospy
 
 def compileInput():
-	###
-	### Add your code here.
-	###
-	### This function should return a dictonary which keys correspond to
-	### the input fields of the service.
-	###
-	### Example:
-	###
-	### return {'numbers' : [1,2,3] }
-	###
+    ###
+    ### Add your code here.
+    ###
+    ### This function should return a dictonary which keys correspond to
+    ### the input fields of the service.
+    ###
+    ### Example:
+    ###
+    ### return {'numbers' : [1,2,3] }
+    ###
 
 def run(data):
-	rospy.wait_for_service('%Service%')
-	try:
-		query = rospy.ServiceProxy('%Service%', Query%Service%)
-		response = query(**data)
-		return response.### Edit ###
-	except rospy.ServiceException as e:
-		print('Service call failed: {0}'.format(e))
+    rospy.wait_for_service('%Service%')
+    try:
+        query = rospy.ServiceProxy('%Service%', Query%Service%)
+        response = query(**data)
+        return response.### Edit ###
+    except rospy.ServiceException as e:
+        print('Service call failed: {0}'.format(e))
 
 def main():
-	print('run...')
-	print(run(compileInput()))
-	
+    print('run...')
+    print(run(compileInput()))
+
 if __name__ == '__main__':
-	main()
+    main()

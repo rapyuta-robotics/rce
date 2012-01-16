@@ -34,26 +34,26 @@ import sys
 import pickle
 
 def run(gtin):
-	rospy.wait_for_service('WebDB')
-	try:
-		query = rospy.ServiceProxy('WebDB', QueryWebDB)
-		response = query(gtin)
-		return response.data
-	except rospy.ServiceException as e:
-		print('Service call failed: {0}'.format(e))
+    rospy.wait_for_service('WebDB')
+    try:
+        query = rospy.ServiceProxy('WebDB', QueryWebDB)
+        response = query(gtin)
+        return response.data
+    except rospy.ServiceException as e:
+        print('Service call failed: {0}'.format(e))
 
 def main():
-	if len(sys.argv) != 2 or len(sys.argv[1]) != 13:
-		print('Usage: debugWebDB.py [13-digit gtin]')
-		return 0
-	
-	print('run...')
-	result=run(sys.argv[1])
-	
-	print('Found {0} hits.'.format(len(result)))
-	
-	with open('dump.txt', 'w') as f:
-		pickle.dump(result, f)
+    if len(sys.argv) != 2 or len(sys.argv[1]) != 13:
+        print('Usage: debugWebDB.py [13-digit gtin]')
+        return 0
+    
+    print('run...')
+    result=run(sys.argv[1])
+    
+    print('Found {0} hits.'.format(len(result)))
+    
+    with open('dump.txt', 'w') as f:
+        pickle.dump(result, f)
 
 if __name__ == '__main__':
-	main()
+    main()

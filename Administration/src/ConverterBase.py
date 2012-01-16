@@ -183,7 +183,7 @@ class Converter(object):
         return (data, files)
     
     def decode(self, rosMsgType, data, files):
-        """ Generate a ROS message from a django compatible data.
+        """ Generate a ROS message from django compatible data.
             
             @param rosMsgType:  String defining the ROS message type, i.e.
                                 std_msgs/String.

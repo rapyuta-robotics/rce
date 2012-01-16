@@ -28,15 +28,15 @@ import ROS_Services.srv
 from initNode import initNode, Request
 
 class SemanticRequest(Request):
-	""" This class is used to represent a request to the Semantic service.
-	"""
-	
-	def fuseData(self):
-		""" Overwrites the necessary method from the base class.
-			This method is used fuse the collected data from the workers
-			into the return object QuerySemanticResponse.
-		"""
-		self._result=ROS_Services.srv.QuerySemanticResponse(self._rawData[0])
+    """ This class is used to represent a request to the Semantic service.
+    """
+    
+    def fuseData(self):
+        """ Overwrites the necessary method from the base class.
+            This method is used fuse the collected data from the workers
+            into the return object QuerySemanticResponse.
+        """
+        self._result=ROS_Services.srv.QuerySemanticResponse(self._rawData[0])
 
 if __name__ == '__main__':
-	initNode('Semantic', SemanticRequest)
+    initNode('Semantic', SemanticRequest)

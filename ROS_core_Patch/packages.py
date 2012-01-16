@@ -146,8 +146,6 @@ def get_dir_pkg(d):
         return d, pkg
     return None, None
 
-_pkg_dir_cache = {}
-
 def _walk(top, package):
     """
     Customized function to walk a directory tree. The function returns as
@@ -191,6 +189,8 @@ def _walk(top, package):
             return path
     
     return None
+
+_pkg_dir_cache = {}
 
 def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
     """
@@ -252,7 +252,7 @@ def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
                 else:
                     # invalidate cache
                     _invalidate_cache(_pkg_dir_cache)
-        
+            
         # recursive searching of dirs for pkg
         # Inspired by os.walk
         if 'win' in sys.platform:
@@ -272,7 +272,7 @@ def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
                 break
         
         if not pkg_dir:
-            raise InvalidROSPkgException("Cannot locate installation of package %s: %s. ROS_ROOT[%s] ROS_PACKAGE_PATH[%s]"%(package, rperr.strip(), ros_root, ros_package_path))
+            raise InvalidROSPkgException("Cannot locate installation of package %s: ROS_ROOT[%s] ROS_PACKAGE_PATH[%s]"%(package, ros_root, ros_package_path))
         
         # don't update cache: this should only be updated from
         # rospack_cache as it will corrupt list_pkgs() otherwise.

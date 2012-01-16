@@ -20,11 +20,11 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 #
-#		Note:	This barcode scanner uses the 'zbar bar code reader' library
-#				and its python wrapper, which are available under the GNU
-#				Lesser General Public License, version 2.1.
-#				The sourcecode is available under:
-#					-	http://zbar.sourceforge.net/
+#       Note:   This barcode scanner uses the 'zbar bar code reader' library
+#               and its python wrapper, which are available under the GNU
+#               Lesser General Public License, version 2.1.
+#               The sourcecode is available under:
+#                   -   http://zbar.sourceforge.net/
 
 from __future__ import print_function
 
@@ -32,43 +32,37 @@ from ScannerBase import ScannerBase, ScannerError
 
 # Import zbar (barcode reader library)
 try:
-	import zbar
+    import zbar
 except ImportError:
-	print('Requires zbar.\n')
-	exit(0)
+    print('Requires zbar.\n')
+    exit(0)
 
 class ZbarScanner(ScannerBase):
-	""" A barcode scanner which uses the 'zbar bar code reader' library.
-	"""
-	
-	def run(self):
-		""" Overwrites the necessary function from the base class.
-			This method scans for a barcode.
-		"""
-		# wrap image data
-		image = self.image.convert('L')
-		
-		width, height = image.size
-		raw = image.tostring()
-		
-		image = zbar.Image(width, height, 'Y800', raw)
-		
-		# create a reader
-		scanner = zbar.ImageScanner()
-		
-		# configure the reader
-		scanner.parse_config('enable')
-		
-		# scan the image for barcodes
-		scanner.scan(image)
-		
-		# check if a unique barcode is found
-		if len(image.symbols) != 1:
-			raise ScannerError('Could not identify the barcode ({0} possible matches).'.format(len(image.symbols)))
-		
-		# get barcode
-		symbol=image.__iter__().next()
-		
-		# return barcode
-		self.info('Found a barcode in the image : {0}, {1}.'.format(symbol.type, symbol.data))
-		self.appendData(symbol.data)
+    """ A barcode scanner which uses the 'zbar bar code reader' library.
+    """
+    
+    def run(self):
+        """ Overwrites the necessary function from the base class.
+            This method scans for a barcode.
+        """
+        # wrap image data
+        image = self.image.convert('L')
+        
+        width, height = image.size
+        raw = image.tostring()
+        
+        image = zbar.Image(width, height, 'Y800', raw)
+        
+        # create a reader
+        scanner = zbar.ImageScanner()
+        
+        # configure the reader
+        scanner.parse_config('enable')
+        
+        # scan the image for barcodes
+        scanner.scan(image)
+        
+        # print and add found barcodes
+        for symbol in image:
+            self.info('Found: {0} - {1}'.format(symbol.type, symbol.data))
+            self.appendData((symbol.type, symbol.data))

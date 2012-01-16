@@ -247,7 +247,13 @@ def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
                 raise ValueError('Can not add the same node twice.')
             
             if config:
-                pass # do something with the config; especially add to files
+                
+                ### ??? ###
+                ### 
+                ### ToDo:	do something with the config; especially add to files
+                ###
+                 
+                pass
             else:
                 add[nodeName] = {}
         

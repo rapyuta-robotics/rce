@@ -27,22 +27,22 @@ from Worker import ObjectWorker as Worker
 #from Worker import ThreadWorker as Worker
 
 class %Service%Base(Worker):
-	
-	DATA_FIELDS={ ### Select the fields which are needed. ### }
-	
-	###
-	### Example
-	###
-	### DATA_FIELDS = { 'number' : None, 'image' : { 'img' : None, 'name' : None } }
-	###
-	### -> self.number = ...
-	### -> self.image = { 'img' : ..., 'name' : ... }
-	###
-	
-	def run(self):
-		###
-		### Add your code here.
-		###
-		### Use self.appendData('data') to add some data which will be
-		### used to compile the response of the service.
-		###
+    
+    DATA_FIELDS={ ### Select the fields which are needed. ### }
+    
+    ###
+    ### Example
+    ###
+    ### DATA_FIELDS = { 'number' : None, 'image' : { 'img' : None, 'name' : None } }
+    ###
+    ### -> self.number = ...
+    ### -> self.image = { 'img' : ..., 'name' : ... }
+    ###
+    
+    def run(self):
+        ###
+        ### Add your code here.
+        ###
+        ### Use self.appendData('data') to add some data which will be
+        ### used to compile the response of the service.
+        ###

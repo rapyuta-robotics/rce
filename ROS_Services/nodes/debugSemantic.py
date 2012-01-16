@@ -34,24 +34,24 @@ import os, sys
 import pickle
 
 def run(data):
-	rospy.wait_for_service('Semantic')
-	try:
-		query = rospy.ServiceProxy('Semantic', QuerySemantic)
-		response = query(data)
-		return response.synset
-	except rospy.ServiceException as e:
-		print('Service call failed: {0}'.format(e))
+    rospy.wait_for_service('Semantic')
+    try:
+        query = rospy.ServiceProxy('Semantic', QuerySemantic)
+        response = query(data)
+        return response.synset
+    except rospy.ServiceException as e:
+        print('Service call failed: {0}'.format(e))
 
 def main():
-	if not os.path.isfile('dump.txt'):
-		print('Run first debugWebDB with a barcode which returns at least one hit.')
-		return
-	
-	with open('dump.txt') as f:
-		data=pickle.load(f)
-	
-	print('run...')
-	print(run(data))
-	
+    if not os.path.isfile('dump.txt'):
+        print('Run first debugWebDB with a barcode which returns at least one hit.')
+        return
+    
+    with open('dump.txt') as f:
+        data=pickle.load(f)
+        
+        print('run...')
+        print(run(data))
+
 if __name__ == '__main__':
-	main()
+    main()
