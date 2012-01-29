@@ -36,9 +36,9 @@ bool readText(ReadTextService::QueryReadText::Request  &req, ReadTextService::Qu
     // Initialize the reader
     DetectText reader = DetectText();
     reader.readLetterCorrelation(filenameCorrelation->c_str());
-	reader.readWordList(filenameWordList->c_str());
+    reader.readWordList(filenameWordList->c_str());
     
-    // Load and convert the recieved image
+    // Load and convert the received image
     boost::shared_ptr<void const> imgPtr = boost::shared_ptr<void const>();
     cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(req.image, imgPtr, "");
     cv::Mat img = cv::Mat(cvImg->image);
@@ -56,7 +56,7 @@ bool readText(ReadTextService::QueryReadText::Request  &req, ReadTextService::Qu
 
 int main(int argc, char **argv)
 {
-	// Initialize the node
+    // Initialize the node
     ros::init(argc, argv, "ReadText");
     ros::NodeHandle n;
     
@@ -85,5 +85,5 @@ int main(int argc, char **argv)
     delete filenameCorrelation;
     delete filenameWordList;
     
-	return 0;
+    return 0;
 }
