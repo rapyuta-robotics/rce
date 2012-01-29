@@ -31,8 +31,9 @@ import rospy
 import time
 import datetime
 import threading
-import uuid
 import json
+import tempfile
+import os
 from functools import wraps
 
 # Custom imports
@@ -41,8 +42,10 @@ from MessageUtility import serializeFiles, deserializeFiles, serializeResult, de
 SerializeError, InvalidRequest, InternalError
 import ThreadUtility
 import ROSUtility
+from IDUtility import generateID
 import SQLite
 import ConverterBase
+import ConverterUtility
 import ManagerBase
 
 def activity(f):
@@ -136,12 +139,9 @@ END;'''
         return name in self._nodeDict
     
     @activity
-    def addNode(self, names, config, binary):
+    def addNode(self, config, binary):
         """ Add new nodes in the environment. Make sure that the node
             names are valid before this method is used.
-            
-            @param names:   Valid node names
-            @type  names:   [str]
             
             @param config:  Dictionary which is compatible with the json
                             encoding and which has at it toplevel keys
@@ -154,26 +154,114 @@ END;'''
             @param binary:  Serialized files object from POST request.
             @type  binary:  str
         """
-        for name in names:
-            try:
-                (pkgName, nodeCls, tmp) = self._nodeDict[name]
-            except KeyError:
-                raise InternalError('Could not get the node information for node {0}.'.format(name))
-            
-            nodeID = self._db.newID('env', 'nodeID')
-            
-            ### ??? ###
-            ### 
-            ### ToDo:	add support for parameters with config and binary
-            ### 
+        files = deserializeFiles(binary)
+        
+        for name in config:
+            tempFiles = []
+            parameters = []
+            receivedNodeConfig = config[name]
             
             try:
-                self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=str(uuid.uuid4()), namespace=self.buildNamespace()))
-            except InternalError:
-                self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
-                raise
-            
-            self._db.change('''UPDATE env SET name = ?, status = 'running' WHERE nodeID == ?''', (name, nodeID))
+                # First load information about the node which should be launched
+                try:
+                    (pkgName, nodeCls, listOfServices, nodeConfig) = self._nodeDict[name]
+                except KeyError:
+                    raise InternalError('Could not get the node information for node {0}.'.format(name))
+                
+                # Create new entry for node in database
+                nodeID = self._db.newID('env', 'nodeID')
+                
+                # Add the necessary configuration parameters to ParameterServer
+                for (configName, configType, configDefaultValue) in nodeConfig:
+                    # Try to read the given configuration value from request or else try to use the default value
+                    try:
+                        configVal = receivedNodeConfig[configName]
+                    except KeyError:
+                        configVal = configDefaultValue
+                        
+                        if not configVal:
+                            raise InvalidRequest('Configuration parameter {0} is missing.'.format(configName))
+                    else:
+                        # If we have to add a file to the ParameterServer which we received from the user create a temporary file
+                        if configType == 'file':
+                            try:
+                                configVal = ConverterUtility.resolveReference(configVal)
+                            except ValueError:
+                                content = configVal
+                            else:
+                                content = files[configVal]
+                                content.seek(0)
+                                content = content.read()
+                            
+                            (tmp, configVal) = tempfile.mkstemp()
+                            tempFiles.append(configVal)
+                            
+                            with open(configVal, 'wb') as f:
+                                f.write(content)
+                    
+                    # Now check the given value and process it accordingly
+                    if configType == 'bool':
+                        if isinstance(configVal, str) or isinstance(configVal, unicode):
+                            configVal = configVal.lower()
+                            
+                            if configVal == 'true':
+                                configVal = True
+                            elif configVal == 'false':
+                                configVal = False
+                            else:
+                                raise InvalidRequest('Configuration parameter {0} is not a valid bool.'.format(configName))
+                        else:
+                            configVal = bool(configVal)
+                    elif configType == 'int':
+                        try:
+                            configVal = int(configVal)
+                        except ValueError:
+                            raise InvalidRequest('Configuration parameter {0} is not a valid int.'.format(configName))
+                    elif configType == 'float':
+                        try:
+                            configVal = float(configVal)
+                        except ValueError:
+                            raise InvalidRequest('Configuration parameter {0} is not a valid float.'.format(configName))
+                    elif configType == 'str':
+                        if isinstance(configVal, unicode):
+                            configVal = configVal.encode('utf-8')
+                        
+                        configVal = str(configVal)
+                    elif configType == 'file':
+                        if not os.path.isfile(configVal):
+                            raise InternalError('Could not find file.')
+                    else:
+                        raise InternalError('Could not identify the type of the configuration parameter.')
+                    
+                    # Build the name of the parameter and add it to the ParameterServer
+                    paramName = self.buildNamespace('{0}/{1}'.format(nodeID, configName))
+                    
+                    if rospy.has_param(paramName):
+                        raise InternalError('Parameter already exists.')
+                    
+                    rospy.set_param(paramName, configVal)
+                    parameters.append(paramName)
+                
+                # Create and launch now the node/process
+                try:
+                    self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace()), self.buildNamespace(nodeID), tempFiles)
+                except InternalError:
+                    self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
+                    raise
+                
+                self._db.change('''UPDATE env SET name = ?, status = 'running' WHERE nodeID == ?''', (name, nodeID))
+            except Exception as e:
+                # If there was any error delete the temporary files again and remove the parameters
+                for filename in tempFiles:
+                    try:
+                        os.remove(filename)
+                    except OSError:
+                        pass
+                
+                for parameter in parameters:
+                    rospy.delete_param(parameter)
+                
+                raise e
     
     def getNodeStatus(self):
         """ Get the status of the all nodes in the environment.
@@ -191,7 +279,7 @@ END;'''
             
             if status == 'init' or status == 'running':
                 try:
-                    if not self.getProcess(nodes[i][0]).is_alive():
+                    if not self.getProcess(nodes[i][0]).isAlive():
                         status = 'terminated'
                 except KeyError:
                     status = 'deleted'
@@ -296,7 +384,7 @@ END;'''
             @type  task:    str
             
             @param msg:     Message which was received from the Service
-            as response.
+                            as response.
             @type  msg:     ROS Service Response message instance
         """
         try:

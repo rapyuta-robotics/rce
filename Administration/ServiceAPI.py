@@ -48,10 +48,21 @@ class RequestError(Exception):
 class FileHandle(object):
     """Convenience class to store file related information."""
     
-    def __init__(self, filename, fileHandle, mimetype=None):
+    def __init__(self, filename, fileHandle=None, mimetype=None):
         self.filename = filename
-        self.fileHandle = fileHandle
+        
+        if fileHandle:
+            self.fileHandle = fileHandle
+        else:
+            self.fileHandle = open(filename)
+        
         self.mimetype = mimetype
+    
+    def __del__(self):
+        try:
+            self.fileHandle.close()
+        except AttributeError:
+            pass
     
     def convertToTuple(self, fieldname):
         return (fieldname, self.filename, self.fileHandle, self.mimetype)
@@ -218,7 +229,7 @@ def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
                             should be added to the environment. A list
                             entry should be a tuple of the for
                             (nodeName, config)
-        @param nodesToAdd:  [(str, ### ??? ###)]
+        @param nodesToAdd:  [(str, { str: bool/int/float/str/fileHandle })]
         
         @param nodesToRemove:   List of nodes which should be removed from
                                 the environment. A list entry should be a
@@ -247,13 +258,9 @@ def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
                 raise ValueError('Can not add the same node twice.')
             
             if config:
-                
-                ### ??? ###
-                ### 
-                ### ToDo:	do something with the config; especially add to files
-                ###
-                 
-                pass
+                (subMsg, subFiles) = _processMessage(config, '/{0}/'.format(nodeName))
+                add[nodeName] = subMsg
+                files += subFiles
             else:
                 add[nodeName] = {}
         
@@ -299,7 +306,7 @@ def addTask(envID, service, message):
                             other dictionaries, lists, fileHandle or
                             base types as values. A fileHandle has to
                             have the method read().
-        @type  message:     { str : str/{}/[]/fileHandle }
+        @type  message:     { str : bool/int/float/str/[]/{}/fileHandle }
         
         @return:        Task ID
         @rtype:         str

@@ -264,9 +264,9 @@ def deserializeFiles(str):
         @param str:     Serialized form of files
         @type  str:     str
         
-        @return:        Files should be a dictionary containing lists
-                        which contain cStringIO.StringO instances.
-        @rtype:         { str : [cStringIO.StringO] }
+        @return:        The files in a dictionary which contains
+                        cStringIO.StringO instances as values.
+        @rtype:         { str : cStringIO.StringO }
     """
     out = {}
     

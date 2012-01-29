@@ -47,9 +47,19 @@ def loadPossibleNodes():
                         - Key:      Name with which the node is
                                     identified.
                         - Value:    Tuple of the form
-                                    ( packageName,
+                                    (
+                                      packageName,
                                       nodeExecutable,
-                                      list of provided services
+                                      list of provided services,
+                                      list of config parameters which
+                                        are tuples of the form
+                                        (
+                                          parameterName,
+                                          parameterType (valid values are
+                                            bool, int, float, str, file),
+                                          defaultValue or None if the
+                                            parameter is mandatory
+                                        )
                                     )
                     - Dictionary containing the definiton for the
                       services where:
@@ -60,8 +70,9 @@ def loadPossibleNodes():
                                       ROS Service class,
                                       ROS Service Request message class
                                     )
-        @rype:      (   { str: (str, str, [str]) },
-                        { str : (str, srvClass, srvRequest) }
+        @rtype:     (
+                      { str : (str, str, [str], [(str, str, str/None)]) },
+                      { str : (str, srvClass, srvRequest) }
                     )
         
         @raise:     NodeError if an error occurred while parsing the
@@ -78,11 +89,28 @@ def loadPossibleNodes():
         nodeName = node['name']
         nodeServices = node['services']
         
+        try:
+            nodeConfig = node['config']
+            
+            if not isinstance(nodeConfig, list):
+                raise NodeError('config is not a list.')
+            
+            for config in nodeConfig:
+                if not roslib.names.is_legal_name(config[0]):
+                    raise NodeError('config contains illegal parameter name.')
+                if config[1] not in ['bool', 'int', 'float', 'str', 'file']:
+                    raise NodeError('config contains an illegal parameter type.')
+        except KeyError:
+            nodeConfig = []
+        
         if nodeName in nodeDict:
             raise NodeError('Node name {0} is used multiple times.'.format(nodeName))
         
         (pkgName, nodeClass) = roslib.names.package_resource_name(nodeName)
-        nodeDict[nodeName] = (pkgName, nodeClass, ['{0}/{1}'.format(pkgName, srvName) for (srvName, srvCls) in nodeServices])
+        nodeDict[nodeName] = (  pkgName,
+                                nodeClass,
+                                ['{0}/{1}'.format(pkgName, srvName) for (srvName, srvCls) in nodeServices],
+                                nodeConfig )
         
         for (srvName, srvCls) in nodeServices:
             keyName = '{0}/{1}'.format(pkgName, srvName)

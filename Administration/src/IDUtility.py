@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       wsgi.py
+#       IDUtility.py
 #       
-#       Copyright 2011 dominique hunziker <dominique.hunziker@gmail.com>
+#       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -20,13 +20,12 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 #       
-#   	
+#       
 
-import os
-import sys
+import string
+import random
 
-sys.path.append('/home/dominique/ROS/django')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'ROS_Service.settings'
+_CHARS = string.ascii_letters
 
-import django.core.handlers.wsgi
-application = django.core.handlers.wsgi.WSGIHandler()
+def generateID(length=10):
+    return ''.join(random.choice(_CHARS) for x in xrange(length))

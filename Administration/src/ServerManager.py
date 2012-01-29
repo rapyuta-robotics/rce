@@ -30,12 +30,12 @@ from Administration.srv import isActive
 
 # Python specific imports
 import time
-import uuid
 
 # Custom imports
 import settings
 from MessageUtility import InvalidRequest, InternalError
 import ROSUtility
+from IDUtility import generateID
 import ManagerBase
 
 class ServerManager(ManagerBase.ManagerBase):
@@ -62,11 +62,12 @@ class ServerManager(ManagerBase.ManagerBase):
                         launched.
         """
         while True:
-            uid = str(uuid.uuid4())
+            uid = generateID()
             if uid not in self.getKeys():
                 break
         
-        self.addProcess(uid, roslaunch.core.Node('Administration', 'Environment.py', name=uid, namespace=self.buildNamespace(uid), output='screen'))
+        namespace = self.buildNamespace(uid)
+        self.addProcess(uid, roslaunch.core.Node('Administration', 'Environment.py', name=uid, namespace=namespace, output='screen'), namespace)
         
         return uid
     

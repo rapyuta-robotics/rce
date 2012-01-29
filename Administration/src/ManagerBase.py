@@ -30,10 +30,54 @@ import rospy
 
 # Python sepcific imports
 import threading
+import os
 
 # Custom imports
 from MessageUtility import InternalError
 import ThreadUtility
+
+class NodeProcess(object):
+    """ Class which represents a running node.
+    """
+    def __init__(self, process, files, namespace):
+        """ Constructor.
+            
+            @param process:  Process in which the node is running.
+            @type  process:  roslaunch.Process instance
+            
+            @param files:    List of all path of the temporary files
+                             which are associated with this node.
+            @type  files     [str]
+            
+            @param namespace:  ROS namespace in which the node resides.
+            @type  namespace:  str
+        """
+        self.process = process
+        self.files = files
+        self.namespace = namespace
+    
+    def __del__(self):
+        """ Destructor.
+        """
+        if self.process.is_alive():
+            self.process.stop()
+        
+        del self.process
+        
+        for param in rospy.get_param_names():
+            if param.find(self.namespace) == 0:
+                rospy.delete_param(param)
+        
+        for filename in self.files:
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
+    
+    def isAlive(self):
+        """ Check whether the node/process is alive.
+        """
+        return self.process.is_alive()
 
 class ManagerBase(ThreadUtility.QueueWorker):
     """ Base class for all managers.
@@ -42,7 +86,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         """ Constructor. Make sure to call this constructor.
         """
         super(ManagerBase, self).__init__()
-        rospy.on_shutdown(lambda: self.terminate.set())
+        rospy.on_shutdown(self.terminate.set)
         
         self._ROSNamespace=roslib.names.get_ros_namespace()
         
@@ -53,7 +97,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         self._threadMngr = ThreadUtility.ThreadManager()
     
     @ThreadUtility.job
-    def addProcess(self, key, node):
+    def addProcess(self, key, node, namespace, tempFiles=[]):
         """ Add a process to the list.
             
             @param key:     Key with which the process will be accessed
@@ -63,6 +107,17 @@ class ManagerBase(ThreadUtility.QueueWorker):
             @param node:    Node which should be added to the list.
             @type  node:    roslaunch.core.Node
             
+            @param namespace:   Namespace for the parameters. (Is not the
+                                same as the namespace of the node.)
+            @type  namespace:   str
+            
+            @param tempFiles:   Optional argument. (default = [])
+                                List of temporary files which should be
+                                associated with this node, i.e. which
+                                will be removed as soon as the node is
+                                removed.
+            @type  tempFiles:   [tempfile.TemporaryFile]
+            
             @raise: InternalError if the node could not be launched.
         """
         try:
@@ -71,7 +126,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
             raise InternalError(e)
         
         with self._processLock:
-            self._runningProcesses[key] = process
+            self._runningProcesses[key] = NodeProcess(process, tempFiles, namespace)
     
     @ThreadUtility.job
     def getProcess(self, key):
@@ -82,7 +137,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
             @type  key:     str
             
             @return:        Process which should be added to the list.
-            @rtype:         roslaunch.core.Process
+            @rtype:         NodeProcess
             
             @raise:     KeyError if the given key does not exist.
         """
@@ -100,13 +155,9 @@ class ManagerBase(ThreadUtility.QueueWorker):
         """
         with self._processLock:
             try:
-                process = self._runningProcesses[key]
                 del self._runningProcesses[key]
             except KeyError:
                 print('Key Error: {0} is not valid.'.format(key))
-                return
-            
-            process.stop()
     
     def getKeys(self):
         """ Get all keys.
@@ -139,7 +190,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
             
             Doing so leads to Errors with the ROSLaunch. If additional
             functions should be executed in a loop overwite the method
-            subspin()
+            subspin().
         """
         subloop = ThreadUtility.Task(self.subspin)
         self._threadMngr.append(subloop, 1)
@@ -150,7 +201,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         """ Main loop for subclasses of the Manager.
             
             If additional functions need to be added to the main loop of
-            a subclass of Manager use overwite this method.
+            a subclass of Manager overwite this method.
         """
         pass
     

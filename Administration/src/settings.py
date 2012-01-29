@@ -46,6 +46,10 @@ _webDB = {      'name' : 'ROS_Services/WebDB.py',
 _semantic = {   'name' : 'ROS_Services/Semantic.py',
                 'services' : [('Semantic', 'QuerySemantic')] }
 
-# Nodes which can be used
-NODES = ( _scanner , _webDB, _semantic )
+_textReader = { 'name' : 'ReadTextService/ReadText',
+                'services' : [('ReadText', 'QueryReadText')],
+                'config' : [('correlation', 'file', '/home/dominique/ROS/read_text/fonts/correlation.txt'),
+                            ('wordList', 'file', '/home/dominique/ROS/read_text/dictionary/full-dictionary')] }
 
+# Nodes which can be used
+NODES = ( _scanner , _webDB, _semantic, _textReader )

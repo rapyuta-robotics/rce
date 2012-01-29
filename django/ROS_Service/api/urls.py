@@ -39,6 +39,6 @@ TaskHandler = CsrfExemptResource(ROS_Service.api.Service.TaskHandler)
 
 urlpatterns = patterns('',
     url(r'^ros_service$', ServiceHandler),
-    url(r'^ros_service/(?P<envID>[-0-9a-fA-F]{36})$', EnvironmentHandler),
-    url(r'^ros_service/(?P<envID>[-0-9a-fA-F]{36})/(?P<taskID>[-0-9a-fA-F]{36})$', TaskHandler),
+    url(r'^ros_service/(?P<envID>[a-zA-Z]{10})$', EnvironmentHandler),
+    url(r'^ros_service/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})$', TaskHandler),
 )

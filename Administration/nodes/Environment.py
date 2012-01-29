@@ -81,37 +81,35 @@ def addNodeCallback(request, manager):
     
     try:
         add = data['add']
+        
+        if not isinstance(add, dict):
+            raise InvalidRequest('data/add does not contain a dict.')
     except (TypeError, AttributeError):
         raise InvalidRequest('data does not contain a dict.')
     except KeyError:
         add = {}
     
     try:
-        namesAdd = add.keys()
-    except AttributeError:
-        raise InvalidRequest('data/add does not contain a dict.')
-    
-    try:
-        namesRemove = data['remove']
+        remove = data['remove']
         
-        if not isinstance(namesRemove, list):
+        if not isinstance(remove, list):
             raise InvalidRequest('data/remove does not contain a list.')
     except KeyError:
-        namesRemove = []
+        remove = []
     
-    for name in namesAdd:
+    for name in add:
         if not manager.isValidNodeName(name):
             raise InvalidRequest('{0} is not a valid node name.'.format(name))
     
-    for name in namesRemove:
+    for name in remove:
         if not manager.isValidNodeName(name):
             raise InvalidRequest('{0} is not a valid node name.'.format(name))
     
-    if namesAdd:
-        manager.addNode(namesAdd, add, request.files)
+    if add:
+        manager.addNode(add, request.files)
     
-    if namesRemove:
-        manager.removeNode(namesRemove)
+    if remove:
+        manager.removeNode(remove)
 
 @serviceCallback(getEnvironmentResponse)
 def getEnvironmentCallback(request, manager):
@@ -177,9 +175,9 @@ def removeTaskCallback(request, manager):
 
 def init(manager):
     """ Set up the ROS Services.
-    The function needs the Manager.Manager instance which should
-    be used to communicate between the different threads and also to
-    terminate the running threads.
+        The function needs the Manager.Manager instance which should
+        be used to communicate between the different threads and also to
+        terminate the running threads.
     """
     # Initialize the node
     rospy.init_node('Environment')

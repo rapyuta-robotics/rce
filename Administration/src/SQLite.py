@@ -22,12 +22,14 @@
 #       
 #       
 
+# Python specific imports
 import sys
 import os.path
 import sqlite3
-import uuid
 
+# Custom imports
 import ThreadUtility
+from IDUtility import generateID
 
 class SQLiteError(Exception):
     """ This error is raised if an error occurred in conjunction with
@@ -145,7 +147,7 @@ class SQLite(ThreadUtility.QueueWorker):
             @rtype:     str
         """
         while True:
-            uid = str(uuid.uuid4())
+            uid = generateID()
             self._cursor.execute('SELECT * FROM "{0}" WHERE "{1}" == ?'.format(table, field), (uid,))
             
             if len(self._cursor.fetchall()) == 0:

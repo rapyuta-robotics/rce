@@ -26,6 +26,7 @@ import operator
 import time
 import PIL.Image
 import cStringIO
+import os.path
 
 import ServiceAPI
 
@@ -35,12 +36,22 @@ class Env(object):
     
     def __del__(self):
         if self.env:
-            ServiceAPI.removeEnv(self.env)
+            try:
+                ServiceAPI.removeEnv(self.env)
+            except ServiceAPI.RequestError:
+                pass
+    
+    def readImage(self, path):
+        img = PIL.Image.open(path)
+        out = cStringIO.StringIO()
+        img.save(out, 'PNG')
+        
+        fh = ServiceAPI.FileHandle('scene.png', out)
+        task = ServiceAPI.addTask(self.env, 'ReadTextService/ReadText', {'image' : fh})
+        
+        return self._waitForResult(task, 30)
     
     def scanImage(self, path):
-        if not self.env:
-            self._setup()
-        
         img = PIL.Image.open(path)
         out = cStringIO.StringIO()
         img.save(out, 'PNG')
@@ -51,9 +62,6 @@ class Env(object):
         return self._waitForResult(task, 10)
     
     def analyseBarcode(self, barcode):
-        if not self.env:
-            self._setup()
-        
         task = ServiceAPI.addTask(self.env, 'ROS_Services/WebDB', {'gtin' : barcode})
         (status, result) = self._waitForResult(task, 10)
         
@@ -67,10 +75,21 @@ class Env(object):
         
         return (status, result, name)
     
-    def _setup(self):
-        self.env = ServiceAPI.changeEnv(nodesToAdd=[('ROS_Services/Semantic.py', None),
-                                                    ('ROS_Services/Scanner.py', None),
-                                                    ('ROS_Services/WebDB.py', None)])
+    def startReader(self, correlation, wordList):
+        config = {}
+        
+        if correlation and os.path.isfile(correlation):
+            config['correlation'] = ServiceAPI.FileHandle(correlation)
+        
+        if wordList and os.path.isfile(wordList):
+            config['wordList'] = ServiceAPI.FileHandle(wordList)
+        
+        self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[ ('ReadTextService/ReadText', config) ])
+    
+    def startChain(self):
+        self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('ROS_Services/Semantic.py', None),
+                                                                ('ROS_Services/Scanner.py', None),
+                                                                ('ROS_Services/WebDB.py', None)])
     
     def _waitForResult(self, task, delta):
         limit = time.time() + delta
