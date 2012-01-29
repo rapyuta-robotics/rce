@@ -25,7 +25,11 @@
 import string
 import random
 
+# Characters which are used to build the ID
 _CHARS = string.ascii_letters
 
 def generateID(length=10):
+    """ Generate a (hopefully) unique ID consisting of the characters
+        [a-zA-Z] and the given length.
+    """
     return ''.join(random.choice(_CHARS) for x in xrange(length))

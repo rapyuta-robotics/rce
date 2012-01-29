@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Manager.py
+#       EnvironmentManager.py
 #       
 #       Copyright 2011 dominique hunziker <dominique.hunziker@gmail.com>
 #       
