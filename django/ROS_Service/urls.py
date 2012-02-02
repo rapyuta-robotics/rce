@@ -27,4 +27,5 @@ from django.conf.urls.defaults import patterns, include, url
 urlpatterns = patterns('',
     url(r'^$', 'ROS_Service.views.home'),
     url(r'^api/', include('ROS_Service.api.urls')),
+    url(r'^xmlrpc/', include('ROS_Service.xmlrpc.urls')),
 )

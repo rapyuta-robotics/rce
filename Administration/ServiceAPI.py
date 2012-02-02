@@ -31,6 +31,7 @@ import uuid
 import mimetypes
 
 _HOST = 'localhost'
+#_HOST = '50.56.194.140'
 _BASE_ADRESS = '/api/ros_service'
 _REFERENCE_PREFIX = 'REF:'
 

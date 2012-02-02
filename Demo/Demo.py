@@ -49,7 +49,7 @@ class Env(object):
         fh = ServiceAPI.FileHandle('scene.png', out)
         task = ServiceAPI.addTask(self.env, 'ReadTextService/ReadText', {'image' : fh})
         
-        return self._waitForResult(task, 30)
+        return self._waitForResult(task, 120)
     
     def scanImage(self, path):
         img = PIL.Image.open(path)

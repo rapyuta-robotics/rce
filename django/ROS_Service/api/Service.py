@@ -26,7 +26,7 @@
 from functools import wraps
 
 # Django imports
-from piston.handler import AnonymousBaseHandler, BaseHandler
+from piston.handler import AnonymousBaseHandler
 from piston.utils import rc
 from django.http import HttpResponseBadRequest, HttpResponseServerError
 
@@ -209,7 +209,7 @@ def _convertFILESToStringIO(FILES):
     """ Converts the given FILES into a dictionary containing StringIO
         objects representing the files.
         
-        Important:	If there are files which have the same key only one
+        Important:  If there are files which have the same key only one
                     will be passed on!
     """
     stringIOs = {}
