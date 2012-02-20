@@ -1,0 +1,34 @@
+Setup of nodes
+==============
+
+1)  Install dependencies for all nodes:
+    -   ROS dependency:
+        
+        $ sudo apt-get install ros-electric-vision-opencv
+    
+    -   Dependency for Semantic processing:
+            package python-nltk (Natural Language ToolKit)
+            
+            $ sudo apt-get install python-nltk
+    
+    -   Dependency for barcode scanning:
+            get zbar library with python binding here
+                http://zbar.sourceforge.net/
+    
+    -   Dependency for web database access:
+            get google-api-python-library here
+                http://code.google.com/p/google-api-python-client/
+    
+    -   Dependencies for leptonica image prcessing library:
+        
+        $ sudo apt-get install libpng12-dev libjpeg62-dev libtiff4-dev zlib1g-dev
+    
+    -   Use the patched versions of the ROS packages tesseract and liptonica
+        form the folder patch or use the original packages from
+            http://www.ros.org/wiki/
+    
+    -   Use the ROS package read_text from
+            http://www.ros.org/wiki/
+
+2)  Possible configuration files are:
+    -   BarCodeService/*.conf

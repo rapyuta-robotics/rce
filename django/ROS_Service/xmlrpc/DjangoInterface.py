@@ -1,1 +1,0 @@
-/home/dominique/ROS/Administration/nodes/DjangoInterface.py

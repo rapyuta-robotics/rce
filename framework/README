@@ -32,6 +32,20 @@ For a setup on standard ubuntu installation:
     $ sudo service apache2 reload
 
 
+Usage
+=====
+
+1)  Start the apache server if it is not already running
+    
+    $ sudo service apache2 start
+
+2)  Start roscore if it is not already running
+
+3)  Start the Server node from the ROS package Administration
+    
+    $ rosrun Administration Server.py
+
+
 Comments
 ========
 

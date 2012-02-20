@@ -1,1 +1,3 @@
-Replace $ROS_ROOT/core/roslib/src/roslib/packages.py with the given file
+Replace $ROS_ROOT/core/roslib/src/roslib/packages.py with the given file:
+
+$ mv packages.py $ROS_ROOT/core/roslib/src/roslib/packages.py

@@ -24,8 +24,6 @@
 
 import operator
 import time
-import PIL.Image
-import cStringIO
 import os.path
 
 import ServiceAPI
@@ -35,34 +33,29 @@ class Env(object):
         self.env = None
     
     def __del__(self):
-        if self.env:
-            try:
-                ServiceAPI.removeEnv(self.env)
-            except ServiceAPI.RequestError:
-                pass
+        try:
+            if self.env:
+                try:
+                    ServiceAPI.removeEnv(self.env)
+                except ServiceAPI.RequestError:
+                    pass
+        except AttributeError:
+            pass
     
     def readImage(self, path):
-        img = PIL.Image.open(path)
-        out = cStringIO.StringIO()
-        img.save(out, 'PNG')
-        
-        fh = ServiceAPI.FileHandle('scene.png', out)
+        fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'ReadTextService/ReadText', {'image' : fh})
         
         return self._waitForResult(task, 120)
     
     def scanImage(self, path):
-        img = PIL.Image.open(path)
-        out = cStringIO.StringIO()
-        img.save(out, 'PNG')
-        
-        fh = ServiceAPI.FileHandle('barcode.png', out)
-        task = ServiceAPI.addTask(self.env, 'ROS_Services/Scanner', {'image' : fh})
+        fh = ServiceAPI.FileHandle(path)
+        task = ServiceAPI.addTask(self.env, 'BarCodeService/Scanner', {'image' : fh})
         
         return self._waitForResult(task, 10)
     
     def analyseBarcode(self, barcode):
-        task = ServiceAPI.addTask(self.env, 'ROS_Services/WebDB', {'gtin' : barcode})
+        task = ServiceAPI.addTask(self.env, 'BarCodeService/WebDB', {'gtin' : barcode})
         (status, result) = self._waitForResult(task, 10)
         
         if status != 'completed':
@@ -70,7 +63,7 @@ class Env(object):
         
         name = self._buildName([entry['product'] for entry in result['data'] if entry['language'] == 'en'])
         
-        task = ServiceAPI.addTask(self.env, 'ROS_Services/Semantic', result)
+        task = ServiceAPI.addTask(self.env, 'BarCodeService/Semantic', result)
         (status, result) = self._waitForResult(task, 10)
         
         return (status, result, name)
@@ -87,9 +80,9 @@ class Env(object):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[ ('ReadTextService/ReadText', config) ])
     
     def startChain(self):
-        self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('ROS_Services/Semantic.py', None),
-                                                                ('ROS_Services/Scanner.py', None),
-                                                                ('ROS_Services/WebDB.py', None)])
+        self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('BarCodeService/Semantic.py', None),
+                                                                ('BarCodeService/Scanner.py', None),
+                                                                ('BarCodeService/WebDB.py', None)])
     
     def _waitForResult(self, task, delta):
         limit = time.time() + delta
@@ -150,3 +143,10 @@ class Env(object):
             name.append(word)
         
         return ' '.join(name)
+
+if __name__ == '__main__':
+    env = Env()
+    env.startChain()
+    env.startReader(None, None)
+    print env.readImage('test_image.jpg')
+    print env.scanImage('IMAG0061.jpg')
