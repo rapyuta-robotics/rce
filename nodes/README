@@ -1,6 +1,10 @@
 Setup of nodes
 ==============
 
+For a setup on a standard ubuntu installation:
+
+0)  Complete the setup steps from root README
+
 1)  Install dependencies for all nodes:
     -   ROS dependency:
         
