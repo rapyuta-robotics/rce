@@ -1,0 +1,42 @@
+Content of git respository
+==========================
+
+-   framework:
+        Basic framework which provides the possibility to manage, launch
+        and use ROS nodes remotely. For further information read the
+        README.
+
+-   nodes:
+        Different nodes which can be used with the framework. For further
+        information read the README.
+
+-   patch:
+        Contains a necessary patch for the ROS core to run the framework
+        without problems and multiple voluntary patches which can be used
+        to use updated packages with the nodes.
+
+-   Demo:
+        Contains a Demo for the framework and the nodes as well as some
+        sample pictures for the testing of the nodes.
+
+-   xmlrpc:
+        Contains old files which can be used to implement xmlrpc support
+        for the framework.
+
+-   template:
+        Contains a script to create multi-threaded Services. (This was
+        used to setup the 3 python nodes).
+
+
+General setup for all parts
+===========================
+
+For a setup on standard ubuntu installation:
+
+1)  Add the ROS respository to the source list for the package repositories.
+    For ubuntu 11.10 it would be:
+        http://packages.ros.org/ros/ubuntu oneiric main
+
+2)  Install the following packages by running:
+    
+    $ sudo apt-get install ros-electric-ros-base autoconf automake libtool

@@ -1,0 +1,2 @@
+string   gtin
+string   type

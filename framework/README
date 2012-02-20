@@ -1,0 +1,45 @@
+Setup of framework
+==================
+
+For a setup on standard ubuntu installation:
+
+1)  Install the ROS core patch.
+
+2)  Install the following packages by running:
+    
+    $ sudo apt-get install apache2 python-django python-django-piston libapache2-mod-wsgi
+
+3)  Adjust the paths / settings in the following files:
+    -   djnago/setupROS.py
+    -   django/wsgi.py
+    -   django/ROS_Service/settings.py
+
+4)  Move the configration file rosService to the apache site folder:
+    
+    $ sudo mv rosService /etc/apache2/site-available
+
+5)  Create symlink for the file django/wsgi.py in the folder /var/www with
+    the name django.wsgi or adjust the configuration file rosService (from
+    step 4) accordingly:
+    
+    $ sudo ln-s django/wsgi.py /var/www/django.wsgi
+
+6)  Enable the configuration for the apache server and reload the configuration:
+    
+    $ sudo a2enmod wsgi
+    $ sudo a2dissite 000-default
+    $ sudo a2ensite rosService
+    $ sudo service apache2 reload
+
+
+Comments
+========
+
+To disable automatic launch of apache server on start-up run the following
+command:
+
+$ sudo update-rc.d -f apache2 remove
+
+To launch the apache server manually run:
+
+$ sudo service apache2 start
