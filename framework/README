@@ -26,7 +26,12 @@ For a setup on a standard ubuntu installation:
     
     $ sudo ln -s django/wsgi.py /var/www/django.wsgi
 
-6)  Enable the configuration for the apache server and reload the it:
+6)  Create temporary directory for binary results
+    
+    $ sudo mkdir /var/www/tmp
+    $ sudo chmod 777 /var/www/tmp
+
+7)  Enable the configuration for the apache server and reload the it:
     
     $ sudo a2enmod wsgi
     $ sudo a2enmod xsendfile
