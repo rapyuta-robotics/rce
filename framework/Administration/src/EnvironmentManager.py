@@ -38,8 +38,7 @@ from functools import wraps
 
 # Custom imports
 import settings
-from MessageUtility import serializeFiles, deserializeFiles, serializeResult, deserializeResult, \
-SerializeError, InvalidRequest, InternalError
+from MessageUtility import serializeFiles, deserializeFiles, SerializeError, InvalidRequest, InternalError
 import ThreadUtility
 import ROSUtility
 from IDUtility import generateID
@@ -47,6 +46,13 @@ import SQLite
 import ConverterBase
 import ConverterUtility
 import ManagerBase
+
+def mktempfile(dir=None):
+    """ Wrapper around tempfile.mkstemp function such that a file object
+        is returned and not a int. Make sure to close the fileobject again.
+    """
+    (fd, fname) = tempfile.mkstemp(dir=dir)
+    return (os.fdopen(fd, 'wb'), fname)
 
 def activity(f):
     """ Decorator to enable an automatic update of the activity timestamp. 
@@ -69,8 +75,10 @@ class EnvironmentManager(ManagerBase.ManagerBase):
     """ This class is used to manage an environment, which consists of
         the ROS nodes and the tasks for the ROS nodes.
     """
-    _SQL_BASE = '''CREATE TABLE env (nodeID TEXT UNIQUE, name TEXT, status TEXT DEFAULT 'init');
-CREATE TABLE task (taskID TEXT UNIQUE, status TEXT DEFAULT 'init', result BLOB, accessed TEXT);
+    _SQL_BASE = '''PRAGMA foreign_keys = ON;
+CREATE TABLE env (nodeID TEXT UNIQUE, name TEXT, status TEXT DEFAULT 'init');
+CREATE TABLE task (taskID TEXT UNIQUE, status TEXT DEFAULT 'init', result TEXT, accessed TEXT);
+CREATE TABLE files (taskID TEXT, ref TEXT, filename TEXT UNIQUE, FOREIGN KEY(taskID) REFERENCES task(taskID) ON DELETE CASCADE);
 CREATE TRIGGER task_insert AFTER INSERT ON task
 BEGIN
 UPDATE task SET accessed = DATETIME('NOW') WHERE taskID == new.taskID;
@@ -79,7 +87,7 @@ END;
 CREATE TRIGGER task_update AFTER UPDATE ON task
 BEGIN
 UPDATE task SET accessed = DATETIME('NOW') WHERE taskID == new.taskID AND old.status != 'deleted';
-END;'''
+END;;'''
 
     def __init__(self):
         """ Initialize the EnvironmentManager.
@@ -96,6 +104,7 @@ END;'''
         self._threadMngr.append(self._db, 0)
         self._db.start()
         
+        # activity monitor
         self._activityLock = threading.Lock()
         self._lastActivity = datetime.datetime.utcnow()
     
@@ -119,7 +128,7 @@ END;'''
             @return:    True if the task ID is vaild, False otherwise.
             @rtype:     bool
         """
-        if len(self._db.query('''SELECT taskID FROM task WHERE taskID == ? AND status != 'deleted';''', (task,))) == 1:
+        if len(self._db.query('''SELECT taskID FROM task WHERE taskID == ? AND status != 'deleted' ''', (task,))) == 1:
             return True
         
         return False
@@ -193,11 +202,10 @@ END;'''
                                 content.seek(0)
                                 content = content.read()
                             
-                            (tmp, configVal) = tempfile.mkstemp()
+                            (f, configVal) = mktempfile()
                             tempFiles.append(configVal)
-                            
-                            with open(configVal, 'wb') as f:
-                                f.write(content)
+                            f.write(content)
+                            f.close()
                     
                     # Now check the given value and process it accordingly
                     if configType == 'bool':
@@ -264,7 +272,7 @@ END;'''
                 raise e
     
     def getNodeStatus(self):
-        """ Get the status of the all nodes in the environment.
+        """ Get the status of all the nodes in the environment.
             
             @return:    Status of all nodes in the environment. List of
                         tuples of the form (name, status)
@@ -396,8 +404,14 @@ END;'''
             traceback.print_exc()
             return
         
-        result = buffer(serializeResult(json.dumps(data), serializeFiles(files)))
-        self._db.change('''UPDATE task SET result = ?, status = 'completed' WHERE taskID == ?''', (result, task))
+        for ref in files:
+            (f, name) = mktempfile(dir=settings.TMP_RESULT_DIR)
+            self._db.change('''INSERT INTO files (taskID, ref, filename) VALUES (?, ?, ?)''', (task, ref, name))
+            f.write(files[ref].read())
+            f.close()
+            os.chmod(name, 0644)
+        
+        self._db.change('''UPDATE task SET result = ?, status = 'completed' WHERE taskID == ?''', (json.dumps(data), task))
     
     @activity
     def getResult(self, task):
@@ -408,27 +422,45 @@ END;'''
             @type  task:    str
             
             @return:    Tuple containing the information about the task:
-                        (status, data, binary)
+                        (status, data)
                         
                         If the status of the task is not yet 'completed'
-                        than data and binary will be None.
+                        than data will be None.
                         The returned string data is the json formatted
-                        string and binary is the serialized form of files.
-                        (further information serialize.serializeFiles)
-            @rtype:     (str, str, str)
+                        string.
+            @rtype:     (str, str)
         """
         response = self._db.query('SELECT status, result FROM task WHERE taskID == ?''', (task,))
+        self._db.change('''UPDATE task SET accessed = DATETIME('NOW') WHERE taskID == ?''', (task,))
         
-        (status, result) = response[0]
+        if not response:
+            raise InvalidRequest('Given task ID is invalid.')
         
-        if status == 'completed':
-            data, binary = deserializeResult(str(result))
-            self._db.change('''UPDATE task SET accessed = DATETIME('NOW') WHERE taskID == ?''', (task,))
-        else:
-            data = ''
-            binary = ''
+        return response[0]
+    
+    @activity
+    def getFile(self, task, ref):
+        """ Get the a file/result of the task. Make sure that the task ID
+            is valid before this method is used.
+            
+            @param task:    Valid task ID (from getNewTask)
+            @type  task:    str
+            
+            @param ref:     Valid reference
+            @type  ref:     str
+            
+            @return:    Absolute path to the temporary file which was
+                        requested.
+            @rtype:     str
+        """
+        response = self._db.query('SELECT filename FROM files WHERE taskID == ? AND ref == ?''', (task, ref))
+        self._db.change('''UPDATE task SET accessed = DATETIME('NOW') WHERE taskID == ?''', (task,))
         
-        return (status, data, binary)
+        if not response:
+            raise InvalidRequest('Given task ID / file reference is invalid.')
+        
+        return response[0][0]
+    
     
     ####################################################################
     # Utility
@@ -455,6 +487,18 @@ END;'''
                 counter = 0
                 self._clean(settings.TIMEOUT)
     
+    def stop(self):
+        """ Overwrites the method from base class. This is necessary to
+            make sure that all temporary files are removed.
+        """
+        for (filename,) in self._db.query('''SELECT filename FROM files'''):
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
+        
+        super(EnvironmentManager, self).stop()
+    
     def _clean(self, timeDelta):
         """ Mark all entries which are older than the given timeDelta
             for removal. 
@@ -478,7 +522,15 @@ END;'''
             self.removeProcess(nodeID)
         
         # Delete all nodes marked for removal
-        self._db.change('''DELETE FROM env WHERE status ==  'deleted' ''')
+        self._db.change('''DELETE FROM env WHERE status == 'deleted' ''')
+        
+        # Delete all temporary files which are associated with the tasks marked for removal
+        for (filename,) in self._db.query('''SELECT files.filename FROM files INNER JOIN task ON files.taskID = task.taskID WHERE task.status == 'deleted' '''):
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
         
         # Delete all task which are marked for removal
-        self._db.change('''DELETE FROM task WHERE status ==  'deleted' ''')
+        self._db.change('''DELETE FROM task WHERE status == 'deleted' ''')
+    

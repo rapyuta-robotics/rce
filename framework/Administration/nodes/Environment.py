@@ -26,14 +26,14 @@
 import roslib; roslib.load_manifest('Administration')
 import rospy
 from Administration.srv import \
-isActive, addNode, getEnvironment, addTask, getTask, removeTask, \
-isActiveResponse, addNodeResponse, getEnvironmentResponse, addTaskResponse, getTaskResponse, removeTaskResponse
+isActive, addNode, getEnvironment, addTask, getTask, getFile, removeTask, \
+isActiveResponse, addNodeResponse, getEnvironmentResponse, addTaskResponse, getTaskResponse, getFileResponse, removeTaskResponse
 
 # Python sepcific imports
 import json
 
 # Custom imports
-from MessageUtility import serializeResult, serviceCallback, setupService, InvalidRequest, InternalError
+from MessageUtility import serviceCallback, setupService, InvalidRequest, InternalError
 from ROSUtility import NodeError
 import EnvironmentManager
 
@@ -147,19 +147,27 @@ def getTaskCallback(request, manager):
     if not manager.isValidTask(request.taskID):
         raise InvalidRequest('Task ID {0} is invalid.'.format(request.taskID))
     
-    try:
-        (status, data, binary) = manager.getResult(request.taskID)
-    except TypeError:
-        raise InternalError('Could not get the status/result of the task.')
+    (status, data) = manager.getResult(request.taskID)
     
     response = { 'taskID' : request.taskID, 'status' : status }
     
     if status == 'completed':
-        response['data'] = data
+        response['data'] = json.loads(data)
     else:
         response['data'] = {}
     
-    return serializeResult(json.dumps(response), binary)
+    return json.dumps(response)
+
+@serviceCallback(getFileResponse)
+def getFileCallback(request, manager):
+    """ Callback function for the getFile Service.
+    """
+    msg = manager.getFile(request.taskID, request.ref)
+    
+    if isinstance(msg, unicode):
+        msg= msg.encode('utf-8')
+    
+    return msg
 
 @serviceCallback(removeTaskResponse)
 def removeTaskCallback(request, manager):
@@ -188,6 +196,7 @@ def init(manager):
     setupService('getEnvironment', getEnvironment, getEnvironmentCallback, manager)
     setupService('addTask', addTask, addTaskCallback, manager)
     setupService('getTask', getTask, getTaskCallback, manager)
+    setupService('getFile', getFile, getFileCallback, manager)
     setupService('removeTask', removeTask, removeTaskCallback, manager)
 
 def main():
@@ -198,12 +207,7 @@ def main():
         exit(1)
     
     init(manager)
-    manager.start()
-    
-    try:
-        manager.spin()
-    finally:
-        manager.stop()
+    manager.spin()
     
     return 0
 

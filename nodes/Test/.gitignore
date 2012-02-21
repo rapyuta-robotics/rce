@@ -1,0 +1,6 @@
+*.pyc
+*.so
+bin/
+build/
+srv_gen/
+src/Test

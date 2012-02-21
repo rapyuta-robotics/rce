@@ -150,22 +150,6 @@ def genericService(name, service, **kw):
     
     return response.msg
 
-def postprocessResponse(response):
-    """ The postprocessing does deserialize the response into the data
-        and files.
-    """
-    try:
-        (data, binary) = deserializeResult(response)
-        
-        if binary:
-            files = deserializeFiles(binary)
-        else:
-            files = {}
-    except SerializeError:
-        raise InternalError('Could not deserialize the response.')
-    
-    return (json.loads(data), files)
-
 ########################################################################
 # Serialization tools
 
@@ -175,62 +159,6 @@ class SerializeError(Exception):
     """ General Exception class which is used for conversion errors.
     """
     pass
-
-def serializeResult(data, binary):
-    """ Serialize a result such that it can be saved in a sqlite db.
-        
-        @param data:    data string
-        @type  data:    str
-        
-        @param binary:  binary string which should be the serialized form
-                        of files -> serializeFiles
-        @type  binary:  str
-        
-        @return:        Serialized form of the result
-        @rtype:         str
-    """
-    out = cStringIO.StringIO()
-    
-    length = len(data)
-    out.write(struct.pack('<I%ss'%length, length, data))
-    
-    length = len(binary)
-    out.write(struct.pack('<I%ss'%length, length, binary))
-    
-    return out.getvalue()
-
-def deserializeResult(result):
-    """ Deserialize a result from a sqlite db.
-        
-        @param result:  Result string (serialized form)
-        @type  result:  str
-        
-        @return:        Tuple of the deserialized strings data and binary
-                        of the form (data, binary)
-                        Remark: binary is still the serialized form of
-                        files -> deserializeFiles
-        @rtype:         (str, str)
-    """
-    try:
-        end = 0
-        
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(result[start:end])
-        start = end
-        end += length
-        data = result[start:end]
-        
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(result[start:end])
-        start = end
-        end += length
-        binary = result[start:end]
-    except struct.error as e:
-        raise SerializeError(e)
-    
-    return (data, binary)
 
 def serializeFiles(files):
     """ Serialize a dictionary full of lists containing cStringIO.StringO

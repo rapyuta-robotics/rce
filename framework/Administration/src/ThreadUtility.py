@@ -246,25 +246,26 @@ class QueueWorker(ManagedThread):
         """ The method which has to be overwitten from the ManagedThread
             base class.
         """
-        self.initLoop()
+        self.init()
         
-        while not self.terminate.isSet():
-            try:
-                query = self.queue.get(block=True, timeout=1)
-            except Queue.Empty:
-                continue
-            
-            query[0](query[1], query[2], query[3])
-        
-        self.finishLoop()
+        try:
+            while not self.terminate.isSet():
+                try:
+                    query = self.queue.get(block=True, timeout=1)
+                except Queue.Empty:
+                    continue
+                
+                query[0](query[1], query[2], query[3])
+        finally:
+            self.stop()
     
-    def initLoop(self):
+    def init(self):
         """ Overwrite this method if some initalization is required in
             the thread.
         """
         pass
     
-    def finishLoop(self):
+    def stop(self):
         """ Overwrite this method if some clean up is required in the
             thread.
         """

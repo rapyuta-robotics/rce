@@ -28,7 +28,8 @@ from functools import wraps
 # Django imports
 from piston.handler import AnonymousBaseHandler
 from piston.utils import rc
-from django.http import HttpResponseBadRequest, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError
+from django.core.servers.basehttp import FileWrapper
 
 # File processing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
@@ -44,10 +45,12 @@ paths = roslib.packages.find_resource('Administration', 'DjangoInterface.py')
 
 if len(paths) != 1:
     print('Could not uniquely identify the ROS interface.')
-    exit(-1)
+    exit(1)
 
 import imp
 DjangoInterface = imp.load_source('DjangoInterface', paths[0])
+
+import os.path
 
 def exceptionHandler(f):
     """ This decorator should be used on the Handler methods to simplify
@@ -101,15 +104,8 @@ class ServiceHandler(AnonymousBaseHandler):
             a valid environment ID only the requested nodes are added
             to the given environment.
         """
-        try:
-            envID = request.POST['ID']
-        except KeyError:
-            envID = None
-        
-        try:
-            data = str(request.POST['data'])
-        except KeyError:
-            data = None
+        envID = request.POST.get('ID')
+        data = str(request.POST.get('data'))
         
         try:
             binary = _convertFILESToStringIO(request.FILES)
@@ -158,15 +154,8 @@ class EnvironmentHandler(AnonymousBaseHandler):
             As soon as the function encounters the field 'data' in
             request.POST the task is launched.
         """
-        try:
-            taskID = request.POST['ID']
-        except KeyError:
-            taskID = None
-        
-        try:
-            data = str(request.POST['data'])
-        except KeyError:
-            data = None
+        taskID = request.POST.get('ID')
+        data = str(request.POST.get('data'))
         
         try:
             binary = _convertFILESToStringIO(request.FILES)
@@ -182,29 +171,33 @@ class TaskHandler(AnonymousBaseHandler):
     allowed_methods = ('GET', 'DELETE')
     
     @exceptionHandler
-    def read(self, request, envID, taskID):
+    def read(self, request, envID, taskID, ref=None):
         """ Handle 'GET' request.
             This type of request should be used to gather information
             on the Task matching the task ID in the ROS environment
             matching the envrironment ID.
         """
-        (data, files) = DjangoInterface.readTask(envID=envID, taskID=taskID)
+        if ref:
+            filePath = DjangoInterface.readFile(envID=envID, taskID=taskID, ref=ref)
+            response = HttpResponse(mimetype='application/force-download')
+            response['Content-Disposition'] = 'attachment'
+            response['X-Sendfile'] = filePath
+            response['Content-Length'] = os.path.getsize(filePath)
+            return response
         
-        ### ??? ###
-        ### 
-        ### ToDo:	What should be done with the files ???
-        ### 
-        
-        return data
+        return DjangoInterface.readTask(envID=envID, taskID=taskID)
     
 #   def update(self, request, envID, taskID):
 #       """ Handle 'PUT'
 #       """
     
     @exceptionHandler
-    def delete(self, request, envID, taskID):
+    def delete(self, request, envID, taskID, ref=None):
         """ Handle 'DELETE' request.
         """
+        if ref:
+            raise InvalidRequest('Can not delete the file.')
+        
         DjangoInterface.deleteTask(envID=envID, taskID=taskID)
         
         return rc.DELETED

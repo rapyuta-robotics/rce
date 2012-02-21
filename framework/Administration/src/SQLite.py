@@ -64,7 +64,7 @@ class SQLite(ThreadUtility.QueueWorker):
         self._connection = None
         self._cursor = None
     
-    def initLoop(self):
+    def init(self):
         """ This method sets up the database and the connection to the
             database. It overwrites the method from the base class.
         """
@@ -85,7 +85,7 @@ class SQLite(ThreadUtility.QueueWorker):
         # Open cursor
         self._cursor = self._connection.cursor()
     
-    def finishLoop(self):
+    def stop(self):
         """ This method terminates the connection to the database. It
             overwrites the method from the base class.
         """

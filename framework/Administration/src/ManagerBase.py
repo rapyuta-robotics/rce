@@ -178,10 +178,19 @@ class ManagerBase(ThreadUtility.QueueWorker):
         """
         return '{0}{1}'.format(self._ROSNamespace, add)
     
-    def start(self):
-        """ Start the Manager.
+    def init(self):
+        """ Start the Manager. This method overwrites the method from the
+            base class and is used to initialize the loop of the manager.
         """
         self._launcher.start()
+    
+    def start(self):
+        """ Overwrite the method from base class threading.Thread to make
+            sure that the manager is not run in a new Thread but in the
+            main thread. (However it is still possible to launch the manager
+            in a child thread.)
+        """
+        raise RuntimeError('The Manager can not be used in a child thread. Use run() in the main thread to launch the Manager instead.')
     
     def spin(self):
         """ Main loop of the Manager.
@@ -206,7 +215,9 @@ class ManagerBase(ThreadUtility.QueueWorker):
         pass
     
     def stop(self):
-        """ Stop the Manager.
+        """ Stop the Manager. This method overwrites the method from the
+            base class and is used to finalize the loop of the manager.
+            It is always executed.
         """
         with self._processLock:
             for key in self._runningProcesses:

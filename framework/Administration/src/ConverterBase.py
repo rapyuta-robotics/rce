@@ -112,7 +112,7 @@ class Converter(object):
     _SPECIAL_TYPES = {  'time' : _TimeConverter,
                         'duration' : _DurationConverter }
     
-    def encode(self, rosMsg, basename='/'):
+    def encode(self, rosMsg, basename='!'):
         """ Generate django compatible data from a ROS message.
             
             @param rosMsg:  The ROS message instance which should be
@@ -164,7 +164,7 @@ class Converter(object):
                     data[slotName] = [None]*len(fieldData)
                     
                     for i in xrange(len(fieldData)):
-                        data[slotName][i], subFiles = convFunc(fieldData[i], '{0}{1}_{2}/'.format(basename, slotName, i))
+                        data[slotName][i], subFiles = convFunc(fieldData[i], '{0}{1}_{2}!'.format(basename, slotName, i))
                         
                         for key in subFiles:
                             if key in files:
@@ -172,7 +172,7 @@ class Converter(object):
                             
                             files[key] = subFiles[key]
                 else:
-                    data[slotName], subFiles = convFunc(getattr(rosMsg, slotName), '{0}{1}/'.format(basename, slotName))
+                    data[slotName], subFiles = convFunc(getattr(rosMsg, slotName), '{0}{1}!'.format(basename, slotName))
                     
                     for key in subFiles:
                         if key in files:

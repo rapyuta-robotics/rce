@@ -9,7 +9,7 @@ For a setup on a standard ubuntu installation:
 
 2)  Install the following packages by running:
     
-    $ sudo apt-get install apache2 python-django python-django-piston libapache2-mod-wsgi
+    $ sudo apt-get install apache2 python-django python-django-piston libapache2-mod-wsgi libapache2-mod-xsendfile
 
 3)  Adjust the paths / settings in the following files:
     -   django/setupROS.py
@@ -29,6 +29,7 @@ For a setup on a standard ubuntu installation:
 6)  Enable the configuration for the apache server and reload the it:
     
     $ sudo a2enmod wsgi
+    $ sudo a2enmod xsendfile
     $ sudo a2dissite 000-default
     $ sudo a2ensite rosService
     $ sudo service apache2 reload

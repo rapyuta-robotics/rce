@@ -1,0 +1,16 @@
+<package>
+  <description brief="Test">
+
+     Test
+
+  </description>
+  <author>dominique hunziker</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/Test</url>
+  <depend package="rospy"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

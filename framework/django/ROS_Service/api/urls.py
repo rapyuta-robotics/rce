@@ -41,4 +41,5 @@ urlpatterns = patterns('',
     url(r'^ros_service$', ServiceHandler),
     url(r'^ros_service/(?P<envID>[a-zA-Z]{10})$', EnvironmentHandler),
     url(r'^ros_service/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})$', TaskHandler),
+    url(r'^ros_service/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})/(?P<ref>[^/]+)$', TaskHandler),
 )

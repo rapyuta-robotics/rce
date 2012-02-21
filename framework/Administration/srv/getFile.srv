@@ -1,0 +1,5 @@
+string taskID
+string ref
+---
+uint8 status
+string msg

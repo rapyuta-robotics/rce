@@ -33,7 +33,7 @@ import mimetypes
 _HOST = 'localhost'
 #_HOST = '50.56.194.140'
 _BASE_ADRESS = '/api/ros_service'
-_REFERENCE_PREFIX = 'REF:'
+_REFERENCE_PREFIX = 'ReF'
 
 class RequestError(Exception):
     """General error which is raised when HTTP Header indicates a problem."""
@@ -119,11 +119,17 @@ class _MultiPartForm(object):
         
         return out.getvalue()
 
-def _processGET(url):
+def _processGET(url, file=False):
     """ Process a GET request.
         
         @param url:     url where the GET request is sent to.
         @type  url:     str
+        
+        @param file:    Optional Argument. (default = False)
+                        Set to True if a file should be downloaded, else
+                        the received string is converted to a json
+                        dictionary.
+        @type  file:    bool
     """
     conn = httplib.HTTPConnection(_HOST)
     
@@ -135,6 +141,9 @@ def _processGET(url):
     
     if r.status != 200:
         raise RequestError(r.status, r.reason, r.read())
+    
+    if file:
+        return r.read()
     
     return json.loads(r.read())
 
@@ -336,11 +345,28 @@ def getTask(envID, taskID):
         @rtype:     (str, {})
     """
     response = _processGET('{0}/{1}/{2}'.format(_BASE_ADRESS, envID, taskID))
-    
-    if isinstance(response['data'], unicode):
-        response['data'] = json.loads(response['data'].encode('utf-8'))
-    
     return (response['status'], response['data'])
+
+def getFile(envID, taskID, ref):
+    """ Get the file/result of a task.
+        
+        @param envID:       Environment ID in which the task is.
+        @type  envID:       str
+        
+        @param taskID:      Task ID to retrieve.
+        @type  taskID:      str
+        
+        @param ref:         File reference to retrieve.
+        @type  ref:         str
+        
+        @return:    File represented as a cStringIO.StringO object.
+        @rtype:     cStringIO.StringO
+    """
+    response = _processGET('{0}/{1}/{2}/{3}'.format(_BASE_ADRESS, envID, taskID, ref), True)
+    out = cStringIO.StringIO()
+    out.write(response)
+    out.seek(0)
+    return out
 
 def removeTask(envID, taskID):
     """ Remove a task.
@@ -353,7 +379,7 @@ def removeTask(envID, taskID):
     """
     _processDELETE('{0}/{1}/{2}'.format(_BASE_ADRESS, envID, taskID))
 
-def _processMessage(message, basename='/'):
+def _processMessage(message, basename='!'):
     """ Helper function to process a message.
     """
     data = {}
@@ -366,7 +392,7 @@ def _processMessage(message, basename='/'):
         field = message[key]
         
         if isinstance(field, dict):
-            (data[key], subFiles) = _processMessage(field, '{0}{1}/'.format(basename, key))
+            (data[key], subFiles) = _processMessage(field, '{0}{1}!'.format(basename, key))
             
             for key in subFiles:
                 if key in files:
@@ -377,7 +403,7 @@ def _processMessage(message, basename='/'):
             data[key] = [None]*len(field)
             for i in xrange(len(field)):
                 if isinstance(field[i], dict):
-                    (data[key][i], subFiles) = _processMessage(field[i], '{0}{1}_{2}/'.format(basename, key, i))
+                    (data[key][i], subFiles) = _processMessage(field[i], '{0}{1}_{2}!'.format(basename, key, i))
                     
                     for key in subFiles:
                         if key in files:
@@ -385,13 +411,13 @@ def _processMessage(message, basename='/'):
                         
                         files[key] = subFiles[key]
                 elif hasattr(field[i], 'convertToTuple'):
-                    data[key][i] = '{3}{0}{1}_{2}/file'.format(basename, key, i, _REFERENCE_PREFIX)
-                    files.append(field[i].convertToTuple('{0}{1}_{2}/file'.format(basename, key, i)))
+                    data[key][i] = '{3}{0}{1}_{2}!file'.format(basename, key, i, _REFERENCE_PREFIX)
+                    files.append(field[i].convertToTuple('{0}{1}_{2}!file'.format(basename, key, i)))
                 else:
                     data[key][i] = field[i]
         elif hasattr(field, 'convertToTuple'):
-            data[key] = '{2}{0}{1}/file'.format(basename, key, _REFERENCE_PREFIX)
-            files.append(field.convertToTuple('{0}{1}/file'.format(basename, key)))
+            data[key] = '{2}{0}{1}!file'.format(basename, key, _REFERENCE_PREFIX)
+            files.append(field.convertToTuple('{0}{1}!file'.format(basename, key)))
         else:
             data[key] = field
     

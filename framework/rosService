@@ -12,7 +12,9 @@
 		Order allow,deny
 		allow from all
 	</Directory>
-
+    
+    XSendFile On
+    
     WSGIScriptAlias / /var/www/django.wsgi
 
 	ErrorLog ${APACHE_LOG_DIR}/error.log

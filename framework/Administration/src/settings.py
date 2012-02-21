@@ -31,13 +31,16 @@ CONVERTER_CLASSES = (
 )
 
 # Definition of reference from data to files
-REFERENCE_PREFIX = 'REF:'
+REFERENCE_PREFIX = 'ReF'
 
 # Time in seconds after which inactive entries in the databases are removed.
 TIMEOUT = 600
 
 # Time in secondes after which unresponsive services are treated as dead.
 WAIT_FOR_SERVICE_TIMEOUT = 2
+
+# Path to directory where temporary files to store the results should be kept
+TMP_RESULT_DIR = '/var/www/tmp'
 
 # Scanner node
 _scanner = {    'name' : 'BarCodeService/Scanner.py',
@@ -56,5 +59,13 @@ _textReader = { 'name' : 'ReadTextService/ReadText',
                 'config' : [('correlation', 'file', os.path.join(pathTo_read_text, 'fonts/correlation.txt')),
                             ('wordList', 'file', os.path.join(pathTo_read_text, 'dictionary/full-dictionary'))] }
 
+_test = {       'name' : 'Test/Test.py',
+                'services' : [('test', 'QueryTest')] }
+
 # Nodes which can be used
-NODES = ( _scanner , _webDB, _semantic, _textReader )
+NODES = (   _scanner ,
+            _webDB,
+            _semantic,
+            _textReader,
+            _test
+        )

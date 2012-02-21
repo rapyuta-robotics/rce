@@ -92,6 +92,7 @@ class ImageConverter(object):
         # Save to StringIO
         img = cStringIO.StringIO()
         pil.save(img, 'PNG')
+        img.seek(0)
         key = ConverterUtility.buildReference('img', basename)
         
         return (key, { key : img })

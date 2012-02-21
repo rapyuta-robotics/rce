@@ -42,6 +42,19 @@ class Env(object):
         except AttributeError:
             pass
     
+    def debug(self, a, b):
+        task = ServiceAPI.addTask(self.env, 'Test/test', {'a' : a, 'b' : b})
+        
+        (status, result) = self._waitForResult(task, 10)
+        img = ServiceAPI.getFile(self.env, task, result['img'])
+        
+        with open('ros.png', 'w') as f:
+            f.write(img.read())
+        
+        print status
+        print '{0} + {1} = {2}'.format(a, b, result['sum'])
+        print 'img -> ros.png'
+    
     def readImage(self, path):
         fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'ReadTextService/ReadText', {'image' : fh})
@@ -68,6 +81,9 @@ class Env(object):
         
         return (status, result, name)
     
+    def startDebug(self):
+        self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[('Test/Test.py', None)])
+    
     def startReader(self, correlation, wordList):
         config = {}
         
@@ -82,7 +98,7 @@ class Env(object):
     def startChain(self):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('BarCodeService/Semantic.py', None),
                                                                 ('BarCodeService/Scanner.py', None),
-                                                                ('BarCodeService/WebDB.py', None)])
+                                                                ('BarCodeService/WebDB.py', None) ])
     
     def _waitForResult(self, task, delta):
         limit = time.time() + delta
@@ -146,7 +162,11 @@ class Env(object):
 
 if __name__ == '__main__':
     env = Env()
+    env.startDebug()
     env.startChain()
     env.startReader(None, None)
     print env.readImage('test_image.jpg')
-    print env.scanImage('IMAG0061.jpg')
+    r = env.scanImage('IMAG0061.jpg')
+    print r
+    print env.analyseBarcode(r[1]['barcode'][0]['gtin'])
+    env.debug(-6, 10)

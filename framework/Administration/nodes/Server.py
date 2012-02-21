@@ -113,12 +113,7 @@ def main():
         exit(1)
     
     init(manager)
-    manager.start()
-    
-    try:
-        manager.spin()
-    finally:
-        manager.stop()
+    manager.spin()
     
     return 0
 
