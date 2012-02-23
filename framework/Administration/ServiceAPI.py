@@ -32,7 +32,7 @@ import mimetypes
 
 _HOST = 'localhost'
 #_HOST = '50.56.194.140'
-_BASE_ADRESS = '/api/ros_service'
+_BASE_ADRESS = '/api/reappengine'
 _REFERENCE_PREFIX = 'ReF'
 
 class RequestError(Exception):
@@ -218,7 +218,7 @@ def getAvailableServices():
                     about the node is returned.
         @rtype:     { str : {} }
     """
-    return _processGET(_BASE_ADRESS)
+    return _processGET('{0}/'.format(_BASE_ADRESS))
 
 def addEnv():
     """ Create a new environment.
@@ -226,7 +226,7 @@ def addEnv():
         @return:    New environment ID
         @rtype:     str
     """
-    return _processPOST(_BASE_ADRESS, {}, [])['envID']
+    return _processPOST('{0}/'.format(_BASE_ADRESS), {}, [])['envID']
 
 def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
     """ Change the nodes in the environment.
@@ -284,7 +284,7 @@ def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
     if envID:
         body['ID'] = envID
     
-    return _processPOST(_BASE_ADRESS, body, files)['envID']
+    return _processPOST('{0}/'.format(_BASE_ADRESS), body, files)['envID']
 
 def getEnv(envID):
     """ Get running nodes in environment.
@@ -296,7 +296,7 @@ def getEnv(envID):
                     as keys and their status as values.
         @rtype:     { str : str }
     """
-    return _processGET('{0}/{1}'.format(_BASE_ADRESS, envID))
+    return _processGET('{0}/{1}/'.format(_BASE_ADRESS, envID))
 
 def removeEnv(envID):
     """ Remove an environment.
@@ -304,7 +304,7 @@ def removeEnv(envID):
         @param envID:       Environment ID to delete.
         @type  envID:       str
     """
-    _processDELETE('{0}/{1}'.format(_BASE_ADRESS, envID))
+    _processDELETE('{0}/{1}/'.format(_BASE_ADRESS, envID))
 
 def addTask(envID, service, message):
     """ Add a task.
@@ -325,7 +325,7 @@ def addTask(envID, service, message):
     """
     (msg, files) = _processMessage(message)
     body = {'data' : json.dumps({'service' : service, 'msg' : msg }) }
-    return _processPOST('{0}/{1}'.format(_BASE_ADRESS, envID), body, files)['taskID']
+    return _processPOST('{0}/{1}/'.format(_BASE_ADRESS, envID), body, files)['taskID']
 
 def getTask(envID, taskID):
     """ Get the status/result of a task.
@@ -344,7 +344,7 @@ def getTask(envID, taskID):
                     The returned result is the json formatted dictionary.
         @rtype:     (str, {})
     """
-    response = _processGET('{0}/{1}/{2}'.format(_BASE_ADRESS, envID, taskID))
+    response = _processGET('{0}/{1}/{2}/'.format(_BASE_ADRESS, envID, taskID))
     return (response['status'], response['data'])
 
 def getFile(envID, taskID, ref):
@@ -362,7 +362,7 @@ def getFile(envID, taskID, ref):
         @return:    File represented as a cStringIO.StringO object.
         @rtype:     cStringIO.StringO
     """
-    response = _processGET('{0}/{1}/{2}/{3}'.format(_BASE_ADRESS, envID, taskID, ref), True)
+    response = _processGET('{0}/{1}/{2}/{3}/'.format(_BASE_ADRESS, envID, taskID, ref), True)
     out = cStringIO.StringIO()
     out.write(response)
     out.seek(0)
@@ -377,7 +377,7 @@ def removeTask(envID, taskID):
         @param taskID:      Task ID to delete.
         @type  taskID:      str
     """
-    _processDELETE('{0}/{1}/{2}'.format(_BASE_ADRESS, envID, taskID))
+    _processDELETE('{0}/{1}/{2}/'.format(_BASE_ADRESS, envID, taskID))
 
 def _processMessage(message, basename='!'):
     """ Helper function to process a message.

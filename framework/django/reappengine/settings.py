@@ -11,12 +11,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',		# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/dominique/django/data.db',	# Or path to database file if using sqlite3.
-        'USER': '',                      			# Not used with sqlite3.
-        'PASSWORD': '',                 			# Not used with sqlite3.
-        'HOST': '',                      			# Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      			# Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',	    # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '/var/django/reappengine/data.db',  # Or path to database file if using sqlite3.
+        'USER': '',                                 # Not used with sqlite3.
+        'PASSWORD': '',                             # Not used with sqlite3.
+        'HOST': '',                                 # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                                 # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -65,7 +65,7 @@ STATIC_URL = '/static/'
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = '/media/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -100,9 +100,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'ROS_Service.urls'
+ROOT_URLCONF = 'reappengine.urls'
 
 TEMPLATE_DIRS = (
+    '/home/dominique/ROS/framework/django/reappengine/site/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -114,8 +115,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'ROS_Service.api',
+    #'django.contrib.staticfiles',
+    'reappengine.api',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

@@ -23,23 +23,10 @@
 #   	
 
 from django.conf.urls.defaults import patterns, include, url
-from piston.resource import Resource
-import ROS_Service.api.Service
-
-class CsrfExemptResource(Resource):
-    """ A Custom Resource that is csrf exempt.
-    """
-    def __init__(self, handler, authentication=None):
-        super(CsrfExemptResource, self).__init__(handler, authentication)
-        self.csrf_exempt = getattr(self.handler, 'csrf_exempt', True)
-
-ServiceHandler = CsrfExemptResource(ROS_Service.api.Service.ServiceHandler)
-EnvironmentHandler = CsrfExemptResource(ROS_Service.api.Service.EnvironmentHandler)
-TaskHandler = CsrfExemptResource(ROS_Service.api.Service.TaskHandler)
 
 urlpatterns = patterns('',
-    url(r'^ros_service$', ServiceHandler),
-    url(r'^ros_service/(?P<envID>[a-zA-Z]{10})$', EnvironmentHandler),
-    url(r'^ros_service/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})$', TaskHandler),
-    url(r'^ros_service/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})/(?P<ref>[^/]+)$', TaskHandler),
+    url(r'^$', 'reappengine.site.views.users.index'),
+    url(r'^login/$', 'reappengine.site.views.users.loginForm'),
+    url(r'^login/check/$', 'reappengine.site.views.users.login'),
+    url(r'^api/', include('reappengine.api.urls')),
 )

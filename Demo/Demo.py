@@ -161,12 +161,15 @@ class Env(object):
         return ' '.join(name)
 
 if __name__ == '__main__':
-    env = Env()
-    env.startDebug()
-    env.startChain()
-    env.startReader(None, None)
-    print env.readImage('test_image.jpg')
-    r = env.scanImage('IMAG0061.jpg')
-    print r
-    print env.analyseBarcode(r[1]['barcode'][0]['gtin'])
-    env.debug(-6, 10)
+    try:
+        env = Env()
+        env.startDebug()
+        env.startChain()
+        env.startReader(None, None)
+        print env.readImage('test_image.jpg')
+        r = env.scanImage('IMAG0061.jpg')
+        print r
+        print env.analyseBarcode(r[1]['barcode'][0]['gtin'])
+        env.debug(-6, 10)
+    except Exception as e:
+        print e

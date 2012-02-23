@@ -15,6 +15,9 @@
     
     XSendFile On
     
+    Alias /img /var/www/img
+    Alias /stylesheets /var/www/stylesheets
+    
     WSGIScriptAlias / /var/www/django.wsgi
 
 	ErrorLog ${APACHE_LOG_DIR}/error.log

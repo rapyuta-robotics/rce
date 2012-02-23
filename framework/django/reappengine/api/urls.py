@@ -23,8 +23,23 @@
 #   	
 
 from django.conf.urls.defaults import patterns, include, url
+from piston.resource import Resource
+import reappengine.api.Service
+
+class CsrfExemptResource(Resource):
+    """ A Custom Resource that is csrf exempt.
+    """
+    def __init__(self, handler, authentication=None):
+        super(CsrfExemptResource, self).__init__(handler, authentication)
+        self.csrf_exempt = getattr(self.handler, 'csrf_exempt', True)
+
+ServiceHandler = CsrfExemptResource(reappengine.api.Service.ServiceHandler)
+EnvironmentHandler = CsrfExemptResource(reappengine.api.Service.EnvironmentHandler)
+TaskHandler = CsrfExemptResource(reappengine.api.Service.TaskHandler)
 
 urlpatterns = patterns('',
-    url(r'^$', 'ROS_Service.views.home'),
-    url(r'^api/', include('ROS_Service.api.urls')),
+    url(r'^reappengine/$', ServiceHandler),
+    url(r'^reappengine/(?P<envID>[a-zA-Z]{10})/$', EnvironmentHandler),
+    url(r'^reappengine/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})/$', TaskHandler),
+    url(r'^reappengine/(?P<envID>[a-zA-Z]{10})/(?P<taskID>[a-zA-Z]{10})/(?P<ref>[^/]+)/$', TaskHandler),
 )

@@ -26,7 +26,7 @@ import os
 import sys
 
 sys.path.append('/home/dominique/ROS/framework/django')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'ROS_Service.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'reappengine.settings'
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()

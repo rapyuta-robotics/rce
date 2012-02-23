@@ -1,0 +1,339 @@
+a, a:link {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+
+html { 
+  background: #f0f0f0;
+  padding: 0px 0px 0px 0px;
+ }
+
+body {
+  font-size:14px;
+}
+
+#contentArea {
+  background: #ffffff;
+  margin: -15px 0px 0px 0px;
+  padding: 1em 1em 1em 0em;
+  max-width: 800px;
+  -moz-border-radius-bottomright: 25px;
+  -moz-border-radius-bottomleft: 25px;
+  border-bottom-right-radius: 25px;
+  border-bottom-left-radius: 25px;
+  box-shadow: 3px 3px 4px rgba(0,0,0,.1);
+  -webkit-box-shadow: 3px 3px 4px rgba(0,0,0,.1);
+  -moz-box-shadow: 3px 3px 4px rgba(0,0,0,.1);
+}
+
+
+a:hover, a:active, a:focus {
+  color: #202D79;
+  text-decoration: none;
+}
+
+/*
+#button form {
+  margin: 0; 
+  text-align: center;
+} 
+*/
+#logo {
+  /*float: left;*/
+  margin-left: 2.25em;
+  margin-top: 1em;
+  margin-bottom: 3em;
+}
+
+#logo img { 
+  border: 0px;
+}
+
+
+/*
+#menu {
+  color: DarkBlue;
+  margin: 0;
+  padding: 0;
+  left: 0.5em;
+  font-weight: bold;
+  position: absolute;
+  width: 220px;
+}
+
+#menu ul li {
+  list-style: none;
+  padding: 0em 0em 0.5em 0em;
+}
+
+#menu ul ul {
+  padding: 0 0 0 1em;
+}
+*/
+
+/* begin new menu */
+
+#menu {
+        margin-left: 2.25em;
+	font-size:14px;
+	position:absolute;	
+}
+
+#menu ul {
+	list-style-type:none;
+	list-style-image:none;
+	margin:0px;
+	padding:0px;
+}
+
+#menu li.topmenu {
+	float:left;
+}
+
+.topmenu a {
+	float:left;
+	width:175px;
+	text-align:center;
+}
+
+.topmenu ul{
+	display:none;
+}
+
+.topmenu a, .submenu a{
+	padding:1px 5px;
+	border:1px solid #78b6e4;
+	border-collapse:collapse;
+	color:dark-blue;
+	font-weight:bold;
+	text-decoration:none;
+        background-color: white;
+	/*background-color:#7F4800;*/
+	margin:0;	
+}
+
+.submenu a{
+	font-size:12px;
+	width:175px;
+	position:relative;
+	clear:both; 
+}
+
+#menu a:hover, .topmenu.on a {
+	color:white;
+	background-color:#78b6e4 !important;
+}
+
+.topmenu:hover ul {
+	display:block;	
+	z-index:500;
+}
+
+/* end new menu */
+
+#content {
+  margin-left: 2.25em;
+  margin-top: 8em;
+  margin-bottom: 5px;
+  max-width: 760px;
+  z-index: 0;
+  padding: .5em 0em 35px 0em;
+}
+
+}
+  /*margin: 3em 0em 0em 3px;*/
+
+
+.commitForm {
+  padding: 0em 3em 0em;
+}
+
+.hidden {
+  visibility: hidden;
+  position:absolute;
+  top:0;
+  left:0
+}
+
+#content input {
+  border: 1px solid #a5acb2; 
+}
+
+/*
+#content input:hover {
+	color:white;
+	background-color:#0066cc !important;
+}
+*/
+
+#content textarea {
+  border: 1px solid #a5acb2; 
+}
+
+#content h1 {
+    color: white;
+    background: #0066cc;
+    margin: 0px 0px 40px 0px;
+    text-align: center;
+}
+
+#content h2 {
+    color: #0066cc;
+}
+
+
+#content h3 {
+    color: #0066cc;
+}
+
+#content hr { 
+  width: 700px;
+  color: #bcdef8;
+ }
+
+p.error{ 
+  color: red;
+  text-align: center;
+ }
+
+#error {
+    background: red;
+    padding: 2em 2em 2em 2em;
+}
+
+#error h1 {
+    color: Black;
+    margin: 0px 10px 80px 10px;
+    text-align: center;
+}
+
+#error pre {
+  white-space: normal;
+  /*text-align: center; */
+  background: white;
+  padding: 1em;
+  font-size:x-large;
+ }
+
+#success {
+    background: green;
+    padding: 2em 2em 2em 2em;
+}
+
+#success h1 {
+    color: Black;
+    margin: 0px 10px 80px 10px;
+    text-align: center;
+}
+
+.center { 
+  text-align: center;
+}
+
+/* Identifier of an robot */
+.id {
+  color: DarkBlue;
+}
+
+/* Identifier of an object */
+.label {
+  color: DarkBlue;
+}
+
+
+/* model of an object */
+.model {
+  color: DarkBlue;
+}
+
+
+/* description of the robot, object, etc,... defined by the identifier */
+.description {
+  color: DarkBlue;
+}
+
+/* position: latitude */
+.latitude {
+  color: DarkBlue;
+}
+
+/* position: longitude */
+.longitude {
+  color: DarkBlue;
+}
+
+/* geographical information at a given position */
+.geographicalInformation {
+  color: DarkBlue;  
+}
+
+.fn {
+    font-size:.8em;
+    vertical-align:top;
+    line-height:.9em;
+}
+
+
+.footnotes {
+    border-top: 1px solid #CCC; 
+    font-size:.8em;
+    margin:2em 5em;
+}
+
+.small
+{
+color:gray;
+font-size:12px;
+}
+
+.newsitems li {
+  list-style: none;
+  max-width: 600px;
+  margin-top: 1.5em;
+  padding-top: 1.5em;
+  padding-left: 1em;
+  border-top: 1px solid #bcdef8;
+  /*border-top: 1px solid #78b6e4; */
+ }
+
+.subscriptions li { 
+  margin-top: 0.5em;
+ }
+
+/*
+#footer
+{
+position: fixed;
+clear:both;
+text-align: right;
+color:gray;
+font-size:12px;
+border-top: 1px solid #999; 
+width: 900px;
+bottom: 0px;
+height: 30px;
+padding-top: 5px;
+background-color: white;
+z-index: 10
+}
+*/
+#footer
+{
+/*position: absolute;*/
+  text-align: center;
+  max-width: 800px;
+  color:gray;
+  font-size:11px;
+  bottom: 0px;
+  height: 30px;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
+
+img.robotPicture { 
+  float: left;
+  margin: 4px;
+  height: 100px;
+}
