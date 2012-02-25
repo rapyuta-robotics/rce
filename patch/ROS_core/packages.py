@@ -146,50 +146,6 @@ def get_dir_pkg(d):
         return d, pkg
     return None, None
 
-def _walk(top, package):
-    """
-    Customized function to walk a directory tree. The function returns as
-    soon a match is found, i.e. not the whole tree is analysed.
-    
-    @param top: path to the top of the tree
-    @type  top: str
-    @param package: package name which we are looking for
-    @type  package: str
-    @return: path to package dir or None if package cannot be found
-    @rtype: str
-    """
-    
-    try:
-        names = os.listdir(top)
-    except OSError as e:
-        if e.errno == 13:   # == Permission denied
-            return None
-        else:
-            raise e         # Is this necessary ?
-    
-    dirs = []
-    
-    for name in names:
-        # Ignore hidden or specially marked directories
-        if name == 'rospack_nosubdirs' or name[0] == '.':
-            continue
-        
-        path = os.path.join(top, name)
-        
-        if name == package and is_pkg_dir(path):
-            return path
-        
-        if os.path.isdir(path):
-            dirs.append(path)
-    
-    for dir in dirs:
-        path = _walk(dir, package)
-        
-        if path is not None:
-            return path
-    
-    return None
-
 _pkg_dir_cache = {}
 
 def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
@@ -252,30 +208,19 @@ def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
                 else:
                     # invalidate cache
                     _invalidate_cache(_pkg_dir_cache)
-            
-        # recursive searching of dirs for pkg
-        # Inspired by os.walk
-        if 'win' in sys.platform:
-            envvar_delim = ';'
-        else:
-            envvar_delim = ':'
         
-        for top in [ros_root] + ros_package_path.split(envvar_delim):
-            try:
-                pkg_dir = _walk(top, package)
-            except RuntimeError:    # This error is raised if the maximum
-				pkg_dir = None	    # recursion depth is reached
-            
-            if pkg_dir is not None:
-                break
+        # locate package
+        for root_dir in get_package_paths():
+            for p, dirs, files in os.walk(root_dir):
+                for d in dirs[:]:
+                    if d[0] == '.':
+                        dirs.remove(d)
+                    elif d  == 'rospack_nosubdirs':
+                        dirs.remove(d)
+                    if d == package and is_pkg_dir(os.path.join(p, d)):
+                        return os.path.join(p, d)
         
-        if not pkg_dir:
-            raise InvalidROSPkgException("Cannot locate installation of package %s: ROS_ROOT[%s] ROS_PACKAGE_PATH[%s]"%(package, ros_root, ros_package_path))
-        
-        # don't update cache: this should only be updated from
-        # rospack_cache as it will corrupt list_pkgs() otherwise.
-        #_pkg_dir_cache[package] = (pkg_dir, ros_root, ros_package_path)
-        return pkg_dir
+        raise InvalidROSPkgException("Cannot locate installation of package %s: ROS_ROOT[%s] ROS_PACKAGE_PATH[%s]"%(package, ros_root, ros_package_path))
     except OSError as e:
         if required:
             raise InvalidROSPkgException("Environment configuration is invalid: cannot locate rospack (%s)"%e)
