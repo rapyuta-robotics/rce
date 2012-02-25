@@ -210,7 +210,7 @@ def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
                     _invalidate_cache(_pkg_dir_cache)
         
         # locate package
-        for root_dir in get_package_paths():
+        for root_dir in get_package_paths(env=penv):
             for p, dirs, files in os.walk(root_dir):
                 for d in dirs[:]:
                     if d[0] == '.':
