@@ -2,7 +2,7 @@
 	ServerAdmin webmaster@localhost
 
 	DocumentRoot /var/www
-	<Directory />
+    <Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
@@ -16,10 +16,13 @@
     XSendFile On
     
     Alias /img /var/www/img
+    Alias /js /var/www/js
     Alias /stylesheets /var/www/stylesheets
     
     WSGIScriptAlias / /var/www/django.wsgi
-
+    
+    SetEnv DJANGO_SETTINGS_MODULE reappengine.settings
+    
 	ErrorLog ${APACHE_LOG_DIR}/error.log
 
 	# Possible values include: debug, info, notice, warn, error, crit,

@@ -79,7 +79,29 @@
 %--------------------------------------------------------------------------
 \begin{document}
 	\section*{Motivation}
-		\textsc{ToDo}
+		Although sufficient computational power enables robots to perform
+		tasks in an intelligent and efficient manner, high on-board
+		computation demands extra power and constrains mobility of the robot.
+		
+		Motivated by the rapid increase in mobile data transfer rates provide
+		the by the upcoming LTS standard (down-link peak rates of 300 Mbit/s,
+		up-link peak rates of 75 Mbit/s) and the growing number of
+		repositories and packages (3350 pkgs at the time of count) available
+		under the ROS framework we propose [re app engine], a Software as a
+		Service framework, where the user, the robot, can upload and run its
+		ROS software in the Cloud with almost zero changes. In addition,
+		keeping the open source spirit robots can also share compatible
+		'cloud-apps' between them.
+		
+		An app store concept, where a robot downloads an app and runs locally
+		has several disadvantages: 0. Computational Cost 1.
+		Configuration/setup overhead 2. Customization of the app to the
+		specific middle ware 3. Maintenance(update) overhead. If the data
+		transfer rate is not a constraint all of this can be avoided by
+		putting the app in the cloud.
+		
+		In the following sections we explain our first prototype and all the
+		implemented functionalities.
 	
 	\section*{Approach}
 		The task of the framework is to offer an interface for arbitrary apps to other users.

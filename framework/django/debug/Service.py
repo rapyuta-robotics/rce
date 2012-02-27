@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       urls.py
+#       Service.py
 #       
-#       Copyright 2011 dominique hunziker <dominique.hunziker@gmail.com>
+#       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -20,25 +20,27 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 #       
-#   	
+#       
 
-from django.conf.urls.defaults import patterns, include, url
+from piston.handler import AnonymousBaseHandler
+from piston.utils import rc
 
-urlpatterns = patterns('',
-    # start page
-    url(r'^$', 'reappengine.site.views.users.index'),
-    
-    # user handling
-    url(r'^login/$', 'reappengine.site.views.users.loginForm'),
-    url(r'^login/check/$', 'reappengine.site.views.users.login'),
-    url(r'^logout/$', 'reappengine.site.views.users.logout'),
-    
-    # service registration
-    url(r'^service/select/$', 'reappengine.site.views.ros.select'),
-    url(r'^service/select/([A-Za-z][\w_]*)/$', 'reappengine.site.views.ros.feedService'),
-    url(r'^service/sumit/$', 'reappengine.site.views.ros.sumit'),
-    
-    # api
-    url(r'^api/', include('reappengine.api.urls')),
-)
+from django.http import HttpResponse
 
+KEY = 'HC2s8q9aUXop1WnKYn4zJxCWUVimGLiOC0r9hUxRWSO8wtStUp'
+VALID_USERNAMES = ['admin', 'user']
+
+class LoginHandler(AnonymousBaseHandler):
+    allowed_methods = ('POST',)
+    
+    def create(self, request):
+        if request.POST.get('key', '') != KEY:
+            return rc.BAD_REQUEST
+        
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        
+        if username in VALID_USERNAMES and username == password:
+            return rc.ALL_OK
+        
+        return rc.FORBIDDEN

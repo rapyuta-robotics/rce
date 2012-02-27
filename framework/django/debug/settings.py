@@ -1,4 +1,4 @@
-# Django settings for barcodeService project.
+# Django settings for debug project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -11,8 +11,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',	            # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/var/django/reappengine/data/users.db',    # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '/home/dominique/ROS/debug/data.db',        # Or path to database file if using sqlite3.
         'USER': '',                                         # Not used with sqlite3.
         'PASSWORD': '',                                     # Not used with sqlite3.
         'HOST': '',                                         # Set to empty string for localhost. Not used with sqlite3.
@@ -65,7 +65,7 @@ STATIC_URL = '/static/'
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -83,7 +83,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'l=5-cs8^dnyy)_bqaz#cl^utds#w&*lg^^g_4fk5%@4p&5)odj'
+SECRET_KEY = '*#&bihcl$xm@w=x=3eo^u1ezg9xkhwj10qa9bldp1&a8#ty^5q'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -100,16 +100,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'reappengine.urls'
-
-AUTH_PROFILE_MODULE = 'reappengine.UserProfile'
-
-AUTHENTICATION_BACKENDS = (
-    'reappengine.backend.RoboearthBackend',
-)
+ROOT_URLCONF = 'debug.urls'
 
 TEMPLATE_DIRS = (
-    '/home/dominique/ROS/framework/django/reappengine/site/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -122,7 +115,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     #'django.contrib.staticfiles',
-    'reappengine',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
