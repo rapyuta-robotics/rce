@@ -78,57 +78,49 @@
 % Document Content
 %--------------------------------------------------------------------------
 \begin{document}
-	\section*{Motivation}
-		Although sufficient computational power enables robots to perform
-		tasks in an intelligent and efficient manner, high on-board
-		computation demands extra power and constrains mobility of the robot.
-		
-		Motivated by the rapid increase in mobile data transfer rates provided
+\section*{Introduction}
+
+		Computational power is a key enabler for 
+		intelligent and efficient robot task performance. However, on-board
+		computation entails additional power requirements, which may constrains robot mobility and operating duration and increases costs.
+
+The RoboEarth App Engine makes powerful computation available to robots. 
+It allows users to run their ROS software in the Cloud in a Software as a Service framework with minimal configuration.
+In addition,
+		keeping the open source and RoboEarth spirit, robots can share compatible 'cloud-apps'.
+
+The RoboEarth App Engine takes advantage of the rapid increase in mobile data transfer rates provided
 		by the upcoming LTS standard (down-link peak rates of 300 Mbit/s,
 		up-link peak rates of 75 Mbit/s) and the growing number of
 		repositories and packages (3350 pkgs at the time of count) available
-		under the ROS framework we propose [re app engine], a Software as a
-		Service framework, where the user, the robot, can upload and run its
-		ROS software in the Cloud with almost zero changes. In addition,
-		keeping the open source spirit robots, can also share compatible
-		'cloud-apps' between them.
+		under the ROS framework. 
+				
+In addition, it sidesteps severe drawbacks of client-side robot apps, including high computational costs, 
+configuration/setup overheads, dependence on custom middleware, as well as maintenance and update overheads. 
 		
-		An app store concept, where a robot downloads an app and runs locally,
-		has several disadvantages: 1. Computational Cost 2.
-		Configuration/setup overhead 3. Customization of the app to the
-		specific middleware 4. Maintenance (update) overhead. If the data
-		transfer rate is not a constraint, all of this can be avoided by
-		putting the app in the cloud.
-		
-		In the following sections we explain our first prototype and all the
-		implemented functionalities.
 	
-	\section*{Approach}
-		The task of the framework is to offer an interface for arbitrary apps to other users.
-		Therefore, the framework has to provide a possibility to interact, i.e. create, select and
-		use, the apps. This means that the framework acts as a manager of the apps and interpreter
-		between the user and apps. As the apps are typically a process the framework essentially
-		has to manage and communicate with them. As the basic interface between the apps and the
-		framework we propose the usage of \textsc{ROS} as motivated above. It allows simple management
-		of processes using \emph{roslaunch} and has a standardized language to communicate between
-		processes. As a first implementation we focused on the usage of \emph{nodes} which provide
+	\section*{RoboEarth App Engine Framework}
+		The RoboEarth App Engine Framework allows users to create, select, and use apps.
+		On the server side (? TODO: What sides are you talking about here??) it acts as an interpreter between users and their apps, managing. It allows 
+communication with processes using \textsc{ROS}, process management
+		using \emph{roslaunch} and has a standardized language to communicate between
+		processes. In this first implementation we focused on the usage of \emph{nodes} which provide
 		\emph{services} as apps.
 		
-		On the other end of the framework it has to communicate with the users who want to use the
-		apps. To include a broader audience the interaction uses the standard \textsc{http} protocol.
-		This allows users who do not have \textsc{ROS} and it would be possible to use the apps from
-		a web browser. This can be achieved by using the framework as a web server. For the first
-		implementation the focus is on the robots as users and, therefore, an API is necessary and
-		the implementation \emph{django}/\emph{piston} is used.
+		On the client side, the framework communicates with app users. 
+To include a broader audience the interaction uses the standard \textsc{http} protocol.
+		This allows users who do not have \textsc{ROS} and opens the door to using apps from
+		a web browser by using the framework as a web server. For this first
+		implementation the focus is on the robots as users. For the API 
+		the implementation \emph{django}/\emph{piston} was used.
 	
-	\section*{Specification}
-		The specification for the development of apps (in the current stage of the framework) is, as
-		mentioned above, that it has to be a \textsc{ROS} \emph{node} which provides a
-		\emph{service} which can be used by the user. Besides that no further restrictions are
+	\section*{Requirements}
+		Apps have to be\textsc{ROS} \emph{nodes} providing a
+		\emph{service} which can be used by the user. No further restrictions are
 		necessary.
 		
-		For the communication between the user and the framework the \textsc{http} protocol is used.
-		Here the request types \textsc{GET}, \textsc{POST} and \textsc{DELETE} are used. To further
+		For the communication between the user and the framework the \textsc{http} protocol (request types \textsc{GET}, \textsc{POST} and \textsc{DELETE}) is used.
+		To further
 		distinguish and control the interaction dynamic URL are used. This leads basically to
 		three levels, i.e. \emph{Service}, \emph{Environment} and \emph{Task}, which results in the
 		following URL pattern
@@ -137,8 +129,7 @@ BASE/api/reappengine/[envID/[taskID/[fileRef/]]]
 		\end{lstlisting}
 		The level \emph{Service} represents the entry point for a new user. The first step is to
 		create a new environment which essentially creates a new \emph{namespace} in \textsc{ROS}.
-		Also on this level the user can add or remove \emph{nodes} from his environment.
-		Furthermore, some general information is available.
+		Also on this level the user can add or remove \emph{nodes} from his environment and access general information.
 		
 		On the next level the user can create a task which is essentially the input message for
 		the selected \textsc{ROS} \emph{service}. Again, he can get some information specific to
