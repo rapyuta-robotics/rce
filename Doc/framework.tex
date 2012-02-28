@@ -104,13 +104,14 @@ configuration/setup overheads, dependence on custom middleware, as well as maint
 	
 	\section*{RoboEarth App Engine Framework}
 		The RoboEarth App Engine Framework allows users to create, select, and use apps.
-		On the server side (? TODO: What sides are you talking about here??) it acts as an interpreter between users and their apps, managing. It allows 
+		The apps interface of the framework acts as an interpreter between user
+		requests and their apps. It allows 
 communication with processes using \textsc{ROS}, process management
 		using \emph{roslaunch} and has a standardized language to communicate between
 		processes. In this first implementation we focused on the usage of \emph{nodes} which provide
 		\emph{services} as apps.
 		
-		On the client side, the framework communicates with app users. 
+		The client interface of the framework communicates with app users. 
 To include a broader audience the interaction uses the standard \textsc{http} protocol.
 		This allows users who do not have \textsc{ROS} and opens the door to using apps from
 		a web browser by using the framework as a web server. For this first
