@@ -43,6 +43,7 @@ import ThreadUtility
 import ROSUtility
 from IDUtility import generateID
 import SQLite
+import DjangoDB
 import ConverterBase
 import ConverterUtility
 import ManagerBase
@@ -97,8 +98,6 @@ END;;'''
         """
         super(EnvironmentManager, self).__init__()
         
-        (self._nodeDict, self._serviceDict) = ROSUtility.loadPossibleNodes()
-        
         # sqlite database connection
         self._db = SQLite.SQLite(self._SQL_BASE)
         self._threadMngr.append(self._db, 0)
@@ -145,7 +144,7 @@ END;;'''
             @return:    True if the node name is vaild, False otherwise.
             @rtype:     bool
         """
-        return name in self._nodeDict
+        return DjangoDB.isValidNodeName(name)
     
     @activity
     def addNode(self, config, binary):
@@ -173,20 +172,21 @@ END;;'''
             try:
                 # First load information about the node which should be launched
                 try:
-                    (pkgName, nodeCls, listOfServices, nodeConfig) = self._nodeDict[name]
-                except KeyError:
+                    (pkgName, nodeCls, nodeConfig) = DjangoDB.getNodeDef(name)
+                except DjangoDB.DjangoDBError:
                     raise InternalError('Could not get the node information for node {0}.'.format(name))
                 
                 # Create new entry for node in database
                 nodeID = self._db.newID('env', 'nodeID')
                 
                 # Add the necessary configuration parameters to ParameterServer
-                for (configName, configType, configDefaultValue) in nodeConfig:
+                for (configName, configType, configOpt, configDefaultValue) in nodeConfig:
                     # Try to read the given configuration value from request or else try to use the default value
                     try:
                         configVal = receivedNodeConfig[configName]
                     except KeyError:
-                        configVal = configDefaultValue
+                        if configOpt:
+                            configVal = configDefaultValue
                         
                         if not configVal:
                             raise InvalidRequest('Configuration parameter {0} is missing.'.format(configName))
@@ -341,8 +341,8 @@ END;;'''
             raise InvalidRequest('Request does not define any message data.')
         
         try:
-            (srvName, srvCls, reqCls) = self._serviceDict[service]
-        except KeyError:
+            (srvName, srvCls, reqCls) = DjangoDB.getServiceDef(service)
+        except DjangoDB.DjangoDBError:
             self.abortTask(task)
             raise InvalidRequest('Requested service {0} is not valid.'.format(service))
         
@@ -533,4 +533,3 @@ END;;'''
         
         # Delete all task which are marked for removal
         self._db.change('''DELETE FROM task WHERE status == 'deleted' ''')
-    

@@ -26,15 +26,13 @@
 import roslib; roslib.load_manifest('Administration')
 import rospy
 from Administration.srv import \
-getService, addEnvironment, removeEnvironment, \
-getServiceResponse, addEnvironmentResponse, removeEnvironmentResponse
+addEnvironment, removeEnvironment, addEnvironmentResponse, removeEnvironmentResponse
 
 # Python sepcific imports
 import json
 
 # Custom imports
 from MessageUtility import serviceCallback, setupService
-from ROSUtility import NodeError
 import ServerManager
 
 ########################################################################
@@ -65,17 +63,6 @@ import ServerManager
                     -> message.serviceCallback
 """
 
-@serviceCallback(getServiceResponse)
-def getServiceCallback(request, manager):
-    """ Callback function for the getService Service.
-    """
-    nodeDict = {}
-    
-    for node in manager.getPossibleNodes():
-        nodeDict[node[0]] = { 'Services' : node[1] }
-    
-    return json.dumps(nodeDict)
-
 @serviceCallback(addEnvironmentResponse)
 def addEnvironmentCallback(request, manager):
     """ Callback function for the addEnvironment Service.
@@ -101,17 +88,11 @@ def init(manager):
     rospy.init_node('Server')
     
     # Setup the Services
-    setupService('getService', getService, getServiceCallback, manager)
     setupService('addEnvironment', addEnvironment, addEnvironmentCallback, manager)
     setupService('removeEnvironment', removeEnvironment, removeEnvironmentCallback, manager)
 
 def main():
-    try:
-        manager = ServerManager.ServerManager()
-    except NodeError as e:
-        print e
-        exit(1)
-    
+    manager = ServerManager.ServerManager()
     init(manager)
     manager.spin()
     

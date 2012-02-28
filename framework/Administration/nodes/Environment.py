@@ -34,7 +34,6 @@ import json
 
 # Custom imports
 from MessageUtility import serviceCallback, setupService, InvalidRequest, InternalError
-from ROSUtility import NodeError
 import EnvironmentManager
 
 ########################################################################
@@ -200,12 +199,7 @@ def init(manager):
     setupService('removeTask', removeTask, removeTaskCallback, manager)
 
 def main():
-    try:
-        manager = EnvironmentManager.EnvironmentManager()
-    except NodeError as e:
-        print e
-        exit(1)
-    
+    manager = EnvironmentManager.EnvironmentManager()
     init(manager)
     manager.spin()
     

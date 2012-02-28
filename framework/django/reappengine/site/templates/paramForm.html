@@ -1,7 +1,17 @@
-<table id="paramTable">
-    <tr><th><label>Parameter Name</label></th><th><label>Optional</label></th><th><label>Type</label></th><th><label>Default Value/Path</label></th></tr>
+<table id="paramTable" border="1" cellpadding="1">
+  <thead>
+    <tr>
+      <th scope="col"><label>Parameter Name</label></th>
+      <th scope="col"><label>Optional</label></th>
+      <th scope="col"><label>Type</label></th>
+      <th scope="col"><label>Default Value/Path</label></th>
+    </tr>
+  </thead>
+  <tbody>
     {% for param in paramForm %}
         {{ param.non_field_errors }}
         <tr>{% for field in param %}<td>{{ field.error }}{{ field }}</td>{% endfor %}<td></tr>
     {% endfor %}
+    </tbody>
 </table>
+{{ paramForm.management_form }}

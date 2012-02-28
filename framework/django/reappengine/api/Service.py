@@ -31,16 +31,19 @@ from piston.utils import rc
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.core.servers.basehttp import FileWrapper
 
+# Database models import
+from reappengine.models import Package, Node, Param, Interface
+
 # File processing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 import cStringIO
 
 # Import used to setup ROS environment
-import setupROS
+import reappengine.ROS
 # Do not import packages which need a functioning ROS environment before here
 
 # Communication interface to the ROS adminstration
-import roslib
+import roslib.packages
 paths = roslib.packages.find_resource('Administration', 'DjangoInterface.py')
 
 if len(paths) != 1:
@@ -86,7 +89,31 @@ class ServiceHandler(AnonymousBaseHandler):
             This type of request should be used to gather information
             on the ROS Service.
         """
-        return DjangoInterface.readService()
+        data = {}
+        
+        for pkg in Package.objects.all():
+            data[pkg.name] = { 'interfaces' : {}, 'nodes' : {} }
+            
+            for node in Node.objects.filter(pkg=pkg):
+                data[pkg.name]['nodes'][node.name] = {}
+                data[pkg.name]['nodes'][node.name]['key'] = '{0}/{1}'.format(pkg.name, node.name)
+                data[pkg.name]['nodes'][node.name]['params'] = {}
+                
+                for param in Param.objects.filter(node=node):
+                    data[pkg.name]['nodes'][node.name]['params'][param.name] = {}
+                    data[pkg.name]['nodes'][node.name]['params'][param.name]['type'] = param.paramType
+                    data[pkg.name]['nodes'][node.name]['params'][param.name]['optional'] = param.opt
+                    
+                    if param.opt:
+                        data[pkg.name]['nodes'][node.name]['params'][param.name]['default'] = param.default
+        
+            for interface in Interface.objects.filter(pkg=pkg):
+                data[pkg.name]['interfaces'][interface.name] = {}
+                data[pkg.name]['interfaces'][interface.name]['type'] = interface.msgType
+                data[pkg.name]['interfaces'][interface.name]['definition'] = interface.msgDef
+                data[pkg.name]['interfaces'][interface.name]['key'] = '{0}/{1}'.format(pkg.name, interface.name)
+        
+        return data
     
 #   def update(self, request):
 #       """ Handle 'PUT'

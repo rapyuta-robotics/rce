@@ -33,24 +33,12 @@ import time
 
 # Custom imports
 import settings
-from MessageUtility import InvalidRequest, InternalError
-import ROSUtility
 from IDUtility import generateID
 import ManagerBase
 
 class ServerManager(ManagerBase.ManagerBase):
     """ This class is used to manage the environments, which are ROS nodes.
     """
-    def __init__(self):
-        """ Initialize the ServerManager.
-            
-            @raise:     ROSUtility.NodeError if an error occurred while
-                        parsing the settings file for the node definitions.
-        """
-        super(ServerManager, self).__init__()
-        
-        self._nodeDict = ROSUtility.loadPossibleNodes()[0]
-    
     def getNewEnv(self):
         """ Generate a new ID for an environment and add a new node for
             an environment to the ROS.
@@ -80,16 +68,6 @@ class ServerManager(ManagerBase.ManagerBase):
             @raise:     InvalidRequest if environment ID is invalid.
         """
         self.removeProcess(uid)
-    
-    def getPossibleNodes(self):
-        """ Return a list of all possible nodes.
-            
-            @return:    A list of all possible nodes. The information for
-                        an individual node consists of a tuple of the
-                        form ( nodeName, [services] )
-            @rtype:     [ ( str, [str] ) ]
-        """
-        return [(key, self._nodeDict[key][2]) for key in self._nodeDict]
     
     def subspin(self):
         """ Main loop of the subclass of the Manager.

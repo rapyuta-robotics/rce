@@ -74,7 +74,7 @@ def MainMenu(request):
         </ul></li>
       """
     private = """
-        <li class="topmenu"><a href="/service/select/">Submit</a></li>
+        <li class="topmenu"><a href="/add/">Submit</a></li>
      """
     
     if request.user.is_authenticated():
@@ -82,9 +82,11 @@ def MainMenu(request):
     else:
         return '<ul>'+public + documentation + user+'</ul>'
 
-def error(request, nextPage='/', errorMessage=""):
+def error(request, nextPage='/', errorTitle="", errorMessage=""):
     """ Display an error message """
-    return render_to_response('errorMessage.html', webpage_values(request, { 'nextPage' : nextPage, 'errorMessage' : errorMessage }))
+    return render_to_response('errorMessage.html', webpage_values(request, {    'nextPage' : nextPage,
+                                                                                'errorTitle' : errorTitle,
+                                                                                'errorMessage' : errorMessage }))
 
 def success(request, nextPage='/'):
     """ Display an success message """

@@ -33,11 +33,11 @@ _SOURCE_FOR_CUSTOM_PACKAGES = '/home/dominique/ROS'
 
 # Default ROS configuration
 _EXPORTS = [('ROS_ROOT', '/opt/ros/electric/ros'),
-			('PATH', '${ROS_ROOT}/bin:${PATH}'),
-			('PYTHONPATH', '${ROS_ROOT}/core/roslib/src:${PYTHONPATH}'),
-			('ROS_PACKAGE_PATH', '{0}:/opt/ros/electric/stacks'.format(_SOURCE_FOR_CUSTOM_PACKAGES)),
-			('ROS_HOSTNAME', 'localhost'),
-			('ROS_MASTER_URI', 'http://localhost:11311')]
+            ('PATH', '${ROS_ROOT}/bin:${PATH}'),
+            ('PYTHONPATH', '${ROS_ROOT}/core/roslib/src:${PYTHONPATH}'),
+            ('ROS_PACKAGE_PATH', '{0}:/opt/ros/electric/stacks'.format(_SOURCE_FOR_CUSTOM_PACKAGES)),
+            ('ROS_HOSTNAME', 'localhost'),
+            ('ROS_MASTER_URI', 'http://localhost:11311')]
 
 ########################################################################
 ### Do not change below here
@@ -47,21 +47,33 @@ import re
 import os
 import sys
 
+def uniqify(pathList):
+    """ Remove all duplicates from a list whilst keeping the ordering """
+    newPathList = []
+    
+    for path in pathList:
+        if path not in newPathList:
+            newPathList.append(path)
+    
+    return newPathList
+
 _regex = re.compile('\$\{(\w+)\}')
 
 for (envVar, rawValue) in _EXPORTS:
-	matches = _regex.finditer(rawValue)
-	value = rawValue
-	
-	for match in matches:
-		value = value.replace(match.group(), os.environ.get(match.group(1), ''))
-		value = value.strip(':')
-	
-	os.environ[envVar] = value
-	
-	# Special case for the PYTHONPATH variable:
-	if envVar == 'PYTHONPATH':
-		for path in value.split(':'):
-			sys.path.append(path)
+    matches = _regex.finditer(rawValue)
+    value = rawValue
+    
+    for match in matches:
+        value = value.replace(match.group(), os.environ.get(match.group(1), ''))
+        value = value.strip(':')
+    
+    os.environ[envVar] = ':'.join(uniqify(value.split(':')))
+    
+    # Special case for the PYTHONPATH variable:
+    if envVar == 'PYTHONPATH':
+        for path in value.split(':'):
+            sys.path.append(path)
+        
+        sys.path = uniqify(sys.path)
 
 ########################################################################

@@ -34,9 +34,9 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'reappengine.site.views.users.logout'),
     
     # service registration
-    url(r'^service/select/$', 'reappengine.site.views.ros.select'),
-    url(r'^service/select/([A-Za-z][\w_]*)/$', 'reappengine.site.views.ros.feedService'),
-    url(r'^service/sumit/$', 'reappengine.site.views.ros.sumit'),
+    url(r'^add/$', 'reappengine.site.views.ros.service'),
+    url(r'^add/service/$', 'reappengine.site.views.ros.feedService'),
+    url(r'^add/node/$', 'reappengine.site.views.ros.feedNode'),
     
     # api
     url(r'^api/', include('reappengine.api.urls')),
