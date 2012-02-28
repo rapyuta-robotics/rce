@@ -23,7 +23,7 @@
 \usepackage{pstricks}						% for inkScape files; for latex to ps
 
 \usepackage{listings}
-
+\usepackage{xcolor}
 % Always the last package:
 \usepackage[breaklinks]{hyperref}			% Hyperreferenzen für pdf
 %==========================================================================
@@ -148,7 +148,8 @@ BASE/api/reappengine/[envID/[taskID/[fileRef/]]]
 		
 		\begin{figure}
 			\begin{center}
-				\input{diagram.tex}
+				\def\svgwidth{\columnwidth}
+				\input{frameworkOverview.tex}
 				\caption{Organization of the framework (loosely from top to bottom): The client,
 				which can use the provided \emph{ServiceAPI}, communicates with the
 				\emph{DjangoInterface} over \textsc{http}. The \emph{DjangoInterface} then uses the
