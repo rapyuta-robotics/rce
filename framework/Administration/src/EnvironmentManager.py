@@ -92,9 +92,6 @@ END;;'''
 
     def __init__(self):
         """ Initialize the EnvironmentManager.
-            
-            @raise:     ROSUtility.NodeError if an error occurred while
-                        parsing the settings file for the node definitions.
         """
         super(EnvironmentManager, self).__init__()
         
@@ -252,6 +249,7 @@ END;;'''
                 
                 # Create and launch now the node/process
                 try:
+                    # for debugging add output='screen' to Node args
                     self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace()), self.buildNamespace(nodeID), tempFiles)
                 except InternalError:
                     self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
@@ -326,49 +324,65 @@ END;;'''
             @type  binary:  str
         """
         try:
-            service = config['service']
+            interface = config['interface']
         except (TypeError, AttributeError):
-            self.abortTask(task)
+            self.abortTask(task, 'invalid data')
             raise InvalidRequest('data does not contain a dict.')
         except KeyError:
-            self.abortTask(task)
-            raise InvalidRequest('Request does not define which service is requested.')
+            self.abortTask(task, 'undefined interface')
+            raise InvalidRequest('Request does not define which interface is requested.')
         
         try:
             msgData = config['msg']
         except KeyError:
-            self.abortTask(task)
+            self.abortTask(task, 'message data missing')
             raise InvalidRequest('Request does not define any message data.')
         
         try:
-            (srvName, srvCls, reqCls) = DjangoDB.getServiceDef(service)
+            (interfaceType, msgCls, interfaceName, interfaceDef) = DjangoDB.getInterfaceDef(interface)
         except DjangoDB.DjangoDBError:
-            self.abortTask(task)
-            raise InvalidRequest('Requested service {0} is not valid.'.format(service))
+            self.abortTask(task, 'invalid interface')
+            raise InvalidRequest('Requested interface {0} is not valid.'.format(interface))
         
         try:
             converter = ConverterBase.Converter()
-            msg = converter.decode(reqCls, msgData, deserializeFiles(binary))
+            msg = converter.decode(msgCls, msgData, deserializeFiles(binary))
         except SerializeError:
-            self.abortTask(task)
+            self.abortTask(task, 'serialization error')
             raise InternalError('Could not deserialize files.')
         except (TypeError, ValueError) as e:
-            self.abortTask(task)
+            self.abortTask(task, 'invalid request message')
             raise InvalidRequest(e)
         
-        taskThread = ThreadUtility.Task(ROSUtility.runTask, self, task, srvName, srvCls, msg)
-        self._threadMngr.append(taskThread, 2)
-        self._db.change('''UPDATE task SET status = 'running' WHERE taskID == ?''', (task,))
-        taskThread.start()
+        if interfaceType == 'srv':
+            taskThread = ThreadUtility.Task(ROSUtility.runService, self, task, interfaceName, interfaceDef[0], msg)
+            self._threadMngr.append(taskThread, 2)
+            self._db.change('''UPDATE task SET status = 'running' WHERE taskID == ?''', (task,))
+            taskThread.start()
+        elif interfaceType == 'topic':
+            try:
+                ROSUtility.runTopic(interfaceName, msgCls, msg)
+            except InternalError:
+                self.abortTask(task, 'unable to publish message')
+                raise
+            
+            self._db.change('''UPDATE task SET result = ?, status = 'completed' WHERE taskID == ?''', (json.dumps({}), task))
+        else:
+            raise InternalError('Requested interface type {0} is currently not supported.')
     
-    def abortTask(self, task):
+    def abortTask(self, task, msg=''):
         """ Abort the task with the given ID in the environment. Make
             sure that the task is valid before this method is used.
             
             @param task:    Valid task ID (from getNewTask)
             @type  task:    str
+            
+            @param msg:     Optional argument.
+                            Error message which should be saved and returned
+                            on request
+            @type  msg:     str
         """
-        self._db.change('''UPDATE task SET status = 'aborted' WHERE taskID == ?''', (task,))
+        self._db.change('''UPDATE task SET result = ?, status = 'aborted' WHERE taskID == ?''', (json.dumps({ 'error' : msg }), task))
     
     @activity
     def removeTask(self, task):
@@ -399,7 +413,7 @@ END;;'''
             converter = ConverterBase.Converter()
             (data, files) = converter.encode(msg)
         except (TypeError, ValueError):
-            self.abortTask(task)
+            self.abortTask(task, 'invalid response message')
             import traceback
             traceback.print_exc()
             return

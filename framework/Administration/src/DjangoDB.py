@@ -51,7 +51,13 @@ class DjangoDBError(Exception):
     pass
 
 def _getPackage(pkg):
-    """
+    """ Internal function to get the specified Package model instance.
+        
+        @param pkg:     Package name
+        @type  pkg:     str
+        
+        @raise:     DjangoDBError if no or more than one matching model
+                    is found.
     """
     package = Package.objects.filter(name=pkg)
     
@@ -64,7 +70,17 @@ def _getPackage(pkg):
     return package[0]
 
 def _getNode(package, node):
-    """
+    """ Internal function to get the specified Node model instance located
+        in the specified package.
+        
+        @param package:     Package in which the node is located
+        @type  package:     Package model instance
+        
+        @param node:    Node name
+        @type  node:    str
+        
+        @raise:     DjangoDBError if no or more than one matching model
+                    is found.
     """
     node = Node.objects.filter(name=node, pkg=package)
     
@@ -77,12 +93,26 @@ def _getNode(package, node):
     return node[0]
 
 def _getParam(node):
-    """
+    """ Internal function to get a list of all the Param model instances
+        for the given node.
+        
+        @param package:     Node for which the parameters should be searched
+        @type  package:     Node model instance
     """
     return Param.objects.filter(node=node)
 
 def _getInterface(package, interface):
-    """
+    """ Internal function to get the specified Interface model instance
+        located in the specified package.
+        
+        @param package:     Package in which the interface is located
+        @type  package:     Package model instance
+        
+        @param interface:   Interface name
+        @type  interface:   str
+        
+        @raise:     DjangoDBError if no or more than one matching model
+                    is found.
     """
     interface = Interface.objects.filter(name=interface, pkg=package)
     
@@ -95,17 +125,23 @@ def _getInterface(package, interface):
     return interface[0]
 
 def _split(name):
-    """
+    """ Internal function to split and check a key.
     """
     parts = name.split('/')
     
     if len(parts) != 2:
-        raise InvalidRequest('Key "{0}" is not valid.'.format(name))
+        raise InvalidRequest('Key {0} is not valid.'.format(name))
     
     return tuple(parts)
 
 def isValidNodeName(key):
-    """
+    """ Check if the given key is valid, i.e. if there is a matching
+        entry in the database.
+        
+        @param key:     Key which should be checked
+        @type  key:     str
+        
+        @return:    True if the key is valid; False otherwise
     """
     try:
         pkg, node = _split(key)
@@ -120,7 +156,17 @@ def isValidNodeName(key):
     return True
 
 def getNodeDef(key):
-    """
+    """ Get the node definition for the given key.
+        
+        @param key:     Key for which the node definition should be retrieved.
+        @type  key:     str
+        
+        @return:    Tuple of the form (package name, node name, config),
+                    where config is a list of parameters which are represented
+                    as tuples of the form (name, type, optional, default value).
+        @rtype:     ( str, str, [ ( str, str, bool, str ) ] )
+        
+        @raise:     DjangoDBError
     """
     pkg, exe = _split(key)
     
@@ -132,19 +178,34 @@ def getNodeDef(key):
     
     return (package.name, node.name, config)
 
-def getServiceDef(key):
-    """
+def getInterfaceDef(key):
+    """ Get the interface definition for the given key.
+        
+        @param key:     Key for which the interface definition should be retrieved.
+        @type  key:     str
+        
+        @return:    Tuple of the form
+                    ( message type, message class, interface name, additional infos ).
+        @rtype:     ( str, str, str, () )
+        
+        @raise:     DjangoDBError
     """
     pkg, srv = _split(key)
     
     package = _getPackage(pkg)
-    service = _getInterface(package, srv)
+    interface = _getInterface(package, srv)
     
-    if service.msgType != 'srv':
-        raise DjangoDBError('{0} is not a service.'.format(srv))
+    msgCls = '{0}/{1}'.format(package.name, interface.msgDef)
     
-    srvName = service.name
-    srvCls = '{0}/{1}'.format(package.name, service.msgDef)
-    reqCls = '{0}Request'.format(srvCls)
+    if interface.msgType == 'srv':
+        # for services the msgCls needs to be modified with {}Request
+        # but first remember the standard form as this is also needed
+        interfaceDef = (msgCls,)
+        msgCls = '{0}Request'.format(msgCls)
+    elif interface.msgType == 'topic':
+        interfaceDef = None
+    else:
+        raise DjangoDBError('Could not identify requested interface {0}.'.format(key))
     
-    return (srvName, srvCls, reqCls)
+    return (interface.msgType, msgCls, interface.name, interfaceDef)
+

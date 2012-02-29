@@ -150,7 +150,7 @@ def getTaskCallback(request, manager):
     
     response = { 'taskID' : request.taskID, 'status' : status }
     
-    if status == 'completed':
+    if status in ['completed', 'aborted']:
         response['data'] = json.loads(data)
     else:
         response['data'] = {}

@@ -306,11 +306,11 @@ def removeEnv(envID):
     """
     _processDELETE('{0}/{1}/'.format(_BASE_ADRESS, envID))
 
-def addTask(envID, service, message):
+def addTask(envID, interface, message):
     """ Add a task.
         
-        @param service:     The service which should be used.
-        @type  service:     str
+        @param interface:   The interface which should be used.
+        @type  interface:   str
         
         @param message:     Dictionary containing strings as keys and
                             other dictionaries, lists, fileHandle or
@@ -324,7 +324,7 @@ def addTask(envID, service, message):
         @raise:     TypeError if the message is not valid.
     """
     (msg, files) = _processMessage(message)
-    body = {'data' : json.dumps({'service' : service, 'msg' : msg }) }
+    body = {'data' : json.dumps({'interface' : interface, 'msg' : msg }) }
     return _processPOST('{0}/{1}/'.format(_BASE_ADRESS, envID), body, files)['taskID']
 
 def getTask(envID, taskID):

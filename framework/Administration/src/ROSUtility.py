@@ -31,9 +31,10 @@ import traceback
 
 # Custom imports
 import settings
+from MessageUtility import InvalidRequest
 
-def runTask(manager, task, srvName, srvClsType, msg):
-    """ Run a task.
+def runService(manager, task, srvName, srvClsType, msg):
+    """ Run a service request.
         
         @param manager: Used EnvironmentManager.
         @type  manager: EnvironmentManager.EnvironmentManager
@@ -45,7 +46,8 @@ def runTask(manager, task, srvName, srvClsType, msg):
         @type  srvName: str
         
         @param srvClsType:  Service class which should be used.
-        @type  srvClsType:  ROS Service class
+                            Has to be of the form 'package/ServiceClass'.
+        @type  srvClsType:  str
         
         @param msg:     Message which matches the given service class and
                         which should be sent.
@@ -66,3 +68,29 @@ def runTask(manager, task, srvName, srvClsType, msg):
         return
     
     manager.addResult(task, response)
+
+def runTopic(topicName, msgClsType, msg):
+    """ Publish a message on a topic.
+        
+        @param topicName:   Name of the topic on which to publish.
+        @type  topicName:   str
+        
+        @param msgClsType:  Message class which should be used.
+                            Has to be of the form 'package/MessageClass'.
+        @type  msgClsType:  str
+        
+        @param msg:     Message which matches the given message class and
+                        which should be sent.
+        @type  msg:     ROS Message instance
+    """
+    try:
+        msgCls = roslib.message.get_message_class(msgClsType)
+    except ValueError:
+        raise InternalRequest('Message class is invalid.')
+    
+    try:
+        rospy.Publisher(topicName, msgCls).publish(msg)
+    except rospy.ROSInterruptException:
+        return
+    except rospy.ROSSerializationException:
+        raise InternalError('Message could not be serialized by ROS.')
