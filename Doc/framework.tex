@@ -54,7 +54,7 @@
 \author {Dominique Hunziker, Mohanarajah Gajamohan, Markus Waibel}
 \date{Zurich, \today}
 \hypersetup{
-	pdftitle={Diagram},
+	pdftitle={framework},
 	pdfauthor={Dominique Hunziker},
 	pdfsubject={Specification of reappengine}}
 %==========================================================================
@@ -103,8 +103,8 @@ configuration/setup overheads, dependence on custom middleware, as well as maint
 		
 	
 	\section*{RoboEarth App Engine Framework}
-		The RoboEarth App Engine Framework allows users to create, select, and use apps.
-		The apps interface of the framework acts as an interpreter between user
+		The RoboEarth App Engine Framework allows users to select, launch and use apps.
+		The Django interface of the framework acts as an interpreter between user
 		requests and their apps. It allows 
 communication with processes using \textsc{ROS}, process management
 		using \emph{roslaunch} and has a standardized language to communicate between
@@ -157,11 +157,11 @@ BASE/api/reappengine/[envID/[taskID/[fileRef/]]]
 				\includegraphics{frameworkOverview.pdf}				
 				\caption{Organization of the framework (loosely from top to bottom): The client,
 				which can use the provided \emph{ServiceAPI}, communicates with the
-				\emph{DjangoInterface} over \textsc{http}. The \emph{DjangoInterface} then uses the
-				necessary \emph{services} of the \emph{ServerNode} or \emph{EnvironmentNode} (solid
-				arrows). The \emph{EnvironmentNode} is created and managed by the \emph{ServerNode}
+				\emph{Django Interface} over \textsc{http}. The \emph{Django Interface} then uses the
+				necessary \emph{services} of the \emph{Server Node} or \emph{Environment Node} (solid
+				arrows). The \emph{Environment Node} is created and managed by the \emph{Server Node}
 				(dashed arrow). The user selected app-\emph{nodes} are then launched and managed by
-				the \emph{EnvironmentNode} (dashed arrow) which also provides the necessary
+				the \emph{Environment Node} (dashed arrow) which also provides the necessary
 				\emph{services} to create tasks and retrieve their results (solid arrow).}
 				\label{fig:diagram}
 			\end{center}
