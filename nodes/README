@@ -58,7 +58,7 @@ For a setup on a standard ubuntu installation:
         form the folder patch or use the original packages from
             http://www.ros.org/wiki/
         
-        If the pachted version for tesseract is used one has also to download
+        If the patched version for tesseract is used one has also to download
         the trained data for the english language from here:
             http://code.google.com/p/tesseract-ocr/
         

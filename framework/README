@@ -119,7 +119,7 @@ For a setup on a standard ubuntu installation:
     
       $ sudo ln -s django/wsgi.py /var/www/django.wsgi
 
-7)  Create temporary directory for binary results (depends on configration
+7)  Create temporary directory for binary results (depends on configuration
     in Administration/src/settings.py)
     
       $ sudo mkdir /var/www/tmp
