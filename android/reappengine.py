@@ -89,7 +89,7 @@ def loop():
     """ One interation from taking a picture to playing the parsed text.
     """
     # First take a picture
-    #droid.cameraInteractiveCapturePicture(IMG_PATH)
+    droid.cameraInteractiveCapturePicture(IMG_PATH)
     
     # Connect to server and setup the environment
     dispSpinnerMsg('Connecting', 'Please wait...')
@@ -102,7 +102,7 @@ def loop():
     task = ServiceAPI.addTask(env, 'ReadTextService/ReadText', {'image' : fh})
     
     # Remove temporary image
-    #os.remove(IMG_PATH)
+    os.remove(IMG_PATH)
     
     # Wait for result
     dispSpinnerMsg('Running TextReader', 'Please wait...')

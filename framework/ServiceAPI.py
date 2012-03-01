@@ -30,8 +30,9 @@ import cStringIO
 import uuid
 import mimetypes
 
-_HOST = 'localhost'
-#_HOST = '50.56.194.140'
+#_HOST = 'localhost'
+#_HOST = '10.0.2.2'
+_HOST = '50.56.194.140'
 _BASE_ADRESS = '/api/reappengine'
 _REFERENCE_PREFIX = 'ReF'
 

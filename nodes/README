@@ -36,16 +36,15 @@ For a setup on a standard ubuntu installation:
 1)  Install dependencies for all nodes:
     -   ROS dependency:
         
-        $ sudo apt-get install ros-electric-vision-opencv
+          $ sudo apt-get install ros-electric-vision-opencv
     
     -   Dependency for Semantic processing:
-            package python-nltk (Natural Language ToolKit)
             
-            $ sudo apt-get install python-nltk
+          $ sudo apt-get install python-nltk
     
     -   Dependency for barcode scanning:
-            get zbar library with python binding here
-                http://zbar.sourceforge.net/
+        
+          $ sudo apt-get install python-zbar
     
     -   Dependency for web database access:
             get google-api-python-library here
@@ -53,18 +52,25 @@ For a setup on a standard ubuntu installation:
     
     -   Dependencies for leptonica image prcessing library:
         
-        $ sudo apt-get install libpng12-dev libjpeg62-dev libtiff4-dev zlib1g-dev
+          $ sudo apt-get install libpng12-dev libjpeg62-dev libtiff4-dev zlib1g-dev
     
     -   Use the patched versions of the ROS packages tesseract and liptonica
         form the folder patch or use the original packages from
             http://www.ros.org/wiki/
+        
+        If the pachted version for tesseract is used one has also to download
+        the trained data for the english language from here:
+            http://code.google.com/p/tesseract-ocr/
+        
+        Copy the file tessdata/eng.traineddata to
+            nodes/tesseract/share/tessdata/
     
     -   Use the ROS package read_text from
             http://www.ros.org/wiki/
     
     -   Dependency for text-to-speech node:
         
-        $ sudo apt-get install festival
+          $ sudo apt-get install festival
 
 2)  Possible configuration files are:
     -   BarCodeService/*.conf
