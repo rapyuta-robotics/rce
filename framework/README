@@ -19,13 +19,13 @@ Content of folder framework
             -   js:
                     Contains javascripts used by the django interface
             -   js-src:
-                    Contains the javascripts in a readable format only for
-                    reference
+                    Contains the javascripts in a readable format; Only
+                    for reference purposes
             -   stylesheets:
                     Contains the stylesheet for the django interface
             -   debug:
-                    Contains at the moment a dummy page on different port
-                    to simulate remote authentifcation.
+                    Contains at the moment a dummy page listening a on
+                    different port to simulate remote authentification.
         
         Note
         ----
@@ -41,10 +41,10 @@ Content of folder framework
         -   Add possibility to configure/remove existing node/interface
             definitions
         -   Add possibility to register custom message converters for
-            the Administation
+            the Administration
 
 -   ServiceAPI.py:
-        Small API to simplify the usage of the communcation interface.
+        Small API to simplify the usage of the communication interface.
 
 -   reappengine.conf & roscore.conf:
         Configration files which can be used with upstart.
@@ -55,7 +55,7 @@ Configration files
 ==================
 
 apache:
-    - django/rosService resp. django/rosService_debug
+    - django/rosService | django/rosService_debug
     - for usage of django/rosService_debug adjustments to
       
         /etc/apache2/ports.conf
@@ -113,7 +113,7 @@ For a setup on a standard ubuntu installation:
       $ sudo chmod 777 /var/www/tmp
 
 7)  Copy necessary files for django to /var/www (depends on configuration
-    in django/rosService | django/rosService_debug
+    in django/rosService | django/rosService_debug)
     
       $ sudo cp -r django/img /var/www/
       $ sudo cp -r django/js /var/www/
@@ -126,7 +126,7 @@ For a setup on a standard ubuntu installation:
       $ sudo python django/reappengine/manage.py syncdb
       $ sudo chown -R www-data:www-data /var/www/django/reappengine/data
 
-9)  Enable the configuration for the apache server and reload the it:
+9)  Enable the configuration for the apache server and reload it:
     
       $ sudo a2enmod wsgi
       $ sudo a2enmod xsendfile
@@ -156,6 +156,7 @@ or if the provided files for upstart are installed:
 1)  $ sudo service apache2 start
 
 2)  $ sudo service reappengine start
+
 
 Comments
 ========

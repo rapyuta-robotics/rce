@@ -14,7 +14,7 @@ Installation
     
     Additionally install the PythonForAndroid package.
     
-1)  To run the script copy the files to your android device at the
+1)  To run the script copy the files to your android device to the
     following location:
     
     /sdcard/sl4a/scripts/
