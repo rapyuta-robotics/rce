@@ -1,0 +1,22 @@
+Important
+=========
+    
+    To run the script the file framework/ServiceAPI.py is required.
+
+
+Installation
+============
+    
+0)  Install the scripting layer for android on your device, which can
+    be found here:
+        
+        http://code.google.com/p/android-scripting/
+    
+    Additionally install the PythonForAndroid package.
+    
+1)  To run the script copy the files to your android device at the
+    following location:
+    
+    /sdcard/sl4a/scripts/
+    
+    The script can now be executed using SL4A.
