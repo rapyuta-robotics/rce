@@ -54,7 +54,7 @@
 \author {Dominique Hunziker, Mohanarajah Gajamohan, Markus Waibel}
 \date{Zurich, \today}
 \hypersetup{
-	pdftitle={framework},
+	pdftitle={Diagram},
 	pdfauthor={Dominique Hunziker},
 	pdfsubject={Specification of reappengine}}
 %==========================================================================
@@ -103,20 +103,20 @@ configuration/setup overheads, dependence on custom middleware, as well as maint
 		
 	
 	\section*{RoboEarth App Engine Framework}
-		The RoboEarth App Engine Framework allows users to select, launch and use apps.
-		The Django interface of the framework acts as an interpreter between user
-		requests and their apps. It allows 
+		The RoboEarth App Engine Framework allows users to upload, select, and use apps.
+		The framework also acts as an interpreter between user
+		requests and their apps. 
+		It allows 
 communication with processes using \textsc{ROS}, process management
-		using \emph{roslaunch} and has a standardized language to communicate between
+		using \emph{roslaunch}, and has a standardized language to communicate between
 		processes. In this first implementation we focused on the usage of \emph{nodes} which provide
 		\emph{services} as apps.
 		
-		The client interface of the framework communicates with app users. 
-To include a broader audience the interaction uses the standard \textsc{http} protocol.
+		The \emph{django Interface} of the framework communicates with the clients. 
+		To include a broader audience the communication uses the standard \textsc{http} protocol.
 		This allows users who do not have \textsc{ROS} and opens the door to using apps from
 		a web browser by using the framework as a web server. For this first
-		implementation the focus is on the robots as users. For the API 
-		the implementation \emph{django}/\emph{piston} was used.
+		implementation the focus is on the robots as users. 
 	
 	\section*{Requirements}
 		Apps have to be \textsc{ROS} \emph{nodes} providing a
@@ -125,7 +125,7 @@ To include a broader audience the interaction uses the standard \textsc{http} pr
 		
 		For the communication between the user and the framework the \textsc{http} protocol (request types \textsc{GET}, \textsc{POST} and \textsc{DELETE}) is used.
 		To further
-		distinguish and control the interaction dynamic URL are used. This leads basically to
+		distinguish and control the interaction dynamic URLs are used. This leads basically to
 		three levels, i.e. \emph{Service}, \emph{Environment} and \emph{Task}, which results in the
 		following URL pattern
 		\begin{lstlisting}
@@ -135,19 +135,21 @@ BASE/api/reappengine/[envID/[taskID/[fileRef/]]]
 		create a new environment which essentially creates a new \emph{namespace} in \textsc{ROS}.
 		Also on this level the user can add or remove \emph{nodes} from his environment and access general information.
 		
-		On the next level the user can create a task which is essentially the input message for
+		On the next level, \emph{Environment}, the user can create a task which is essentially the input message for
 		the selected \textsc{ROS} \emph{service}. Again, he can get some information specific to
 		his current environment.
 		
-		And on the last level the user can retrieve the status or, if the task has been completed
-		successfully, the result of a task. The forth level \emph{fileRef} is only used to provide
-		the possibility to download referenced files for the tasks result, e.g. an image file. The
-		result is basically the response message of the selected service.
+		And on the last level, \emph{Task}, the user can retrieve the status or, if the task has been completed
+		successfully, the result of the task. The result is basically the response message of the selected service.
+		
+		
+		The forth level \emph{fileRef} is only used to provide
+		the possibility to download referenced files for the tasks result, e.g. an image file. 
 		
 		To exchange the data needed for all these requests the \textsc{json} format is used. Since
 		the requests which create a new environment/node or task are implemented as a
 		\textsc{POST}, it is also possible to send files. To simplify the construction of requests and
-		the interpretation of the responses a small Python-based ServiceAPI is available. For a graphical
+		the interpretation of the responses a small Python-based ServiceAPI is provided. For a graphical
 		representation of these interactions refer to figure \ref{fig:diagram}. 
 		
 		\begin{figure}
@@ -157,12 +159,10 @@ BASE/api/reappengine/[envID/[taskID/[fileRef/]]]
 				\includegraphics{frameworkOverview.pdf}				
 				\caption{Organization of the framework (loosely from top to bottom): The client,
 				which can use the provided \emph{ServiceAPI}, communicates with the
-				\emph{Django Interface} over \textsc{http}. The \emph{Django Interface} then uses the
-				necessary \emph{services} of the \emph{Server Node} or \emph{Environment Node} (solid
-				arrows). The \emph{Environment Node} is created and managed by the \emph{Server Node}
-				(dashed arrow). The user selected app-\emph{nodes} are then launched and managed by
-				the \emph{Environment Node} (dashed arrow) which also provides the necessary
-				\emph{services} to create tasks and retrieve their results (solid arrow).}
+				\emph{django Interface} over \textsc{http}. The \emph{django Interface} then uses the
+				necessary \emph{services} of the \emph{Server Node} or \emph{Environment Node}. The \emph{Environment Node} is created and managed by the \emph{Server Node}. The user selected \emph{App Nodes} are then launched and managed by
+				the \emph{Environment Node} which also provides the necessary
+				\emph{services} to create tasks and retrieve their results.}
 				\label{fig:diagram}
 			\end{center}
 		\end{figure}
