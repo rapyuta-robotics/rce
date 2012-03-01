@@ -26,10 +26,14 @@
 # Custom converters for django/piston input to ROS messages.
 CONVERTER_CLASSES = (
     'converters.ImageConverter.ImageConverter',
+    'converters.FileConverter.FileConverter',
 )
 
-# Definition of reference from data to files
+# Definition of prefix for reference from data to files
 REFERENCE_PREFIX = 'ReF'
+
+# Definition of separator for reference from data to files
+REFERENCE_SEPARATOR = '!'
 
 # Definition of django database
 DJANGO_DB = {   'DATABASE_ENGINE': 'django.db.backends.sqlite3',
@@ -42,7 +46,7 @@ DJANGO_ROOT_DIR = '/home/dominique/ROS/framework/django'
 TIMEOUT = 600
 
 # Time in secondes after which unresponsive services are treated as dead.
-WAIT_FOR_SERVICE_TIMEOUT = 2
+WAIT_FOR_SERVICE_TIMEOUT = 5
 
 # Path to directory where temporary files to store the results should be kept
 TMP_RESULT_DIR = '/var/www/tmp'

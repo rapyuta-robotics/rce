@@ -9,8 +9,9 @@
 	<Directory /var/www/>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride None
-		Order allow,deny
-		allow from all
+		Order deny,allow
+        deny from all
+        allow from 127.0.0.1
 	</Directory>
     
     WSGIScriptAlias / /var/www/django.wsgi

@@ -24,6 +24,17 @@
 
 import settings
 
+def getName(key):
+    """ Try to build a name for an object from its key.
+        
+        @param key:     Key which should be used to extract the name.
+        @type  key:     str
+        
+        @return:    The extracted name.
+        @rtype:     str
+    """
+    return key.rsplit(settings.REFERENCE_SEPARATOR)[-1]
+
 def resolveReference(key):
     """ Resolve the reference.
         

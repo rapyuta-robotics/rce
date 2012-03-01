@@ -61,6 +61,22 @@ class Env(object):
         
         return self._waitForResult(task, 120)
     
+    def convertToAudio(self, text):
+        task = ServiceAPI.addTask(self.env, 'TTSService/TTSService', {'text' : text})
+        (status, result) = self._waitForResult(task, 30)
+        
+        if status != 'completed':
+            print (status, result)
+            return
+        
+        wav = ServiceAPI.getFile(self.env, task, result['wavFile']['content'])
+        
+        with open(result['wavFile']['name'], 'w') as f:
+            f.write(wav.read())
+        
+        print status
+        print 'wav -> {0}'.format(result['wavFile']['name'])
+    
     def scanImage(self, path):
         fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'BarCodeService/Scanner', {'image' : fh})
@@ -94,6 +110,9 @@ class Env(object):
             config['wordList'] = ServiceAPI.FileHandle(wordList)
         
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[ ('ReadTextService/ReadText', config) ])
+    
+    def startTextToSpeech(self):
+        self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[ ('TTSService/TTS.py', None) ])
     
     def startChain(self):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('BarCodeService/Semantic.py', None),
@@ -166,7 +185,10 @@ if __name__ == '__main__':
         env.startDebug()
         env.startChain()
         env.startReader(None, None)
-        print env.readImage('test_image.jpg')
+        env.startTextToSpeech()
+        r = env.readImage('test_image.jpg')
+        print r
+        env.convertToAudio('. '.join(r[1]['text']))
         r = env.scanImage('IMAG0061.jpg')
         print r
         print env.analyseBarcode(r[1]['barcode'][0]['gtin'])

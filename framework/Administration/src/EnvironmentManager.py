@@ -250,7 +250,7 @@ END;;'''
                 # Create and launch now the node/process
                 try:
                     # for debugging add output='screen' to Node args
-                    self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace()), self.buildNamespace(nodeID), tempFiles)
+                    self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace(), output='screen'), self.buildNamespace(nodeID), tempFiles)
                 except InternalError:
                     self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
                     raise
@@ -421,7 +421,7 @@ END;;'''
         for ref in files:
             (f, name) = mktempfile(dir=settings.TMP_RESULT_DIR)
             self._db.change('''INSERT INTO files (taskID, ref, filename) VALUES (?, ?, ?)''', (task, ref, name))
-            f.write(files[ref].read())
+            f.write(files[ref].getvalue())
             f.close()
             os.chmod(name, 0644)
         

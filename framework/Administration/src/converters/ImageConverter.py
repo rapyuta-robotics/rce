@@ -50,7 +50,6 @@ class ImageConverter(object):
         imgObj = files[ConverterUtility.resolveReference(data)]
         
         if not isinstance(imgObj, cStringIO.OutputType):
-            print type(imgObj)
             raise TypeError('Given object is not a cStringIO.StringO instance.')
         
         # Checking of image according to django.forms.fields.ImageField
@@ -92,7 +91,6 @@ class ImageConverter(object):
         # Save to StringIO
         img = cStringIO.StringIO()
         pil.save(img, 'PNG')
-        img.seek(0)
         key = ConverterUtility.buildReference('img', basename)
         
         return (key, { key : img })

@@ -19,13 +19,16 @@ Content of git respository
         Contains a Demo for the framework and the nodes as well as some
         sample pictures for the testing of the nodes.
 
+-   android:
+        Contains the Python script for a Demo of the ReadText and TTS node.
+
 -   xmlrpc:
         Contains old files which can be used to implement xmlrpc support
         for the framework.
 
 -   template:
-        Contains a script to create multi-threaded Services. (This was
-        used to setup the 3 python nodes).
+        Contains a script to create (multi-threaded) Services. (This was
+        used to setup the 3 python nodes of nodes/BarCodeService).
 
 
 General setup for all parts

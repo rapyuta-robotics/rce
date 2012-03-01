@@ -1,0 +1,17 @@
+<package>
+  <description brief="TTSService">
+
+     TTSService
+
+  </description>
+  <author>dominique hunziker</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/TTSService</url>
+  <depend package="rospy"/>
+  
+  <depend package="Administration"/>
+
+</package>
+
+

@@ -1,3 +1,31 @@
+Content of folder nodes
+=======================
+
+-   BarCodeService:
+        Contains three nodes for 1) Scanning an image for a barcode,
+        2) Query different webDBs for imformation about barcode, 3) some
+        semantic processing of collected data.
+        
+        ToDo:   imporve semantic processing
+    
+-   ReadTextService:
+        Contains a node which provides an interface for the ROS node
+        "read_text", which can extract text from images.
+        
+        ToDo:   invastigate behaviour when processing multiple request
+                in parallel (uses temporary files with same filename?)
+
+-   TTSService:
+        Contains a node which provides an interface for text2speech from
+        the festival package.
+
+-   Test:
+        Only for debugging purposes of file transport (obsolete with
+        intoduction of TTSService which also uses this functionality).
+        Implements the add_two_ints_server from ROS Tutorials and
+        additionally returns an image.
+
+
 Setup of nodes
 ==============
 
@@ -33,6 +61,10 @@ For a setup on a standard ubuntu installation:
     
     -   Use the ROS package read_text from
             http://www.ros.org/wiki/
+    
+    -   Dependency for text-to-speech node:
+        
+        $ sudo apt-get install festival
 
 2)  Possible configuration files are:
     -   BarCodeService/*.conf
