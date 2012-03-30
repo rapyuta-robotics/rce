@@ -256,7 +256,7 @@ END;;'''
                     raise
                 
                 self._db.change('''UPDATE env SET name = ?, status = 'running' WHERE nodeID == ?''', (name, nodeID))
-            except Exception as e:
+            except Exception:
                 # If there was any error delete the temporary files again and remove the parameters
                 for filename in tempFiles:
                     try:
@@ -267,7 +267,7 @@ END;;'''
                 for parameter in parameters:
                     rospy.delete_param(parameter)
                 
-                raise e
+                raise
     
     def getNodeStatus(self):
         """ Get the status of all the nodes in the environment.

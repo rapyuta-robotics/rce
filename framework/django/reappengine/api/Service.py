@@ -132,7 +132,7 @@ class ServiceHandler(AnonymousBaseHandler):
             to the given environment.
         """
         envID = request.POST.get('ID')
-        data = str(request.POST.get('data'))
+        data = request.POST.get('data')
         
         try:
             binary = _convertFILESToStringIO(request.FILES)
@@ -182,7 +182,7 @@ class EnvironmentHandler(AnonymousBaseHandler):
             request.POST the task is launched.
         """
         taskID = request.POST.get('ID')
-        data = str(request.POST.get('data'))
+        data = request.POST.get('data')
         
         try:
             binary = _convertFILESToStringIO(request.FILES)
