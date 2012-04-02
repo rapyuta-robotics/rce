@@ -96,7 +96,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         
         self._threadMngr = ThreadUtility.ThreadManager()
     
-    @ThreadUtility.job
+    @ThreadUtility.QueueWorker.job
     def addProcess(self, key, node, namespace, tempFiles=[]):
         """ Add a process to the list.
             
@@ -128,7 +128,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         with self._processLock:
             self._runningProcesses[key] = NodeProcess(process, tempFiles, namespace)
     
-    @ThreadUtility.job
+    @ThreadUtility.QueueWorker.job
     def getProcess(self, key):
         """ Get a process matching the key.
             
@@ -144,7 +144,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         with self._processLock:
             return self._runningProcesses[key]
     
-    @ThreadUtility.job
+    @ThreadUtility.QueueWorker.job
     def removeProcess(self, key):
         """ Remove and terminate a process matching the key.
             
@@ -185,7 +185,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         self._launcher.start()
     
     def start(self):
-        """ Overwrite the method from base class threading.Thread to make
+        """ Overwrites the method from base class threading.Thread to make
             sure that the manager is not run in a new Thread but in the
             main thread. (However it is still possible to launch the manager
             in a child thread.)

@@ -38,7 +38,7 @@ import ServerManager
 ########################################################################
 # ROS callback functions
 
-""" The ROS callback functions have the following constraints:
+""" The ROS callback functions have the following arguments:
     
     @param request: ROS Service Request instance matching the
                     ROS Service.

@@ -27,6 +27,12 @@ import Queue
 import traceback
 from functools import wraps
 
+class ThreadManagerError(Exception):
+    """ This error is raised if an error occurred in conjunction with the
+        ThreadManager.
+    """
+    pass
+
 class ThreadManager(object):
     """ Little helper class to simplify thread managment.
     """
@@ -88,15 +94,17 @@ class ThreadManager(object):
         """
         termThread = None
         
-        with self.lock:
-            for theadList in self.data:
-                if thread in threadList:
-                    termThread = thread
-                    break
+        if thread in self:
+            termThread = thread
         
         if termThread:
             termThread.terminate.set()
             termThread.join()
+            
+            # Remark: The thread should remove himself from the manger;
+            # make sure that this is the case
+            if thread in self:
+                raise ThreadManagerError('Could not terminate thread.')
         else:
             # Thread not managed by this manager (inform somebody?)
             pass
@@ -118,6 +126,11 @@ class ThreadManager(object):
             
             for thread in threads:
                 thread.join()
+            
+            # Remark: The threads should remove themselves from the manager;
+            # make sure that this is the case
+            if self.data[priority]:
+                raise ThreadManagerError('Could not terminate threads.')
     
     def removeThread(self, thread):
         """ Callback function for thread to remove itself from the
@@ -146,7 +159,7 @@ class ManagedThread(threading.Thread):
         ThreadManager.
     """
     def __init__(self):
-        """ Initalize the QueueWorker. Make sure this method is called
+        """ Initalize the ManagedThread. Make sure this method is called
             when overwriting the constructor in the subclass.
         """
         threading.Thread.__init__(self)
@@ -203,11 +216,17 @@ class Task(ManagedThread):
 
 class QueueWorker(ManagedThread):
     """ This class is used to provide threads which operate with an
-        endless loop.
+        endless loop. Be aware that an iteration through the loop is not
+        interrupted, when the QueueWorker should be terminated, but the 
+        ThreadManager has to wait for the loop iteration to complete.
+        
+        To use this class create a subclass and decorate the methods which
+        should be run in the QueueWorker thread with the decorator 'job'.
     """
     class Capsule(object):
-        """ This class is used to provide a thread-safe exchange of query
-            results. If the returned data is None an error occurred.
+        """ This class is used to provide a thread-safe exchange of the
+            queue workers results. If the returned data is None an error
+            occurred.
         """
         def __init__(self):
             """ Initializes the Capsule.
@@ -218,7 +237,7 @@ class QueueWorker(ManagedThread):
         def getData(self):
             """ Use this method to get the data.
             """
-            self._event.wait(3)
+            self._event.wait(3)     # Block the execution for maximal 3 secs
             return self._data
         
         def setData(self, data):
@@ -270,25 +289,25 @@ class QueueWorker(ManagedThread):
             thread.
         """
         pass
-
-def job(f):
-    """ This decorator should be used on the methods which are the methods
-        called from the outside and which should be executed in the main
-        loop.
-    """
-    @wraps(f)
-    def wrapper(*args, **kw):
-        def loopFunc(capsule_, args_, kw_):
-            try:
-                capsule_.data = f(*args_, **kw_)
-            except Exception:
-                # What to do with the errors in the loop ?
-                capsule_.data = None
-                raise
-        
-        capsule = QueueWorker.Capsule()
-        args[0].queue.put((loopFunc, capsule, args, kw))
-        
-        return capsule.data
     
-    return wrapper
+    @staticmethod
+    def job(f):
+        """ This decorator should be used on the methods which are called
+            from the outside and which should be executed in the QueueWorker
+            loop.
+        """
+        @wraps(f)
+        def wrapper(*args, **kw):
+            def loopFunc(capsule_, args_, kw_):
+                try:
+                    capsule_.data = f(*args_, **kw_)
+                except Exception as e:
+                    # What to do with the errors in the loop ?
+                    capsule_.data = None
+            
+            capsule = QueueWorker.Capsule()
+            args[0].queue.put((loopFunc, capsule, args, kw))
+            
+            return capsule.data
+        
+        return wrapper

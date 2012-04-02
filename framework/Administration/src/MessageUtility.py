@@ -59,8 +59,8 @@ class FatalError(Exception):
 def serviceCallback(responseMsgType):
     """ Decorator which allows to use callback functions which use the
         two exceptions InvalidRequest and InternalError.
-        The decorator needs a response message which has at least the two
-        fields msg (string) and status (uint8).
+        The decorator needs a response message which has the two fields
+        msg (string) and status (uint8).
         
         @param responseMsgType: The class which should be used to generate
                                 the response message

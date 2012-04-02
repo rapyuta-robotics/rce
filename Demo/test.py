@@ -89,7 +89,7 @@ def main():
             print 'remove Environment:'
             ServiceAPI.removeEnv(envID)
             print 'removed environment {0}'.format(envID)
-            time.sleep(0.1)
+            time.sleep(1)
             print ' '
         
         if CHANGE_ENV:

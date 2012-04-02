@@ -39,7 +39,7 @@ import EnvironmentManager
 ########################################################################
 # ROS callback functions
 
-""" The ROS callback functions have the following constraints:
+""" The ROS callback functions have the following arguments:
     
     @param request: ROS Service Request instance matching the
                     ROS Service.
@@ -115,7 +115,7 @@ def getEnvironmentCallback(request, manager):
     """ Callback function for the getEnvironment Service.
     """
     try:
-        return json.dumps(dict(manager.getNodeStatus()))
+        return json.dumps(manager.getNodeStatus())
     except TypeError:
         raise InternalError('Could not get status of the nodes.')
 
@@ -161,10 +161,13 @@ def getTaskCallback(request, manager):
 def getFileCallback(request, manager):
     """ Callback function for the getFile Service.
     """
+    if not manager.isValidTask(request.taskID):
+        raise InvalidRequest('Task ID {0} is invalid.'.format(request.taskID))
+    
     msg = manager.getFile(request.taskID, request.ref)
     
     if isinstance(msg, unicode):
-        msg= msg.encode('utf-8')
+        msg = msg.encode('utf-8')
     
     return msg
 

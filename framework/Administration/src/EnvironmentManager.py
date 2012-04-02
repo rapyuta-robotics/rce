@@ -124,10 +124,7 @@ END;;'''
             @return:    True if the task ID is vaild, False otherwise.
             @rtype:     bool
         """
-        if len(self._db.query('''SELECT taskID FROM task WHERE taskID == ? AND status != 'deleted' ''', (task,))) == 1:
-            return True
-        
-        return False
+        return len(self._db.query('''SELECT taskID FROM task WHERE taskID == ? AND status != 'deleted' ''', (task,))) == 1
     
     ####################################################################
     # Node
@@ -159,7 +156,10 @@ END;;'''
             @param binary:  Serialized files object from POST request.
             @type  binary:  str
         """
-        files = deserializeFiles(binary)
+        try:
+            files = deserializeFiles(binary)
+        except SerializeError:
+            raise InternalError('Could not deserialize files.')
         
         for name in config:
             tempFiles = []
@@ -249,7 +249,7 @@ END;;'''
                 
                 # Create and launch now the node/process
                 try:
-                    # for debugging add output='screen' to Node args
+                    # for debugging add  > output='screen' < to Node args
                     self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace(), output='screen'), self.buildNamespace(nodeID), tempFiles)
                 except InternalError:
                     self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
@@ -272,25 +272,24 @@ END;;'''
     def getNodeStatus(self):
         """ Get the status of all the nodes in the environment.
             
-            @return:    Status of all nodes in the environment. List of
-                        tuples of the form (name, status)
-            @rtype:     [(str, str)]
+            @return:    Status of all nodes in the environment. Dictionary
+                        with the node name as key and the status as
+                        corresponding value.
+            @rtype:     { str : str }
         """
         nodes = self._db.query('SELECT nodeID, name, status FROM env')
         
-        response = [None]*len(nodes)
+        response = {}
         
-        for i in xrange(len(nodes)):
-            status = nodes[i][2]
-            
-            if status == 'init' or status == 'running':
+        for (processKey, nodeName, status) in nodes:
+            if status == 'init' or status  == 'running':
                 try:
-                    if not self.getProcess(nodes[i][0]).isAlive():
+                    if not self.getProcess(processKey).isAlive():
                         status = 'terminated'
                 except KeyError:
                     status = 'deleted'
             
-            response[i] = (nodes[i][1], status)
+            response[nodeName] = status
         
         return response
     

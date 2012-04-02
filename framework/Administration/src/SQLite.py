@@ -94,7 +94,7 @@ class SQLite(ThreadUtility.QueueWorker):
         except sqlite3.Error:
             pass
     
-    @ThreadUtility.job
+    @ThreadUtility.QueueWorker.job
     def query(self, query, values=()):
         """ This method is used to run a query to search for entries.
             
@@ -114,7 +114,7 @@ class SQLite(ThreadUtility.QueueWorker):
         self._cursor.execute(query, values)
         return self._cursor.fetchall()
     
-    @ThreadUtility.job
+    @ThreadUtility.QueueWorker.job
     def change(self, query, values=()):
         """ This method is used to change some entries.
             
@@ -131,7 +131,7 @@ class SQLite(ThreadUtility.QueueWorker):
         self._cursor.execute(query, values)
         self._connection.commit()
     
-    @ThreadUtility.job
+    @ThreadUtility.QueueWorker.job
     def newID(self, table, field):
         """ This method is used to generate a new unique ID.
             
