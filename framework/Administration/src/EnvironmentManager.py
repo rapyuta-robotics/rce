@@ -41,19 +41,12 @@ import settings
 from MessageUtility import serializeFiles, deserializeFiles, SerializeError, InvalidRequest, InternalError
 import ThreadUtility
 import ROSUtility
-from IDUtility import generateID
+from MiscUtility import generateID, mktempfile
 import SQLite
 import DjangoDB
 import ConverterBase
 import ConverterUtility
 import ManagerBase
-
-def mktempfile(dir=None):
-    """ Wrapper around tempfile.mkstemp function such that a file object
-        is returned and not a int. Make sure to close the fileobject again.
-    """
-    (fd, fname) = tempfile.mkstemp(dir=dir)
-    return (os.fdopen(fd, 'wb'), fname)
 
 def activity(f):
     """ Decorator to enable an automatic update of the activity timestamp. 
@@ -162,112 +155,31 @@ END;;'''
             raise InternalError('Could not deserialize files.')
         
         for name in config:
-            tempFiles = []
-            parameters = []
-            receivedNodeConfig = config[name]
-            
+            # First load information about the node which should be launched
             try:
-                # First load information about the node which should be launched
-                try:
-                    (pkgName, nodeCls, nodeConfig) = DjangoDB.getNodeDef(name)
-                except DjangoDB.DjangoDBError:
-                    raise InternalError('Could not get the node information for node {0}.'.format(name))
-                
-                # Create new entry for node in database
-                nodeID = self._db.newID('env', 'nodeID')
-                
-                # Add the necessary configuration parameters to ParameterServer
-                for (configName, configType, configOpt, configDefaultValue) in nodeConfig:
-                    # Try to read the given configuration value from request or else try to use the default value
-                    try:
-                        configVal = receivedNodeConfig[configName]
-                    except KeyError:
-                        if configOpt:
-                            configVal = configDefaultValue
-                        
-                        if not configVal:
-                            raise InvalidRequest('Configuration parameter {0} is missing.'.format(configName))
-                    else:
-                        # If we have to add a file to the ParameterServer which we received from the user create a temporary file
-                        if configType == 'file':
-                            try:
-                                configVal = ConverterUtility.resolveReference(configVal)
-                            except ValueError:
-                                content = configVal
-                            else:
-                                content = files[configVal]
-                                content.seek(0)
-                                content = content.read()
-                            
-                            (f, configVal) = mktempfile()
-                            tempFiles.append(configVal)
-                            f.write(content)
-                            f.close()
-                    
-                    # Now check the given value and process it accordingly
-                    if configType == 'bool':
-                        if isinstance(configVal, str) or isinstance(configVal, unicode):
-                            configVal = configVal.lower()
-                            
-                            if configVal == 'true':
-                                configVal = True
-                            elif configVal == 'false':
-                                configVal = False
-                            else:
-                                raise InvalidRequest('Configuration parameter {0} is not a valid bool.'.format(configName))
-                        else:
-                            configVal = bool(configVal)
-                    elif configType == 'int':
-                        try:
-                            configVal = int(configVal)
-                        except ValueError:
-                            raise InvalidRequest('Configuration parameter {0} is not a valid int.'.format(configName))
-                    elif configType == 'float':
-                        try:
-                            configVal = float(configVal)
-                        except ValueError:
-                            raise InvalidRequest('Configuration parameter {0} is not a valid float.'.format(configName))
-                    elif configType == 'str':
-                        if isinstance(configVal, unicode):
-                            configVal = configVal.encode('utf-8')
-                        
-                        configVal = str(configVal)
-                    elif configType == 'file':
-                        if not os.path.isfile(configVal):
-                            raise InternalError('Could not find file.')
-                    else:
-                        raise InternalError('Could not identify the type of the configuration parameter.')
+                (pkgName, nodeCls, nodeParams) = DjangoDB.getNodeDef(name)
+            except DjangoDB.DjangoDBError:
+                raise InternalError('Could not get the node information for node {0}.'.format(name))
+            
+            # Create new entry for node in database
+            nodeID = self._db.newID('env', 'nodeID')
+            
+            # Add the necessary configuration parameters to the ParameterServer
+            try:
+                for param in nodeParams:
+                    param.parse(config[name], files)
                     
                     # Build the name of the parameter and add it to the ParameterServer
-                    paramName = self.buildNamespace('{0}/{1}'.format(nodeID, configName))
-                    
-                    if rospy.has_param(paramName):
-                        raise InternalError('Parameter already exists.')
-                    
-                    rospy.set_param(paramName, configVal)
-                    parameters.append(paramName)
+                    param.setParam(self.buildNamespace('{0}/{1}'.format(nodeID, param.name)))
                 
                 # Create and launch now the node/process
-                try:
-                    # for debugging add  > output='screen' < to Node args
-                    self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace(), output='screen'), self.buildNamespace(nodeID), tempFiles)
-                except InternalError:
-                    self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
-                    raise
-                
-                self._db.change('''UPDATE env SET name = ?, status = 'running' WHERE nodeID == ?''', (name, nodeID))
-            except Exception:
-                # If there was any error delete the temporary files again and remove the parameters
-                for filename in tempFiles:
-                    try:
-                        os.remove(filename)
-                    except OSError:
-                        pass
-                
-                for parameter in parameters:
-                    rospy.delete_param(parameter)
-                
+                # for debugging add  > output='screen' < to Node args
+                self.addProcess(nodeID, roslaunch.core.Node(pkgName, nodeCls, name=nodeID, namespace=self.buildNamespace(), output='screen'), nodeParams)
+            except (InvalidRequest, InternalError):
+                self._db.change('''UPDATE env SET name = ?, status = 'aborted' WHERE nodeID == ?''', (name, nodeID))
                 raise
+                
+            self._db.change('''UPDATE env SET name = ?, status = 'running' WHERE nodeID == ?''', (name, nodeID))
     
     def getNodeStatus(self):
         """ Get the status of all the nodes in the environment.
@@ -338,36 +250,37 @@ END;;'''
             raise InvalidRequest('Request does not define any message data.')
         
         try:
-            (interfaceType, msgCls, interfaceName, interfaceDef) = DjangoDB.getInterfaceDef(interface)
+            interface = DjangoDB.getInterfaceDef(interface)
         except DjangoDB.DjangoDBError:
             self.abortTask(task, 'invalid interface')
             raise InvalidRequest('Requested interface {0} is not valid.'.format(interface))
         
         try:
-            converter = ConverterBase.Converter()
-            msg = converter.decode(msgCls, msgData, deserializeFiles(binary))
+            files = deserializeFiles(binary)
         except SerializeError:
             self.abortTask(task, 'serialization error')
             raise InternalError('Could not deserialize files.')
-        except (TypeError, ValueError) as e:
-            self.abortTask(task, 'invalid request message')
-            raise InvalidRequest(e)
         
-        if interfaceType == 'srv':
-            taskThread = ThreadUtility.Task(ROSUtility.runService, self, task, interfaceName, interfaceDef[0], msg)
-            self._threadMngr.append(taskThread, 2)
-            self._db.change('''UPDATE task SET status = 'running' WHERE taskID == ?''', (task,))
-            taskThread.start()
-        elif interfaceType == 'topic':
-            try:
-                ROSUtility.runTopic(interfaceName, msgCls, msg)
-            except InternalError:
-                self.abortTask(task, 'unable to publish message')
-                raise
+        try:
+            interface.parseMessage(msgData, files)
+        except InvalidRequest:
+            self.abortTask(task, 'invalid request message')
+            raise
+        
+        try:
+            interface.run(self, task)
+        except InternalError:
+            self.abortTask(task, 'unable to send message')
+            raise
+    
+    def setTaskRunning(self, task):
+        """ Set the status of the task to 'running'. Make sure that the
+            task is valid before this method is used.
             
-            self._db.change('''UPDATE task SET result = ?, status = 'completed' WHERE taskID == ?''', (json.dumps({}), task))
-        else:
-            raise InternalError('Requested interface type {0} is currently not supported.')
+            @param task:    Valid task ID (from getNewTask)
+            @type  task:    str
+        """
+        self._db.change('''UPDATE task SET status = 'running' WHERE taskID == ?''', (task,))
     
     def abortTask(self, task, msg=''):
         """ Abort the task with the given ID in the environment. Make
@@ -397,32 +310,35 @@ END;;'''
     # Result
     
     @activity
-    def addResult(self, task, msg):
+    def addResult(self, task, msg=None):
         """ Add the result for the given task. Make sure that the task ID
             is valid before this method is used.
             
             @param task:    Valid task ID (from getNewTask)
             @type  task:    str
             
-            @param msg:     Message which was received from the Service
-                            as response.
+            @param msg:     Message which was received from the interface
+                            as response or None if no message is returned.
             @type  msg:     ROS Service Response message instance
         """
-        try:
-            converter = ConverterBase.Converter()
-            (data, files) = converter.encode(msg)
-        except (TypeError, ValueError):
-            self.abortTask(task, 'invalid response message')
-            import traceback
-            traceback.print_exc()
-            return
-        
-        for ref in files:
-            (f, name) = mktempfile(dir=settings.TMP_RESULT_DIR)
-            self._db.change('''INSERT INTO files (taskID, ref, filename) VALUES (?, ?, ?)''', (task, ref, name))
-            f.write(files[ref].getvalue())
-            f.close()
-            os.chmod(name, 0644)
+        if msg:
+            try:
+                converter = ConverterBase.Converter()
+                (data, files) = converter.encode(msg)
+            except (TypeError, ValueError):
+                self.abortTask(task, 'invalid response message')
+                import traceback
+                traceback.print_exc()
+                return
+            
+            for ref in files:
+                (f, name) = mktempfile(dir=settings.TMP_RESULT_DIR)
+                self._db.change('''INSERT INTO files (taskID, ref, filename) VALUES (?, ?, ?)''', (task, ref, name))
+                f.write(files[ref].getvalue())
+                f.close()
+                os.chmod(name, 0644)
+        else:
+            data = {}
         
         self._db.change('''UPDATE task SET result = ?, status = 'completed' WHERE taskID == ?''', (json.dumps(data), task))
     
@@ -477,6 +393,15 @@ END;;'''
     
     ####################################################################
     # Utility
+    
+    def addTaskToThreadMngr(self, thread):
+        """ Add a thread to the current used thread manager.
+            
+            @param thread:  Thread instance which should be added to the
+                            current thread manager.
+            @type  thread:  ManagedThread
+        """
+        self._threadMngr.append(thread, 2)
     
     def isActive(self):
         """ Check if the last activity was longer than settings.TIMEOUT

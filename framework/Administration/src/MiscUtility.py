@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       IDUtility.py
+#       MiscUtility.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,6 +22,8 @@
 #       
 #       
 
+########################################################################
+
 import string
 import random
 
@@ -33,3 +35,15 @@ def generateID(length=10):
         [a-zA-Z] and the given length.
     """
     return ''.join(random.choice(_CHARS) for x in xrange(length))
+
+########################################################################
+
+import os
+import tempfile
+
+def mktempfile(dir=None):
+    """ Wrapper around tempfile.mkstemp function such that a file object
+        is returned and not a int. Make sure to close the fileobject again.
+    """
+    (fd, fname) = tempfile.mkstemp(dir=dir)
+    return (os.fdopen(fd, 'wb'), fname)

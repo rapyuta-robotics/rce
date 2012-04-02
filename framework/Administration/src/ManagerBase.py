@@ -39,40 +39,24 @@ import ThreadUtility
 class NodeProcess(object):
     """ Class which represents a running node.
     """
-    def __init__(self, process, files, namespace):
+    def __init__(self, process, params):
         """ Constructor.
             
-            @param process:  Process in which the node is running.
-            @type  process:  roslaunch.Process instance
+            @param process:     Process in which the node is running.
+            @type  process:     roslaunch.Process instance
             
-            @param files:    List of all path of the temporary files
-                             which are associated with this node.
-            @type  files     [str]
-            
-            @param namespace:  ROS namespace in which the node resides.
-            @type  namespace:  str
+            @param params:      List of parameters which are associated
+                                with this node.
+            @type  params:      [ Parameter ]
         """
         self.process = process
-        self.files = files
-        self.namespace = namespace
+        self.params = params
     
     def __del__(self):
-        """ Destructor.
+        """ Destructor
         """
         if self.process.is_alive():
             self.process.stop()
-        
-        del self.process
-        
-        for param in rospy.get_param_names():
-            if param.find(self.namespace) == 0:
-                rospy.delete_param(param)
-        
-        for filename in self.files:
-            try:
-                os.remove(filename)
-            except OSError:
-                pass
     
     def isAlive(self):
         """ Check whether the node/process is alive.
@@ -97,7 +81,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         self._threadMngr = ThreadUtility.ThreadManager()
     
     @ThreadUtility.QueueWorker.job
-    def addProcess(self, key, node, namespace, tempFiles=[]):
+    def addProcess(self, key, node, params=[]):
         """ Add a process to the list.
             
             @param key:     Key with which the process will be accessed
@@ -107,16 +91,12 @@ class ManagerBase(ThreadUtility.QueueWorker):
             @param node:    Node which should be added to the list.
             @type  node:    roslaunch.core.Node
             
-            @param namespace:   Namespace for the parameters. (Is not the
-                                same as the namespace of the node.)
-            @type  namespace:   str
-            
-            @param tempFiles:   Optional argument. (default = [])
-                                List of temporary files which should be
-                                associated with this node, i.e. which
-                                will be removed as soon as the node is
-                                removed.
-            @type  tempFiles:   [tempfile.TemporaryFile]
+            @param params:  Optional argument. (default = [])
+                            List of all parameters which should be
+                            associated with this node, i.e. which
+                            will be removed as soon as the node is
+                            removed.
+            @type  params:  [Parameter]
             
             @raise: InternalError if the node could not be launched.
         """
@@ -126,7 +106,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
             raise InternalError(e)
         
         with self._processLock:
-            self._runningProcesses[key] = NodeProcess(process, tempFiles, namespace)
+            self._runningProcesses[key] = NodeProcess(process, params)
     
     @ThreadUtility.QueueWorker.job
     def getProcess(self, key):

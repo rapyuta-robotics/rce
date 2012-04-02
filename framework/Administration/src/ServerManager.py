@@ -33,7 +33,7 @@ import time
 
 # Custom imports
 import settings
-from IDUtility import generateID
+from MiscUtility import generateID
 import ManagerBase
 
 class ServerManager(ManagerBase.ManagerBase):
@@ -55,7 +55,7 @@ class ServerManager(ManagerBase.ManagerBase):
                 break
         
         namespace = self.buildNamespace(uid)
-        self.addProcess(uid, roslaunch.core.Node('Administration', 'Environment.py', name=uid, namespace=namespace, output='screen'), namespace)
+        self.addProcess(uid, roslaunch.core.Node('Administration', 'Environment.py', name=uid, namespace=namespace, output='screen'))
         
         return uid
     

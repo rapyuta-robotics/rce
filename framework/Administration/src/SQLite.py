@@ -29,7 +29,7 @@ import sqlite3
 
 # Custom imports
 import ThreadUtility
-from IDUtility import generateID
+from MiscUtility import generateID
 
 class SQLiteError(Exception):
     """ This error is raised if an error occurred in conjunction with

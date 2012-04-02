@@ -43,6 +43,7 @@ if rosSettings.DJANGO_ROOT_DIR not in sys.path:
 from reappengine.models import Package, Node, Param, Interface
 
 from MessageUtility import InvalidRequest
+from ROSUtility import ParameterFactory, InterfaceFactory
 
 class DjangoDBError(Exception):
     """ This error is raised if an error occurred in conjunction with
@@ -162,9 +163,8 @@ def getNodeDef(key):
         @type  key:     str
         
         @return:    Tuple of the form (package name, node name, config),
-                    where config is a list of parameters which are represented
-                    as tuples of the form (name, type, optional, default value).
-        @rtype:     ( str, str, [ ( str, str, bool, str ) ] )
+                    where config is a list of Parameter instances.
+        @rtype:     ( str, str, [ Parameter ] )
         
         @raise:     DjangoDBError
     """
@@ -174,7 +174,7 @@ def getNodeDef(key):
     node = _getNode(package, exe)
     params = _getParam(node)
     
-    config = [(param.name, param.paramType, param.opt, param.default) for param in params]
+    config = [ParameterFactory.createParameter(param.name, param.paramType, param.opt, param.default) for param in params]
     
     return (package.name, node.name, config)
 
@@ -184,9 +184,8 @@ def getInterfaceDef(key):
         @param key:     Key for which the interface definition should be retrieved.
         @type  key:     str
         
-        @return:    Tuple of the form
-                    ( message type, message class, interface name, additional infos ).
-        @rtype:     ( str, str, str, () )
+        @return:    Interface instance.
+        @rtype:     Interface
         
         @raise:     DjangoDBError
     """
@@ -207,5 +206,5 @@ def getInterfaceDef(key):
     else:
         raise DjangoDBError('Could not identify requested interface {0}.'.format(key))
     
-    return (interface.msgType, msgCls, interface.name, interfaceDef)
+    return InterfaceFactory.createInterface(interface.msgType, msgCls, interface.name, interfaceDef)
 
