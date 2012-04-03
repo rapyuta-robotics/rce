@@ -30,7 +30,7 @@ from Administration.msg import File
 import cStringIO
 
 # Custom imports
-import ConverterUtility
+from ConverterUtility import getName, buildReference, resolveReference
 
 class FileConverter(object):
     """ Convert files from Django style to ROS style and back.
@@ -41,12 +41,12 @@ class FileConverter(object):
         """ Convert a file stored in a cStringIO.StrinO object to a ROS
             compatible message (Administration.File).
         """
-        fileObj = files[ConverterUtility.resolveReference(data)]
+        fileObj = files[resolveReference(data)]
         
         if not isinstance(fileObj, cStringIO.OutputType):
             raise TypeError('Given object is not a cStringIO.StringO instance.')
         
-        return File(content=fileObj.read(), name=ConverterUtility.getName(data))
+        return File(content=fileObj.read(), name=getName(data))
     
     def encode(self, rosMsg, basename):
         """ Convert a ROS compatible message (Administration.File) to a
@@ -58,6 +58,6 @@ class FileConverter(object):
         # Save to StringIO
         fileObj = cStringIO.StringIO()
         fileObj.write(rosMsg.content)
-        key = ConverterUtility.buildReference(rosMsg.name, basename)
+        key = buildReference(rosMsg.name, basename)
         
         return ({ 'name' : rosMsg.name, 'content' : key }, { key : fileObj })

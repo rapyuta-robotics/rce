@@ -27,7 +27,6 @@ import roslib; roslib.load_manifest('Administration')
 import rospy
 
 # Python specific imports
-import json
 import cStringIO
 import struct
 from functools import wraps

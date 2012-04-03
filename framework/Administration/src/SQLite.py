@@ -23,12 +23,11 @@
 #       
 
 # Python specific imports
-import sys
 import os.path
 import sqlite3
 
 # Custom imports
-import ThreadUtility
+from ThreadUtility import QueueWorker
 from MiscUtility import generateID
 
 class SQLiteError(Exception):
@@ -37,7 +36,7 @@ class SQLiteError(Exception):
     """
     pass
 
-class SQLite(ThreadUtility.QueueWorker):
+class SQLite(QueueWorker):
     """ This class is used to connect to a SQLite database.
     """ 
     def __init__(self, layout, dbName=':memory:'):
@@ -94,7 +93,7 @@ class SQLite(ThreadUtility.QueueWorker):
         except sqlite3.Error:
             pass
     
-    @ThreadUtility.QueueWorker.job
+    @QueueWorker.job
     def query(self, query, values=()):
         """ This method is used to run a query to search for entries.
             
@@ -114,7 +113,7 @@ class SQLite(ThreadUtility.QueueWorker):
         self._cursor.execute(query, values)
         return self._cursor.fetchall()
     
-    @ThreadUtility.QueueWorker.job
+    @QueueWorker.job
     def change(self, query, values=()):
         """ This method is used to change some entries.
             
@@ -131,7 +130,7 @@ class SQLite(ThreadUtility.QueueWorker):
         self._cursor.execute(query, values)
         self._connection.commit()
     
-    @ThreadUtility.QueueWorker.job
+    @QueueWorker.job
     def newID(self, table, field):
         """ This method is used to generate a new unique ID.
             

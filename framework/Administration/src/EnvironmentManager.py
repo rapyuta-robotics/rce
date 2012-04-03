@@ -32,21 +32,17 @@ import time
 import datetime
 import threading
 import json
-import tempfile
 import os
 from functools import wraps
 
 # Custom imports
 import settings
 from MessageUtility import serializeFiles, deserializeFiles, SerializeError, InvalidRequest, InternalError
-import ThreadUtility
-import ROSUtility
 from MiscUtility import generateID, mktempfile
-import SQLite
-import DjangoDB
-import ConverterBase
-import ConverterUtility
-import ManagerBase
+from SQLite import SQLite
+from DjangoDB import DjangoDBError, getNodeDef, getInterfaceDef, existsNode
+from ConverterBase import Converter
+from ManagerBase import ManagerBase
 
 def activity(f):
     """ Decorator to enable an automatic update of the activity timestamp. 
@@ -65,7 +61,7 @@ def activity(f):
     
     return wrapper
     
-class EnvironmentManager(ManagerBase.ManagerBase):
+class EnvironmentManager(ManagerBase):
     """ This class is used to manage an environment, which consists of
         the ROS nodes and the tasks for the ROS nodes.
     """
@@ -89,7 +85,7 @@ END;;'''
         super(EnvironmentManager, self).__init__()
         
         # sqlite database connection
-        self._db = SQLite.SQLite(self._SQL_BASE)
+        self._db = SQLite(self._SQL_BASE)
         self._threadMngr.append(self._db, 0)
         self._db.start()
         
@@ -131,7 +127,7 @@ END;;'''
             @return:    True if the node name is vaild, False otherwise.
             @rtype:     bool
         """
-        return DjangoDB.isValidNodeName(name)
+        return existsNode(name)
     
     @activity
     def addNode(self, config, binary):
@@ -157,8 +153,8 @@ END;;'''
         for name in config:
             # First load information about the node which should be launched
             try:
-                (pkgName, nodeCls, nodeParams) = DjangoDB.getNodeDef(name)
-            except DjangoDB.DjangoDBError:
+                (pkgName, nodeCls, nodeParams) = getNodeDef(name)
+            except DjangoDBError:
                 raise InternalError('Could not get the node information for node {0}.'.format(name))
             
             # Create new entry for node in database
@@ -250,8 +246,8 @@ END;;'''
             raise InvalidRequest('Request does not define any message data.')
         
         try:
-            interface = DjangoDB.getInterfaceDef(interface)
-        except DjangoDB.DjangoDBError:
+            interface = getInterfaceDef(interface)
+        except DjangoDBError:
             self.abortTask(task, 'invalid interface')
             raise InvalidRequest('Requested interface {0} is not valid.'.format(interface))
         
@@ -323,7 +319,7 @@ END;;'''
         """
         if msg:
             try:
-                converter = ConverterBase.Converter()
+                converter = Converter()
                 (data, files) = converter.encode(msg)
             except (TypeError, ValueError):
                 self.abortTask(task, 'invalid response message')

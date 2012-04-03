@@ -31,7 +31,7 @@ import cStringIO
 import PIL.Image
 
 # Custom imports
-import ConverterUtility
+from ConverterUtility import buildReference, resolveReference
 
 class ImageConverter(object):
     """ Convert images from Django style to ROS style and back.
@@ -47,7 +47,7 @@ class ImageConverter(object):
             in a cStringIO.StrinO object to a ROS compatible message
             (sensor_msgs.Image).
         """
-        imgObj = files[ConverterUtility.resolveReference(data)]
+        imgObj = files[resolveReference(data)]
         
         if not isinstance(imgObj, cStringIO.OutputType):
             raise TypeError('Given object is not a cStringIO.StringO instance.')
@@ -91,6 +91,6 @@ class ImageConverter(object):
         # Save to StringIO
         img = cStringIO.StringIO()
         pil.save(img, 'PNG')
-        key = ConverterUtility.buildReference('img', basename)
+        key = buildReference('img', basename)
         
         return (key, { key : img })

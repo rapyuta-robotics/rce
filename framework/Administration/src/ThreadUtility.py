@@ -24,7 +24,6 @@
 
 import threading
 import Queue
-import traceback
 from functools import wraps
 
 class ThreadManagerError(Exception):
@@ -174,6 +173,7 @@ class ManagedThread(threading.Thread):
         try:
             self.threadMethod()
         except:
+            import traceback
             traceback.print_exc()
         finally:
             with self.managedlock:

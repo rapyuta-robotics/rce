@@ -34,7 +34,7 @@ import json
 
 # Custom imports
 from MessageUtility import serviceCallback, setupService, InvalidRequest, InternalError
-import EnvironmentManager
+from EnvironmentManager import EnvironmentManager
 
 ########################################################################
 # ROS callback functions
@@ -202,7 +202,7 @@ def init(manager):
     setupService('removeTask', removeTask, removeTaskCallback, manager)
 
 def main():
-    manager = EnvironmentManager.EnvironmentManager()
+    manager = EnvironmentManager()
     init(manager)
     manager.spin()
     

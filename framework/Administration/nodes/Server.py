@@ -33,7 +33,7 @@ import json
 
 # Custom imports
 from MessageUtility import serviceCallback, setupService
-import ServerManager
+from ServerManager import ServerManager
 
 ########################################################################
 # ROS callback functions
@@ -92,7 +92,7 @@ def init(manager):
     setupService('removeEnvironment', removeEnvironment, removeEnvironmentCallback, manager)
 
 def main():
-    manager = ServerManager.ServerManager()
+    manager = ServerManager()
     init(manager)
     manager.spin()
     

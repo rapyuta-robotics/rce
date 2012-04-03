@@ -34,9 +34,9 @@ import time
 # Custom imports
 import settings
 from MiscUtility import generateID
-import ManagerBase
+from ManagerBase import ManagerBase
 
-class ServerManager(ManagerBase.ManagerBase):
+class ServerManager(ManagerBase):
     """ This class is used to manage the environments, which are ROS nodes.
     """
     def getNewEnv(self):

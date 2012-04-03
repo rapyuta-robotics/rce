@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       djangoDB.py
+#       DjangoDB.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -135,7 +135,7 @@ def _split(name):
     
     return tuple(parts)
 
-def isValidNodeName(key):
+def existsNode(key):
     """ Check if the given key is valid, i.e. if there is a matching
         entry in the database.
         

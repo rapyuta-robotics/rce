@@ -30,11 +30,10 @@ import rospy
 
 # Python sepcific imports
 import threading
-import os
 
 # Custom imports
 from MessageUtility import InternalError
-import ThreadUtility
+from ThreadUtility import QueueWorker, Task, ThreadManager
 
 class NodeProcess(object):
     """ Class which represents a running node.
@@ -63,7 +62,7 @@ class NodeProcess(object):
         """
         return self.process.is_alive()
 
-class ManagerBase(ThreadUtility.QueueWorker):
+class ManagerBase(QueueWorker):
     """ Base class for all managers.
     """
     def __init__(self):
@@ -78,9 +77,9 @@ class ManagerBase(ThreadUtility.QueueWorker):
         self._processLock = threading.Lock()
         self._runningProcesses = {}
         
-        self._threadMngr = ThreadUtility.ThreadManager()
+        self._threadMngr = ThreadManager()
     
-    @ThreadUtility.QueueWorker.job
+    @QueueWorker.job
     def addProcess(self, key, node, params=[]):
         """ Add a process to the list.
             
@@ -103,12 +102,12 @@ class ManagerBase(ThreadUtility.QueueWorker):
         try:
             process = self._launcher.launch(node)
         except roslaunch.core.RLException as e:
-            raise InternalError(e)
+            raise InternalError(str(e))
         
         with self._processLock:
             self._runningProcesses[key] = NodeProcess(process, params)
     
-    @ThreadUtility.QueueWorker.job
+    @QueueWorker.job
     def getProcess(self, key):
         """ Get a process matching the key.
             
@@ -124,7 +123,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
         with self._processLock:
             return self._runningProcesses[key]
     
-    @ThreadUtility.QueueWorker.job
+    @QueueWorker.job
     def removeProcess(self, key):
         """ Remove and terminate a process matching the key.
             
@@ -181,7 +180,7 @@ class ManagerBase(ThreadUtility.QueueWorker):
             functions should be executed in a loop overwite the method
             subspin().
         """
-        subloop = ThreadUtility.Task(self.subspin)
+        subloop = Task(self.subspin)
         self._threadMngr.append(subloop, 1)
         subloop.start()
         self.run()

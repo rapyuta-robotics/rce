@@ -28,14 +28,13 @@ import rospy
 
 # Python specific imports
 import os
-import traceback
 
 # Custom imports
 import settings
 from MessageUtility import InvalidRequest, InternalError
-import ThreadUtility
+from ThreadUtility import Task
 from MiscUtility import mktempfile
-import ConverterBase
+from ConverterBase import Converter
 from ConverterUtility import resolveReference
 
 class ParameterFactory(object):
@@ -310,7 +309,7 @@ class InterfaceFactory(object):
             @raise:     InvalidRequest if the message can not be parsed.
         """
         try:
-            converter = ConverterBase.Converter()
+            converter = Converter()
             self.msg = converter.decode(self.msgCls, data, files)
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
@@ -391,7 +390,7 @@ class ServiceInterface(InterfaceFactory):
         self.manager = manager
         self.task = task
         
-        taskThread = ThreadUtility.Task(self._taskFunc)
+        taskThread = Task(self._taskFunc)
         manager.addTaskToThreadMngr(taskThread)
         manager.setTaskRunning(task)
         
@@ -409,6 +408,7 @@ class ServiceInterface(InterfaceFactory):
             return
         except:
             self.manager.abortTask(self.task)
+            import traceback
             traceback.print_exc()
             return
         
