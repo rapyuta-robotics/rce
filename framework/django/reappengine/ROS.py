@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       setupROS.py
+#       ROS.py
 #       
 #       Copyright 2011 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -47,7 +47,7 @@ import re
 import os
 import sys
 
-def uniqify(pathList):
+def uniquify(pathList):
     """ Remove all duplicates from a list whilst keeping the ordering """
     newPathList = []
     
@@ -74,6 +74,6 @@ for (envVar, rawValue) in _EXPORTS:
         for path in value.split(':'):
             sys.path.append(path)
         
-        sys.path = uniqify(sys.path)
+        sys.path = uniquify(sys.path)
 
 ########################################################################
