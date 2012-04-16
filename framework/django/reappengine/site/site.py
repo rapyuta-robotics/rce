@@ -25,7 +25,7 @@
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 
-DOMAIN = "http://localhost/"
+DOMAIN = 'http://localhost/'
 FOOTER = """The RoboEarth web interface is licensed under
       the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache
       License</a> Version 2.0. &#151; <a href="http://roboearth.informatik.uni-stuttgart.de/releases">Get</a> the source code!"""

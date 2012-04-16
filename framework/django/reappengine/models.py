@@ -61,8 +61,8 @@ class ROSNameField(models.CharField):
 
 class Package(models.Model):
     """ Model for a package """
-    name = ROSNameField(max_length=MAX_LENGTH, verbose_name="Package Name")
-    user = models.ForeignKey(User, verbose_name="Package Owner")
+    name = ROSNameField(max_length=MAX_LENGTH, verbose_name='Package Name')
+    user = models.ForeignKey(User, verbose_name='Package Owner')
     
     def clean(self):
         """ Custom clean method to validate package """
@@ -76,8 +76,8 @@ class Package(models.Model):
 
 class Node(models.Model):
     """ Model for a ROS node """
-    name = models.CharField(max_length=MAX_LENGTH, verbose_name="Node Name")
-    pkg = models.ForeignKey(Package, verbose_name="Package")
+    name = models.CharField(max_length=MAX_LENGTH, verbose_name='Node Name')
+    pkg = models.ForeignKey(Package, verbose_name='Package')
     
     def clean(self):
         """ Custom clean method to validate node """
@@ -135,7 +135,7 @@ class Interface(models.Model):
     msgType = models.CharField(max_length=5, choices=VALID_INTERFACE_TYPES, verbose_name='Interface Type')
     name = ROSNameField(max_length=MAX_LENGTH, verbose_name='Name')
     msgDef = ROSNameField(max_length=MAX_LENGTH, verbose_name='Definition')
-    pkg = models.ForeignKey(Package, verbose_name="Package")
+    pkg = models.ForeignKey(Package, verbose_name='Package')
     
     def clean(self):
         """ Custom clean method to validate interface """

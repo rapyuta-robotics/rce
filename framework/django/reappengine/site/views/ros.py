@@ -41,7 +41,7 @@ from reappengine.site.site import webpage_values, error, success
 def service(request):
     """ Webpage with form to register a new service """
     if not request.user.is_authenticated():
-        return HttpResponseRedirect("/login/")
+        return HttpResponseRedirect('/login/')
     
     if request.method == 'POST':
         # Validate Package form
@@ -53,7 +53,7 @@ def service(request):
             packageDict['user'] = request.user
             package, created = Package.objects.get_or_create(**packageDict)
         else:
-            return error(request, nextPage='/add/', errorTitle="Package", errorMessage=str(packageForm.errors))
+            return error(request, nextPage='/add/', errorTitle='Package', errorMessage=str(packageForm.errors))
         
         # Validate Node form
         node = Node(pkg=package)
@@ -62,7 +62,7 @@ def service(request):
         if nodeForm.is_valid():
             node = nodeForm.save(commit=False)
         else:
-            return error(request, nextPage='/add/', errorTitle="Node", errorMessage=str(nodeForm.errors))
+            return error(request, nextPage='/add/', errorTitle='Node', errorMessage=str(nodeForm.errors))
         
         # Validate Param form
         paramFormSet = ParamFormSet(request.POST, request.FILES, instance=node, prefix='param')
@@ -71,7 +71,7 @@ def service(request):
             paramForm.empty_permitted = False
         
         if not paramFormSet.is_valid():
-            return error(request, nextPage='/add/', errorTitle="Parameter", errorMessage=str(paramFormSet.errors))
+            return error(request, nextPage='/add/', errorTitle='Parameter', errorMessage=str(paramFormSet.errors))
         
         # Validate Interface form
         interfaceFormSet = InterfaceFormSet(request.POST, request.FILES, instance=package, prefix='interface')
@@ -80,7 +80,7 @@ def service(request):
             interfaceForm.empty_permitted = False
         
         if not interfaceFormSet.is_valid():
-            return error(request, nextPage='/add/', errorTitle="Interface", errorMessage=str(interfaceFormSet.errors))
+            return error(request, nextPage='/add/', errorTitle='Interface', errorMessage=str(interfaceFormSet.errors))
         
         # Everything ok
         package.save()
@@ -113,7 +113,7 @@ def service(request):
 def feedService(request):
     """ Used by javascript function to get available services in specified package """
     if not request.user.is_authenticated():
-        return HttpResponseRedirect("/login/")
+        return HttpResponseRedirect('/login/')
     
     try:
         pkg = request.GET['package']
@@ -137,7 +137,7 @@ def feedService(request):
 def feedNode(request):
     """ Used by javascript function to get available executables/nodes in specified package """
     if not request.user.is_authenticated():
-        return HttpResponseRedirect("/login/")
+        return HttpResponseRedirect('/login/')
     
     try:
         pkg = request.GET['package']

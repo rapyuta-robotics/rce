@@ -78,23 +78,24 @@ def addNodeCallback(request, manager):
     except ValueError:
         raise InvalidRequest('data is not properly json encoded.')
     
-    try:
-        add = data['add']
-        
-        if not isinstance(add, dict):
-            raise InvalidRequest('data/add does not contain a dict.')
-    except (TypeError, AttributeError):
+    if not isinstance(data, dict):
         raise InvalidRequest('data does not contain a dict.')
-    except KeyError:
+    
+    if 'add' in data:
+        add = data['add']
+    else:
         add = {}
     
-    try:
+    if not isinstance(add, dict):
+        raise InvalidRequest('data/add does not contain a dict.')
+    
+    if 'remove' in data:
         remove = data['remove']
-        
-        if not isinstance(remove, list):
-            raise InvalidRequest('data/remove does not contain a list.')
-    except KeyError:
+    else:
         remove = []
+    
+    if not isinstance(remove, list):
+        raise InvalidRequest('data/remove does not contain a list.')
     
     for name in add:
         if not manager.isValidNodeName(name):

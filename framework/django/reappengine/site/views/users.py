@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       views.py
+#       users.py
 #       
 #       Copyright 2011 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -34,7 +34,7 @@ from reappengine.site.site import webpage_values
 def loginForm(request, error=False):
     """ show login form """
     if request.user.is_authenticated():
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect('/')
     
     values = {'error' : error}
     
@@ -42,8 +42,11 @@ def loginForm(request, error=False):
 
 def login(request):
     """ authenticate a user. The user has to provide his user name and password """
-    username = request.POST['username']
-    password = request.POST['password']
+    try:
+        username = request.POST['username']
+        password = request.POST['password']
+    except KeyError:
+        return HttpResponse(loginForm(request, error=True))
     
     user = auth.authenticate(username=username, password=password)
     
@@ -51,7 +54,7 @@ def login(request):
         # Correct password, and the user is marked "active"
         auth.login(request, user)
         # Redirect to a success page.
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect('/')
     else:
         # Show an error page
         return HttpResponse(loginForm(request, error=True))
@@ -59,7 +62,7 @@ def login(request):
 def logout(request):
     """ user logout """
     auth.logout(request)
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect('/')
 
 ########################################################################
 # start page

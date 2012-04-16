@@ -95,23 +95,28 @@ class ServiceHandler(AnonymousBaseHandler):
             data[pkg.name] = { 'interfaces' : {}, 'nodes' : {} }
             
             for node in Node.objects.filter(pkg=pkg):
-                data[pkg.name]['nodes'][node.name] = {}
-                data[pkg.name]['nodes'][node.name]['key'] = '{0}/{1}'.format(pkg.name, node.name)
-                data[pkg.name]['nodes'][node.name]['params'] = {}
+                nodeDict = {}
+                nodeDict['key'] = '{0}/{1}'.format(pkg.name, node.name)
+                nodeDict['params'] = {}
                 
                 for param in Param.objects.filter(node=node):
-                    data[pkg.name]['nodes'][node.name]['params'][param.name] = {}
-                    data[pkg.name]['nodes'][node.name]['params'][param.name]['type'] = param.paramType
-                    data[pkg.name]['nodes'][node.name]['params'][param.name]['optional'] = param.opt
+                    paramDict = {}
+                    paramDict['type'] = param.paramType
+                    paramDict['optional'] = param.opt
                     
                     if param.opt:
-                        data[pkg.name]['nodes'][node.name]['params'][param.name]['default'] = param.default
+                        paramDict['default'] = param.default
+                    
+                    nodeDict['params'][param.name] = paramDict
+                
+                data[pkg.name]['nodes'][node.name] = nodeDict
         
             for interface in Interface.objects.filter(pkg=pkg):
-                data[pkg.name]['interfaces'][interface.name] = {}
-                data[pkg.name]['interfaces'][interface.name]['type'] = interface.msgType
-                data[pkg.name]['interfaces'][interface.name]['definition'] = interface.msgDef
-                data[pkg.name]['interfaces'][interface.name]['key'] = '{0}/{1}'.format(pkg.name, interface.name)
+                interfaceDict = {}
+                interfaceDict['type'] = interface.msgType
+                interfaceDict['definition'] = interface.msgDef
+                interfaceDict['key'] = '{0}/{1}'.format(pkg.name, interface.name)
+                data[pkg.name]['interfaces'][interface.name] = interfaceDict
         
         return data
     

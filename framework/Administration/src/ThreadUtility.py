@@ -100,7 +100,7 @@ class ThreadManager(object):
             termThread.terminate.set()
             termThread.join()
             
-            # Remark: The thread should remove himself from the manger;
+            # Remark: The thread should remove himself from the manager;
             # make sure that this is the case
             if thread in self:
                 raise ThreadManagerError('Could not terminate thread.')

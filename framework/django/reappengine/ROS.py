@@ -67,7 +67,7 @@ for (envVar, rawValue) in _EXPORTS:
         value = value.replace(match.group(), os.environ.get(match.group(1), ''))
         value = value.strip(':')
     
-    os.environ[envVar] = ':'.join(uniqify(value.split(':')))
+    os.environ[envVar] = ':'.join(uniquify(value.split(':')))
     
     # Special case for the PYTHONPATH variable:
     if envVar == 'PYTHONPATH':

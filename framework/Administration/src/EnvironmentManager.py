@@ -190,11 +190,13 @@ END;;'''
         response = {}
         
         for (processKey, nodeName, status) in nodes:
-            if status == 'init' or status  == 'running':
-                try:
-                    if not self.getProcess(processKey).isAlive():
+            if status in ['init', 'running']:
+                processID = self.getProcess(processKey)
+                
+                if processID:
+                    if not processID.isAlive():
                         status = 'terminated'
-                except KeyError:
+                else:
                     status = 'deleted'
             
             response[nodeName] = status
@@ -230,18 +232,19 @@ END;;'''
             @param binary:  Serialized files object from POST request.
             @type  binary:  str
         """
-        try:
-            interface = config['interface']
-        except (TypeError, AttributeError):
+        if not isinstance(config, dict):
             self.abortTask(task, 'invalid data')
             raise InvalidRequest('data does not contain a dict.')
-        except KeyError:
+        
+        if 'interface' in config:
+            interface = config['interface']
+        else:
             self.abortTask(task, 'undefined interface')
             raise InvalidRequest('Request does not define which interface is requested.')
         
-        try:
+        if 'msg' in config:
             msgData = config['msg']
-        except KeyError:
+        else:
             self.abortTask(task, 'message data missing')
             raise InvalidRequest('Request does not define any message data.')
         

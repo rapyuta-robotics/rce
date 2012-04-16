@@ -115,13 +115,14 @@ class ManagerBase(QueueWorker):
                             which should be accessed.
             @type  key:     str
             
-            @return:        Process which should be added to the list.
-            @rtype:         NodeProcess
+            @return:        Process which matches the given key. If no
+                            match is found, None is returned.
+            @rtype:         NodeProcess / None
             
             @raise:     KeyError if the given key does not exist.
         """
         with self._processLock:
-            return self._runningProcesses[key]
+            return self._runningProcesses.get(key, None)
     
     @QueueWorker.job
     def removeProcess(self, key):
@@ -129,14 +130,9 @@ class ManagerBase(QueueWorker):
             
             @param key:     Key which is used to identify the process
                             which should be removed.
-            
-            @raise:     KeyError if the given key does not exist.
         """
         with self._processLock:
-            try:
-                del self._runningProcesses[key]
-            except KeyError:
-                print('Key Error: {0} is not valid.'.format(key))
+            self._runningProcesses.pop(key, None)
     
     def getKeys(self):
         """ Get all keys.

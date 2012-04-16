@@ -153,10 +153,10 @@ class Converter(object):
                 else:
                     data[slotName] = Converter._BASE_TYPES[slotType](getattr(rosMsg, slotName))
             else:
-                try:
+                if slotType in Converter._SPECIAL_TYPES:
                     conv = Converter._SPECIAL_TYPES[slotType]()
                     convFunc = conv.encode
-                except KeyError:
+                else:
                     convFunc = self.encode
                 
                 if listBool:
@@ -246,10 +246,10 @@ class Converter(object):
                     
                     setattr(rosMsg, slotName, field)
             else:
-                try:
+                if slotType in Converter._SPECIAL_TYPES:
                     conv = Converter._SPECIAL_TYPES[slotType]()
                     convFunc = conv.decode
-                except KeyError:
+                else:
                     convFunc = self.decode
                 
                 if listBool:

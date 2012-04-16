@@ -117,11 +117,10 @@ class ParameterFactory(object):
             return
         
         # Try to load the value or the default value
-        try:
+        if self.name in config:
             self.value = config[self.name]
-        except KeyError:
-            if self.opt:
-                self.value = self.default
+        elif self.opt:
+            self.value = self.default
         
         # Make sure that there is a value
         if self.value is None:
