@@ -31,10 +31,10 @@ import ServiceAPI
 DELTA_SUM = 10
 DELTA_READ = 120
 
-INFO = True
-ADD_REMOVE_ENV = True
-CHANGE_ENV = True
-READ = True
+INFO = False
+ADD_REMOVE_ENV = False
+CHANGE_ENV = False
+READ = False
 SUM = True
 
 def _wait(delta, envID, taskID):
@@ -46,6 +46,14 @@ def _wait(delta, envID, taskID):
         
         if status != 'running':
             break
+    
+    if status == 'aborted':
+        msg = result['error']
+        
+        if not msg:
+            msg = 'Unknown'
+        
+        raise ValueError(msg)
     
     return (status, result)
 
@@ -83,7 +91,7 @@ def main():
             print 'add Environment:'
             envID = ServiceAPI.addEnv()
             print 'added environment {0}'.format(envID)
-            time.sleep(0.1)
+            time.sleep(1)
             print ' '
             
             print 'remove Environment:'
@@ -96,7 +104,7 @@ def main():
             print 'change Environment (implicit addEnv):'
             envID = ServiceAPI.changeEnv(nodesToAdd=[('BarCodeService/WebDB.py', None)])
             print 'added node WebDB to {0}'.format(envID)
-            time.sleep(0.1)
+            time.sleep(1)
             print ' '
             
             print 'change Environment:'
@@ -112,9 +120,9 @@ def main():
             time.sleep(0.1)
             print ' '
         
-        if READ or SUM:
+        if READ or SUM or TOPIC:
             print 'create Environment:'
-            envID = ServiceAPI.changeEnv(nodesToAdd=[('ReadTextService/ReadText', {}), ('Test/Test.py', None)])
+            envID = ServiceAPI.changeEnv(nodesToAdd=[('ReadTextService/ReadText', {}), ('Test/Test.py', None), ('Test/TopicTest.py', None)])
             print 'created environment with nodes Test and TextReader'
             time.sleep(0.1)
             print ' '
@@ -165,6 +173,29 @@ def main():
             print 'removed task {0}'.format(taskID)
             time.sleep(0.1)
             print ' '
+            
+            a = 7
+            b = 5
+            c = -2
+            s = a+b+c
+            print 'add Numbers:\n{0}, {1}, {2}'.format(a, b, c)
+            ServiceAPI.addTask(envID, 'Test/addInt', {'data' : a})
+            time.sleep(0.1)
+            ServiceAPI.addTask(envID, 'Test/addInt', {'data' : b})
+            time.sleep(0.1)
+            ServiceAPI.addTask(envID, 'Test/addInt', {'data' : c})
+            time.sleep(0.1)
+            print ' '
+            
+            print 'getSum:'
+            time.sleep(0.4)
+            taskID = ServiceAPI.addTask(envID, 'Test/getSum', {})
+            (status, result) = _wait(DELTA_SUM, envID, taskID)
+            
+            if result['sum'] != s:
+                raise ValueError('Sum is not correct. Received value: {0}'.format(result['sum']))
+            else:
+                print 'sum correct'
     except (ServiceAPI.RequestError, ValueError) as e:
         print 'Error: {0}'.format(e)
     else:

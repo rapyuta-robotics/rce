@@ -423,7 +423,7 @@ class TopicInterface(InterfaceFactory):
             raise InternalError('Message class is invalid.')
         
         try:
-            rospy.Publisher(self.interfaceName, msgCls).publish(self.msg)
+            rospy.Publisher(self.interfaceName, msgCls, latch=True).publish(self.msg)
         except rospy.ROSInterruptException:
             return
         except rospy.ROSSerializationException:
