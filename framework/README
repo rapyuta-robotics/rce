@@ -25,7 +25,7 @@ Content of folder framework
                     Contains the stylesheet for the django interface
             -   debug:
                     Contains at the moment a dummy page listening a on
-                    different port to simulate remote authentification.
+                    different port to simulate remote authentication.
         
         Note
         ----
@@ -35,7 +35,7 @@ Content of folder framework
               http://www.roboearth.org/
         
         ToDo:
-        -   Adapt authentification process
+        -   Adapt authentication process
                 -   currently unsafe connection used
                 -   currently usage of dummy page
         -   Add possibility to configure/remove existing node/interface
@@ -47,13 +47,13 @@ Content of folder framework
         Small API to simplify the usage of the communication interface.
 
 -   reappengine.conf & roscore.conf:
-        Configration files which can be used with upstart.
+        Configuration files which can be used with upstart.
         (To do so: Copy both files to
             /etc/init/
         but before make sure to configure / set the paths.)
 
 
-Configration files
+Configuration files
 ==================
 
 apache:
@@ -101,7 +101,7 @@ For a setup on a standard ubuntu installation:
     Additionally:
     -   django/reappengine/models.py
 
-5)  Move the configration file rosService to the apache site folder:
+5)  Move the configuration file rosService to the apache site folder:
     
       ### $ sudo mv django/rosService /etc/apache2/site-available
     
