@@ -43,7 +43,7 @@ import tempfile
 
 def mktempfile(dir=None):
     """ Wrapper around tempfile.mkstemp function such that a file object
-        is returned and not a int. Make sure to close the fileobject again.
+        is returned and not a int. Make sure to close the file object again.
     """
     (fd, fname) = tempfile.mkstemp(dir=dir)
     return (os.fdopen(fd, 'wb'), fname)

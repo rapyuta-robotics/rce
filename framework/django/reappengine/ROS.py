@@ -50,11 +50,11 @@ import sys
 def uniquify(pathList):
     """ Remove all duplicates from a list whilst keeping the ordering """
     newPathList = []
-    
+
     for path in pathList:
         if path not in newPathList:
             newPathList.append(path)
-    
+
     return newPathList
 
 _regex = re.compile('\$\{(\w+)\}')
@@ -62,18 +62,18 @@ _regex = re.compile('\$\{(\w+)\}')
 for (envVar, rawValue) in _EXPORTS:
     matches = _regex.finditer(rawValue)
     value = rawValue
-    
+
     for match in matches:
         value = value.replace(match.group(), os.environ.get(match.group(1), ''))
         value = value.strip(':')
-    
+
     os.environ[envVar] = ':'.join(uniquify(value.split(':')))
-    
+
     # Special case for the PYTHONPATH variable:
     if envVar == 'PYTHONPATH':
         for path in value.split(':'):
             sys.path.append(path)
-        
+
         sys.path = uniquify(sys.path)
 
 ########################################################################

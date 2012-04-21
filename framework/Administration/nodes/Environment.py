@@ -29,7 +29,7 @@ from Administration.srv import \
 isActive, addNode, getEnvironment, addTask, getTask, getFile, removeTask, \
 isActiveResponse, addNodeResponse, getEnvironmentResponse, addTaskResponse, getTaskResponse, getFileResponse, removeTaskResponse
 
-# Python sepcific imports
+# Python specific imports
 import json
 
 # Custom imports
@@ -40,24 +40,24 @@ from EnvironmentManager import EnvironmentManager
 # ROS callback functions
 
 """ The ROS callback functions have the following arguments:
-    
+
     @param request: ROS Service Request instance matching the
                     ROS Service.
     @type  request: ROS Service Request
-    
+
     @param manager: Manager instance which is used to handle the
                     different tasks necessary to process the request.
     @type  manager: Manager.Manager
-    
+
     @return:    The callback function return a ROS Service Response
                 instance matching the ROS Service.
     @rtype:     ROS Service Response
-    
+
     Important: -ROS callback functions can only have the argument request.
                 Therefore, it is necessary to use a wrapper to get
                 additional arguments.
                     -> message.setupService
-                
+
                -To enable the use of the exceptions InternalError and
                 InvalidRequest in the callback function it is necessary
                 to decorate the callback functions.
@@ -77,37 +77,37 @@ def addNodeCallback(request, manager):
         data = json.loads(request.data)
     except ValueError:
         raise InvalidRequest('data is not properly json encoded.')
-    
+
     if not isinstance(data, dict):
         raise InvalidRequest('data does not contain a dict.')
-    
+
     if 'add' in data:
         add = data['add']
     else:
         add = {}
-    
+
     if not isinstance(add, dict):
         raise InvalidRequest('data/add does not contain a dict.')
-    
+
     if 'remove' in data:
         remove = data['remove']
     else:
         remove = []
-    
+
     if not isinstance(remove, list):
         raise InvalidRequest('data/remove does not contain a list.')
-    
+
     for name in add:
         if not manager.isValidNodeName(name):
             raise InvalidRequest('{0} is not a valid node name.'.format(name))
-    
+
     for name in remove:
         if not manager.isValidNodeName(name):
             raise InvalidRequest('{0} is not a valid node name.'.format(name))
-    
+
     if add:
         manager.addNode(add, request.files)
-    
+
     if remove:
         manager.removeNode(remove)
 
@@ -129,15 +129,15 @@ def addTaskCallback(request, manager):
             raise InvalidRequest('Task ID {0} is invalid.'.format(request.taskID))
     else:
         request.taskID = manager.getNewTask()
-    
+
     if request.data:
         try:
             data = json.loads(request.data)
         except ValueError:
             raise InvalidRequest('data is not properly json encoded.')
-        
+
         manager.addTask(request.taskID, data, request.files)
-    
+
     return json.dumps({ 'taskID' : request.taskID })
 
 @serviceCallback(getTaskResponse)
@@ -146,16 +146,16 @@ def getTaskCallback(request, manager):
     """
     if not manager.isValidTask(request.taskID):
         raise InvalidRequest('Task ID {0} is invalid.'.format(request.taskID))
-    
+
     (status, data) = manager.getResult(request.taskID)
-    
+
     response = { 'taskID' : request.taskID, 'status' : status }
-    
+
     if status in ['completed', 'aborted']:
         response['data'] = json.loads(data)
     else:
         response['data'] = {}
-    
+
     return json.dumps(response)
 
 @serviceCallback(getFileResponse)
@@ -164,12 +164,12 @@ def getFileCallback(request, manager):
     """
     if not manager.isValidTask(request.taskID):
         raise InvalidRequest('Task ID {0} is invalid.'.format(request.taskID))
-    
+
     msg = manager.getFile(request.taskID, request.ref)
-    
+
     if isinstance(msg, unicode):
         msg = msg.encode('utf-8')
-    
+
     return msg
 
 @serviceCallback(removeTaskResponse)
@@ -178,7 +178,7 @@ def removeTaskCallback(request, manager):
     """
     if not manager.isValidTask(request.taskID):
         raise InvalidRequest('Task ID {0} is invalid.'.format(request.taskID))
-    
+
     manager.removeTask(request.taskID)
 
 ########################################################################
@@ -192,7 +192,7 @@ def init(manager):
     """
     # Initialize the node
     rospy.init_node('Environment')
-    
+
     # Setup the Services
     setupService('isActive', isActive, isActiveCallback, manager)
     setupService('addNode', addNode, addNodeCallback, manager)
@@ -206,7 +206,7 @@ def main():
     manager = EnvironmentManager()
     init(manager)
     manager.spin()
-    
+
     return 0
 
 if __name__ == '__main__':

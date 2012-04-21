@@ -26,10 +26,10 @@ import settings
 
 def getName(key):
     """ Try to build a name for an object from its key.
-        
+
         @param key:     Key which should be used to extract the name.
         @type  key:     str
-        
+
         @return:    The extracted name.
         @rtype:     str
     """
@@ -37,31 +37,31 @@ def getName(key):
 
 def resolveReference(key):
     """ Resolve the reference.
-        
+
         @param key:     Key which should be resolved.
         @type  key:     str
-        
+
         @return:    The modified key for retrieving the data from files.
         @rtype:     str
-        
+
         @raise:     ValueError if the given key does not match the reference
                     structure.
     """
     if settings.REFERENCE_PREFIX != key[:len(settings.REFERENCE_PREFIX)]:
         raise ValueError('Data field does not contain a reference to files.')
-    
+
     return key[len(settings.REFERENCE_PREFIX):]
 
 def buildReference(key, basename):
     """ Generate a reference.
-        
+
         @param key:     Name of the field which is referenced.
         @type  key:     str
-        
-        @param basename:    Basename which should be used to generate the
+
+        @param basename:    Name which should be used to generate the
                             reference.
         @type  basename:    str
-        
+
         @return:        Reference which should be used.
         @rtype:         str
     """

@@ -28,7 +28,7 @@ import rospy
 from Administration.srv import \
 addEnvironment, removeEnvironment, addEnvironmentResponse, removeEnvironmentResponse
 
-# Python sepcific imports
+# Python specific imports
 import json
 
 # Custom imports
@@ -39,24 +39,24 @@ from ServerManager import ServerManager
 # ROS callback functions
 
 """ The ROS callback functions have the following arguments:
-    
+
     @param request: ROS Service Request instance matching the
                     ROS Service.
     @type  request: ROS Service Request
-    
+
     @param manager: Manager instance which is used to handle the
                     different tasks necessary to process the request.
     @type  manager: Manager.Manager
-    
+
     @return:    The callback function return a ROS Service Response
                 instance matching the ROS Service.
     @rtype:     ROS Service Response
-    
+
     Important: -ROS callback functions can only have the argument request.
                 Therefore, it is necessary to use a wrapper to get
                 additional arguments.
                     -> message.setupService
-                
+
                -To enable the use of the exceptions InternalError and
                 InvalidRequest in the callback function it is necessary
                 to decorate the callback functions.
@@ -86,7 +86,7 @@ def init(manager):
     """
     # Initialize the node
     rospy.init_node('Server')
-    
+
     # Setup the Services
     setupService('addEnvironment', addEnvironment, addEnvironmentCallback, manager)
     setupService('removeEnvironment', removeEnvironment, removeEnvironmentCallback, manager)
@@ -95,7 +95,7 @@ def main():
     manager = ServerManager()
     init(manager)
     manager.spin()
-    
+
     return 0
 
 if __name__ == '__main__':

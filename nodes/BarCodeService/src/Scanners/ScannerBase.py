@@ -32,14 +32,14 @@ class ScannerError(Exception):
 class ScannerBase(ObjectWorker):
     """ Generic base class for all barcode scanners. You should not
         instantiate this class directly.
-        
+
         The keyworded argument data of the constructor should contain
         a dictionary with an entry 'image' which is again a dictionary
         with the keys 'width', 'height' and 'raw'.
     """
-    
-    DATA_FIELDS={ 'image' : None }
-    
+
+    DATA_FIELDS = { 'image' : None }
+
     def run(self):
         """ Overwrites the necessary method from the base class.
             This method scans for a barcode by calling the method scan
@@ -50,7 +50,7 @@ class ScannerBase(ObjectWorker):
         except ScannerError as e:
             error(e)
             return
-    
+
     def scan(self):
         """ Overwrite this method, else a NotImplementedError is raised.
             This method is used to run a scan an image.

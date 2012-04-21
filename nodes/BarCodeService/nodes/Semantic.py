@@ -30,7 +30,7 @@ from initNode import initNode, Request
 class SemanticRequest(Request):
     """ This class is used to represent a request to the Semantic service.
     """
-    
+
     def fuseData(self):
         """ Overwrites the necessary method from the base class.
             This method is used fuse the collected data from the workers

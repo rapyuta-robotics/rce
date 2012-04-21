@@ -27,17 +27,17 @@ from django.conf.urls.defaults import patterns, include, url
 urlpatterns = patterns('',
     # start page
     url(r'^$', 'reappengine.site.views.users.index'),
-    
+
     # user handling
     url(r'^login/$', 'reappengine.site.views.users.loginForm'),
     url(r'^login/check/$', 'reappengine.site.views.users.login'),
     url(r'^logout/$', 'reappengine.site.views.users.logout'),
-    
+
     # service registration
     url(r'^add/$', 'reappengine.site.views.ros.service'),
     url(r'^add/service/$', 'reappengine.site.views.ros.feedService'),
     url(r'^add/node/$', 'reappengine.site.views.ros.feedNode'),
-    
+
     # api
     url(r'^api/', include('reappengine.api.urls')),
 )

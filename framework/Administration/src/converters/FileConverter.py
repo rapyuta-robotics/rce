@@ -36,28 +36,28 @@ class FileConverter(object):
     """ Convert files from Django style to ROS style and back.
     """
     MESSAGE_TYPE = 'Administration/File'
-    
+
     def decode(self, rosMsgType, data, files):
         """ Convert a file stored in a cStringIO.StrinO object to a ROS
             compatible message (Administration.File).
         """
         fileObj = files[resolveReference(data)]
-        
+
         if not isinstance(fileObj, cStringIO.OutputType):
             raise TypeError('Given object is not a cStringIO.StringO instance.')
-        
+
         return File(content=fileObj.read(), name=getName(data))
-    
+
     def encode(self, rosMsg, basename):
         """ Convert a ROS compatible message (Administration.File) to a
             cStringIO.StrinO object.
         """
         if not isinstance(rosMsg, File):
             raise TypeError('Given object is not a Administration.File instance.')
-        
+
         # Save to StringIO
         fileObj = cStringIO.StringIO()
         fileObj.write(rosMsg.content)
         key = buildReference(rosMsg.name, basename)
-        
+
         return ({ 'name' : rosMsg.name, 'content' : key }, { key : fileObj })

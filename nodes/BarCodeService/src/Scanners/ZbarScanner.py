@@ -40,28 +40,28 @@ except ImportError:
 class ZbarScanner(ScannerBase):
     """ A barcode scanner which uses the 'zbar bar code reader' library.
     """
-    
+
     def run(self):
         """ Overwrites the necessary function from the base class.
             This method scans for a barcode.
         """
         # wrap image data
         image = self.image.convert('L')
-        
+
         width, height = image.size
         raw = image.tostring()
-        
+
         image = zbar.Image(width, height, 'Y800', raw)
-        
+
         # create a reader
         scanner = zbar.ImageScanner()
-        
+
         # configure the reader
         scanner.parse_config('enable')
-        
+
         # scan the image for barcodes
         scanner.scan(image)
-        
+
         # print and add found barcodes
         for symbol in image:
             self.info('Found: {0} - {1}'.format(symbol.type, symbol.data))

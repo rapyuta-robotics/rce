@@ -31,7 +31,7 @@ from reappengine.models import Package, Node, Param, Interface
 class DynamicChoiceField(fields.ChoiceField):
     """ Choice field for which the choices can be dynamically altered """
     def validate(self, value):
-        # ingore valiatate() for a ChoiceField and and only check its super
+        # ignore validate() for a ChoiceField and and only check its super
         # class validate() method which is from the class fields.Field;
         # this means that the value does not have to be part of choices and,
         # therefore, the choices can be dynamically altered.
@@ -40,18 +40,18 @@ class DynamicChoiceField(fields.ChoiceField):
 class PackageForm(forms.ModelForm):
     """ Matching form for Package """
     name = DynamicChoiceField()
-    
+
     class Meta:
         model = Package
         exclude = ('user',)
-    
+
     def register(self, pkgs):
         self.fields['name'] = DynamicChoiceField(label='Name', choices=pkgs, required=True, widget=forms.Select())
 
 class NodeForm(forms.ModelForm):
     """ Matching form for Node """
     name = DynamicChoiceField(label='Executable', required=True, widget=forms.Select(attrs={ 'disabled' : 'true' }))
-    
+
     class Meta:
         model = Node
         exclude = ('pkg',)

@@ -34,15 +34,15 @@ import subprocess
 def callback(req):
     txtfile = tempfile.NamedTemporaryFile(prefix='tts', suffix='.txt')
     wavfile = tempfile.NamedTemporaryFile(prefix='tts', suffix='.wav')
-    
+
     txtfile.write(req.text)
     txtfile.flush()
-    
+
     try:
         subprocess.check_call('text2wave -eval "(voice_kal_diphone)" {0} -o {1}'.format(txtfile.name, wavfile.name), shell=True)
     except subprocess.CalledProcessError:
         return QueryTTSResponse()
-    
+
     return QueryTTSResponse(File(content=wavfile.read(), name='speech.wav'))
 
 def ttsServiceServer():

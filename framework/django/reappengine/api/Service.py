@@ -29,7 +29,6 @@ from functools import wraps
 from piston.handler import AnonymousBaseHandler
 from piston.utils import rc
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError
-from django.core.servers.basehttp import FileWrapper
 
 # Database models import
 from reappengine.models import Package, Node, Param, Interface
@@ -42,7 +41,7 @@ import cStringIO
 import reappengine.ROS
 # Do not import packages which need a functioning ROS environment before here
 
-# Communication interface to the ROS adminstration
+# Communication interface to the ROS administration
 import roslib.packages
 paths = roslib.packages.find_resource('Administration', 'DjangoInterface.py')
 
@@ -69,7 +68,7 @@ def exceptionHandler(f):
             return HttpResponseBadRequest(str(e), content_type='text/plain')
         except DjangoInterface.FatalError as e:
             return HttpResponseServerError(str(e), content_type='text/plain')
-    
+
     return wrapper
 
 class _ConversionError(Exception):
@@ -78,11 +77,11 @@ class _ConversionError(Exception):
     pass
 
 class ServiceHandler(AnonymousBaseHandler):
-    """ This class provides the methodes to handle requests to the ROS
+    """ This class provides the methods to handle requests to the ROS
         service API without an environment ID and without a task ID.
     """
     allowed_methods = ('GET', 'POST')
-    
+
     @exceptionHandler
     def read(self, request):
         """ Handle 'GET' request.
@@ -90,44 +89,44 @@ class ServiceHandler(AnonymousBaseHandler):
             on the ROS Service.
         """
         data = {}
-        
+
         for pkg in Package.objects.all():
             data[pkg.name] = { 'interfaces' : {}, 'nodes' : {} }
-            
+
             for node in Node.objects.filter(pkg=pkg):
                 nodeDict = {}
                 nodeDict['key'] = '{0}/{1}'.format(pkg.name, node.name)
                 nodeDict['params'] = {}
-                
+
                 for param in Param.objects.filter(node=node):
                     paramDict = {}
                     paramDict['type'] = param.paramType
                     paramDict['optional'] = param.opt
-                    
+
                     if param.opt:
                         paramDict['default'] = param.default
-                    
+
                     nodeDict['params'][param.name] = paramDict
-                
+
                 data[pkg.name]['nodes'][node.name] = nodeDict
-        
+
             for interface in Interface.objects.filter(pkg=pkg):
                 interfaceDict = {}
                 interfaceDict['type'] = interface.msgType
                 interfaceDict['definition'] = interface.msgDef
                 interfaceDict['key'] = '{0}/{1}'.format(pkg.name, interface.name)
                 data[pkg.name]['interfaces'][interface.name] = interfaceDict
-        
+
         return data
-    
+
 #   def update(self, request):
 #       """ Handle 'PUT'
 #       """
-    
+
 #   def delete(self, request):
 #       """ Handle 'DELETE'
 #       """
-    
+
     @exceptionHandler
     def create(self, request):
         """ Handle 'POST' request.
@@ -138,20 +137,20 @@ class ServiceHandler(AnonymousBaseHandler):
         """
         envID = request.POST.get('ID')
         data = request.POST.get('data')
-        
+
         try:
             binary = _convertFILESToStringIO(request.FILES)
         except _ConversionError:	# Raised by _getStringIO if dict request.FILES
             return rc.BAD_REQUEST	#   contains objects which are not of type UploadedFile
-        
+
         return DjangoInterface.createEnvironment(envID=envID, data=data, files=binary)
 
 class EnvironmentHandler(AnonymousBaseHandler):
-    """ This class provides the methodes to handle requests to the ROS
+    """ This class provides the methods to handle requests to the ROS
         service API with an environment ID and without a task ID.
     """
     allowed_methods = ('GET', 'DELETE', 'POST')
-    
+
     @exceptionHandler
     def read(self, request, envID):
         """ Handle 'GET' request.
@@ -159,11 +158,11 @@ class EnvironmentHandler(AnonymousBaseHandler):
             on the ROS environment matching the environment ID.
         """
         return DjangoInterface.readEnvironment(envID=envID)
-    
+
 #   def update(self, request, envID):
 #       """ Handle 'PUT'
 #       """
-    
+
     @exceptionHandler
     def delete(self, request, envID):
         """ Handle 'DELETE' request.
@@ -172,9 +171,9 @@ class EnvironmentHandler(AnonymousBaseHandler):
             environment are deleted.
         """
         DjangoInterface.deleteEnvironment(envID=envID)
-        
+
         return rc.DELETED
-    
+
     @exceptionHandler
     def create(self, request, envID):
         """ Handle 'POST' request.
@@ -188,26 +187,26 @@ class EnvironmentHandler(AnonymousBaseHandler):
         """
         taskID = request.POST.get('ID')
         data = request.POST.get('data')
-        
+
         try:
             binary = _convertFILESToStringIO(request.FILES)
         except _ConversionError:	# Raised by _getStringIO if dict request.FILES
             return rc.BAD_REQUEST	#   contains objects which are not of type UploadedFile
-        
+
         return DjangoInterface.createTask(envID=envID, taskID=taskID, data=data, files=binary)
 
 class TaskHandler(AnonymousBaseHandler):
-    """ This class provides the methodes to handle requests to the ROS
+    """ This class provides the methods to handle requests to the ROS
         service API with an environment ID and with a task ID.
     """
     allowed_methods = ('GET', 'DELETE')
-    
+
     @exceptionHandler
     def read(self, request, envID, taskID, ref=None):
         """ Handle 'GET' request.
             This type of request should be used to gather information
             on the Task matching the task ID in the ROS environment
-            matching the envrironment ID.
+            matching the environment ID.
         """
         if ref:
             filePath = DjangoInterface.readFile(envID=envID, taskID=taskID, ref=ref)
@@ -216,24 +215,24 @@ class TaskHandler(AnonymousBaseHandler):
             response['X-Sendfile'] = filePath
             response['Content-Length'] = os.path.getsize(filePath)
             return response
-        
+
         return DjangoInterface.readTask(envID=envID, taskID=taskID)
-    
+
 #   def update(self, request, envID, taskID):
 #       """ Handle 'PUT'
 #       """
-    
+
     @exceptionHandler
     def delete(self, request, envID, taskID, ref=None):
         """ Handle 'DELETE' request.
         """
         if ref:
-            raise InvalidRequest('Can not delete the file.')
-        
+            raise DjangoInterface.InvalidRequest('Can not delete the file.')
+
         DjangoInterface.deleteTask(envID=envID, taskID=taskID)
-        
+
         return rc.DELETED
-    
+
 #   def create(self, request, envID, taskID):
 #       """ Handle 'POST'
 #       """
@@ -241,15 +240,15 @@ class TaskHandler(AnonymousBaseHandler):
 def _convertFILESToStringIO(FILES):
     """ Converts the given FILES into a dictionary containing StringIO
         objects representing the files.
-        
+
         Important:  If there are files which have the same key only one
                     will be passed on!
     """
     stringIOs = {}
-    
+
     for key in FILES:
         fileObj = FILES[key]
-        
+
         if isinstance(fileObj, InMemoryUploadedFile):
             strObj = fileObj.file
         elif isinstance(fileObj, TemporaryUploadedFile):
@@ -257,7 +256,7 @@ def _convertFILESToStringIO(FILES):
             strObj.write(fileObj.read())
         else:
             raise _ConversionError('Given fileObj is not a valid instance of django.core.file.uploadedfile.UploadedFile')
-        
+
         stringIOs[key] = strObj
-    
+
     return stringIOs

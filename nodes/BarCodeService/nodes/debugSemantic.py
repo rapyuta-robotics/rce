@@ -46,10 +46,10 @@ def main():
     if not os.path.isfile('dump.txt'):
         print('Run first debugWebDB with a barcode which returns at least one hit.')
         return
-    
+
     with open('dump.txt') as f:
-        data=pickle.load(f)
-        
+        data = pickle.load(f)
+
         print('run...')
         print(run(data))
 

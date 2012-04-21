@@ -50,9 +50,9 @@ def MainMenu(request):
     """
     super_user = '<li class="submenu"><a href="/accounts/manage">User Management</a></li>'
     logout = '<li class="submenu"><a href="/logout">Logout</a></li>'
-    
+
     if request.user.is_authenticated():
-        user = '<li class="topmenu"><a href="">'+request.user.username+'</a>'+generic_profil
+        user = '<li class="topmenu"><a href="">' + request.user.username + '</a>' + generic_profil
         if request.user.is_superuser:
             user = user + super_user
         user = user + logout + '</ul></li>'
@@ -61,13 +61,13 @@ def MainMenu(request):
         <li class="topmenu"><a href="/register">Register</a></li>
         <li class="topmenu"><a href="/login">Login</a></li>
         """
-    
+
     public = """
         <li class="topmenu"><a href="">Search</a>
         <ul>
           <li class="submenu"><a href="/recipes/request">Action Recipes</a></li>
           <li class="submenu"><a href="/objects/request">Objects</a></li>
-          <li class="submenu"><a href="/environments/request">Environments</a></li>        
+          <li class="submenu"><a href="/environments/request">Environments</a></li>
           <li class="submenu"><a href="/robots/request">Robots</a></li>
           <li class="submenu"><a href="/serql">SeRQL Console</a></li>
             <!--<li><a href="/locations/objects/request">Objects</a></li>-->
@@ -76,11 +76,11 @@ def MainMenu(request):
     private = """
         <li class="topmenu"><a href="/add/">Submit</a></li>
      """
-    
+
     if request.user.is_authenticated():
-        return '<ul>'+public + private + documentation + user+'</ul>'
+        return '<ul>' + public + private + documentation + user + '</ul>'
     else:
-        return '<ul>'+public + documentation + user+'</ul>'
+        return '<ul>' + public + documentation + user + '</ul>'
 
 def error(request, nextPage='/', errorTitle="", errorMessage=""):
     """ Display an error message """

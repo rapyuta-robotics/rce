@@ -42,10 +42,10 @@ class ServerManager(ManagerBase):
     def getNewEnv(self):
         """ Generate a new ID for an environment and add a new node for
             an environment to the ROS.
-            
+
             @return:    New environment ID
             @rtype:     str
-            
+
             @raise:     InternalError if environment node can not be
                         launched.
         """
@@ -53,50 +53,50 @@ class ServerManager(ManagerBase):
             uid = generateID()
             if uid not in self.getKeys():
                 break
-        
+
         namespace = self.buildNamespace(uid)
         self.addProcess(uid, roslaunch.core.Node('Administration', 'Environment.py', name=uid, namespace=namespace, output='screen'))
-        
+
         return uid
-    
+
     def removeEnv(self, uid):
         """ Terminate the node matching the given environment ID.
-            
+
             @param uid:     Environment ID
             @type  uid:     str
-            
+
             @raise:     InvalidRequest if environment ID is invalid.
         """
         self.removeProcess(uid)
-    
+
     def subspin(self):
         """ Main loop of the subclass of the Manager.
         """
         interval = 0.05
-        limit = (settings.TIMEOUT/4.0)/interval
+        limit = (settings.TIMEOUT / 4.0) / interval
         counter = 0
-        
+
         while not rospy.is_shutdown():
             time.sleep(interval)
             counter += 1
-            
+
             if counter % limit == 0:
                 counter = 0
                 self._clean()
-    
+
     def _clean(self):
         """ Delete ROS nodes which are inactive longer than settings.TIMEOUT.
         """
         for key in self.getKeys():
             name = '{0}/isActive'.format(key)
-            
+
             try:
                 rospy.wait_for_service(name, timeout=settings.WAIT_FOR_SERVICE_TIMEOUT)
                 isActiveFunc = rospy.ServiceProxy(name, isActive)
-                
+
                 response = isActiveFunc()
-                
+
                 if not response.active:
                     self.removeEnv(key)
-            except rospy.ROSException as e:
+            except rospy.ROSException:
                 self.removeEnv(key)

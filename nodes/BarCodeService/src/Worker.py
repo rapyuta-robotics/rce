@@ -36,9 +36,9 @@ class ObjectWorker(object):
         with the Request class for a ROS service. This Worker should be
         used for serial execution.
     """
-    CONF_FIELDS=[]
-    DATA_FIELDS={}
-    
+    CONF_FIELDS = []
+    DATA_FIELDS = {}
+
     def __init__(self, **kargs):
         """ The given arguments have to be keyworded arguments. Relevant
             arguments are data, target, debug, info, warning, error, fatal.
@@ -51,34 +51,34 @@ class ObjectWorker(object):
         """
         if len(self.__class__.DATA_FIELDS) != 0:
             try:
-                data=kargs['data']
+                data = kargs['data']
             except KeyError:
                 raise WorkerError("The keyworded arguments miss the key 'data'.")
-            
+
             self._assign(self, data, self.__class__.DATA_FIELDS, 'data')
-        
+
         for key in ['target', 'debug', 'info', 'warning', 'error', 'fatal']:
             if key not in kargs:
-                func=None
+                func = None
             else:
-                func=kargs[key]
-            
+                func = kargs[key]
+
             if not callable(func):
-                func=None
-            
+                func = None
+
             setattr(self, '_{0}Func'.format(key), func)
-    
+
     def run(self):
         """ Overwrite this method, else a NotImplementedError is raised.
             This method is executed when the request has to be processed.
         """
         raise NotImplementedError('The method run for the used Worker is not implemented.')
-    
+
     def appendData(self, data):
         """ This method is used to send the data to the Request instance.
         """
         self._targetFunc(data)
-    
+
     def formatMsg(self, msg, func):
         """ Overwite this method if you want to change the appearance of
             the message sent. func should be one of the five message
@@ -87,33 +87,33 @@ class ObjectWorker(object):
             func is None or not.
         """
         if func is not None:
-            func('[{0}] {1}'.format(self.__class__.__name__,  msg))
-    
+            func('[{0}] {1}'.format(self.__class__.__name__, msg))
+
     def debug(self, msg):
         """ Use this method to send a debug message.
         """
         self.formatMsg(msg, self._debugFunc)
-    
+
     def info(self, msg):
         """ Use this method to send a info message.
         """
         self.formatMsg(msg, self._infoFunc)
-    
+
     def warning(self, msg):
         """ Use this method to send a warning message.
         """
         self.formatMsg(msg, self._warningFunc)
-    
+
     def error(self, msg):
         """ Use this method to send a error message.
         """
         self.formatMsg(msg, self._errorFunc)
-    
+
     def fatal(self, msg):
         """ Use this method to send a fatal message.
         """
         self.formatMsg(msg, self._fatalFunc)
-    
+
     def _assign(self, dictToSave, dataDict, dictToKeyNames, fieldName):
         """ Used to check if input in data field is correct.
         """
@@ -123,21 +123,21 @@ class ObjectWorker(object):
                     if dictToSave == self:
                         setattr(self, key, dataDict[key])
                     else:
-                        dictToSave[key]=dataDict[key]
+                        dictToSave[key] = dataDict[key]
                 elif isinstance(dictToKeyNames[key], list):
                     if dictToKeyNames[key][0] is None:
                         if dictToSave == self:
                             setattr(self, key, dataDict[key])
                         else:
-                            dictToSave[key]=dataDict[key]
+                            dictToSave[key] = dataDict[key]
                     elif isinstance(dictToKeyNames[key][0], dict):
                         if dictToSave == self:
-                            setattr(self, key, [{}]*len(dataDict[key]))
-                            listToSave=getattr(self, key)
+                            setattr(self, key, [{}] * len(dataDict[key]))
+                            listToSave = getattr(self, key)
                         else:
-                            dictToSave[key]=[{}]*len(dataDict[key])
-                            listToSave=dictToSave[key]
-                        
+                            dictToSave[key] = [{}] * len(dataDict[key])
+                            listToSave = dictToSave[key]
+
                         for i in xrange(len(dataDict[key])):
                             self._assign(listToSave[i], dataDict[key][i], dictToKeyNames[key][0], key)
                     else:
@@ -147,7 +147,7 @@ class ObjectWorker(object):
                         setattr(self, key, {})
                         self._assign(getattr(self, key), dataDict[key], dictToKeyNames[key], key)
                     else:
-                        dictToSave[key]={}
+                        dictToSave[key] = {}
                         self._assign(dictToSave[key], dataDict[key], dictToKeyNames[key], key)
                 else:
                     raise WorkerError('Format of DATA_FIELD is wrong.')
@@ -155,7 +155,7 @@ class ObjectWorker(object):
             raise WorkerError("The {0} misses the key '{1}'.".format(fieldName, key))
         except Exception:
             raise WorkerError('Format of DATA_FIELD is wrong.')
-    
+
     @classmethod
     def configure(cls, config):
         """ This method allows to configure a Worker. config has to be

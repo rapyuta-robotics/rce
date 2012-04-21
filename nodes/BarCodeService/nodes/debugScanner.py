@@ -54,7 +54,7 @@ def run(img):
     try:
         query = rospy.ServiceProxy('Scanner', QueryScanner)
         response = query(convert.image_PyToROS(img))
-        
+
         for barcode in response.barcode:
             print('{0} - {1}'.format(barcode.type, barcode.gtin))
     except rospy.ServiceException as e:
@@ -64,7 +64,7 @@ def main():
     if len(sys.argv) != 2 :
         print('Usage: debugScanner.py [path to image]')
         return 0
-    
+
     print('run...')
     run(getImage(sys.argv[1]))
 

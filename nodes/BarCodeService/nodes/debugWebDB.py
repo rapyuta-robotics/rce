@@ -46,12 +46,12 @@ def main():
     if len(sys.argv) != 2 or len(sys.argv[1]) != 13:
         print('Usage: debugWebDB.py [13-digit gtin]')
         return 0
-    
+
     print('run...')
-    result=run(sys.argv[1])
-    
+    result = run(sys.argv[1])
+
     print('Found {0} hits.'.format(len(result)))
-    
+
     with open('dump.txt', 'w') as f:
         pickle.dump(result, f)
 

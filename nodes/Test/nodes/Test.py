@@ -8,7 +8,7 @@ import rospy
 import os.path
 import PIL.Image
 
-_ENCODINGMAP_PY_TO_ROS={'L' : 'mono8', 'RGB' : 'rgb8', 'RGBA' : 'rgba8', 'YCbCr' : 'yuv422'}
+_ENCODINGMAP_PY_TO_ROS = {'L' : 'mono8', 'RGB' : 'rgb8', 'RGBA' : 'rgba8', 'YCbCr' : 'yuv422'}
 _PIL_MODE_CHANNELS = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }
 
 def image_PyToROS(imageObj):
@@ -17,10 +17,10 @@ def image_PyToROS(imageObj):
         instance the object is returned unchanged.
     """
     if isinstance(imageObj, PIL.Image.Image):
-        rosimage=sensor_msgs.msg.Image()
-        rosimage.encoding=_ENCODINGMAP_PY_TO_ROS[imageObj.mode]
-        (rosimage.width, rosimage.height)=imageObj.size
-        rosimage.step=_PIL_MODE_CHANNELS[imageObj.mode]*rosimage.width
+        rosimage = sensor_msgs.msg.Image()
+        rosimage.encoding = _ENCODINGMAP_PY_TO_ROS[imageObj.mode]
+        (rosimage.width, rosimage.height) = imageObj.size
+        rosimage.step = _PIL_MODE_CHANNELS[imageObj.mode] * rosimage.width
         rosimage.data = imageObj.tostring()
         return rosimage
     else:

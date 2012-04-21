@@ -31,7 +31,7 @@ import ServiceAPI
 class Env(object):
     def __init__(self):
         self.env = None
-    
+
     def __del__(self):
         try:
             if self.env:
@@ -41,142 +41,142 @@ class Env(object):
                     pass
         except AttributeError:
             pass
-    
+
     def debug(self, a, b):
         task = ServiceAPI.addTask(self.env, 'Test/test', {'a' : a, 'b' : b})
-        
+
         (status, result) = self._waitForResult(task, 10)
         img = ServiceAPI.getFile(self.env, task, result['img'])
-        
+
         with open('ros.png', 'w') as f:
             f.write(img.read())
-        
+
         print status
         print '{0} + {1} = {2}'.format(a, b, result['sum'])
         print 'img -> ros.png'
-    
+
     def readImage(self, path):
         fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'ReadTextService/ReadText', {'image' : fh})
-        
+
         return self._waitForResult(task, 120)
-    
+
     def convertToAudio(self, text):
         task = ServiceAPI.addTask(self.env, 'TTSService/TTSService', {'text' : text})
         (status, result) = self._waitForResult(task, 30)
-        
+
         if status != 'completed':
             print (status, result)
             return
-        
+
         wav = ServiceAPI.getFile(self.env, task, result['wavFile']['content'])
-        
+
         with open(result['wavFile']['name'], 'w') as f:
             f.write(wav.read())
-        
+
         print status
         print 'wav -> {0}'.format(result['wavFile']['name'])
-    
+
     def scanImage(self, path):
         fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'BarCodeService/Scanner', {'image' : fh})
-        
+
         return self._waitForResult(task, 10)
-    
+
     def analyseBarcode(self, barcode):
         task = ServiceAPI.addTask(self.env, 'BarCodeService/WebDB', {'gtin' : barcode})
         (status, result) = self._waitForResult(task, 10)
-        
+
         if status != 'completed':
             return (status, result)
-        
+
         name = self._buildName([entry['product'] for entry in result['data'] if entry['language'] == 'en'])
-        
+
         task = ServiceAPI.addTask(self.env, 'BarCodeService/Semantic', result)
         (status, result) = self._waitForResult(task, 10)
-        
+
         return (status, result, name)
-    
+
     def startDebug(self):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[('Test/Test.py', None)])
-    
+
     def startReader(self, correlation, wordList):
         config = {}
-        
+
         if correlation and os.path.isfile(correlation):
             config['correlation'] = ServiceAPI.FileHandle(correlation)
-        
+
         if wordList and os.path.isfile(wordList):
             config['wordList'] = ServiceAPI.FileHandle(wordList)
-        
+
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[ ('ReadTextService/ReadText', config) ])
-    
+
     def startTextToSpeech(self):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[ ('TTSService/TTS.py', None) ])
-    
+
     def startChain(self):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('BarCodeService/Semantic.py', None),
                                                                 ('BarCodeService/Scanner.py', None),
                                                                 ('BarCodeService/WebDB.py', None) ])
-    
+
     def _waitForResult(self, task, delta):
         limit = time.time() + delta
-        
+
         while time.time() < limit:
             time.sleep(0.1)
             (status, result) = ServiceAPI.getTask(self.env, task)
-            
+
             if status != 'running':
                 break
-        
+
         return (status, result)
-    
+
     def _buildName(self, names):
         endSign = '!end%Sign$'
-        
+
         firstWord = {}
-        wordDict = { endSign : -1 }
-        
+        wordDict = { endSign :-1 }
+
         for name in names:
             wordList = name.split()
-            
+
             try:
                 firstWord[wordList[0]] += 1
             except KeyError:
                 firstWord[wordList[0]] = 1
-            
+
             for i in xrange(len(wordList)):
                 try:
-                    newWord = wordList[i+1]
+                    newWord = wordList[i + 1]
                 except IndexError:
                     newWord = endSign
-                
+
                 try:
                     words = wordDict[wordList[i]]
                 except KeyError:
                     words = {}
-                
+
                 try:
                     words[newWord] += 1
                 except KeyError:
                     words[newWord] = 1
-                
+
                 wordDict[wordList[i]] = words
-        
+
         name = []
-        
+
         firstWord = sorted(firstWord.iteritems(), key=operator.itemgetter(1), reverse=True)
         name.append(firstWord[0][0])
-        
+
         while True:
             words = sorted(wordDict[name[-1]].iteritems(), key=operator.itemgetter(1), reverse=True)
             word = words[0][0]
-            
+
             if word == endSign or word in name:
                 break
-            
+
             name.append(word)
-        
+
         return ' '.join(name)
 
 if __name__ == '__main__':

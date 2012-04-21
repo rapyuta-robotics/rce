@@ -28,7 +28,7 @@ import sensor_msgs.msg
 
 # Python specific imports
 import cStringIO
-import PIL.Image
+import Image
 
 # Custom imports
 from ConverterUtility import buildReference, resolveReference
@@ -37,60 +37,60 @@ class ImageConverter(object):
     """ Convert images from Django style to ROS style and back.
     """
     MESSAGE_TYPE = 'sensor_msgs/Image'
-    
+
     _ENCODINGMAP_PY_TO_ROS = { 'L' : 'mono8', 'RGB' : 'rgb8', 'RGBA' : 'rgba8', 'YCbCr' : 'yuv422' }
     _ENCODINGMAP_ROS_TO_PY = { 'mono8' : 'L', 'rgb8' : 'RGB', 'rgba8' : 'RGBA', 'yuv422' : 'YCbCr' }
     _PIL_MODE_CHANNELS = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }
-    
+
     def decode(self, rosMsgType, data, files):
         """ Convert a image stored (PIL library readable image file format)
             in a cStringIO.StrinO object to a ROS compatible message
             (sensor_msgs.Image).
         """
         imgObj = files[resolveReference(data)]
-        
+
         if not isinstance(imgObj, cStringIO.OutputType):
             raise TypeError('Given object is not a cStringIO.StringO instance.')
-        
+
         # Checking of image according to django.forms.fields.ImageField
         try:
             imgObj.reset()
-            img = PIL.Image.open(imgObj)
+            img = Image.open(imgObj)
             img.verify()
-            
+
             imgObj.reset()
-            img = PIL.Image.open(imgObj)
+            img = Image.open(imgObj)
             img.load()
         except:
             raise ValueError('Content of given image could not be verified.')
-        
+
         # Everything ok, convert PIL.Image to ROS and return it
         rosimage = sensor_msgs.msg.Image()
         rosimage.encoding = ImageConverter._ENCODINGMAP_PY_TO_ROS[img.mode]
         (rosimage.width, rosimage.height) = img.size
-        rosimage.step = ImageConverter._PIL_MODE_CHANNELS[img.mode]*rosimage.width
+        rosimage.step = ImageConverter._PIL_MODE_CHANNELS[img.mode] * rosimage.width
         rosimage.data = img.tostring()
         return rosimage
-    
+
     def encode(self, rosMsg, basename):
         """ Convert a ROS compatible message (sensor_msgs.Image) to a
             JPEG encoded image stored in a cStringIO.StrinO object.
         """
         if not isinstance(rosMsg, sensor_msgs.msg.Image):
             raise TypeError('Given object is not a sensor_msgs.msg.Image instance.')
-        
+
         # Convert to PIL Image
-        pil = PIL.Image.fromstring( ImageConverter._ENCODINGMAP_ROS_TO_PY[rosMsg.encoding],
-                                    (rosMsg.width, rosMsg.height),
-                                    rosMsg.data,
-                                    'raw',
-                                    ImageConverter._ENCODINGMAP_ROS_TO_PY[rosMsg.encoding],
-                                    0,
-                                    1)
-        
+        pil = Image.fromstring(ImageConverter._ENCODINGMAP_ROS_TO_PY[rosMsg.encoding],
+                                (rosMsg.width, rosMsg.height),
+                                rosMsg.data,
+                                'raw',
+                                ImageConverter._ENCODINGMAP_ROS_TO_PY[rosMsg.encoding],
+                                0,
+                                1)
+
         # Save to StringIO
         img = cStringIO.StringIO()
         pil.save(img, 'PNG')
         key = buildReference('img', basename)
-        
+
         return (key, { key : img })

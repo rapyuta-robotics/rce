@@ -30,13 +30,13 @@ class RoboearthBackend(RemoteUserBackend):
     """ This backend is to be used in conjunction with the 'RemoteUserMiddleware'
         found in the middleware module of this package, and is used when the server
         is handling authentication outside of Django.
-        
+
         The authentication is done via a POST request to a remote webserver.
     """
     _KEY = 'HC2s8q9aUXop1WnKYn4zJxCWUVimGLiOC0r9hUxRWSO8wtStUp'
     _HOST = 'localhost:75'
     _URI = '/login/'
-    
+
     def authenticate(self, username=None, password=None):
         """ Authenticates a user using the remote webserver '_HOST'.
             Returns a User object if the authentication was successful
@@ -44,12 +44,12 @@ class RoboearthBackend(RemoteUserBackend):
         """
         body = urllib.urlencode([('key', RoboearthBackend._KEY), ('username', username), ('password', password)])
         headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
-        
+
         conn = httplib.HTTPConnection(RoboearthBackend._HOST)
         conn.request('POST', RoboearthBackend._URI, body, headers)
         r = conn.getresponse()
-    
+
         if r.status == 200:
             return super(RoboearthBackend, self).authenticate(username)
-        
+
         return None

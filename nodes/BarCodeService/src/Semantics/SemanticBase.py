@@ -35,13 +35,13 @@ class SemanticBase(ObjectWorker):
     """ Generic base class for all Semantics interfaces. You should not
         instantiate this class directly.
     """
-    
+
     DATA_FIELDS = { 'data' : [{ 'product' : None,
                     'type' : None,
                     'description' : None,
                     'additional_info' : None,
                     'language' : None }] }
-    
+
     def run(self):
         """ Overwrites the necessary method from the base class.
             This method processes the raw data by calling the method
@@ -50,11 +50,11 @@ class SemanticBase(ObjectWorker):
         if len(self.data) == 0:
             self.warning('No data to process.')
             return
-        
+
         self.process()
-        
+
         self.appendData(self.result)
-    
+
     def process(self):
         """ Overwrite this method, else a NotImplementedError is raised.
             This function is used to process the rawData from a Task

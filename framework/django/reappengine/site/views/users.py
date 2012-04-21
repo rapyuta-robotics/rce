@@ -35,10 +35,10 @@ def loginForm(request, error=False):
     """ show login form """
     if request.user.is_authenticated():
         return HttpResponseRedirect('/')
-    
+
     values = {'error' : error}
-    
-    return render_to_response('login.html', webpage_values(request,values))
+
+    return render_to_response('login.html', webpage_values(request, values))
 
 def login(request):
     """ authenticate a user. The user has to provide his user name and password """
@@ -47,9 +47,9 @@ def login(request):
         password = request.POST['password']
     except KeyError:
         return HttpResponse(loginForm(request, error=True))
-    
+
     user = auth.authenticate(username=username, password=password)
-    
+
     if user is not None and user.is_active:
         # Correct password, and the user is marked "active"
         auth.login(request, user)
@@ -69,4 +69,4 @@ def logout(request):
 
 def index(request):
     """ show start page """
-    return render_to_response('index.html', webpage_values(request,{}))
+    return render_to_response('index.html', webpage_values(request, {}))

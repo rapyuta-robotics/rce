@@ -38,75 +38,75 @@ _REFERENCE_PREFIX = 'ReF'
 
 class RequestError(Exception):
     """General error which is raised when HTTP Header indicates a problem."""
-    
+
     def __init__(self, code, reason, msg):
         self.code = code
         self.reason = reason
         self.msg = msg
-    
+
     def __str__(self):
         return '{0} {1}\n{2}'.format(self.code, self.reason, self.msg)
 
 class FileHandle(object):
     """Convenience class to store file related information."""
-    
+
     def __init__(self, filename, fileHandle=None, mimetype=None):
         self.filename = filename
-        
+
         if fileHandle:
             self.fileHandle = fileHandle
         else:
             self.fileHandle = open(filename)
-        
+
         self.mimetype = mimetype
-    
+
     def __del__(self):
         try:
             self.fileHandle.close()
         except AttributeError:
             pass
-    
+
     def convertToTuple(self, fieldname):
         return (fieldname, self.filename, self.fileHandle, self.mimetype)
 
 class _MultiPartForm(object):
     """Accumulate the data to be used when posting a form."""
-    
+
     def __init__(self):
         self.form_fields = []
         self.files = []
         self.boundary = '--x-x-{0}-x-x'.format(uuid.uuid4())
         return
-    
+
     def getContentType(self):
         return 'multipart/form-data; boundary={0}'.format(self.boundary)
-    
+
     def addField(self, name, value):
         """Add a simple field to the form data."""
         self.form_fields.append((name, value))
-    
+
     def addFile(self, fieldname, filename, fileHandle, mimetype=None):
         """Add a file to be uploaded."""
         fileHandle.seek(0)
         body = fileHandle.read()
-        
+
         if mimetype is None:
             mimetype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-        
+
         self.files.append((fieldname, filename, mimetype, body))
-    
+
     def __str__(self):
         """Return a string representing the form data, including attached files."""
         out = cStringIO.StringIO()
         part_boundary = '--{0}\r\n'.format(self.boundary)
-        
+
         # Add the form fields
         for (name, value) in self.form_fields:
             out.write(part_boundary)
             out.write('Content-Disposition: form-data; name="{0}"\r\n'.format(name))
             out.write('\r\n')
             out.write('{0}\r\n'.format(value))
-        
+
         # Add the files to upload
         for (field_name, filename, content_type, body) in self.files:
             out.write(part_boundary)
@@ -114,18 +114,18 @@ class _MultiPartForm(object):
             out.write('Content-Type: {0}\r\n'.format(content_type))
             out.write('\r\n')
             out.write('{0}\r\n'.format(body))
-        
+
         out.write('--{0}--\r\n'.format(self.boundary))
         out.write('\r\n')
-        
+
         return out.getvalue()
 
 def _processGET(url, file=False):
     """ Process a GET request.
-        
+
         @param url:     url where the GET request is sent to.
         @type  url:     str
-        
+
         @param file:    Optional Argument. (default = False)
                         Set to True if a file should be downloaded, else
                         the received string is converted to a json
@@ -133,46 +133,46 @@ def _processGET(url, file=False):
         @type  file:    bool
     """
     conn = httplib.HTTPConnection(_HOST)
-    
+
     if len(url) and url[0] != '/':
         url = '/{0}'.format(url)
-    
+
     conn.request('GET', url)
     r = conn.getresponse()
-    
+
     if r.status != 200:
         raise RequestError(r.status, r.reason, r.read())
-    
+
     if file:
         return r.read()
-    
+
     return json.loads(r.read())
 
 def _processPOST(url, data, files):
     """ Process a POST request.
-        
+
         @param url:     url where the POST request is sent to.
         @type  url:     str
-        
+
         @param data:    Dictionary which contains all key/value pairs
                         which should be sent with the POST request.
         @type  data:    { str : str }
-        
+
         @param files:   List of file descriptions which are tuples of the
                         form (fieldname, filename, fileHandle, mimetype)
         @type  files:   (str, str, FileHandle instace, str)
     """
     conn = httplib.HTTPConnection(_HOST)
-    
+
     if files:
         form = _MultiPartForm()
-        
+
         for key in data:
             form.addField(key, data[key])
-        
+
         for (fieldname, filename, fileHandle, mimetype) in files:
             form.addFile(fieldname, filename, fileHandle, mimetype)
-        
+
         body = str(form)
         headers = { 'Content-Type': form.getContentType() }
     elif data:
@@ -181,38 +181,38 @@ def _processPOST(url, data, files):
     else:
         body = None
         headers = {}
-    
+
     if len(url) and url[0] != '/':
         url = '/{0}'.format(url)
-    
+
     conn.request('POST', url, body, headers)
     r = conn.getresponse()
-    
+
     if r.status != 200:
         raise RequestError(r.status, r.reason, r.read())
-    
+
     return json.loads(r.read())
 
 def _processDELETE(url):
     """ Process a DELETE request.
-        
+
         @param url:     url where the DELETE request is sent to.
         @type  url:     str
     """
     conn = httplib.HTTPConnection(_HOST)
-    
+
     if len(url) and url[0] != '/':
         url = '/{0}'.format(url)
-    
+
     conn.request('DELETE', url)
     r = conn.getresponse()
-    
+
     if r.status != 204:
         raise RequestError(r.status, r.reason, r.read())
 
 def getAvailableServices():
     """ Get available nodes and services.
-        
+
         @return:    Dictionary containing all available nodes. As key
                     the node name is used (which is needed to add/remove
                     a node). As value a dictionary containing information
@@ -223,7 +223,7 @@ def getAvailableServices():
 
 def addEnv():
     """ Create a new environment.
-        
+
         @return:    New environment ID
         @rtype:     str
     """
@@ -231,22 +231,22 @@ def addEnv():
 
 def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
     """ Change the nodes in the environment.
-        
+
         @param envID:   Environment ID which should be changed.
                         If no ID is given a new environment is created.
         @type  envID:   str
-        
+
         @param nodesToAdd:  List of nodes with their configuration which
                             should be added to the environment. A list
                             entry should be a tuple of the for
                             (nodeName, config)
         @param nodesToAdd:  [(str, { str: bool/int/float/str/fileHandle })]
-        
+
         @param nodesToRemove:   List of nodes which should be removed from
                                 the environment. A list entry should be a
                                 string containing the nodeName.
         @param nodesToReomve:   [str]
-        
+
         @return:    Environment ID where the nodes where added/removed.
         @rtype:     str
     """
@@ -256,43 +256,43 @@ def changeEnv(envID=None, nodesToAdd=[], nodesToRemove=[]):
             return envID
         else:
             return addEnv()
-    
+
     # Request is necessary; prepare the data
     data = {}
     files = []
-    
+
     if nodesToAdd:
         add = {}
-        
+
         for (nodeName, config) in nodesToAdd:
             if nodeName in add:
                 raise ValueError('Can not add the same node twice.')
-            
+
             if config:
                 (subMsg, subFiles) = _processMessage(config, '/{0}/'.format(nodeName))
                 add[nodeName] = subMsg
                 files += subFiles
             else:
                 add[nodeName] = {}
-        
+
         data['add'] = add
-    
+
     if nodesToRemove:
         data['remove'] = nodesToRemove
-    
+
     body = { 'data' : json.dumps(data) }
-    
+
     if envID:
         body['ID'] = envID
-    
+
     return _processPOST('{0}/'.format(_BASE_ADRESS), body, files)['envID']
 
 def getEnv(envID):
     """ Get running nodes in environment.
-        
+
         @param envID:       Environment ID to analyse.
         @type  envID:       str
-        
+
         @return:    Dictionary containing all nodes in the environment
                     as keys and their status as values.
         @rtype:     { str : str }
@@ -301,7 +301,7 @@ def getEnv(envID):
 
 def removeEnv(envID):
     """ Remove an environment.
-        
+
         @param envID:       Environment ID to delete.
         @type  envID:       str
     """
@@ -309,19 +309,19 @@ def removeEnv(envID):
 
 def addTask(envID, interface, message):
     """ Add a task.
-        
+
         @param interface:   The interface which should be used.
         @type  interface:   str
-        
+
         @param message:     Dictionary containing strings as keys and
                             other dictionaries, lists, fileHandle or
                             base types as values. A fileHandle has to
                             have the method read().
         @type  message:     { str : bool/int/float/str/[]/{}/fileHandle }
-        
+
         @return:        Task ID
         @rtype:         str
-        
+
         @raise:     TypeError if the message is not valid.
     """
     (msg, files) = _processMessage(message)
@@ -330,16 +330,16 @@ def addTask(envID, interface, message):
 
 def getTask(envID, taskID):
     """ Get the status/result of a task.
-        
+
         @param envID:       Environment ID in which the task is.
         @type  envID:       str
-        
+
         @param taskID:      Task ID to retrieve.
         @type  taskID:      str
-        
+
         @return:    Tuple containing the information about the task:
                     (status, result)
-                    
+
                     If the status of the task is not yet 'completed'
                     than result will be None.
                     The returned result is the json formatted dictionary.
@@ -350,16 +350,16 @@ def getTask(envID, taskID):
 
 def getFile(envID, taskID, ref):
     """ Get the file/result of a task.
-        
+
         @param envID:       Environment ID in which the task is.
         @type  envID:       str
-        
+
         @param taskID:      Task ID to retrieve.
         @type  taskID:      str
-        
+
         @param ref:         File reference to retrieve.
         @type  ref:         str
-        
+
         @return:    File represented as a cStringIO.StringO object.
         @rtype:     cStringIO.StringO
     """
@@ -371,10 +371,10 @@ def getFile(envID, taskID, ref):
 
 def removeTask(envID, taskID):
     """ Remove a task.
-        
+
         @param envID:       Environment ID in which the task is.
         @type  envID:       str
-        
+
         @param taskID:      Task ID to delete.
         @type  taskID:      str
     """
@@ -385,31 +385,31 @@ def _processMessage(message, basename='!'):
     """
     data = {}
     files = []
-    
+
     if not isinstance(message, dict):
         raise TypeError('Received message is not a dict.')
-    
+
     for key in message:
         field = message[key]
-        
+
         if isinstance(field, dict):
             (data[key], subFiles) = _processMessage(field, '{0}{1}!'.format(basename, key))
-            
+
             for key in subFiles:
                 if key in files:
                     raise ValueError('Multiple values for the same key.')
-                
+
                 files[key] = subFiles[key]
         elif isinstance(field, list):
-            data[key] = [None]*len(field)
+            data[key] = [None] * len(field)
             for i in xrange(len(field)):
                 if isinstance(field[i], dict):
                     (data[key][i], subFiles) = _processMessage(field[i], '{0}{1}_{2}!'.format(basename, key, i))
-                    
+
                     for key in subFiles:
                         if key in files:
                             raise ValueError('Multiple values for the same key.')
-                        
+
                         files[key] = subFiles[key]
                 elif hasattr(field[i], 'convertToTuple'):
                     data[key][i] = '{3}{0}{1}_{2}!file'.format(basename, key, i, _REFERENCE_PREFIX)
@@ -421,5 +421,5 @@ def _processMessage(message, basename='!'):
             files.append(field.convertToTuple('{0}{1}!file'.format(basename, key)))
         else:
             data[key] = field
-    
+
     return (data, files)

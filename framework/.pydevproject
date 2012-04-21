@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse-pydev version="1.0"?>
+
+<pydev_project>
+<pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
+<path>/framework</path>
+<path>/framework/Administration/src</path>
+<path>/framework/django</path>
+</pydev_pathproperty>
+<pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
+<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
+<path>/opt/ros/electric/ros/core/roslib/src</path>
+<path>/opt/ros/electric/stacks/ros_comm/clients/rospy/src</path>
+<path>/opt/ros/electric/stacks/ros_comm/tools/roslaunch/src</path>
+<path>/opt/ros/electric/stacks/ros_comm/messages/std_msgs/src/std_msgs</path>
+<path>/opt/ros/electric/stacks/common_msgs/sensor_msgs/src</path>
+</pydev_pathproperty>
+</pydev_project>

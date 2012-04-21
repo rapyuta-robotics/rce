@@ -32,15 +32,15 @@ VALID_USERNAMES = ['admin', 'user']
 
 class LoginHandler(AnonymousBaseHandler):
     allowed_methods = ('POST',)
-    
+
     def create(self, request):
         if request.POST.get('key', '') != KEY:
             return rc.BAD_REQUEST
-        
+
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        
+
         if username in VALID_USERNAMES and username == password:
             return rc.ALL_OK
-        
+
         return rc.FORBIDDEN

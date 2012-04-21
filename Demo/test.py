@@ -31,82 +31,82 @@ import ServiceAPI
 DELTA_SUM = 10
 DELTA_READ = 120
 
-INFO = False
-ADD_REMOVE_ENV = False
-CHANGE_ENV = False
-READ = False
+INFO = True
+ADD_REMOVE_ENV = True
+CHANGE_ENV = True
+READ = True
 SUM = True
 
 def _wait(delta, envID, taskID):
     limit = time.time() + delta
-    
+
     while time.time() < limit:
         time.sleep(0.1)
         (status, result) = ServiceAPI.getTask(envID, taskID)
-        
+
         if status != 'running':
             break
-    
+
     if status == 'aborted':
         msg = result['error']
-        
+
         if not msg:
             msg = 'Unknown'
-        
+
         raise ValueError(msg)
-    
+
     return (status, result)
 
 def _validateImg(imgStr):
     import PIL.Image
-    
+
     try:
         imgStr.reset()
         img = PIL.Image.open(imgStr)
         img.verify()
-        
+
         imgStr.reset()
         img = PIL.Image.open(imgStr)
         img.load()
     except:
         raise ValueError('Image content could not be verified.')
-    
+
     return True
 
 def main():
     if len(sys.argv) != 2 or not os.path.isfile(sys.argv[1]):
         print 'Usage: test.py [path to image to read text from]'
         exit(0)
-    
+
     print 'start...'
-    
+
     try:
         if INFO:
             print 'get Available Services:'
             print ServiceAPI.getAvailableServices()
             time.sleep(0.1)
             print ' '
-        
+
         if ADD_REMOVE_ENV:
             print 'add Environment:'
             envID = ServiceAPI.addEnv()
             print 'added environment {0}'.format(envID)
             time.sleep(1)
             print ' '
-            
+
             print 'remove Environment:'
             ServiceAPI.removeEnv(envID)
             print 'removed environment {0}'.format(envID)
             time.sleep(1)
             print ' '
-        
+
         if CHANGE_ENV:
             print 'change Environment (implicit addEnv):'
             envID = ServiceAPI.changeEnv(nodesToAdd=[('BarCodeService/WebDB.py', None)])
             print 'added node WebDB to {0}'.format(envID)
             time.sleep(1)
             print ' '
-            
+
             print 'change Environment:'
             tmp = ServiceAPI.changeEnv(envID=envID, nodesToAdd=[('ReadTextService/ReadText', None), ('Test/Test.py', None)], nodesToRemove=['BarCodeService/WebDB.py'])
             if tmp != envID:
@@ -114,41 +114,41 @@ def main():
             print 'added nodes Test and TextReader. Removed node WebDB from {0}'.format(envID)
             time.sleep(0.1)
             print ' '
-            
+
             print 'get Environment info:'
             print ServiceAPI.getEnv(envID)
             time.sleep(0.1)
             print ' '
-        
+
         if READ or SUM or TOPIC:
             print 'create Environment:'
             envID = ServiceAPI.changeEnv(nodesToAdd=[('ReadTextService/ReadText', {}), ('Test/Test.py', None), ('Test/TopicTest.py', None)])
             print 'created environment with nodes Test and TextReader'
             time.sleep(0.1)
             print ' '
-        
+
         if READ:
             print 'add Task:'
             taskID = ServiceAPI.addTask(envID, 'ReadTextService/ReadText', {'image' : ServiceAPI.FileHandle(sys.argv[1])})
             print 'added task {0}'.format(taskID)
             time.sleep(0.1)
             print ' '
-            
+
             print 'get Task:'
             print 'status/result of task {0}:'.format(taskID)
             (status, result) = ServiceAPI.getTask(envID, taskID)
             time.sleep(0.1)
             print ' '
-            
+
             if status != 'completed':
                 print 'wait for result...'
                 (status, result) = _wait(DELTA_READ, envID, taskID)
-            
+
             print status
             print result
             time.sleep(0.1)
             print ' '
-        
+
         if SUM:
             a = 9
             b = -5
@@ -157,27 +157,27 @@ def main():
             print 'added task {0}'.format(taskID)
             time.sleep(0.1)
             print ' '
-            
+
             print 'wait for result...'
             (status, result) = _wait(DELTA_SUM, envID, taskID)
             print status
             print '({0}) + ({1}) = {2}'.format(a, b, result['sum'])
             if _validateImg(ServiceAPI.getFile(envID, taskID, result['img'])):
                 print 'image is valid'
-            
+
             time.sleep(0.1)
             print ' '
-            
+
             print 'remove Task:'
             ServiceAPI.removeTask(envID, taskID)
             print 'removed task {0}'.format(taskID)
             time.sleep(0.1)
             print ' '
-            
+
             a = 7
             b = 5
             c = -2
-            s = a+b+c
+            s = a + b + c
             print 'add Numbers:\n{0}, {1}, {2}'.format(a, b, c)
             ServiceAPI.addTask(envID, 'Test/addInt', {'data' : a})
             time.sleep(0.1)
@@ -186,12 +186,12 @@ def main():
             ServiceAPI.addTask(envID, 'Test/addInt', {'data' : c})
             time.sleep(0.1)
             print ' '
-            
+
             print 'getSum:'
             time.sleep(0.4)
             taskID = ServiceAPI.addTask(envID, 'Test/getSum', {})
             (status, result) = _wait(DELTA_SUM, envID, taskID)
-            
+
             if result['sum'] != s:
                 raise ValueError('Sum is not correct. Received value: {0}'.format(result['sum']))
             else:
