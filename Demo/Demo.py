@@ -45,7 +45,7 @@ class Env(object):
     def debug(self, a, b):
         task = ServiceAPI.addTask(self.env, 'Test/test', {'a' : a, 'b' : b})
 
-        (status, result) = self._waitForResult(task, 10)
+        (status, result) = ServiceAPI.getTask(self.env, task, 10)
         img = ServiceAPI.getFile(self.env, task, result['img'])
 
         with open('ros.png', 'w') as f:
@@ -59,11 +59,11 @@ class Env(object):
         fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'ReadTextService/ReadText', {'image' : fh})
 
-        return self._waitForResult(task, 120)
+        return ServiceAPI.getTask(self.env, task, 120)
 
     def convertToAudio(self, text):
         task = ServiceAPI.addTask(self.env, 'TTSService/TTSService', {'text' : text})
-        (status, result) = self._waitForResult(task, 30)
+        (status, result) = ServiceAPI.getTask(self.env, task, 30)
 
         if status != 'completed':
             print (status, result)
@@ -81,11 +81,11 @@ class Env(object):
         fh = ServiceAPI.FileHandle(path)
         task = ServiceAPI.addTask(self.env, 'BarCodeService/Scanner', {'image' : fh})
 
-        return self._waitForResult(task, 10)
+        return ServiceAPI.getTask(self.env, task, 10)
 
     def analyseBarcode(self, barcode):
         task = ServiceAPI.addTask(self.env, 'BarCodeService/WebDB', {'gtin' : barcode})
-        (status, result) = self._waitForResult(task, 10)
+        (status, result) = ServiceAPI.getTask(self.env, task, 10)
 
         if status != 'completed':
             return (status, result)
@@ -93,7 +93,7 @@ class Env(object):
         name = self._buildName([entry['product'] for entry in result['data'] if entry['language'] == 'en'])
 
         task = ServiceAPI.addTask(self.env, 'BarCodeService/Semantic', result)
-        (status, result) = self._waitForResult(task, 10)
+        (status, result) = ServiceAPI.getTask(self.env, task, 10)
 
         return (status, result, name)
 
@@ -118,18 +118,6 @@ class Env(object):
         self.env = ServiceAPI.changeEnv(self.env, nodesToAdd=[  ('BarCodeService/Semantic.py', None),
                                                                 ('BarCodeService/Scanner.py', None),
                                                                 ('BarCodeService/WebDB.py', None) ])
-
-    def _waitForResult(self, task, delta):
-        limit = time.time() + delta
-
-        while time.time() < limit:
-            time.sleep(0.1)
-            (status, result) = ServiceAPI.getTask(self.env, task)
-
-            if status != 'running':
-                break
-
-        return (status, result)
 
     def _buildName(self, names):
         endSign = '!end%Sign$'

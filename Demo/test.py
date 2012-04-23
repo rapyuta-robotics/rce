@@ -37,26 +37,6 @@ CHANGE_ENV = True
 READ = True
 SUM = True
 
-def _wait(delta, envID, taskID):
-    limit = time.time() + delta
-
-    while time.time() < limit:
-        time.sleep(0.1)
-        (status, result) = ServiceAPI.getTask(envID, taskID)
-
-        if status != 'running':
-            break
-
-    if status == 'aborted':
-        msg = result['error']
-
-        if not msg:
-            msg = 'Unknown'
-
-        raise ValueError(msg)
-
-    return (status, result)
-
 def _validateImg(imgStr):
     import PIL.Image
 
@@ -136,14 +116,7 @@ def main():
 
             print 'get Task:'
             print 'status/result of task {0}:'.format(taskID)
-            (status, result) = ServiceAPI.getTask(envID, taskID)
-            time.sleep(0.1)
-            print ' '
-
-            if status != 'completed':
-                print 'wait for result...'
-                (status, result) = _wait(DELTA_READ, envID, taskID)
-
+            (status, result) = ServiceAPI.getTask(envID, taskID, DELTA_READ)
             print status
             print result
             time.sleep(0.1)
@@ -159,7 +132,7 @@ def main():
             print ' '
 
             print 'wait for result...'
-            (status, result) = _wait(DELTA_SUM, envID, taskID)
+            (status, result) = ServiceAPI.getTask(envID, taskID, DELTA_SUM)
             print status
             print '({0}) + ({1}) = {2}'.format(a, b, result['sum'])
             if _validateImg(ServiceAPI.getFile(envID, taskID, result['img'])):
@@ -190,7 +163,7 @@ def main():
             print 'getSum:'
             time.sleep(0.4)
             taskID = ServiceAPI.addTask(envID, 'Test/getSum', {})
-            (status, result) = _wait(DELTA_SUM, envID, taskID)
+            (status, result) = ServiceAPI.getTask(envID, taskID, DELTA_SUM)
 
             if result['sum'] != s:
                 raise ValueError('Sum is not correct. Received value: {0}'.format(result['sum']))

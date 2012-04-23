@@ -22,6 +22,7 @@
 #       
 #       
 
+import time
 import json
 import httplib
 import urllib
@@ -328,7 +329,7 @@ def addTask(envID, interface, message):
     body = {'data' : json.dumps({'interface' : interface, 'msg' : msg }) }
     return _processPOST('{0}/{1}/'.format(_BASE_ADRESS, envID), body, files)['taskID']
 
-def getTask(envID, taskID):
+def getTask(envID, taskID, timeout=0):
     """ Get the status/result of a task.
 
         @param envID:       Environment ID in which the task is.
@@ -336,6 +337,10 @@ def getTask(envID, taskID):
 
         @param taskID:      Task ID to retrieve.
         @type  taskID:      str
+        
+        @param timeout:     Time for which the function should wait
+                            for a result (in seconds).
+        @type  timeout:     int
 
         @return:    Tuple containing the information about the task:
                     (status, result)
@@ -345,7 +350,15 @@ def getTask(envID, taskID):
                     The returned result is the json formatted dictionary.
         @rtype:     (str, {})
     """
-    response = _processGET('{0}/{1}/{2}/'.format(_BASE_ADRESS, envID, taskID))
+    limitReached = False
+    limit = time.time() + timeout
+    
+    while not limitReached: 
+        response = _processGET('{0}/{1}/{2}/'.format(_BASE_ADRESS, envID, taskID))
+        
+        if response['status'] != 'running' or time.time() > limit:
+            limitReached = True
+    
     return (response['status'], response['data'])
 
 def getFile(envID, taskID, ref):
