@@ -286,7 +286,16 @@ class InterfaceFactory(object):
             @param interfaceName:   String representation of the name of
                                     the interface.
             @type  interfaceName:   str
+            
+            @raise:     InternalError if the interfaceName is not a valid
+                        string.
         """
+        if isinstance(interfaceName, unicode):
+            try:
+                interfaceName = str(interfaceName)
+            except UnicodeEncodeError:
+                raise InternalError('The interface name {0} is not valid.'.format(interfaceName))
+        
         self.msgCls = msgCls
         self.interfaceName = interfaceName
 
