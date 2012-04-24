@@ -61,7 +61,13 @@ class ParameterFactory(object):
         """
         if opt and default is None:
             raise InternalError('Argument {0} is defined optional without a given default value.'.format(self.name))
-
+        
+        if isinstance(name, unicode):
+            try:
+                name = str(name)
+            except UnicodeEncodeError:
+                raise InternalError('The parameter name {0} is not valid.'.format(name))
+        
         self.name = name
         self.opt = opt
         self.default = default
