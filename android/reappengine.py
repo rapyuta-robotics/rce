@@ -25,7 +25,7 @@
 # Library for android
 import android
 
-# std Python libraries
+# Standard Python libraries
 import os, time
 
 # Custom reappengine API
@@ -36,21 +36,6 @@ IMG_PATH = '/sdcard/reappengine_scene.jpg'
 
 # Context for all android related methods
 droid = android.Android()
-
-def getResult(env, task, timeout=10):
-    """ Get the result for task in env. With the optional argument timeout
-        the maximal time for waiting for the result can be specified.
-    """
-    limit = time.time() + timeout
-    
-    while time.time() < limit:
-        time.sleep(0.1)
-        (status, result) = ServiceAPI.getTask(env, task)
-        
-        if status != 'running':
-            break
-    
-    return (status, result)
 
 def reportError(msg):
     """ Report an error with the given message and terminate the process.
@@ -82,11 +67,11 @@ def askRepeat():
     elif resp == 'negative':
         return False
     else:
-        raise ValueError('Returned value is neither "positive" nor "neagtive".')
+        raise ValueError('Returned value is neither "positive" nor "negative".')
     
 
 def loop():
-    """ One interation from taking a picture to playing the parsed text.
+    """ One iteration from taking a picture to playing the parsed text.
     """
     # First take a picture
     droid.cameraInteractiveCapturePicture(IMG_PATH)
@@ -106,7 +91,7 @@ def loop():
     
     # Wait for result
     dispSpinnerMsg('Running TextReader', 'Please wait...')
-    (status, result) = getResult(env, task, 120)
+    (status, result) = ServiceAPI.getTask(env, task, 120)
 
     # Check whether the ReadText node was successful
     if status != 'completed':
@@ -120,7 +105,7 @@ def loop():
     task = ServiceAPI.addTask(env, 'TTSService/TTSService', {'text' : '. '.join(result['text'])})
     
     # Wait for result
-    (status, result) = getResult(env, task, 30)
+    (status, result) = ServiceAPI.getTask(env, task, 30)
     droid.dialogDismiss()
     
     if status != 'completed':

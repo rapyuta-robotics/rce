@@ -31,9 +31,9 @@ import cStringIO
 import uuid
 import mimetypes
 
-#_HOST = 'localhost'
+_HOST = 'localhost'
 #_HOST = '10.0.2.2'
-_HOST = '50.56.194.140'
+#_HOST = '50.56.194.140'
 _BASE_ADRESS = '/api/reappengine'
 _REFERENCE_PREFIX = 'ReF'
 
@@ -121,17 +121,17 @@ class _MultiPartForm(object):
 
         return out.getvalue()
 
-def _processGET(url, file=False):
+def _processGET(url, isFile=False):
     """ Process a GET request.
 
         @param url:     url where the GET request is sent to.
         @type  url:     str
 
-        @param file:    Optional Argument. (default = False)
+        @param isFile:  Optional Argument. (default = False)
                         Set to True if a file should be downloaded, else
                         the received string is converted to a json
                         dictionary.
-        @type  file:    bool
+        @type  isFile:    bool
     """
     conn = httplib.HTTPConnection(_HOST)
 
@@ -144,10 +144,10 @@ def _processGET(url, file=False):
     if r.status != 200:
         raise RequestError(r.status, r.reason, r.read())
 
-    if file:
+    if isFile:
         return r.read()
-
-    return json.loads(r.read())
+    else:
+        return json.loads(r.read())
 
 def _processPOST(url, data, files):
     """ Process a POST request.
