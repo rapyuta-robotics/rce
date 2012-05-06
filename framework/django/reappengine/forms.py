@@ -63,4 +63,4 @@ def interfaceFormfieldCallback(field):
         return DynamicChoiceField(label='Definition', required=True, widget=forms.Select(attrs={ 'disabled' : 'true' }))
     return field.formfield()
 
-InterfaceFormSet = inlineformset_factory(Package, Interface, extra=1, formfield_callback=interfaceFormfieldCallback)
+InterfaceFormSet = inlineformset_factory(Node, Interface, extra=1, formfield_callback=interfaceFormfieldCallback)

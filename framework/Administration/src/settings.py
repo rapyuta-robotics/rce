@@ -25,8 +25,7 @@
 
 # Custom converters for django/piston input to ROS messages.
 CONVERTER_CLASSES = (
-    'converters.ImageConverter.ImageConverter',
-    'converters.FileConverter.FileConverter',
+    'Converter._ImageConverter.ImageConverter',
 )
 
 # Definition of prefix for reference from data to files
@@ -45,8 +44,18 @@ DJANGO_ROOT_DIR = '/home/dominique/ROS/framework/django'
 # Time in seconds after which inactive entries in the databases are removed.
 TIMEOUT = 600
 
-# Time in secondes after which unresponsive services are treated as dead.
+# Time in seconds after which unresponsive services are treated as dead.
 WAIT_FOR_SERVICE_TIMEOUT = 5
 
 # Path to directory where temporary files to store the results should be kept
 TMP_RESULT_DIR = '/var/www/tmp'
+
+
+#####################
+# New stuff
+
+# Maximal length for a message
+MAX_LENGTH_MESSAGE = 99999
+
+# Time in seconds after which queue messages are removed from the queue
+MSG_QUQUE_TIMEOUT = 30

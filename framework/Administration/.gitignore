@@ -1,7 +1,6 @@
 *.pyc
 *.so
-bin/
-build/
-msg_gen/
-srv_gen/
-src/Administration
+trash
+src/trash
+src/Comm/cert.pem
+src/Comm/key.pem

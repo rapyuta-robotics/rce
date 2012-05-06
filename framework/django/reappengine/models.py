@@ -47,7 +47,8 @@ VALID_PARAM_TYPES = (
 
 VALID_INTERFACE_TYPES = (
     ('srv', 'Service'),
-    ('topic', 'Topic'),
+    ('pub', 'Publisher'),
+    ('sub', 'Subscriber'),
 )
 
 def rosNameValidator(value):
@@ -96,7 +97,7 @@ class Param(models.Model):
     opt = models.BooleanField(verbose_name='Optional Parameter')
     paramType = models.CharField(max_length=5, choices=VALID_PARAM_TYPES, verbose_name='Parameter Type')
     default = models.CharField(max_length=100, blank=True, verbose_name='Default Value/Path')
-    node = models.ForeignKey(Node)
+    node = models.ForeignKey(Node, verbose_name='Parent Node')
 
     def clean(self):
         """ Custom clean method to validate default field of parameter """
@@ -135,26 +136,26 @@ class Interface(models.Model):
     msgType = models.CharField(max_length=5, choices=VALID_INTERFACE_TYPES, verbose_name='Interface Type')
     name = ROSNameField(max_length=MAX_LENGTH, verbose_name='Name')
     msgDef = ROSNameField(max_length=MAX_LENGTH, verbose_name='Definition')
-    pkg = models.ForeignKey(Package, verbose_name='Package')
+    node = models.ForeignKey(Node, verbose_name='Parent Node')
 
     def clean(self):
         """ Custom clean method to validate interface """
         try:
-            pkgDir = roslib.packages.get_pkg_dir(self.pkg.name)
+            pkgDir = roslib.packages.get_pkg_dir(self.node.pkg.name)
         except roslib.packages.InvalidROSPkgException:
             raise ValidationError('Package is not valid.')
 
         if self.msgType == 'srv':
             if not os.path.isfile(os.path.join(pkgDir, 'srv', '{0}.srv'.format(self.msgDef))):
                 raise ValidationError('Definition is not valid.')
-        elif self.msgType == 'topic':
+        elif self.msgType == 'pub' or self.msgType == 'sub':
             if not os.path.isfile(os.path.join(pkgDir, 'msg', '{0}.msg'.format(self.msgDef))):
                 raise ValidationError('Definition is not valid.')
         else:
             raise ValidationError('Type is not valid.')
 
-        if Interface.objects.filter(name=self.name, pkg=self.pkg):
-            raise ValidationError('{0} already exists for this package.'.format(self.msgType))
+        if Interface.objects.filter(name=self.name, node=self.node):
+            raise ValidationError('{0} already exists for this node.'.format(self.msgType))
 
 def create_new_dir():
     """ Create a new home directory for a user """

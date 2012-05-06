@@ -1,2 +1,0 @@
-string content
-string name

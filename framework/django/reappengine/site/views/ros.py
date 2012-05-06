@@ -74,7 +74,7 @@ def service(request):
             return error(request, nextPage='/add/', errorTitle='Parameter', errorMessage=str(paramFormSet.errors))
 
         # Validate Interface form
-        interfaceFormSet = InterfaceFormSet(request.POST, request.FILES, instance=package, prefix='interface')
+        interfaceFormSet = InterfaceFormSet(request.POST, request.FILES, instance=node, prefix='interface')
 
         for interfaceForm in interfaceFormSet:
             interfaceForm.empty_permitted = False
@@ -103,7 +103,7 @@ def service(request):
     paramFormSet = ParamFormSet(prefix='param', queryset=Node.objects.none())
 
     # Interface Form
-    interfaceFormSet = InterfaceFormSet(prefix='interface', queryset=Package.objects.none())
+    interfaceFormSet = InterfaceFormSet(prefix='interface', queryset=Node.objects.none())
 
     return render_to_response('add.html', webpage_values(request, { 'packageForm' : packageForm,
                                                                     'nodeForm' : nodeForm,
@@ -170,6 +170,8 @@ def feedNode(request):
             dirs.remove('.git')
         elif 'build' in dirs:
             dirs.remove('build')
+        elif 'test' in dirs:
+            dirs.remove('test')
 
     content = '\n'.join(['Select...\t'] + ['{0}\t{1}'.format(exe, os.path.basename(exe)) for exe in exes])
 

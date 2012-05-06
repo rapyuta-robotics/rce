@@ -42,4 +42,4 @@ For a setup on standard ubuntu installation:
 
 2)  Install the following packages by running:
     
-    $ sudo apt-get install ros-electric-ros-base autoconf automake libtool
+    $ sudo apt-get install ros-fuerte-ros-comm ros-fuerte-ros-common-msgs autoconf automake libtool

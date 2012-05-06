@@ -42,8 +42,8 @@ if rosSettings.DJANGO_ROOT_DIR not in sys.path:
 
 from reappengine.models import Package, Node, Param, Interface
 
-from MessageUtility import InvalidRequest
-from ROSUtility import ParameterFactory, InterfaceFactory
+from Exceptions import InvalidRequest
+from ROSUtil.Parser import createParameterParser, createInterfaceParser, createNodeParser
 
 class DjangoDBError(Exception):
     """ This error is raised if an error occurred in conjunction with
@@ -96,34 +96,20 @@ def _getNode(package, node):
 def _getParam(node):
     """ Internal function to get a list of all the Param model instances
         for the given node.
-
-        @param package:     Node for which the parameters should be searched
-        @type  package:     Node model instance
+        
+        @param node:    Node for which the parameters should be searched
+        @type  node:    Node
     """
     return Param.objects.filter(node=node)
 
-def _getInterface(package, interface):
-    """ Internal function to get the specified Interface model instance
-        located in the specified package.
-
-        @param package:     Package in which the interface is located
-        @type  package:     Package model instance
-
-        @param interface:   Interface name
-        @type  interface:   str
-
-        @raise:     DjangoDBError if no or more than one matching model
-                    is found.
+def _getInterface(node):
+    """ Internal function to get a list of all the Interface model instances
+        for the given node.
+        
+        @param node:    Node for which the interfaces should be searched
+        @type  node:    Node
     """
-    interface = Interface.objects.filter(name=interface, pkg=package)
-
-    if len(interface) != 1:
-        if package:
-            raise DjangoDBError('Interface could not uniquely identified.')
-        else:
-            raise DjangoDBError('Interface could not be found.')
-
-    return interface[0]
+    return Interface.objects.filter(node=node)
 
 def _split(name):
     """ Internal function to split and check a key.
@@ -156,55 +142,25 @@ def existsNode(key):
 
     return True
 
-def getNodeDef(key):
+def getNode(key):
     """ Get the node definition for the given key.
 
         @param key:     Key for which the node definition should be retrieved.
         @type  key:     str
 
-        @return:    Tuple of the form (package name, node name, config),
-                    where config is a list of Parameter instances.
-        @rtype:     ( str, str, [ Parameter ] )
+        @return:    Node instance.
+        @rtype:     Node
 
         @raise:     DjangoDBError
     """
     pkg, exe = _split(key)
 
-    package = _getPackage(pkg)
-    node = _getNode(package, exe)
+    pkg = _getPackage(pkg)
+    node = _getNode(pkg, exe)
     params = _getParam(node)
+    interfaces = _getInterface(node)
 
-    config = [ParameterFactory.createParameter(param.name, param.paramType, param.opt, param.default) for param in params]
+    config = [createParameterParser(param.name, param.paramType, param.opt, param.default) for param in params]
+    interfaces = [createInterfaceParser(interface.msgType, '{0}/{1}'.format(pkg.name, interface.msgDef), interface.name) for interface in interfaces]
 
-    return (package.name, node.name, config)
-
-def getInterfaceDef(key):
-    """ Get the interface definition for the given key.
-
-        @param key:     Key for which the interface definition should be retrieved.
-        @type  key:     str
-
-        @return:    Interface instance.
-        @rtype:     Interface
-
-        @raise:     DjangoDBError
-    """
-    pkg, srv = _split(key)
-
-    package = _getPackage(pkg)
-    interface = _getInterface(package, srv)
-
-    msgCls = '{0}/{1}'.format(package.name, interface.msgDef)
-
-    if interface.msgType == 'srv':
-        # for services the msgCls needs to be modified with {}Request
-        # but first remember the standard form as this is also needed
-        interfaceDef = (msgCls,)
-        msgCls = '{0}Request'.format(msgCls)
-    elif interface.msgType == 'topic':
-        interfaceDef = None
-    else:
-        raise DjangoDBError('Could not identify requested interface {0}.'.format(key))
-
-    return InterfaceFactory.createInterface(interface.msgType, msgCls, interface.name, interfaceDef)
-
+    return createNodeParser(pkg.name, node.name, config, interfaces)
