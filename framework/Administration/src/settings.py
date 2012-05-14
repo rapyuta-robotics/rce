@@ -54,8 +54,17 @@ TMP_RESULT_DIR = '/var/www/tmp'
 #####################
 # New stuff
 
-# Maximal length for a message
+# Master Comm ID
+MASTER_COMM_ID = 'MASTER'
+
+# Maximal length for a message in bytes
 MAX_LENGTH_MESSAGE = 99999
 
 # Time in seconds after which queue messages are removed from the queue
 MSG_QUQUE_TIMEOUT = 30
+
+# Time in seconds after which results are removed
+RESULT_TIMEOUT = 600
+
+# Time interval in which the newest load information are sent to the master node/load balancer
+LOAD_INFO_UPDATE = 5

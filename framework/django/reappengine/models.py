@@ -31,9 +31,9 @@ from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 
 # ROS import
-import reappengine.ROS      # sets up the necessary environment variables
-import roslib.names
-import roslib.packages
+import reappengine.ROS
+import rosgraph.names
+import roslib.packages      # TODO: Find replacement functions for roslib.packages functions
 
 MAX_LENGTH = 30
 
@@ -53,7 +53,7 @@ VALID_INTERFACE_TYPES = (
 
 def rosNameValidator(value):
     """ Validator to check whether value is a valid ROS base name """
-    if not roslib.names.is_legal_base_name(value):
+    if not rosgraph.names.is_legal_base_name(value):
         raise ValidationError('"{0}" is not a valid ROS base name.'.format(value))
 
 class ROSNameField(models.CharField):

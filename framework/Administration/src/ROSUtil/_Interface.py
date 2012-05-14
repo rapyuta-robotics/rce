@@ -27,8 +27,10 @@ import rospy
 import genpy
 
 # Python specific imports
-from threading import Event, Lock
+from threading import Event, Lock, Thread
 from struct import error as StructError
+from datetime import datetime, timedelta
+import time
 
 # Custom imports
 import settings
@@ -39,19 +41,19 @@ from MiscUtility import generateID
 class InterfaceBase(object):
     """ Base class which represents an interface for a node.
     """
-    # TODO: Use slots yes or no?
-    # __slots__ = ['interfaceName', '_manager', 'ready']
 
     def __init__(self, interfaceName):
         """ Initialize the Interface instance.
 
             @param interfaceName:   ROS name of the interface.
             @type  interfaceName:   str
-
         """
         self.interfaceName = interfaceName
         self._manager = None
         self.ready = False
+        
+        # Dictionary of all push receivers
+        self.pushReceivers = {}
 
     @classmethod
     def deserialize(cls, data):
@@ -107,13 +109,27 @@ class InterfaceBase(object):
 
         self._manager.registerInterface(self)
         self.ready = True
-
-    def _send(self, msg):
+    
+    def addPushReceiver(self, commID, name):
+        """ Add a receiver which should be automatically supplied with the messages.
+            
+            @param dest:    Communication ID of destination.
+            @type  dest:    str
+            
+            @param name:    Name of the interface where the message should be published.
+            @type  name:    str
+        """
+        if commID in self.pushReceivers:
+            raise InternalError('"{0}" is already registered as a receiver for this interface.'.format(commID))
+        
+        self.pushReceivers[commID] = str
+    
+    def _send(self, msg, pushResult):
         """ This method should be overwritten to implement the send functionality.
         """
         raise InternalError('Interface does not support sending of a message.')
 
-    def send(self, msg):
+    def send(self, msg, pushResult=(None, None)):
         """ This method is used to send a message to a node.
 
             Don't overwrite this method; instead overwrite the method _send.
@@ -123,15 +139,20 @@ class InterfaceBase(object):
 
             @param msg:     Message which should be sent in serialized form.
             @type  msg:     str
-
+            
+            @param pushResult:  Tuple of the form (commID, userID) to indicate to
+                                which communication node this result should be sent
+                                and which user is responsible for the request.
+            @type  pushResult:  ( str, str )
+            
             @return:    ID which can be used to match a received message to a
-                        sent one or if this is not possible None.
+                        sent one if the pushResult flag is False or the .
             @rtype:     str
         """
         if self.ready:
             raise InternalError('Interface is not ready to send a message.')
 
-        return self._send(msg)
+        return self._send(msg, pushResult)
 
     def _receive(self, taskID):
         """ This method should be overwritten to implement the receive functionality.
@@ -181,13 +202,14 @@ class InterfaceBase(object):
 class ServiceInterface(InterfaceBase):
     """ Represents a service interface for a node.
     """
+    
     class ServiceTask(object):
         """ Data container for a single Task, which consists of a
             request and its corresponding result.
         """
         __slots__ = ['_completed', '_error', '_srv', '_msg', '_id']
 
-        def __init__(self, srv, msg):
+        def __init__(self, srv, msg, pushResult):
             """ Initialize the Task.
 
                 @param srv:     ServiceInterface which uses this task.
@@ -196,15 +218,22 @@ class ServiceInterface(InterfaceBase):
                 @param msg:     Message which should be sent as a request
                                 in its serialized form.
                 @type  msg:     str
+            
+                @param pushResult:  Tuple of the form (commID, uid) to indicate to
+                                    which communication node this result should be sent
+                                    and a unique ID to identify the request/response.
+                @type  pushResult:  ( str, str )
             """
             self._id = None
             self._srv = srv
             self._msg = msg
-
+            self._commID, self._pushID = pushResult
+            
+            self.lastAccessed = None
+            
+            self._hasID = Event()
             self._completed = False
             self._error = False
-
-            self._hasID = Event()
             self._signalCompletion = False
 
         def setID(self, taskID):
@@ -239,12 +268,16 @@ class ServiceInterface(InterfaceBase):
                 self._error = True
             else:
                 self._msg = response._buff
+                self.lastAccessed = datetime.now()
                 self._completed = True
-
-            self._hasID.wait(1)
-
-            if self._signalCompleted:
-                self._srv._signalCompletion(self._id)
+            
+            if self._commID:
+                self._manager.sendROSMessage(self._msg, self._commID, '', self._pushID)
+            else:
+                self._hasID.wait(1)
+                
+                if self._signalCompleted:
+                    self._srv._signalCompletion(self._id)
 
         def getResult(self):
             """ Get the result of this task.
@@ -258,15 +291,13 @@ class ServiceInterface(InterfaceBase):
             self._signalCompleted = True
 
             if self._completed:
+                self.lastAccessed = datetime.now()
                 return self._msg
             elif self._error:
                 # TODO: Good idea to raise an error here?
                 raise InternalError(self._msg)
             else:
                 return None
-
-    # TODO: Use slots yes or no?
-    # __slots__ = ['srvCls', '_tasks', '_tasksLock']
 
     def __init__(self, cls, interfaceName):
         super(ServiceInterface, self).__init__(interfaceName)
@@ -281,6 +312,10 @@ class ServiceInterface(InterfaceBase):
 
         self._tasks = {}
         self._tasksLock = Lock()
+        
+        t = Thread(target=self._clean)
+        t.daemon = True
+        t.start()
 
     @classmethod
     def deserialize(cls, data):
@@ -306,21 +341,24 @@ class ServiceInterface(InterfaceBase):
     __init__.__doc__ = InterfaceBase.__init__.__doc__
     deserialize.__func__.__doc__ = InterfaceBase.deserialize.__func__.__doc__
 
-    def _send(self, msg):
-        task = ServiceInterface.ServiceTask(self, msg)
+    def _send(self, msg, pushResult):
+        task = ServiceInterface.ServiceTask(self, msg, pushResult)
         self._manager.runTaskInSeparateThread(task.run)
-
-        while True:
-            uid = generateID()
-
-            with self._tasksLock:
-                if uid not in self._tasks.keys():
-                    self._tasks[uid] = task
-                    break
-
-        task.setID(uid)
-
-        return uid
+        
+        if pushResult[0]:
+            while True:
+                uid = generateID()
+    
+                with self._tasksLock:
+                    if uid not in self._tasks.keys():
+                        self._tasks[uid] = task
+                        break
+    
+            task.setID(uid)
+    
+            return uid
+        else:
+            return None
 
     def _receive(self, taskID):
         with self._tasksLock:
@@ -346,17 +384,28 @@ class ServiceInterface(InterfaceBase):
         # TODO: Add / change method send for manager...
         # TODO: What has to be sent to signal completion of task?
         pass
+    
+    def _clean(self):
+        """ This method is used to remove old results from storage.
+        """
+        while True:
+            time.sleep(settings.RESULT_TIMEOUT/4)
+            
+            timeout = datetime.now() - timedelta(seconds=settings.RESULT_TIMEOUT)
+            
+            with self._tasksLock:
+                for key in self._tasks.keys():
+                    if self._tasks.lastAccessed and self._tasks.lastAccessed > timeout:
+                        del self._tasks[key]
 
 class PublisherInterface(InterfaceBase):
     """ Represents a publisher interface for a node.
     """
-    # TODO: Use slots yes or no?
-    # __slots__ = ['_publisher']
 
     def _start(self):
         self._publisher = rospy.Publisher(self.interfaceName, rospy.AnyMsg, latch=True)
 
-    def _send(self, msgData):
+    def _send(self, msgData, _):
         msg = rospy.AnyMsg()
         msg._buff = msgData
 
@@ -376,8 +425,6 @@ class PublisherInterface(InterfaceBase):
 class SubscriberInterface(InterfaceBase):
     """ Represents a subscriber interface for a node.
     """
-    # TODO: Use slots yes or no?
-    # __slots__ = ['_subscriber', '_lastMsg', '_msgLock']
 
     def __init__(self, interfaceName):
         super(SubscriberInterface, self).__init__(interfaceName)
@@ -400,4 +447,7 @@ class SubscriberInterface(InterfaceBase):
 
     def _callbackFunc(self, msg):
         with self._msgLock:
+            for commID in self.pushReceivers:
+                self._manager.sendROSMessage(msg._buff, commID, self.pushReceivers[commID], '')
+            
             self._lastMsg = msg._buff

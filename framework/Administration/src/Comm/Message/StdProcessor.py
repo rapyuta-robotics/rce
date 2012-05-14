@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Serializer.py
+#       StdProcessor.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -23,25 +23,31 @@
 #       
 
 # Custom imports
-from ContentDefinition import ContentDefinition
+from ProcessorBase import ProcessorBase
+from TypeBase import MessageTypes as MsgTypes
 
-from ._Serializer import serialize, deserialize
+class RouteProcessor(ProcessorBase):
+    """ Message processor to update the routing information.
+    """
+    IDENTIFIER = MsgTypes.ROUTE_INFO
+    
+    def processMessage(self, msg):
+        self.manager.updateRoutingInfo(msg.content)
 
-from ._Node import Node
-from ._Interface import ServiceInterface, PublisherInterface, SubscriberInterface
+class ConnectDirectiveProcessor(ProcessorBase):
+    """ Message processor which executes the directives from the message and connects
+        to all specified nodes.
+    """
+    IDENTIFIER = MsgTypes.CONNECT
+    
+    def processMessage(self, msg):
+        self.manager.connectToSatellites(msg)
 
-_MAP = {
-    ContentDefinition.NODE          : Node,
-    ContentDefinition.INTERFACE_SRV : ServiceInterface,
-    ContentDefinition.INTERFACE_PUB : PublisherInterface,
-    ContentDefinition.INTERFACE_SUB : SubscriberInterface
-}
-
-_deserialize = deserialize
-
-def deserialize(data):
-    return _deserialize(data, _MAP)
-
-deserialize.__doc__ = _deserialize.__doc__
-
-__all__ = ['serialize', 'deserialize']
+class LoadInfoProcessor(ProcessorBase):
+    """ Message processor to update the load information with the load balancer.
+    """
+    IDENTIFIER = MsgTypes.LOAD_INFO
+    
+    def processMessage(self, msg):
+        pass # TODO: Add
+    

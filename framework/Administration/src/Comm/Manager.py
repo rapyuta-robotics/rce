@@ -23,7 +23,7 @@
 #       
 
 # twisted specific imports
-from twisted.internet.protocol import Factory
+from twisted.python import log
 from twisted.internet.task import LoopingCall
 
 # Python specific imports
@@ -32,11 +32,12 @@ from datetime import datetime, timedelta
 # Custom imports
 import settings
 from Exceptions import InternalError
-from MessageDefinition import MessageDefinition as MsgDef
-from Message import MessageSender, MessageReceiver, MessageForwarder
-from Protocol import ReappengineProtocol
+import Message.Definition as MsgDef
+from Message.Base import DestinationError
+from Message.Handler import MessageSender, MessageReceiver, MessageForwarder, Sink
+from Message.StdProcessor import RouteProcessor
 
-class ReappengineManager(Factory):
+class ReappengineManager(object):
     """ This class defines the necessary methods which have to be implemented
         to use the manager with the ReappengineProtocol, its Factory and its
         Message class.
@@ -59,10 +60,19 @@ class ReappengineManager(Factory):
 
         # CommID of this node
         self.commID = commID
-
+        
+        # List containing all valid message processors for this node
+        self.msgProcessors = []
+        
         # Storage of all connections
         self.connections = {}
         self.producerQueue = {}
+        
+        # Storage of routing information
+        self.routingTable = {}
+        
+        # List of all available basic message processors
+        self.msgProcessors = [ RouteProcessor(self) ]
 
         # Counter for the message number
         self._msgNr = 0
@@ -73,28 +83,30 @@ class ReappengineManager(Factory):
         # Setup periodic calling of clean method of manager
         LoopingCall(self.clean).start(settings.MSG_QUQUE_TIMEOUT)
     
-    def registerConnection(self, dest, conn):
+    def registerConnection(self, conn):
         """ Callback for Protocol instance to register the connection.
 
             This method should not be overwritten.
-
-            @param dest:    CommID of node to which the connection was
-                            established.
-            @type  dest:    str
 
             @param conn:    Protocol instance which has established the
                             connection.
             @type  conn:    ReappengineProtocol
         """
-        if dest in self.connections:
+        if conn.dest in self.connections:
             raise InternalError('There is already a connection registered for the same destination.')
-
-        self.connections[dest] = conn
-
-        if dest not in self.producerQueue:
+        
+        # Register connection
+        self.connections[conn.dest] = conn
+        
+        # Register connection in routing table
+        self.routingTable[conn.dest] = conn.dest
+        
+        # TODO: Fire an routeInfoUpdate event (probably only for selected connection...)
+        
+        if conn.dest not in self.producerQueue:
             # If there is no queue yet for this destination create one
-            self.producerQueue[dest] = []
-        elif self.producerQueue[dest]:
+            self.producerQueue[conn.dest] = []
+        elif self.producerQueue[conn.dest]:
             # If there are already messages which should be sent
             conn.requestSend()
 
@@ -106,30 +118,41 @@ class ReappengineManager(Factory):
             @param conn:    Protocol instance which should be unregistered.
             @type  conn:    ReappengineProtocol
         """
-        for key, value in self.connections.iteritems():
+        for dest, value in self.connections.iteritems():
             if value == conn:
                 break
         else:
             return
-
-        del self.connections[key]
-
-    def buildProtocol(self, addr):
-        """ Builds a new protocol instance.
-
-            This method is called when a new connection should be
-            established.
-
-            This method should not be overwritten.
+        
+        # Unregister connection in routing table
+        try:
+            del self.routingTable[dest]
+        except KeyError:
+            log.msg('Tried to remove a routing information for a registered connection which was never added.')
+        
+        # TODO: Fire an routeInfoUpdate event (probably only for selected connection...)
+        
+        # Unregister connection
+        del self.connections[dest]
+    
+    def updateRoutingInfo(self, info):
+        """ Callback for the RoutingInfo processor to update the routing information
+            in this manager.
+            
+            @param info:    Dictionary containing as keys the destinations and as value
+                            the next waypoint of the route. The key represents a default
+                            destination, which is used for all destinations which do not
+                            have an explicit route. If the info dictionary contains None as 
+                            value the corresponding key will be removed form the routing
+                            table.
+            @type  info:    { str/None : str/None }
         """
-        return ReappengineProtocol(self)
-
-    def getCommID(self):
-        """ Returns the CommID of this node.
-
-            This method should not be overwritten.
-        """
-        return self.commID
+        for dest, route in info.iteritems():
+            log.msg('Add route to {0} via {1}.'.format(dest, route))
+            if route is None:
+                self.routingTable.pop(dest, None)
+            else:
+                self.routingTable[dest] = route
 
     def getMessageNr(self):
         """ Returns a new message number.
@@ -158,20 +181,19 @@ class ReappengineManager(Factory):
             @raise:     DestinationError if no route for the ID can be found or
                         if the message is returned to the same node.
         """
-        # First check if connection is authenticated
-        if dest == MsgDef.NO_AUTH_ADDR:
-            return MessageReceiver(self, fromProtocol, False)
-
-        # Now check if the message is for this communication node
-        if dest == self.commID:
-            return MessageReceiver(self, fromProtocol, True)
+        # Check if the message is for this communication node
+        if dest == self.commID or dest == MsgDef.NEIGHBOR_ADDR:
+            return MessageReceiver(self, True)
 
         # Try to find the next point to where the message should be sent
         dest = self.resolveDest(dest)
 
         if dest == fromProtocol:
             # The message is returned to the sender, report problem
-            pass # TODO: What to do
+            # TODO: Good idea to drop the message here?
+            #       Most probably the message would be sent here again anyway...
+            log.msg('Tried to return a message to the sender. Message will be dropped.')
+            return Sink()
         
         forwarder = MessageForwarder()
         self.registerProducer(forwarder, dest)
@@ -180,14 +202,24 @@ class ReappengineManager(Factory):
     def resolveDest(self, dest):
         """ Resolve the received destination ID and decide what to do next.
 
-            This method has to be overwritten.
+            This method uses the information set in the dictionary 'routingTable'.
+            First this method tries to use the destination address as a key in the
+            dictionary to get the next destination. If there is no matching key
+            the key None is used which symbolizes the default address. If there
+            is also no key None, than a DestinationError is raised.
 
             @return:    The destination address to where the message should be
                         send next.
 
             @raise:     DestinationError if no route for the ID can be found.
         """
-        raise NotImplementedError('The manager instance has to overwrite this method.')
+        if dest in self.routingTable:
+            return self.routingTable[dest]
+        
+        if None in self.routingTable:
+            return self.routingTable[None]
+        
+        raise DestinationError('Can not route the destination "{0}".'.format(dest))
     
     def registerProducer(self, producer, dest):
         """ Register a producer for a given destination.
@@ -215,51 +247,37 @@ class ReappengineManager(Factory):
             # If there is a connection to this destination request to send a message
             self.connections[dest].requestSend()
     
-    def sendMessage(self, msg, dest):
+    def _sendMessage(self, msg):
+        """ Send a message.
+        """
+        self.registerProducer(MessageSender(self, msg), self.resolveDest(msg.dest))
+    
+    def sendMessage(self, msg):
         """ Send a message.
 
             @param msg:     Message which should be sent to destination.
             @type  msg:     Message
-
-            @param dest:    The destination address has to be the valid
-                            CommID of the destination node.
-            @type  dest:    str
         """
-        self.registerProducer(MessageSender(self, msg), self.resolveDest(dest))
-
-    def processMessage(self, msg, conn, authenticated):
-        """ Process the received message.
-
-            This method should not be overwritten.
-
-            @param msg:     Message.
-            @type  msg:     Message
-
-            @param conn:    Connection from with the message originated.
-                            (This is only used for the authentication process.)
-            @type  conn:    ReappengineProtocol
-
-            @param authenticated:   Flag to indicate whether the message was
-                                    received from an authenticated source.
-            @type  authenticated:   bool
-        """
-        if not authenticated:
-            # Handle message from not yet authenticated connection
-            pass # TODO: What to do
-        else:
-            self.messageReceived(msg)
+        self.reactor.callFromThread(self._sendMessage, msg)
 
     def messageReceived(self, msg):
-        """ This method is called with the received message if it has to be handled
-            by the specialized Manager, i.e. the subclass.
-
-            This method should be overwritten.
+        """ This method is called with the received message.
+            
+            For handling the message the first match from the msgProcessors list
+            is used.
 
             @param msg:     Received message.
             @type  msg:     Message
         """
-        import warnings
-        warnings.warn('The manager does not implement a handler for received message.', UserWarning)
+        if self.isShutdown:
+            return
+        
+        for msgProcessor in self.msgProcessors:
+            if msgProcessor.IDENTIFIER == msg.msgType:
+                msgProcessor.processMessage(msg)
+                break
+        else:
+            log.msg('Received a message whose type can not be handled by this node.')
 
     def runTaskInSeparateThread(self, func, *args, **kw):
         """ Convenience method to run any function in a separate thread.
@@ -289,12 +307,14 @@ class ReappengineManager(Factory):
             queue = []
             
             for (prod, timestamp) in prodList:
-                if timestamp < limit:
-                    queue(prod, timestamp)
+                if timestamp > limit:
+                    queue.append(prod, timestamp)
+                else:
+                    log.msg('Producer has been dropped from queue for destination "{0}".'.format(commID))
             
             self.producerQueue[commID] = queue
 
-    def stopFactory(self):
+    def shutdown(self):
         """ Method is called when the manager/factory is stopped.
         """
         if self.isShutdown:

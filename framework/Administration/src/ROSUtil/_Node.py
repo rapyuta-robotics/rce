@@ -37,14 +37,16 @@ from _Serializer import deserialize as deserializeElement
 from ._Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 from ._Interface import ServiceInterface, PublisherInterface, SubscriberInterface
 
-_MAP = { ContentDefinition.INTERFACE_SRV : ServiceInterface,
-         ContentDefinition.INTERFACE_PUB : PublisherInterface,
-         ContentDefinition.INTERFACE_SUB : SubscriberInterface,
-         ContentDefinition.PARAM_INT     : IntParam,
-         ContentDefinition.PARAM_STR     : StrParam,
-         ContentDefinition.PARAM_FLOAT   : FloatParam,
-         ContentDefinition.PARAM_BOOL    : BoolParam,
-         ContentDefinition.PARAM_FILE    : FileParam }
+_MAP = {
+    ContentDefinition.INTERFACE_SRV : ServiceInterface,
+    ContentDefinition.INTERFACE_PUB : PublisherInterface,
+    ContentDefinition.INTERFACE_SUB : SubscriberInterface,
+    ContentDefinition.PARAM_INT     : IntParam,
+    ContentDefinition.PARAM_STR     : StrParam,
+    ContentDefinition.PARAM_FLOAT   : FloatParam,
+    ContentDefinition.PARAM_BOOL    : BoolParam,
+    ContentDefinition.PARAM_FILE    : FileParam
+}
 
 class Node(object):
     """ Class which represents a running node. The node is created

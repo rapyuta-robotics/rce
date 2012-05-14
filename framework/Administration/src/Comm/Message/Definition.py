@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Serializer.py
+#       Defintion.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,26 +22,34 @@
 #       
 #       
 
+# Python specific imports
+from struct import Struct
+
 # Custom imports
-from ContentDefinition import ContentDefinition
+import settings
 
-from ._Serializer import serialize, deserialize
+# Chunk size into which the message is split
+CHUNK_SIZE = 8192
 
-from ._Node import Node
-from ._Interface import ServiceInterface, PublisherInterface, SubscriberInterface
+# Constants which are used to (de-)serialize integers
+I_STRUCT = Struct('!I')
+I_LEN = I_STRUCT.size
+MAX_INT = 2 ** (I_LEN * 8) - 1
 
-_MAP = {
-    ContentDefinition.NODE          : Node,
-    ContentDefinition.INTERFACE_SRV : ServiceInterface,
-    ContentDefinition.INTERFACE_PUB : PublisherInterface,
-    ContentDefinition.INTERFACE_SUB : SubscriberInterface
-}
+# To prevent overly large messages
+# Absolute maximum is MAX_INT
+# else the message length header field has an overflow
+MAX_LENGTH = min(settings.MAX_LENGTH_MESSAGE, MAX_INT)
 
-_deserialize = deserialize
+# Necessary constants for the message
+ADDRESS_LENGTH = 6
+MSG_TYPE_LENGTH = 2
 
-def deserialize(data):
-    return _deserialize(data, _MAP)
+POS_DEST = I_LEN
+POS_ORIGIN = POS_DEST + ADDRESS_LENGTH
+POS_MSG_TYPE = POS_ORIGIN + ADDRESS_LENGTH
+POS_MSG_NUMBER = POS_MSG_TYPE + MSG_TYPE_LENGTH
+HEADER_LENGTH = POS_MSG_NUMBER + I_LEN
 
-deserialize.__doc__ = _deserialize.__doc__
-
-__all__ = ['serialize', 'deserialize']
+# Special address which is used to signal a message which is intended for direct neighbor
+NEIGHBOR_ADDR = '-' * ADDRESS_LENGTH

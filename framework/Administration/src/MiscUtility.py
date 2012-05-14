@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Serializer.py
+#       MiscUtility.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,26 +22,28 @@
 #       
 #       
 
-# Custom imports
-from ContentDefinition import ContentDefinition
+########################################################################
 
-from ._Serializer import serialize, deserialize
+import string
+import random
 
-from ._Node import Node
-from ._Interface import ServiceInterface, PublisherInterface, SubscriberInterface
+# Characters which are used to build the ID
+_CHARS = string.ascii_letters
 
-_MAP = {
-    ContentDefinition.NODE          : Node,
-    ContentDefinition.INTERFACE_SRV : ServiceInterface,
-    ContentDefinition.INTERFACE_PUB : PublisherInterface,
-    ContentDefinition.INTERFACE_SUB : SubscriberInterface
-}
+def generateID(length=10):
+    """ Generate a (hopefully) unique ID consisting of the characters
+        [a-zA-Z] and the given length.
+    """
+    return ''.join(random.choice(_CHARS) for _ in xrange(length))
 
-_deserialize = deserialize
+########################################################################
 
-def deserialize(data):
-    return _deserialize(data, _MAP)
+import os
+import tempfile
 
-deserialize.__doc__ = _deserialize.__doc__
-
-__all__ = ['serialize', 'deserialize']
+def mktempfile(directory=None):
+    """ Wrapper around tempfile.mkstemp function such that a file object
+        is returned and not a int. Make sure to close the file object again.
+    """
+    (fd, fname) = tempfile.mkstemp(dir=directory)
+    return (os.fdopen(fd, 'wb'), fname)

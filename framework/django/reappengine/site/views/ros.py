@@ -27,8 +27,8 @@ import glob
 import stat
 
 # ROS import
-import reappengine.ROS      # sets up the necessary environment variables
-import roslib.packages
+import reappengine.ROS
+import roslib.packages      # TODO: Find replacement functions for roslib.packages functions
 
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response

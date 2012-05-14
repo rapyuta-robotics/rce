@@ -25,6 +25,7 @@
 import os
 import sys
 
+# Django document root
 sys.path.append('/home/dominique/ROS/framework/django')
 
 import django.core.handlers.wsgi

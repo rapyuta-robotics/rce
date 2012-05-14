@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Serializer.py
+#       ProcessorBase.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,26 +22,24 @@
 #       
 #       
 
-# Custom imports
-from ContentDefinition import ContentDefinition
-
-from ._Serializer import serialize, deserialize
-
-from ._Node import Node
-from ._Interface import ServiceInterface, PublisherInterface, SubscriberInterface
-
-_MAP = {
-    ContentDefinition.NODE          : Node,
-    ContentDefinition.INTERFACE_SRV : ServiceInterface,
-    ContentDefinition.INTERFACE_PUB : PublisherInterface,
-    ContentDefinition.INTERFACE_SUB : SubscriberInterface
-}
-
-_deserialize = deserialize
-
-def deserialize(data):
-    return _deserialize(data, _MAP)
-
-deserialize.__doc__ = _deserialize.__doc__
-
-__all__ = ['serialize', 'deserialize']
+class ProcessorBase(object):
+    """ Base class which declares the necessary methods which all processor subclasses
+        have to overwrite.
+        
+        The Processor classes will be instantiated once and will be used for all
+        received messages. 
+    """
+    IDENTIFIER = None
+    
+    def __init__(self, manager):
+        """ @param manager:     Manager which is used in this node.
+            @type  manager:     ReappengineManager
+        """
+        self.manager = manager
+    
+    def processMessage(self, msg):
+        """ Process the message.
+            
+            All references which are necessary to process the message have to available
+            as instance variables as the arguments of this method can not be changed.
+        """
