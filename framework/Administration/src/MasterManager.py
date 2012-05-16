@@ -32,7 +32,7 @@ import sys
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message, validateAddress
-from Comm.Message.TypeBase import MessageTypes as MsgTypes
+from Comm.Message import MsgTypes
 from Comm.Manager import ReappengineManager
 from Comm.Factory import ReappengineServerFactory
 from MiscUtility import generateID

@@ -30,8 +30,7 @@ from twisted.internet.interfaces import IPushProducer, IConsumer
 
 # Custom imports
 from Exceptions import InternalError
-import Message.Definition as MsgDef
-from Message.Base import DestinationError
+from Message import MsgDef
 from Message.Handler import MessageReceiver, Sink
 
 class ReappengineProtocol(Protocol):
@@ -43,21 +42,16 @@ class ReappengineProtocol(Protocol):
     """
     implements(IPushProducer, IConsumer)
 
-    def __init__(self, factory, addr):
+    def __init__(self, factory):
         """ Instantiate the Reappengine Protocol.
             
             @param factory:     Factory which created this connection.
             @type  factory:     ReappengineFactory
-            
-            @param addr:        Address from where the connection originated.
-            @type  addr:        ()    # TODO: Add specification
         """
         # Reference to parent for using persistent data
         self._factory = factory
-        self._manager = factory.manager
 
         # Protocol variables
-        self._addr = addr
         self.dest = None
         self.initialized = False
         self.paused = False
@@ -75,12 +69,6 @@ class ReappengineProtocol(Protocol):
         """ This method is called once the connection is established.
         """
         self._factory.startInit(self)
-    
-    def recievedInitMessage(self, msg):
-        """ This method is called when a message is received, but the
-            connection is not yet initialized.
-        """
-        self._factory.processInitMessage(msg, self)
     
     def dataReceived(self, data):
         """ Convert received raw data into appropriate messages.
@@ -113,19 +101,14 @@ class ReappengineProtocol(Protocol):
                         self._msgDest = Sink()
                     elif not self.initialized:
                         # Other side is not yet authenticated
-                        self._msgDest = MessageReceiver(self._manager, False)
+                        self._msgDest = MessageReceiver(lambda msg: self._factory.processInitMessage(msg, self))
                     elif self._factory.filterMessage(msgType):
                         # Message should be filtered out
                         log.msg('Message of type "{0}" has been filtered out.'.format(msgType))
                         self._msgDest = Sink()
                     else:
-                        # Everything ok; try to resolve destination
-                        try:
-                            self._msgDest = self._manager.nextDest(self._msgDest, self.dest)
-                        except DestinationError:
-                            # TODO: Resolve this DestinationError with specialized consumer/producer to process message.
-                            #       At the moment the data is read but not saved or parsed.
-                            self._msgDest = Sink()
+                        # Everything ok; get the next message consumer
+                        self._msgDest = self._factory.nextConsumer(self._msgDest, self.dest)
 
                     # Register this instance as a producer with the retrieved consumer
                     self._msgDest.registerProducer(self, True)
@@ -156,8 +139,11 @@ class ReappengineProtocol(Protocol):
     def requestSend(self):
         """ Request that this protocol instance sends a message.
         """
-        if not self._producer and self.initialized and self.dest and self._manager.producerQueue[self.dest]:
-            self._manager.producerQueue[self.dest].pop(0)[0].send(self)
+        if not self._producer and self.initialized:
+            producer = self._factory.getNextProducer(self.dest)
+            
+            if producer:
+                producer.send(self)
 
     def registerProducer(self, producer, streaming):
         """ Register a producer which be used to send a message. The
@@ -168,8 +154,8 @@ class ReappengineProtocol(Protocol):
                 The producers should not use this method without being
                 asked to do so, i.e. the protocol will call 'send' as soon
                 as it is ready to receive a new message.
-                Instead the producer should add himself to the producerQueue
-                of the manager.
+                Instead the producer should add himself to the FIFOs
+                of the router.
         """
         if not streaming:
             raise NotImplementedError('Pull Producer are not supported; use Push Producer instead.')
@@ -222,12 +208,17 @@ class ReappengineProtocol(Protocol):
         #       when not the full length of the previous message is received...
         self.paused = True
         self.transport.stopProducing()
-
+    
     def connectionLost(self, reason):
         """ Method which is called when the connection is lost.
         """
-        # First of all remove the connection from the factory/manager
+        # Unregister the connection from the factory
         self._factory.unregisterConnection(self)
+        
+        # Unregister connection from all waiting FIFOs
+        for fifo in self._fifos:
+            fifo.unregisterConnection()
+        
         # TODO: Is anything else necessary?
         
         reason.printTraceback(detail='verbose')

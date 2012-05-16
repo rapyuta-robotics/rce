@@ -22,6 +22,9 @@
 #       
 #       
 
+# twisted specific imports
+from zope.interface import implements
+
 # Python specific imports
 from struct import error as StructError
 
@@ -32,10 +35,12 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from TypeBase import ContentBase, serializeDict, deserializeDict, serializeList, deserializeList, MessageTypes as MsgTypes
-import Definition as MsgDef
+from Interfaces import IContentSerializer
+from SerializerUtil import serializeDict, deserializeDict, serializeList, deserializeList
+import MsgDef
+import MsgTypes
 
-class InitMessage(ContentBase):
+class InitMessage(object):
     """ Message type to initialize the communication.
         
         The fields are:
@@ -43,6 +48,8 @@ class InitMessage(ContentBase):
             origin  CommID of origin
             key     Key to authenticate the node
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.INIT_REQUEST
     
     def serialize(self, data):
@@ -91,23 +98,64 @@ class InitMessage(ContentBase):
         
         return msg
 
-class RouteMessage(ContentBase):
+class RouteMessage(object):
     """ Message type to provide other nodes with routing information.
+        
+        Message format is a list of 2-tuples (DestID, Add (True) / Remove (False) flag)
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ROUTE_INFO
     
-    def serialize(self, data):
-        if not isinstance(data, dict):
-            raise SerializationError('Content of the message has to be a dictionary.')
+    def _serializeElement(self, element):
+        if len(element) != 2:
+            raise SerializationError('List element is not a 2-tuple.')
         
-        return serializeDict(data)
+        buf = StringIO()
+        
+        try:
+            buf.write(MsgDef.I_STRUCT.pack(len(element[0])))
+            buf.write(element[0])
+            
+            buf.write(MsgDef.B_STRUCT.pack(element[1]))
+        except KeyError as e:
+            raise SerializationError('Could not serialize element: {0}'.format(e))
+        
+        return buf.getvalue()
+    
+    def serialize(self, data):
+        if not isinstance(data, list):
+            raise SerializationError('Content of the message has to be a list.')
+        
+        data = map(self._serializeElement, data)
+        
+        return serializeList(data)
+    
+    def _deserializeElement(self, data):
+        try:
+            start = 0
+            end = MsgDef.I_LEN
+            length, = MsgDef.I_STRUCT.unpack(data[start:end])
+            start = end
+            end += length
+            dest = data[start:end]
+            
+            start = end
+            end += MsgDef.I_LEN
+            addFlag, = MsgDef.B_STRUCT.unpack(data[start:end])
+        except StructError as e:
+            raise SerializationError('Could not deserialize element: {0}'.format(e))
+        
+        return (dest, addFlag)
     
     def deserialize(self, data):
-        return deserializeDict(data)
+        return map(self._deserializeElement, deserializeList(data))
 
-class ConnectDirectiveMessage(ContentBase):
+class ConnectDirectiveMessage(object):
     """ Message type to provide node with connection directives.
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.CONNECT
     
     def serialize(self, data):
@@ -166,9 +214,11 @@ class ConnectDirectiveMessage(ContentBase):
         
         return satellites
 
-class LoadInfoMessage(ContentBase):
+class LoadInfoMessage(object):
     """ Message type to provide the load balancer with the necessary information.
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.LOAD_INFO
     
     def serialize(self, data):

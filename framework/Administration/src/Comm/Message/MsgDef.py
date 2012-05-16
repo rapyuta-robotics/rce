@@ -31,6 +31,9 @@ import settings
 # Chunk size into which the message is split
 CHUNK_SIZE = 8192
 
+# Constants which are used to (de-)serialize booleans
+B_STRUCT = Struct('!B')
+
 # Constants which are used to (de-)serialize integers
 I_STRUCT = Struct('!I')
 I_LEN = I_STRUCT.size

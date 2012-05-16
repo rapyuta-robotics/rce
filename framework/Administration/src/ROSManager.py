@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       EnvironmentManager.py
+#       ROSManager.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -23,67 +23,43 @@
 #       
 
 # ROS specific imports
-import rospy
-import roslaunch.scriptapi
 import roslaunch.core
-
-# twisted specific imports
-from twisted.python import log
-from twisted.internet.ssl import ClientContextFactory
-from twisted.internet.task import LoopingCall
-
-# Python specific imports
-import sys
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-from Comm.Message.Base import Message, validateAddress
-from Comm.Message.TypeBase import MessageTypes as MsgTypes
+from Comm.Message.Base import Message
+from Comm.Message import MsgTypes
 from Comm.Message.ROSProcessor import ROSAddNode, ROSRemoveNode, ROSMessageContainer, ROSGet
-from Comm.Manager import ReappengineManager
-from Comm.Factory import ReappengineClientFactory
 from MiscUtility import generateID
 
-class EnvironmentFactory(ReappengineClientFactory):
-    """ Specialized ReappengineClientFactory to filter the incoming messages.
+class ROSManager(object):
+    """ Manager which handles ROS specific tasks.
     """
-    def filterMessage(self, msgType):
-        return msgType not in [ MsgTypes.ROUTE_INFO,
-                                MsgTypes.ROS_ADD,
-                                MsgTypes.ROS_REMOVE,
-                                MsgTypes.ROS_GET,
-                                MsgTypes.ROS_MSG ]
-
-class EnvironmentManager(ReappengineManager):
-    """ Manager which is used for the nodes inside the containers.
-    """
-    def __init__(self, reactor, launcher, commID):
-        """ Initialize the necessary variables for the environment manager.
-
-            @param reactor:     TODO: Add description
-            @type  reactor:     reactor
+    def __init__(self, launcher, commMngr):
+        """ Initialize the ROSManager.
             
             @param launcher:    Launcher for the ROS nodes
             @type  launcher:    roslaunch.scriptapi.Launcher
-
-            @param commID:  CommID of this node which can be used by other
-                            nodes to identify this node.
-            @type  commID:  str
+            
+            @param commMngr:    CommManager which should be used to communicate.
+            @type  commMngr:    CommManager
         """
-        super(EnvironmentManager, self).__init__(reactor, commID)
-        
-        # References used by the manager
+        # References used by the ROS manager
         self._launcher = launcher
+        self._commMngr = commMngr
         
         # Storage for references required to process messages
         self._runningNodes = {}
         self._interfaces = {}
         
-        # Setup list of valid message processors
-        self.msgProcessors.extend([ ROSAddNode(self),
-                                    ROSRemoveNode(self),
-                                    ROSMessageContainer(self),
-                                    ROSGet(self) ])
+        # Flag to indicate shutdown
+        self.isShutdown = False
+        
+        # Register Message Processors
+        self._commMngr.registerMessageProcessor(ROSAddNode(self))
+        self._commMngr.registerMessageProcessor(ROSRemoveNode(self))
+        self._commMngr.registerMessageProcessor(ROSMessageContainer(self, commMngr))
+        self._commMngr.registerMessageProcessor(ROSGet(self, commMngr))
 
     def registerInterface(self, interface):
         """ Callback for Interface instance to register the interface.
@@ -135,7 +111,7 @@ class EnvironmentManager(ReappengineManager):
         msg.msgType = MsgTypes.ROS_MSG
         msg.dest = dest
         msg.content = { 'msg' : rosMsg, 'name' : name, 'uid' : uid, 'push' : False }
-        self.sendMessage(msg)
+        self._commMngr.sendMessage(msg)
     
     def addNode(self, node):
         """ Add a new node to the list of managed nodes. This method takes
@@ -206,88 +182,30 @@ class EnvironmentManager(ReappengineManager):
         except roslaunch.core.RLException as e:
             raise InternalError(str(e))
 
+    def runTaskInSeparateThread(self, func, *args, **kw):
+        """ Convenience method to run any function in a separate thread.
+
+            This method should not be overwritten.
+
+            @param func:    Callable which should be executed in separate
+                            thread.
+            @type  func:    callable
+
+            @param *args:   Any positional arguments which will be passed
+                            to 'func'.
+
+            @param *kw:     Any keyworded arguments which will be passed
+                            to 'func'.
+        """
+        self._commMngr.reactor.callInThread(func, args, kw)
+
     def shutdown(self):
         """ Method is called when the manager/factory is stopped.
         """
-        super(EnvironmentManager, self).shutdown()
+        if self.isShutdown:
+            return
+        
+        self.isShutdown = True
         
         for node in self._runningNodes:
             node.stop()
-
-def main(reactor, ip, port, commID, satelliteID, key):
-    # Start logger
-    log.startLogging(sys.stdout)
-    
-    log.msg('Start initialization...')
-
-    # Init ROS
-    log.msg('Initialize ROS node')
-    rospy.init_node('Administration')
-
-    # Init ROS Launcher
-    log.msg('Initialize ROS launcher')
-    launcher = roslaunch.scriptapi.ROSLaunch()
-
-    # Create Manager
-    manager = EnvironmentManager(reactor, launcher, commID)
-
-    # Initialize twisted
-    log.msg('Initialize twisted')
-    reactor.connectSSL(ip, port, EnvironmentFactory(manager, satelliteID, key), ClientContextFactory())
-
-    # Add shutdown hooks
-    log.msg('Add shutdown hooks')
-    def terminate():
-        log.msg('Shutdown hook "terminate" called...')
-        reactor.callFromThread(manager.shutdown)
-        reactor.callFromThread(reactor.stop)
-        log.msg('Shutdown hook "terminate" leaving')
-
-    rospy.on_shutdown(terminate)
-
-    # Start ROS Launcher
-    log.msg('Start ROS launcher')
-    launcher.start()
-
-    # Setup periodic calling of ROS spin_once in main thread
-    log.msg('Add periodic call for ROS spin_once')
-    LoopingCall(launcher.spin_once).start(0.1)
-
-    # Start twisted (without signal handles as ROS also registers signal handlers)
-    log.msg('Initialization completed')
-    log.msg('Enter mainloop')
-    reactor.run(installSignalHandlers=False)
-
-    # Stop ROS Launcher (should normally already be done as ROS handles the signals)
-    launcher.stop()
-    log.msg('Leaving Administrator')
-
-def _get_argparse():
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser(prog='Administrator',
-                            description='Administrator of App Nodes in Linux Container for the reappengine.')
-
-    parser.add_argument('commID', help='Communication address of this node.')
-    parser.add_argument('ip', type=str, help='IP address of the satellite node to which the connection should be established.')
-    parser.add_argument('port', type=int, help='Port of the satellite node to which the connection should be established.')
-    parser.add_argument('satelliteID', help='Communication address of the node to which a connection should be established.')
-    parser.add_argument('key', help='Key which is used to identify this node with the satellite node.')
-
-    return parser
-
-if __name__ == '__main__':
-    from twisted.internet import reactor
-
-    parser = _get_argparse()
-    args = parser.parse_args()
-    
-    if not validateAddress(args.commID):
-        print 'CommID is not a valid address.'
-        exit(1)
-     
-    if not validateAddress(args.satelliteID):
-        print 'SatelliteID is not a valid address.'
-        exit(1)
-    
-    main(reactor, args.ip, args.port, args.commID, args.satelliteID, args.key)

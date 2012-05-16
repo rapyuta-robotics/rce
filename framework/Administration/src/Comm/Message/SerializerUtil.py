@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       TypeBase.py
+#       SerializerUtil.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -32,54 +32,7 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-import Definition as MsgDef
-
-class MessageTypes(object):
-    """ Message Types of Reappengine Protocol:
-            
-            AR  Initialization request
-            AI  Routing information
-            AC  Connection directives
-            
-            CS  Start container
-            CH  Stop container
-            CO  Container Status
-            
-            EC  Create environment
-            ED  Destroy environment
-            
-            LI  Load Information
-            
-            RA  Add ROS component
-            RR  Remove ROS component
-            RM  ROS Message
-            RB  Response from ROS
-            RG  Get ROS Message
-    """
-    __slots__ = [ 'INIT_REQUEST', 'ROUTE_INFO', 'CONNECT',
-                  'CONTAINER_START', 'CONTAINER_STOP', 'CONTAINER_STATUS',
-                  'ENV_CREATE', 'ENV_DESTROY',
-                  'LOAD_INFO',
-                  'ROS_ADD', 'ROS_REMOVE', 'ROS_MSG', 'ROS_RESPONSE', 'ROS_GET' ]
-    
-    INIT_REQUEST = 'AR'
-    ROUTE_INFO = 'AI'
-    CONNECT = 'AC'
-    
-    CONTAINER_START = 'CS'
-    CONTAINER_STOP = 'CH'
-    CONTAINER_STATUS = 'CO'
-    
-    ENV_CREATE = 'EC'
-    ENV_DESTROY = 'ED'
-    
-    LOAD_INFO = 'LI'
-    
-    ROS_ADD = 'RA'
-    ROS_REMOVE = 'RR'
-    ROS_MSG = 'RM'
-    ROS_RESPONSE = 'RB'
-    ROS_GET = 'RG'
+import MsgDef
 
 _NONE = '__None__'
 _NONE_LEN = len(_NONE)
@@ -88,7 +41,7 @@ def serializeDict(data):
     """ Serialize the dictionary.
 
         @param data:    Dictionary which should be serialized.
-        @type  data:    { str : str }
+        @type  data:    { str/None : str/None }
 
         @return:        Serialized dictionary.
         @rtype:         str
@@ -126,7 +79,7 @@ def deserializeDict(data):
         @type  data:    str
 
         @return:        Dictionary of the message.
-        @rtype:         { str : str }
+        @rtype:         { str/None : str/None }
     """
     msg = {}
 
@@ -166,7 +119,7 @@ def serializeList(data):
     """ Serialize the list.
 
         @param data:    List which should be serialized.
-        @type  data:    [ ]
+        @type  data:    [ str/None ]
 
         @return:        Serialized list.
         @rtype:         str
@@ -177,12 +130,15 @@ def serializeList(data):
     buf.write(MsgDef.I_STRUCT.pack(len(data)))
 
     for ele in data:
-        if not isinstance(ele, str):
+        if isinstance(ele, str):
+            buf.write(MsgDef.I_STRUCT.pack(len(ele)))
+            buf.write(ele)
+        elif ele is None:
+            buf.write(MsgDef.I_STRUCT.pack(_NONE_LEN))
+            buf.write(_NONE)
+        else:
             raise SerializationError('List element is not serialized to a string.')
-        
-        buf.write(MsgDef.I_STRUCT.pack(len(ele)))
-        buf.write(ele)
-
+    
     return buf.getvalue()
 
 def deserializeList(data):
@@ -192,7 +148,7 @@ def deserializeList(data):
         @type  data:    str
 
         @return:        List of the message.
-        @rtype:         [ ]
+        @rtype:         [ str/None ]
         
         @raise:     SerializationError if the format does not match that of a
                     serialized list.
@@ -210,29 +166,13 @@ def deserializeList(data):
             length, = MsgDef.I_STRUCT.unpack(data[start:end])
             start = end
             end += length
-            data.append(data[start:end])
+            value = data[start:end]
+            
+            if length == _NONE_LEN and value == _NONE:
+                value = None
+            
+            data.append(value)
     except StructError as e:
         raise SerializationError('Could not deserialize List: {0}'.format(e))
     
     return data
-
-class ContentBase(object):
-    """ Base class which declares the necessary methods which all content subclasses
-        have to overwrite.
-        
-        The Content classes will be instantiated once and will be used for all received
-        and sent messages. 
-    """
-    IDENTIFIER = None
-    
-    def serialize(self, data):
-        """ Serialize the data and return it.
-            
-            @raise:     SerializationError
-        """
-    
-    def deserialize(self, data):
-        """ Deserialize the data and return it.
-            
-            @raise:     SerializationError
-        """

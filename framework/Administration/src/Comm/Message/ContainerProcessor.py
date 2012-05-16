@@ -22,11 +22,25 @@
 #       
 #       
 
-# Custom imports
-from ProcessorBase import ProcessorBase
-from TypeBase import MessageTypes as MsgTypes
+# twisted specific imports
+from zope.interface import implements
 
-class CreateEnvProcessor(ProcessorBase):
+# Custom imports
+from Interfaces import IContentSerializer
+import MsgTypes
+
+class ContainerProcessorBase(object):
+    """ Base class for all container processors.
+    """
+    implements(IContentSerializer)
+    
+    def __init__(self, manager):
+        """ @param manager:     ContainerManager which is used in this node.
+            @type  manager:     ContainerManager
+        """
+        self.manager = manager
+
+class CreateEnvProcessor(ContainerProcessorBase):
     """ Message processor to create an environment.
     """
     IDENTIFIER = MsgTypes.ENV_CREATE
@@ -34,7 +48,7 @@ class CreateEnvProcessor(ProcessorBase):
     def processMessage(self, msg):
         self.manager.createContainer(msg.content['commID'], msg.content['home'])
 
-class DestroyEnvProcessor(ProcessorBase):
+class DestroyEnvProcessor(ContainerProcessorBase):
     """ Message processor to destroy an environment.
     """
     IDENTIFIER = MsgTypes.ENV_DESTROY
@@ -42,7 +56,7 @@ class DestroyEnvProcessor(ProcessorBase):
     def processMessage(self, msg):
         self.manager.destroyContainer(msg.content['commID'])
 
-class StartContainerProcessor(ProcessorBase):
+class StartContainerProcessor(ContainerProcessorBase):
     """ Message processor to start a container.
     """
     IDENTIFIER = MsgTypes.CONTAINER_START
@@ -50,7 +64,7 @@ class StartContainerProcessor(ProcessorBase):
     def processMessage(self, msg):
         pass # TODO: Add necessary code here
 
-class StopContainerProcessor(ProcessorBase):
+class StopContainerProcessor(ContainerProcessorBase):
     """ Message processor to stop a container.
     """
     IDENTIFIER = MsgTypes.CONTAINER_STOP
@@ -58,7 +72,7 @@ class StopContainerProcessor(ProcessorBase):
     def processMessage(self, msg):
         pass # TODO: Add necessary code here
 
-class ContainerStatusProcessor(ProcessorBase):
+class ContainerStatusProcessor(ContainerProcessorBase):
     """ Message processor to # TODO: ???
     """
     IDENTIFIER = MsgTypes.CONTAINER_STOP

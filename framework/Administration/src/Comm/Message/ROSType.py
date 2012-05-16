@@ -22,6 +22,9 @@
 #       
 #       
 
+# twisted specific imports
+from zope.interface import implements
+
 # Python specific imports
 from struct import error as StructError
 
@@ -32,13 +35,17 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from TypeBase import ContentBase, serializeList, deserializeList, MessageTypes as MsgTypes
-import Definition as MsgDef
+from Interfaces import IContentSerializer
+from SerializerUtil import serializeList, deserializeList
+import MsgDef
+import MsgTypes
 from ROSUtil.Serializer import serialize as rosSerialize, deserialize as rosDeserialize
 
-class ROSAddNode(ContentBase):
+class ROSAddNode(object):
     """ Message type to add a/multiple node(s).
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ROS_ADD
     
     def serialize(self, data):
@@ -52,11 +59,13 @@ class ROSAddNode(ContentBase):
         data = deserializeList(data)
         return map(rosDeserialize, data)
 
-class ROSRemoveNode(ContentBase):
+class ROSRemoveNode(object):
     """ Message type to remove a/multiple node(s).
         
         Should be a list of ROSUtil.Node
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ROS_REMOVE
     
     def serialize(self, data):
@@ -68,7 +77,7 @@ class ROSRemoveNode(ContentBase):
     def deserialize(self, data):
         return map(rosDeserialize, data)
 
-class ROSMessage(ContentBase):
+class ROSMessage(object):
     """ Message type for a single ROS message.
         
         The fields are:
@@ -79,6 +88,8 @@ class ROSMessage(ContentBase):
             push    Flag to indicate whether the response message, if it exists,
                     should be pushed back or stored for polling
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ROS_MSG
     
     def serialize(self, data):
@@ -139,7 +150,7 @@ class ROSMessage(ContentBase):
         
         return msg
 
-class ROSResponse(ContentBase):
+class ROSResponse(object):
     """ Message type to send back an ID which can be used to retrieve a result later.
         
         The fields are:
@@ -147,6 +158,8 @@ class ROSResponse(ContentBase):
                     the ID and if an error occurred it should contain the error message
             error   Flag to indicate whether msg contains an error message or not
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ROS_RESPONSE
     
     def serialize(self, data):
@@ -187,13 +200,15 @@ class ROSResponse(ContentBase):
         
         return msg
 
-class ROSGet(ContentBase):
+class ROSGet(object):
     """ Message type to request a result using an ID.
         
         The fields are:
             name    Interface name from where the message should be retrieved
             uid     ID which identifies the message which should be retrieved
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ROS_GET
     
     def serialize(self, data):

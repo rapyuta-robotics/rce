@@ -25,35 +25,36 @@
 # twisted specific imports
 from zope.interface import implements
 from twisted.python import log
-from twisted.internet.interfaces import IPushProducer, IConsumer
+from twisted.internet.interfaces import IConsumer
 
 # Custom imports
-from Exceptions import InternalError, SerializationError
-import Definition as MsgDef
-from Base import MessageLengthError, Message
+from Exceptions import InternalError, SerializationError, MessageLengthError
+import MsgDef
+from Base import Message
+from Interfaces import IReappengineProducer
 
 class MessageSender(object):
     """ This class is used to provide a startpoint for the communication.
         It also takes care of the serialization of the data.
     """
-    implements(IPushProducer)
+    implements(IReappengineProducer)
 
     def __init__(self, manager, msg):
         """ Initialize the Message object.
 
-            @param manager:     Manager which has the node specific handling
-                                for Protocol callbacks.
-            @type  manager:     Class which implements IReappengineManager
+            @param manager:     CommManager which has the current CommID and the
+                                message number.
+            @type  manager:     CommManager
 
             @param msg:     Message which should be sent.
             @type  msg:     Message
 
             @raise:     InternalError, MessageLengthError
         """
-        self._manager = manager
+        self.origin = manager.commID
         self._consumer = None
 
-        self._sendBuf = msg.serialize(manager)
+        self._sendBuf = msg.serialize(manager.getMessageNr, self.origin)
         self._pos = 0
         self.paused = False
 
@@ -96,7 +97,14 @@ class MessageSender(object):
                 break
 
     def send(self, consumer):
-        """ Send the previously parsed message.
+        """ Callback from consumer to register himself and request that the Producer starts
+            to send the previously parsed message.
+                                
+            @param consumer:    Protocol instance which should consume this message.
+                                It is also possible to use any consumer which implements the
+                                IConsumer interface; however, in this case the method send has
+                                to be called manually.
+            @type  consumer:    ReappengineProtocol (or any IConsumer)
         """
         if self._consumer:
             raise InternalError('This message sender is already sending a message.')
@@ -111,23 +119,21 @@ class MessageReceiver(object):
     """
     implements(IConsumer)
 
-    # TODO: Check if conn and authenticated is still necessary
-    def __init__(self, manager, authenticated):
+    def __init__(self, processMsg):
         """ Initialize the Message Receiver object.
 
-            @param manager:     Manager which has the node specific handling
-                                for Protocol callbacks.
-            @type  manager:     Class which implements IReappengineManager
-
-            @param authenticated:   Flag to indicate whether the message was
-                                    received from an authenticated source.
-            @type  authenticated:   bool
+            @param processMsg:  Callback which should be used when the message
+                                has been completely received and successfully
+                                deserialized. The callback function should take
+                                as a single argument a Message instance.
+            @type  processMsg:  Callable
 
             @raise:     InternalError, MessageLengthError
         """
-        self._manager = manager
-        self._authenticated = authenticated
-        self._conn = None
+        if not callable(processMsg):
+            raise InternalError('Process Message callback is not a callable object.')
+        
+        self._processMsg = processMsg
 
         self._recvBuf = ''
 
@@ -141,8 +147,6 @@ class MessageReceiver(object):
 
         if self._recvBuf:
             raise InternalError('Can not use the same Message Receiver for more than one message.')
-        
-        self._conn = producer
 
     def write(self, data):
         """ Method which is used by the producer to send data of this
@@ -157,21 +161,23 @@ class MessageReceiver(object):
         log.msg('Message Receiver: {0} bytes received'.format(len(self._recvBuf)))
         
         try:
-            if self._authenticated:
-                self._manager.messageReceived(Message.deserialize(self._recvBuf))
-            else:
-                self._conn.receivedInitMessage(Message.deserialize(self._recvBuf))
+            self._msgProcessor(Message.deserialize(self._recvBuf))
         except SerializationError as e:
             log.msg('Could not deserialize message: {0}'.format(e))
 
 class MessageForwarder(object):
     """ This class is used to forward a message.
     """
-    implements(IPushProducer, IConsumer)
+    implements(IReappengineProducer, IConsumer)
     
-    def __init__(self):
-        """ Forward a received message to the specified node.
+    def __init__(self, origin):
+        """ Initialize the Message Forwarder.
+            
+            @param origin:  Communication ID of originating connection.
+            @type  origin:  str
         """
+        self.origin = origin
+        
         self._producer = None
         self._consumer = None
         
@@ -225,7 +231,14 @@ class MessageForwarder(object):
             self._consumer.unregisterProducer()
 
     def send(self, consumer):
-        """ Send the previously parsed message.
+        """ Callback from consumer to register himself and request that the Producer starts
+            to send the previously parsed message.
+                                
+            @param consumer:    Protocol instance which should consume this message.
+                                It is also possible to use any consumer which implements the
+                                IConsumer interface; however, in this case the method send has
+                                to be called manually.
+            @type  consumer:    ReappengineProtocol (or any IConsumer)
         """
         if self._consumer:
             raise InternalError('This message sender is already sending a message.')

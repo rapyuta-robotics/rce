@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       ProcessorBase.py
+#       TypeBase.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,24 +22,43 @@
 #       
 #       
 
-class ProcessorBase(object):
-    """ Base class which declares the necessary methods which all processor subclasses
-        have to overwrite.
+""" Message Types of Reappengine Protocol:
         
-        The Processor classes will be instantiated once and will be used for all
-        received messages. 
-    """
-    IDENTIFIER = None
-    
-    def __init__(self, manager):
-        """ @param manager:     Manager which is used in this node.
-            @type  manager:     ReappengineManager
-        """
-        self.manager = manager
-    
-    def processMessage(self, msg):
-        """ Process the message.
-            
-            All references which are necessary to process the message have to available
-            as instance variables as the arguments of this method can not be changed.
-        """
+        AR  Initialization request
+        AI  Routing information
+        AC  Connection directives
+        
+        CS  Start container
+        CH  Stop container
+        CO  Container Status
+        
+        EC  Create environment
+        ED  Destroy environment
+        
+        LI  Load Information
+        
+        RA  Add ROS component
+        RR  Remove ROS component
+        RM  ROS Message
+        RB  Response from ROS
+        RG  Get ROS Message
+"""
+
+INIT_REQUEST = 'AR'
+ROUTE_INFO = 'AI'
+CONNECT = 'AC'
+
+CONTAINER_START = 'CS'
+CONTAINER_STOP = 'CH'
+CONTAINER_STATUS = 'CO'
+
+ENV_CREATE = 'EC'
+ENV_DESTROY = 'ED'
+
+LOAD_INFO = 'LI'
+
+ROS_ADD = 'RA'
+ROS_REMOVE = 'RR'
+ROS_MSG = 'RM'
+ROS_RESPONSE = 'RB'
+ROS_GET = 'RG'

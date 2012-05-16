@@ -31,20 +31,9 @@ except ImportError:
     from StringIO import StringIO
 
 # Custom imports
-from Exceptions import SerializationError
-import Definition as MsgDef
+from Exceptions import InternalError, SerializationError
+import MsgDef
 import Serializer
-
-class DestinationError(Exception):
-    """ This class is used to signal a problem with the destination
-        of a message.
-    """
-    pass
-
-class MessageLengthError(Exception):
-    """ This class is used to signal a message which is too long.
-    """
-    pass
 
 def validateAddress(addr):
     """ Validate the given address.
@@ -73,18 +62,25 @@ class Message(object):
         self.origin = None
         self.content = None
 
-    def serialize(self, manager):
+    def serialize(self, msgNrCallback, origin):
         """ Serialize the message.
 
             The fields msgType, dest and depending on msgType content has to be
             set before this method is called.
 
-            @param manager:     Manager which is used to get the message number
-                                and the origin of the message.
-            @type  manager:     ReappengineManager
+            @param msgNrCallback:   Callback function which can be used to get a new message
+                                    number. The function should take no arguments and return
+                                    an integer.
+            @type  msgNrCallback:   Callable
             
-            @raise:     SerializationError
+            @param origin:  CommID of this node.
+            @type  origin:  str
+            
+            @raise:     InternalError, SerializationError
         """
+        if not callable(msgNrCallback):
+            raise InternalError('Message number callback is not a callable object.')
+        
         if self.msgType is None:
             raise SerializationError('The message is missing the message type.')
 
@@ -97,8 +93,8 @@ class Message(object):
         if len(self.dest) != MsgDef.ADDRESS_LENGTH:
             raise SerializationError('The destination address is not valid.')
 
-        self.msgNumber = manager.getMessageNr()
-        self.origin = manager.commID
+        self.msgNumber = msgNrCallback()
+        self.origin = origin
         
         content = Serializer.SERIALIZERS[self.msgType].serialize(self.content)
         

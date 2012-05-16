@@ -42,3 +42,8 @@ class SerializationError(InternalError):
         internal messages.
     """
     pass
+
+class MessageLengthError(Exception):
+    """ This class is used to signal a message which is too long.
+    """
+    pass

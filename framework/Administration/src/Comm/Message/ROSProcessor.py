@@ -23,15 +23,31 @@
 #       
 
 # twisted specific imports
+from zope.interface import implements
 from twisted.python import log
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-from ProcessorBase import ProcessorBase
-from TypeBase import MessageTypes as MsgTypes
+from Interfaces import IMessageProcessor
+import MsgTypes
 from Base import Message
 
-class ROSAddNode(ProcessorBase):
+class ROSProcessorBase(object):
+    """ Message processor base class for ROS Processors.
+    """
+    implements(IMessageProcessor)
+    
+    def __init__(self, manager, commManager):
+        """ @param manager:     ROSManager which is used in this node.
+            @type  manager:     ROSManager
+            
+            @param commManager:     CommManager which is used in this node.
+            @type  commManager:     CommManager
+        """
+        self.manager = manager
+        self.commManager = commManager
+
+class ROSAddNode(ROSProcessorBase):
     """ Message processor to add a/multiple node(s).
     """
     IDENTIFIER = MsgTypes.ROS_ADD
@@ -43,7 +59,7 @@ class ROSAddNode(ProcessorBase):
             except InternalError as e:
                 log.msg('Could not add Node: {0}'.format(e))
 
-class ROSRemoveNode(ProcessorBase):
+class ROSRemoveNode(ROSProcessorBase):
     """ Message processor to remove a/multiple node(s).
         
         Should be a list of ROSUtil.Node
@@ -57,7 +73,7 @@ class ROSRemoveNode(ProcessorBase):
             except InvalidRequest as e:
                 log.msg('Could not remove Node: {0}'.format(e))
 
-class ROSMessageContainer(ProcessorBase):
+class ROSMessageContainer(ROSProcessorBase):
     """ Message processor for a single ROS message in the container node.
     """
     IDENTIFIER = MsgTypes.ROS_MSG
@@ -82,9 +98,9 @@ class ROSMessageContainer(ProcessorBase):
                 log.msg('Could not send ROS Message: {0}'.format(e))
                 respMsg.content = { 'msg' : str(e), 'error' : True }
             
-            self.sendMessage(respMsg)
+            self.commManager.sendMessage(respMsg)
 
-class ROSMessageMaster(ProcessorBase):
+class ROSMessageMaster(ROSProcessorBase):
     """ Message processor for a single ROS message in the master node.
     """
     IDENTIFIER = MsgTypes.ROS_MSG
@@ -93,7 +109,7 @@ class ROSMessageMaster(ProcessorBase):
         pass
         # TODO: Add logic to process message in master node
 
-class ROSGet(ProcessorBase):
+class ROSGet(ROSProcessorBase):
     """ Message processor for a single ROS message request.
     """
     IDENTIFIER = MsgTypes.ROS_GET
@@ -113,4 +129,4 @@ class ROSGet(ProcessorBase):
         except InternalError as e:
             log.msg('Could not send ROS Message: {0}'.format(e))
         
-        self.sendMessage(respMsg)
+        self.commManager.sendMessage(respMsg)

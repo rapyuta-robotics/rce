@@ -28,15 +28,29 @@ from twisted.internet.protocol import ServerFactory, ReconnectingClientFactory
 
 # Custom imports
 from Exceptions import SerializationError
-import Message.Definition as MsgDef
-from Message.TypeBase import MessageTypes as MsgTypes
 from Protocol import ReappengineProtocol
+from Message import MsgDef
+from Message import MsgTypes
 from Message.Base import Message
 from Message.Handler import MessageSender
 
 class ReappengineFactory(object):
     """ Base factory which implements base methods for all Reappengine Factories.
     """
+    def __init__(self, router, commMngr):
+        """ Initialize the ReappengineFactory.
+            
+            @param router:      Router instance which should be used with this factory
+                                and its build protocols.
+            @type  router:      Router
+            
+            @param commMngr:    CommManager instance which should be used with this
+                                factory and its build protocols.
+            @type  commMngr:    CommManager
+        """
+        self.router = router
+        self.commMngr = commMngr
+    
     def filterMessage(self, msgType):
         """ Method which is called by the protocol to filter the incoming messages.
                                 
@@ -47,6 +61,34 @@ class ReappengineFactory(object):
                             False otherwise.
             @rtype:         str
         """
+        return False
+    
+    def getNextProducer(self, dest):
+        """ Callback for the protocol instances which is used when a new producer can be
+            processed.
+            
+            @param route:   Communication ID of destination of protocol.
+            @type  route:   str
+            
+            @return:        Next producer which should be processed or None if no processor
+                            are left to process.
+            @rtype:         Producer (MessageSender/MessageForwarder) or None
+        """
+        return self.router.getNextProducer(dest)
+    
+    def getNextConsumer(self, dest, origin):
+        """ This method is called by the protocol instances to get the next destination
+            point for the received message.
+
+            @param dest:    The destination address of the received message.
+            @type  dest:    str
+
+            @param origin:  The communication ID from which the received message originated.
+            @type  origin:  str
+
+            @return:    The correct Message handler to where the message should be forwarded.
+        """
+        return self.commMngr.getNextConsumer(dest, origin)
     
     def startInit(self):
         """ Method which is called when the connection has been made.
@@ -67,7 +109,9 @@ class ReappengineFactory(object):
         """
     
     def postInitTrigger(self, origin):
-        """ This method is called once as soon the connection is successfully initialized.
+        """ This method should be called once as soon the connection is successfully
+            initialized. It has to be called manually in the subclass as the methods
+            'startInit' and 'processInitMessage' of this base class do nothing.
             
             @param origin:  CommID of request origin.
             @type  origin:  str
@@ -79,10 +123,12 @@ class ReappengineFactory(object):
             @param conn:    Protocol instance who should be unregistered.
             @type  conn:    ReappengineProtocol
         """
+        self.router.unregisterConnection(conn)
 
 class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
     """ Factory which is used for client connections.
     """
+    # TODO: Update Constructor for new base constructor
     def __init__(self, manager, satelliteID, key, overrideCommID=False):
         """ Initialize the Reappengine Factory.
 
@@ -156,13 +202,12 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
         
         # Trigger the post init method
         self.postInitTrigger(self._dest)
-    
-    def unregisterConnection(self, conn):
-        self.manager.unregisterConnection(conn)
 
 class ReappengineServerFactory(ReappengineFactory, ServerFactory):
     """ Factory which is used for server connections.
     """
+    # TODO: Update Constructor for new base constructor
+    
     def buildProtocol(self, addr):
         """ Builds a new protocol instance.
 
@@ -260,6 +305,3 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
         
         # Trigger the post init method
         self.postInitTrigger(origin)
-    
-    def unregisterConnection(self, conn):
-        self.manager.unregisterConnection(conn)

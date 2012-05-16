@@ -22,6 +22,9 @@
 #       
 #       
 
+# twisted specific imports
+from zope.interface import implements
+
 # Python specific imports
 from struct import error as StructError
 
@@ -32,16 +35,20 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from TypeBase import ContentBase, serializeDict, deserializeDict, serializeList, deserializeList, MessageTypes as MsgTypes
-import Definition as MsgDef
+from Interfaces import IContentSerializer
+from SerializerUtil import serializeDict, deserializeDict, serializeList, deserializeList
+import MsgDef
+import MsgTypes
 
-class CreateEnvMessage(ContentBase):
+class CreateEnvMessage(object):
     """ Message type to create a new environment.
         
         The fields are:
             commID  CommID which is used to identify the environment
             home    Home directory which should be used
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ENV_CREATE
     
     def serialize(self, data):
@@ -80,12 +87,14 @@ class CreateEnvMessage(ContentBase):
         
         return msg
 
-class DestroyEnvMessage(ContentBase):
+class DestroyEnvMessage(object):
     """ Message type to destroy an existing environment.
         
         The fields are:
             commID  CommID which is used to identify the environment
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.ENV_DESTROY
     
     def serialize(self, data):
@@ -114,7 +123,7 @@ class DestroyEnvMessage(ContentBase):
         
         return msg
 
-class StartContainerMessage(ContentBase):
+class StartContainerMessage(object):
     """ Message type to start a container.
         
         The fields are:
@@ -122,6 +131,8 @@ class StartContainerMessage(ContentBase):
             home    Home directory which should be used
             # TODO: Add fields
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.CONTAINER_START
     
     def serialize(self, data):
@@ -164,12 +175,14 @@ class StartContainerMessage(ContentBase):
         
         return msg
 
-class StopContainerMessage(ContentBase):
+class StopContainerMessage(object):
     """ Message type to stop a container.
         
         The fields are:
             commID  CommID which is used to identify the container
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.CONTAINER_STOP
     
     def serialize(self, data):
@@ -198,12 +211,14 @@ class StopContainerMessage(ContentBase):
         
         return msg
 
-class ContainerStatusMessage(ContentBase):
+class ContainerStatusMessage(object):
     """ Message type to # TODO: What exactly is this message used for?
         
         The fields are:
             commID  CommID which is used to identify the environment
     """
+    implements(IContentSerializer)
+    
     IDENTIFIER = MsgTypes.CONTAINER_STATUS
     
     def serialize(self, data):

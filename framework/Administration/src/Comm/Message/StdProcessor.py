@@ -22,19 +22,33 @@
 #       
 #       
 
-# Custom imports
-from ProcessorBase import ProcessorBase
-from TypeBase import MessageTypes as MsgTypes
+# twisted specific imports
+from zope.interface import implements
 
-class RouteProcessor(ProcessorBase):
+# Custom imports
+from Interfaces import IMessageProcessor
+import MsgTypes
+
+class StdProcessorBase(object):
+    """ Base class for all standard processors.
+    """
+    implements(IMessageProcessor)
+    
+    def __init__(self, manager):
+        """ @param manager:     CommManager which is used in this node.
+            @type  manager:     CommManager
+        """
+        self.manager = manager
+
+class RouteProcessor(StdProcessorBase):
     """ Message processor to update the routing information.
     """
     IDENTIFIER = MsgTypes.ROUTE_INFO
     
     def processMessage(self, msg):
-        self.manager.updateRoutingInfo(msg.content)
+        self.manager.updateRoutingInfo(msg.origin, msg.content)
 
-class ConnectDirectiveProcessor(ProcessorBase):
+class ConnectDirectiveProcessor(StdProcessorBase):
     """ Message processor which executes the directives from the message and connects
         to all specified nodes.
     """
@@ -43,7 +57,7 @@ class ConnectDirectiveProcessor(ProcessorBase):
     def processMessage(self, msg):
         self.manager.connectToSatellites(msg)
 
-class LoadInfoProcessor(ProcessorBase):
+class LoadInfoProcessor(StdProcessorBase):
     """ Message processor to update the load information with the load balancer.
     """
     IDENTIFIER = MsgTypes.LOAD_INFO
