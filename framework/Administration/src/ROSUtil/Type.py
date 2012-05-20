@@ -35,13 +35,13 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from Interfaces import IContentSerializer
-from SerializerUtil import serializeList, deserializeList
-import MsgDef
-import MsgTypes
-from ROSUtil.Serializer import serialize as rosSerialize, deserialize as rosDeserialize
+from Comm.Message.Interfaces import IContentSerializer
+from Comm.Message.SerializerUtil import serializeList, deserializeList
+from Comm.Message import MsgDef
+from Comm.Message import MsgTypes
+from Serializer import serialize as rosSerialize, deserialize as rosDeserialize
 
-class ROSAddNode(object):
+class ROSAddNodeMessage(object):
     """ Message type to add a/multiple node(s).
     """
     implements(IContentSerializer)
@@ -59,7 +59,7 @@ class ROSAddNode(object):
         data = deserializeList(data)
         return map(rosDeserialize, data)
 
-class ROSRemoveNode(object):
+class ROSRemoveNodeMessage(object):
     """ Message type to remove a/multiple node(s).
         
         Should be a list of ROSUtil.Node
@@ -77,7 +77,7 @@ class ROSRemoveNode(object):
     def deserialize(self, data):
         return map(rosDeserialize, data)
 
-class ROSMessage(object):
+class ROSMsgMessage(object):
     """ Message type for a single ROS message.
         
         The fields are:
@@ -150,7 +150,7 @@ class ROSMessage(object):
         
         return msg
 
-class ROSResponse(object):
+class ROSResponseMessage(object):
     """ Message type to send back an ID which can be used to retrieve a result later.
         
         The fields are:
@@ -200,7 +200,7 @@ class ROSResponse(object):
         
         return msg
 
-class ROSGet(object):
+class ROSGetMessage(object):
     """ Message type to request a result using an ID.
         
         The fields are:

@@ -31,7 +31,7 @@ from twisted.internet.interfaces import IPushProducer, IConsumer
 # Custom imports
 from Exceptions import InternalError
 from Message import MsgDef
-from Message.Handler import MessageReceiver, Sink
+from Message.Handler import Sink
 
 class ReappengineProtocol(Protocol):
     """ Reappengine Protocol.
@@ -52,9 +52,9 @@ class ReappengineProtocol(Protocol):
         self._factory = factory
 
         # Protocol variables
-        self.dest = None
-        self.initialized = False
-        self.paused = False
+        self._dest = None
+        self._initialized = False
+        self._paused = False
         
         # Variables to store current message
         self._recvBuf = ''
@@ -64,6 +64,35 @@ class ReappengineProtocol(Protocol):
         
         # Reference on current producer
         self._producer = None
+    
+    @property
+    def dest(self):
+        """ Communication ID of node on the other end of this connection. """
+        return self._dest
+    
+    @dest.setter
+    def dest(self, value):
+        if self._dest:
+            raise InternalError('There is already a destination address assigned to this connection.')
+        
+        self._dest = value
+    
+    @property
+    def initialized(self):
+        """ Flag which indicates whether the connection is initialized. """
+        return self._initialized
+    
+    @initialized.setter
+    def initialized(self, value):
+        if not value:
+            raise InternalError('Can not set a connection to uninitialized.')
+        
+        self._initialized = value
+    
+    @property
+    def paused(self):
+        """ Flag which indicates whether the producer is paused or not. """
+        return self._paused
     
     def connectionMade(self):
         """ This method is called once the connection is established.
@@ -77,7 +106,7 @@ class ReappengineProtocol(Protocol):
         self._recvBuf += data
 
         # Run processing as long as there is no pause requested
-        while not self.paused:
+        while not self._paused:
             # Calculate current length of buffer
             lenBuf = len(self._recvBuf)
             
@@ -101,14 +130,14 @@ class ReappengineProtocol(Protocol):
                         self._msgDest = Sink()
                     elif not self.initialized:
                         # Other side is not yet authenticated
-                        self._msgDest = MessageReceiver(lambda msg: self._factory.processInitMessage(msg, self))
+                        self._msgDest = self._factory.commManager.nextConsumer(self._dest, callback=lambda msg: self._factory.processInitMessage(msg, self))
                     elif self._factory.filterMessage(msgType):
                         # Message should be filtered out
                         log.msg('Message of type "{0}" has been filtered out.'.format(msgType))
                         self._msgDest = Sink()
                     else:
                         # Everything ok; get the next message consumer
-                        self._msgDest = self._factory.nextConsumer(self._msgDest, self.dest)
+                        self._msgDest = self._factory.commManager.nextConsumer(self._dest, dest=self._msgDest)
 
                     # Register this instance as a producer with the retrieved consumer
                     self._msgDest.registerProducer(self, True)
@@ -140,7 +169,7 @@ class ReappengineProtocol(Protocol):
         """ Request that this protocol instance sends a message.
         """
         if not self._producer and self.initialized:
-            producer = self._factory.getNextProducer(self.dest)
+            producer = self._factory.commManager.router.getNextProducer(self._dest)
             
             if producer:
                 producer.send(self)
@@ -188,14 +217,14 @@ class ReappengineProtocol(Protocol):
         """ Method for the consumer to signal that he can't accept (more)
             data at the moment.
         """
-        self.paused = True
+        self._paused = True
         self.transport.pauseProducing()
 
     def resumeProducing(self):
         """ Method for the consumer to signal that he can accept (again)
             data.
         """
-        self.paused = False
+        self._paused = False
         self.transport.resumeProducing()
         self.dataReceived('')
 
@@ -206,7 +235,7 @@ class ReappengineProtocol(Protocol):
         # TODO: Drop the current message; how could this be achieved ?!?
         #       Or in other words how can we figure out where the new message start in the buffer
         #       when not the full length of the previous message is received...
-        self.paused = True
+        self._paused = True
         self.transport.stopProducing()
     
     def connectionLost(self, reason):
@@ -214,10 +243,6 @@ class ReappengineProtocol(Protocol):
         """
         # Unregister the connection from the factory
         self._factory.unregisterConnection(self)
-        
-        # Unregister connection from all waiting FIFOs
-        for fifo in self._fifos:
-            fifo.unregisterConnection()
         
         # TODO: Is anything else necessary?
         

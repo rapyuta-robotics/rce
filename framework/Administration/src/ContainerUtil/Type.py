@@ -35,10 +35,10 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from Interfaces import IContentSerializer
-from SerializerUtil import serializeDict, deserializeDict, serializeList, deserializeList
-import MsgDef
-import MsgTypes
+from Comm.Message.Interfaces import IContentSerializer
+from Comm.Message.SerializerUtil import serializeDict, deserializeDict, serializeList, deserializeList
+from Comm.Message import MsgDef
+from Comm.Message import MsgTypes
 
 class CreateEnvMessage(object):
     """ Message type to create a new environment.

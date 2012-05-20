@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       StdProcessor.py
+#       SatelliteProcessor.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -26,24 +26,34 @@
 from zope.interface import implements
 
 # Custom imports
-from Interfaces import IMessageProcessor
-import MsgTypes
+from Comm.Message.Interfaces import IMessageProcessor
+from Comm.Message import MsgTypes
 
-class StdProcessorBase(object):
+class SatelliteProcessorBase(object):
     """ Base class for all standard processors.
     """
     implements(IMessageProcessor)
     
     def __init__(self, manager):
-        """ @param manager:     CommManager which is used in this node.
-            @type  manager:     CommManager
+        """ @param manager:     SatelliteManager which is used in this node.
+            @type  manager:     SatelliteManager
         """
         self.manager = manager
 
-class RouteProcessor(StdProcessorBase):
-    """ Message processor to update the routing information.
+class ConnectDirectiveProcessor(SatelliteProcessorBase):
+    """ Message processor which executes the directives from the message and connects
+        to all specified nodes.
     """
-    IDENTIFIER = MsgTypes.ROUTE_INFO
+    IDENTIFIER = MsgTypes.CONNECT
     
     def processMessage(self, msg):
-        self.manager.router.updateRoutingInfo(msg.origin, msg.content)
+        self.manager.connectToSatellites(msg)
+
+class LoadInfoProcessor(SatelliteProcessorBase):
+    """ Message processor to update the load information with the load balancer.
+    """
+    IDENTIFIER = MsgTypes.LOAD_INFO
+    
+    def processMessage(self, msg):
+        pass # TODO: Add
+    

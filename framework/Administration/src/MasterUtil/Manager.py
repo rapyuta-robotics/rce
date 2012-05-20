@@ -33,7 +33,7 @@ import sys
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message, validateAddress
 from Comm.Message import MsgTypes
-from Comm.Manager import ReappengineManager
+from Comm.CommManager import CommManager
 from Comm.Factory import ReappengineServerFactory
 from MiscUtility import generateID
 
@@ -59,7 +59,7 @@ class MasterServerFactory(ReappengineServerFactory):
         msg.content = self.manager.getSatelliteRouting()
         self.manager.sendMessage(msg)
 
-class MasterManager(ReappengineManager):
+class MasterManager(object):
     """ Manager which is used for master node who is responsible for the management
         of the satellites nodes and is the connection point for the outside world.
     """

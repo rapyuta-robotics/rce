@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Defintion.py
+#       MsgDef.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -28,22 +28,24 @@ from struct import Struct
 # Custom imports
 import settings
 
+####################
 # Chunk size into which the message is split
 CHUNK_SIZE = 8192
 
-# Constants which are used to (de-)serialize booleans
+####################
+# Constants which are used to (de-)serialize booleans / integers
 B_STRUCT = Struct('!B')
 
-# Constants which are used to (de-)serialize integers
 I_STRUCT = Struct('!I')
 I_LEN = I_STRUCT.size
 MAX_INT = 2 ** (I_LEN * 8) - 1
 
-# To prevent overly large messages
-# Absolute maximum is MAX_INT
-# else the message length header field has an overflow
+####################
+# Message length limit to prevent overly large messages
+# Absolute maximum is MAX_INT else the message length header field has an overflow
 MAX_LENGTH = min(settings.MAX_LENGTH_MESSAGE, MAX_INT)
 
+####################
 # Necessary constants for the message
 ADDRESS_LENGTH = 6
 MSG_TYPE_LENGTH = 2
@@ -54,5 +56,22 @@ POS_MSG_TYPE = POS_ORIGIN + ADDRESS_LENGTH
 POS_MSG_NUMBER = POS_MSG_TYPE + MSG_TYPE_LENGTH
 HEADER_LENGTH = POS_MSG_NUMBER + I_LEN
 
-# Special address which is used to signal a message which is intended for direct neighbor
-NEIGHBOR_ADDR = '-' * ADDRESS_LENGTH
+####################
+# Special addresses
+PREFIX_LENGTH_ADDR = ADDRESS_LENGTH / 2
+SUFFIX_LENGTH_ADDR = ADDRESS_LENGTH - ADDRESS_LENGTH / 2
+
+# Used to identify a client which needs an address from server
+NEED_ADDR = '?' * ADDRESS_LENGTH
+
+# Used to identify a message which is intended for direct neighbor
+NEIGHBOR_ADDR = '!' * ADDRESS_LENGTH
+
+# Used for master node
+MASTER_ADDR = '$' * ADDRESS_LENGTH
+
+# Used prefix for satellite nodes
+PREFIX_SATELLITE_ADDR = '+' * PREFIX_LENGTH_ADDR
+
+# Used prefix for container manager nodes
+PREFIX_CONTAINER_ADDR = '-' * PREFIX_LENGTH_ADDR

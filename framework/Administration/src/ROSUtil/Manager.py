@@ -26,10 +26,12 @@
 import roslaunch.core
 
 # Custom imports
+
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
-from Comm.Message.ROSProcessor import ROSAddNode, ROSRemoveNode, ROSMessageContainer, ROSGet
+from Type import ROSAddNodeMessage, ROSRemoveNodeMessage, ROSMsgMessage, ROSResponseMessage, ROSGetMessage #@UnresolvedImport
+from Processor import ROSAddNodeProcessor, ROSRemoveNodeProcessor, ROSMessageContainerProcessor, ROSGetProcessor #@UnresolvedImport
 from MiscUtility import generateID
 
 class ROSManager(object):
@@ -55,11 +57,18 @@ class ROSManager(object):
         # Flag to indicate shutdown
         self.isShutdown = False
         
+        # Register Content Serializers
+        self._commMngr.registerContentSerializers([ ROSAddNodeMessage(),
+                                                    ROSRemoveNodeMessage(),
+                                                    ROSMsgMessage(),
+                                                    ROSResponseMessage(),
+                                                    ROSGetMessage() ])
+        
         # Register Message Processors
-        self._commMngr.registerMessageProcessor(ROSAddNode(self))
-        self._commMngr.registerMessageProcessor(ROSRemoveNode(self))
-        self._commMngr.registerMessageProcessor(ROSMessageContainer(self, commMngr))
-        self._commMngr.registerMessageProcessor(ROSGet(self, commMngr))
+        self._commMngr.registerMessageProcessors([ ROSAddNodeProcessor(self, commMngr),
+                                                   ROSRemoveNodeProcessor(self, commMngr),
+                                                   ROSMessageContainerProcessor(self, commMngr),
+                                                   ROSGetProcessor(self, commMngr) ])
 
     def registerInterface(self, interface):
         """ Callback for Interface instance to register the interface.
@@ -209,3 +218,5 @@ class ROSManager(object):
         
         for node in self._runningNodes:
             node.stop()
+        
+        self._commMngr.shutdown()

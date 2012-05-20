@@ -25,7 +25,7 @@
 import settings as rosSettings
 
 import sys
-from django.conf import settings
+from django.conf import settings #@UnresolvedImport
 
 settings.configure(
     DATABASE_ENGINE=rosSettings.DJANGO_DB.get('DATABASE_ENGINE', ''),

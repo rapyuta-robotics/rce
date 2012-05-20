@@ -26,13 +26,13 @@
 from zope.interface import implements
 
 # Custom imports
-from Interfaces import IContentSerializer
-import MsgTypes
+from Comm.Message.Interfaces import IMessageProcessor
+from Comm.Message import MsgTypes
 
 class ContainerProcessorBase(object):
     """ Base class for all container processors.
     """
-    implements(IContentSerializer)
+    implements(IMessageProcessor)
     
     def __init__(self, manager):
         """ @param manager:     ContainerManager which is used in this node.

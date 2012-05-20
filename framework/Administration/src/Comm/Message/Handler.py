@@ -28,9 +28,8 @@ from twisted.python import log
 from twisted.internet.interfaces import IConsumer
 
 # Custom imports
-from Exceptions import InternalError, SerializationError, MessageLengthError
+from Exceptions import InternalError, MessageLengthError
 import MsgDef
-from Base import Message
 from Interfaces import IReappengineProducer
 
 class MessageSender(object):
@@ -51,31 +50,41 @@ class MessageSender(object):
 
             @raise:     InternalError, MessageLengthError
         """
-        self.origin = manager.commID
+        self._origin = manager.commID
         self._consumer = None
 
-        self._sendBuf = msg.serialize(manager.getMessageNr, self.origin)
+        self._sendBuf = msg.serialize(manager)
         self._pos = 0
-        self.paused = False
+        self._paused = False
+    
+    @property
+    def origin(self):
+        """ Communication ID of this node. """
+        return self._origin
+    
+    @property
+    def paused(self):
+        """ Flag which indicates whether the producer is paused or not. """
+        return self._paused
 
     def pauseProducing(self):
         """ Method for the consumer to signal that he can't accept (more)
             data at the moment.
         """
-        self.paused = True
+        self._paused = True
 
     def resumeProducing(self):
         """ Method for the consumer to signal that he can accept (again)
             data.
         """
-        self.paused = False
+        self._paused = False
         self._send()
 
     def stopProducing(self):
         """ Method for the consumer to signal that the producer should
             stop sending data.
         """
-        self.paused = True
+        self._paused = True
         self._consumer.unregisterProducer()
 
     def _send(self):
@@ -87,7 +96,7 @@ class MessageSender(object):
             self._consumer.unregisterProducer()
             raise MessageLengthError('The message does not contain a valid message.')
 
-        while not self.paused:
+        while not self._paused:
             self._consumer.write(self._sendBuf[self._pos:self._pos + MsgDef.CHUNK_SIZE])
             self._pos += MsgDef.CHUNK_SIZE
 
@@ -119,7 +128,7 @@ class MessageReceiver(object):
     """
     implements(IConsumer)
 
-    def __init__(self, processMsg):
+    def __init__(self, commManager, processMsg):
         """ Initialize the Message Receiver object.
 
             @param processMsg:  Callback which should be used when the message
@@ -127,12 +136,8 @@ class MessageReceiver(object):
                                 deserialized. The callback function should take
                                 as a single argument a Message instance.
             @type  processMsg:  Callable
-
-            @raise:     InternalError, MessageLengthError
         """
-        if not callable(processMsg):
-            raise InternalError('Process Message callback is not a callable object.')
-        
+        self._commManager = commManager
         self._processMsg = processMsg
 
         self._recvBuf = ''
@@ -158,12 +163,7 @@ class MessageReceiver(object):
         """ Method which is used by the producer to signal that he has
             finished sending data.
         """
-        log.msg('Message Receiver: {0} bytes received'.format(len(self._recvBuf)))
-        
-        try:
-            self._msgProcessor(Message.deserialize(self._recvBuf))
-        except SerializationError as e:
-            log.msg('Could not deserialize message: {0}'.format(e))
+        self._commManager.messageReceived(self._recvBuf, self._processMsg)
 
 class MessageForwarder(object):
     """ This class is used to forward a message.
@@ -176,7 +176,7 @@ class MessageForwarder(object):
             @param origin:  Communication ID of originating connection.
             @type  origin:  str
         """
-        self.origin = origin
+        self._origin = origin
         
         self._producer = None
         self._consumer = None
@@ -185,9 +185,19 @@ class MessageForwarder(object):
         self._sent = 0
         self._recv = 0
         
-        self.paused = False
+        self._paused = False
         self._connected = False
         self._completed = False
+    
+    @property
+    def origin(self):
+        """ Communication ID of this node. """
+        return self._origin
+    
+    @property
+    def paused(self):
+        """ Flag which indicates whether the producer is paused or not. """
+        return self._paused
     
     ##################################################
     ### Producer
@@ -196,20 +206,20 @@ class MessageForwarder(object):
         """ Method for the consumer to signal that he can't accept (more)
             data at the moment.
         """
-        self.paused = True
+        self._paused = True
 
     def resumeProducing(self):
         """ Method for the consumer to signal that he can accept (again)
             data.
         """
-        self.paused = False
+        self._paused = False
         self._send()
 
     def stopProducing(self):
         """ Method for the consumer to signal that the producer should
             stop sending data.
         """
-        self.paused = True
+        self._paused = True
         self._completed = True
         self._consumer.unregisterProducer()
         
@@ -219,7 +229,7 @@ class MessageForwarder(object):
     def _send(self):
         """ This method sends the data to the specified consumer.
         """
-        while not self.paused and self._buf:
+        while not self._paused and self._buf:
             sendSize = min(len(self._buf), MsgDef.CHUNK_SIZE)
             
             self._consumer.write(self._buf[:sendSize])

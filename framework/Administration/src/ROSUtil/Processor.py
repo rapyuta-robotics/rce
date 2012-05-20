@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       ROSProcessor.py
+#       Processor.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -28,9 +28,9 @@ from twisted.python import log
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-from Interfaces import IMessageProcessor
-import MsgTypes
-from Base import Message
+from Comm.Message.Interfaces import IMessageProcessor
+from Comm.Message import MsgTypes
+from Comm.Message.Base import Message
 
 class ROSProcessorBase(object):
     """ Message processor base class for ROS Processors.
@@ -47,7 +47,7 @@ class ROSProcessorBase(object):
         self.manager = manager
         self.commManager = commManager
 
-class ROSAddNode(ROSProcessorBase):
+class ROSAddNodeProcessor(ROSProcessorBase):
     """ Message processor to add a/multiple node(s).
     """
     IDENTIFIER = MsgTypes.ROS_ADD
@@ -59,7 +59,7 @@ class ROSAddNode(ROSProcessorBase):
             except InternalError as e:
                 log.msg('Could not add Node: {0}'.format(e))
 
-class ROSRemoveNode(ROSProcessorBase):
+class ROSRemoveNodeProcessor(ROSProcessorBase):
     """ Message processor to remove a/multiple node(s).
         
         Should be a list of ROSUtil.Node
@@ -73,7 +73,7 @@ class ROSRemoveNode(ROSProcessorBase):
             except InvalidRequest as e:
                 log.msg('Could not remove Node: {0}'.format(e))
 
-class ROSMessageContainer(ROSProcessorBase):
+class ROSMessageContainerProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message in the container node.
     """
     IDENTIFIER = MsgTypes.ROS_MSG
@@ -100,7 +100,7 @@ class ROSMessageContainer(ROSProcessorBase):
             
             self.commManager.sendMessage(respMsg)
 
-class ROSMessageMaster(ROSProcessorBase):
+class ROSMessageMasterProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message in the master node.
     """
     IDENTIFIER = MsgTypes.ROS_MSG
@@ -109,7 +109,7 @@ class ROSMessageMaster(ROSProcessorBase):
         pass
         # TODO: Add logic to process message in master node
 
-class ROSGet(ROSProcessorBase):
+class ROSGetProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message request.
     """
     IDENTIFIER = MsgTypes.ROS_GET

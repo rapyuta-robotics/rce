@@ -36,7 +36,7 @@ except ImportError:
 # Custom imports
 from Exceptions import SerializationError
 from Interfaces import IContentSerializer
-from SerializerUtil import serializeDict, deserializeDict, serializeList, deserializeList
+from SerializerUtil import serializeList, deserializeList
 import MsgDef
 import MsgTypes
 
@@ -150,79 +150,3 @@ class RouteMessage(object):
     
     def deserialize(self, data):
         return map(self._deserializeElement, deserializeList(data))
-
-class ConnectDirectiveMessage(object):
-    """ Message type to provide node with connection directives.
-    """
-    implements(IContentSerializer)
-    
-    IDENTIFIER = MsgTypes.CONNECT
-    
-    def serialize(self, data):
-        satellites = []
-        
-        try:
-            for element in data:
-                buf = StringIO()
-                
-                buf.write(MsgDef.I_STRUCT.pack(len(element['ip'])))
-                buf.write(element['ip'])
-                
-                buf.write(MsgDef.I_STRUCT.pack(len(element['port'])))
-                buf.write(element['port'])
-                
-                buf.write(MsgDef.I_STRUCT.pack(len(element['commID'])))
-                buf.write(element['commID'])
-                
-                satellites.append(buf.getvalue())
-        except KeyError as e:
-            raise SerializationError('Could not serialize message of type ConnectDirective: {0}'.format(e))
-        
-        return serializeList(satellites)
-    
-    def deserialize(self, data):
-        satellites = []
-        
-        try:
-            for element in deserializeList(data):
-                msg = {}
-                
-                start = 0
-                end = MsgDef.I_LEN
-                length, = MsgDef.I_STRUCT.unpack(element[start:end])
-                start = end
-                end += length
-                msg['ip'] = element[start:end]
-                
-                start = end
-                end += MsgDef.I_LEN
-                length, = MsgDef.I_STRUCT.unpack(element[start:end])
-                start = end
-                end += length
-                msg['port'] = element[start:end]
-                
-                start = end
-                end += MsgDef.I_LEN
-                length, = MsgDef.I_STRUCT.unpack(element[start:end])
-                start = end
-                end += length
-                msg['commID'] = element[start:end]
-                
-                satellites.append(msg)
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type ConnectDirective: {0}'.format(e))
-        
-        return satellites
-
-class LoadInfoMessage(object):
-    """ Message type to provide the load balancer with the necessary information.
-    """
-    implements(IContentSerializer)
-    
-    IDENTIFIER = MsgTypes.LOAD_INFO
-    
-    def serialize(self, data):
-        pass # TODO: Add
-    
-    def deserialize(self, data):
-        pass # TODO: Add

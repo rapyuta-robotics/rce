@@ -54,8 +54,14 @@ TMP_RESULT_DIR = '/var/www/tmp'
 #####################
 # New stuff
 
-# Master Comm ID
-MASTER_COMM_ID = 'MASTER'
+# Port of Container Manager
+PORT_CONTAINER_MNGR = 10011
+
+# Port of Satellite for other Satellites
+PORT_SATELLITE_SATELLITE = 10010
+
+# Port of Satellite for Environment Nodes
+PORT_SATELLITE_ENVIRONMENT = 11010
 
 # Maximal length for a message in bytes
 MAX_LENGTH_MESSAGE = 99999

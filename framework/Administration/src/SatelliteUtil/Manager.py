@@ -24,16 +24,18 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import ClientContextFactory
 
 # Custom imports
 import settings
 from Exceptions import InternalError
 from Comm.Message import MsgTypes
-from Comm.Message.StdProcessor import ConnectDirectiveProcessor
-from Comm.Message.ContainerProcessor import CreateEnvProcessor, DestroyEnvProcessor
 from Comm.Message.Base import Message
+from Comm.Message.SatelliteType import ConnectDirectiveMessage #@UnresolvedImport
+from Comm.Message.SatelliteProcessor import ConnectDirectiveProcessor #@UnresolvedImport
+from Comm.Message.ContainerType import CreateEnvMessage, DestroyEnvMessage, StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
+from Comm.Message.ContainerProcessor import CreateEnvProcessor, DestroyEnvProcessor, ContainerStatusProcessor #@UnresolvedImport
 from Comm.Factory import ReappengineClientFactory
+from Triggers import SatelliteRoutingTrigger #@UnresolvedImport
 
 class SatelliteManager(object):
     """ Manager which is used for the satellites nodes, which represent the communication
@@ -53,17 +55,26 @@ class SatelliteManager(object):
         self._commMngr = commMngr
         
         # SSL Context which is used to connect to other satellites
-        self._ctx = ClientContextFactory()
-        self._ctx._contextFactory = ctx
+        self._ctx = ctx
         
         # Storage for all running containers
         self._containers = {}
         self.containerMngrID = None
         
+        # Register Content Serializers
+        self.registerContentSerializers([ ConnectDirectiveMessage(),
+                                          CreateEnvMessage(),
+                                          DestroyEnvMessage(),
+                                          StartContainerMessage(),
+                                          StopContainerMessage(),
+                                          ContainerStatusMessage() ])    # <- necessary?
+        # TODO: Check if all these Serializers are necessary
+        
         # Register Message Processors
-        self._commMngr.registerMessageProcessor(ConnectDirectiveProcessor(self))
-        self._commMngr.registerMessageProcessor(CreateEnvProcessor(self))
-        self._commMngr.registerMessageProcessor(DestroyEnvProcessor(self))
+        self._commMngr.registerMessageProcessors([ ConnectDirectiveProcessor(self),
+                                                   CreateEnvProcessor(self),
+                                                   DestroyEnvProcessor(self),
+                                                   ContainerStatusProcessor(self) ])
         # TODO: Add all valid messages    
     
     def createContainer(self, commID, homeFolder):
@@ -98,18 +109,23 @@ class SatelliteManager(object):
         """
         return self._containers.keys()
     
+    def _connectToSatellite(self, commID, ip, port):
+        """ Connect to another satellite node.
+        """
+        factory = ReappengineClientFactory(self._commMngr, commID, '', SatelliteRoutingTrigger(self._commMngr, self))
+        factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
+                                          MsgTypes.ROS_MSG ])
+        self._commMngr.reactor.connectSSL(ip, port, factory, self._ctx)
+    
     def connectToSatellites(self, satellites):
         """ Connect to specified satellites.
             
             @param satellites:  List of dictionaries containing the necessary
-                                information each (ip, port, commID).
+                                information of each satellite (ip, port, commID).
             @type  satellites:  [ { str : str } ]
         """
         for satellite in satellites:
-            satelliteID = satellite['commID']
-            ip = satellite['ip']
-            port = satellite['port']
-            self._commMngr.reactor.connectSSL(ip, port, ReappengineClientFactory(self._commMngr, satelliteID, ''), self._ctx)
+            self._connectToSatellite(satellite['commID'], satellite['ip'], satellite['port'])
     
     def updateLoadInfo(self):
         """ This method is called regularly and is used to send the newest load info

@@ -30,6 +30,7 @@ from twisted.internet.task import LoopingCall
 import settings
 from Exceptions import InternalError
 from FIFO import ProducerFIFO
+from Message.Base import validateAddress
 
 class Router(object):
     """ Class which is responsible for routing the communication.
@@ -80,6 +81,10 @@ class Router(object):
         if dest not in self._dest:
             self._dest[dest] = set()
         
+        # Add direct route to routing
+        self._routes[dest] = dest
+        self._dest[dest].add(dest)
+        
         # Try to start to send messages if it is necessary
         self._connections[dest].requestSend()
     
@@ -103,6 +108,10 @@ class Router(object):
                             CommID of the destination node.
             @type  dest:    str
         """
+        if not validateAddress(dest, True):
+            log.msg('Message could not be sent: "{0}" is not a valid address'.format(dest))
+            return
+        
         if dest not in self._fifos:
             # If there is no FIFO yet for this destination create one
             self._fifos[dest] = ProducerFIFO()

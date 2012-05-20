@@ -40,11 +40,16 @@ class ProducerFIFO(object):
     def __init__(self, dest):
         """ Initialize the Producer FIFO.
 
-            @param dest:    The destination for which this producer queue is used.
+            @param dest:    The destination for which this producer FIFO is used.
             @type  dest:    str
         """
         self._fifo = []
-        self.dest = dest
+        self._dest = dest
+    
+    @property
+    def dest(self):
+        """ Communication ID for which this producer FIFO is used. """
+        return self._dest
     
     def __len__(self):
         """ Get the number of producers in the FIFO.
@@ -84,4 +89,4 @@ class ProducerFIFO(object):
         
         if i:
             self._fifo = self._fifo[i:]
-            log.msg('{0} Producer(s) has been dropped from queue for destination "{1}".'.format(i, self.dest))
+            log.msg('{0} Producer(s) has been dropped from queue for destination "{1}".'.format(i, self._dest))

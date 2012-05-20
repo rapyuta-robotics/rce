@@ -39,17 +39,7 @@ from Comm.Message.Base import validateAddress
 from Comm.Message import MsgTypes
 from Comm.Factory import ReappengineClientFactory
 from Comm.CommManager import CommManager
-from ROSManager import ROSManager
-
-class EnvironmentClientFactory(ReappengineClientFactory):
-    """ Specialized ReappengineClientFactory to filter the incoming messages.
-    """
-    def filterMessage(self, msgType):
-        return msgType not in [ MsgTypes.ROUTE_INFO,
-                                MsgTypes.ROS_ADD,
-                                MsgTypes.ROS_REMOVE,
-                                MsgTypes.ROS_GET,
-                                MsgTypes.ROS_MSG ]
+from ROSUtil.Manager import ROSManager #@UnresolvedImport
 
 def main(reactor, ip, port, commID, satelliteID, key):
     # Start logger
@@ -71,7 +61,13 @@ def main(reactor, ip, port, commID, satelliteID, key):
 
     # Initialize twisted
     log.msg('Initialize twisted')
-    reactor.connectSSL(ip, port, EnvironmentClientFactory(commManager, satelliteID, key), ClientContextFactory())
+    factory = ReappengineClientFactory(commManager, satelliteID, key)
+    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
+                                      MsgTypes.ROS_ADD,
+                                      MsgTypes.ROS_REMOVE,
+                                      MsgTypes.ROS_GET,
+                                      MsgTypes.ROS_MSG ])
+    reactor.connectSSL(ip, port, factory, ClientContextFactory())
 
     # Add shutdown hooks
     log.msg('Add shutdown hooks')
