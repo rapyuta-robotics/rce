@@ -26,7 +26,6 @@
 import roslaunch.core
 
 # Custom imports
-
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes

@@ -26,7 +26,7 @@
 from zope.interface import implements
 
 # Custom imports
-from Comm.Message.Interfaces import IMessageProcessor
+from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
 from Comm.Message import MsgTypes
 
 class SatelliteProcessorBase(object):
@@ -56,4 +56,27 @@ class LoadInfoProcessor(SatelliteProcessorBase):
     
     def processMessage(self, msg):
         pass # TODO: Add
+
+class CreateEnvProcessor(SatelliteProcessorBase):
+    """ Message processor to create an environment.
+    """
+    IDENTIFIER = MsgTypes.ENV_CREATE
     
+    def processMessage(self, msg):
+        self.manager.createContainer(msg.content['commID'], msg.content['home'])
+
+class DestroyEnvProcessor(SatelliteProcessorBase):
+    """ Message processor to destroy an environment.
+    """
+    IDENTIFIER = MsgTypes.ENV_DESTROY
+    
+    def processMessage(self, msg):
+        self.manager.destroyContainer(msg.content['commID'])
+
+class ContainerStatusProcessor(SatelliteProcessorBase):
+    """ Message processor to handle container status information.
+    """
+    IDENTIFIER = MsgTypes.CONTAINER_STATUS
+    
+    def processMessage(self, msg):
+        pass # TODO: Add necessary code here

@@ -23,6 +23,7 @@
 #       
 
 # twisted specific imports
+from zope.interface import implements
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
 
@@ -30,39 +31,21 @@ from twisted.internet.ssl import DefaultOpenSSLContextFactory
 import sys
 
 # Custom imports
+import settings
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message, validateAddress
 from Comm.Message import MsgTypes
 from Comm.CommManager import CommManager
 from Comm.Factory import ReappengineServerFactory
+from Comm.Interfaces import IUIDServer #@UnresolvedImport
 from MiscUtility import generateID
-
-class MasterServerFactory(ReappengineServerFactory):
-    """ Factory which is used in the master node for the connection to the satellite nodes.
-    """
-    def filterMessage(self, msgType):
-        return msgType not in [ MsgTypes.ROUTE_INFO,    # TODO: <- Necessary in master node?
-                                MsgTypes.LOAD_INFO,
-                                MsgTypes.ROS_RESPONSE,
-                                MsgTypes.ROS_MSG ]
-    
-    def getResponse(self, origin):
-        return { 'origin' : self.manager.commID, 'dest' : origin, 'key' : '' }  # TODO: Assign a new destination ID to dest?
-    
-    def postInitTrigger(self, origin):
-        ### TODO: Send MsgTypes.CONNECT
-        #         ROUTE_INFO what exactly?
-        
-        msg = Message()
-        msg.msgType = MsgTypes.ROUTE_INFO
-        msg.dest = origin
-        msg.content = self.manager.getSatelliteRouting()
-        self.manager.sendMessage(msg)
 
 class MasterManager(object):
     """ Manager which is used for master node who is responsible for the management
         of the satellites nodes and is the connection point for the outside world.
     """
+    implements(IUIDServer)
+    
     def __init__(self, reactor, commID):
         """ Initialize the necessary variables for the base manager.
 
@@ -77,56 +60,19 @@ class MasterManager(object):
         
         # Setup list of valid message processors
         self.msgProcessors.extend([ ])
-
+    
+    def getUID(self):
+        """ Callback method which provides a new UID for a machine.
+            
+            @return:    Unique ID which should be used to build the CommID for Satellite and
+                        Container Node.
+            @rtype:     str
+        """
+        # TODO: Return a UID...
+    
     def shutdown(self):
         """ Method is called when the manager/factory is stopped.
         """
         super(MasterManager, self).shutdown()
         
         # Stop all satellites nodes
-
-def main(reactor, port, commID):
-    # Start logger
-    log.startLogging(sys.stdout)
-    
-    log.msg('Start initialization...')
-
-    # Create Manager
-    manager = MasterManager(reactor, commID)
-
-    # Initialize twisted
-    log.msg('Initialize twisted')
-    reactor.listeSSL(port, MasterServerFactory(manager), DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem'))
-
-    # Start twisted (without signal handles as ROS also registers signal handlers)
-    log.msg('Initialization completed')
-    log.msg('Enter mainloop')
-    reactor.run()       # TODO: Call shutdown on manager before reactor is terminated.
-    log.msg('Leaving Master')
-
-def _get_argparse():
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser(prog='Master',
-                            description='Master Node of the Satellite Nodes of the reappengine.')
-
-    parser.add_argument('commID', help='Communication address of this node.')
-    parser.add_argument('port', type=int, help='Port of the satellite node to which the connection should be established.')
-    
-    return parser
-
-if __name__ == '__main__':
-    from twisted.internet import reactor
-
-    parser = _get_argparse()
-    args = parser.parse_args()
-    
-    if not validateAddress(args.commID):
-        print 'CommID is not a valid address.'
-        exit(1)
-     
-    if not validateAddress(args.satelliteID):
-        print 'SatelliteID is not a valid address.'
-        exit(1)
-    
-    main(reactor, args.port, args.commID)

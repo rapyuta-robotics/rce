@@ -26,7 +26,7 @@
 from zope.interface import implements
 
 # Custom imports
-from Interfaces import IMessageProcessor
+from Interfaces import IMessageProcessor #@UnresolvedImport
 import MsgTypes
 
 class StdProcessorBase(object):

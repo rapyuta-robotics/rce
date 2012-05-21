@@ -26,7 +26,7 @@
 from zope.interface import implements
 
 # Custom imports
-from Comm.Message.Interfaces import IMessageProcessor
+from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
 from Comm.Message import MsgTypes
 
 class ContainerProcessorBase(object):
@@ -40,29 +40,13 @@ class ContainerProcessorBase(object):
         """
         self.manager = manager
 
-class CreateEnvProcessor(ContainerProcessorBase):
-    """ Message processor to create an environment.
-    """
-    IDENTIFIER = MsgTypes.ENV_CREATE
-    
-    def processMessage(self, msg):
-        self.manager.createContainer(msg.content['commID'], msg.content['home'])
-
-class DestroyEnvProcessor(ContainerProcessorBase):
-    """ Message processor to destroy an environment.
-    """
-    IDENTIFIER = MsgTypes.ENV_DESTROY
-    
-    def processMessage(self, msg):
-        self.manager.destroyContainer(msg.content['commID'])
-
 class StartContainerProcessor(ContainerProcessorBase):
     """ Message processor to start a container.
     """
     IDENTIFIER = MsgTypes.CONTAINER_START
     
     def processMessage(self, msg):
-        pass # TODO: Add necessary code here
+        self.manager.startContainer(msg['commID'], msg['ip'], msg['homeDir'], msg['key'])
 
 class StopContainerProcessor(ContainerProcessorBase):
     """ Message processor to stop a container.
@@ -70,12 +54,4 @@ class StopContainerProcessor(ContainerProcessorBase):
     IDENTIFIER = MsgTypes.CONTAINER_STOP
     
     def processMessage(self, msg):
-        pass # TODO: Add necessary code here
-
-class ContainerStatusProcessor(ContainerProcessorBase):
-    """ Message processor to # TODO: ???
-    """
-    IDENTIFIER = MsgTypes.CONTAINER_STOP
-    
-    def processMessage(self, msg):
-        pass # TODO: Add necessary code here
+        self.manager.stopContainer(msg['commID'])

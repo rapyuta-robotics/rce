@@ -28,7 +28,7 @@ from twisted.python import log
 
 # Custom imports
 from Exceptions import InternalError, SerializationError
-from Message.Interfaces import IContentSerializer, IMessageProcessor
+from Message.Interfaces import IContentSerializer, IMessageProcessor #@UnresolvedImport
 from Message import MsgDef
 from Message.Base import Message
 from Message.Handler import MessageReceiver, MessageForwarder, MessageSender, Sink

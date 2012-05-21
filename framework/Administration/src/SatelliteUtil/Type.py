@@ -35,7 +35,7 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from Comm.Message.Interfaces import IContentSerializer
+from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
 from Comm.Message.SerializerUtil import serializeList, deserializeList
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
@@ -115,3 +115,86 @@ class LoadInfoMessage(object):
     
     def deserialize(self, data):
         pass # TODO: Add
+
+class CreateEnvMessage(object):
+    """ Message type to create a new environment.
+        
+        The fields are:
+            commID  CommID which is used to identify the environment
+            home    Home directory which should be used
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = MsgTypes.ENV_CREATE
+    
+    def serialize(self, data):
+        buf = StringIO()
+        
+        try:
+            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
+            buf.write(data['commID'])
+            
+            buf.write(MsgDef.I_STRUCT.pack(len(data['home'])))
+            buf.write(data['home'])
+        except KeyError as e:
+            raise SerializationError('Could not serialize message of type CreateEnv: {0}'.format(e))
+        
+        return buf.getvalue()
+    
+    def deserialize(self, data):
+        msg = {}
+        
+        try:
+            start = 0
+            end = MsgDef.I_LEN
+            length, = MsgDef.I_STRUCT.unpack(data[start:end])
+            start = end
+            end += length
+            msg['commID'] = data[start:end]
+            
+            start = end
+            end += MsgDef.I_LEN
+            length, = MsgDef.I_STRUCT.unpack(data[start:end])
+            start = end
+            end += length
+            msg['home'] = data[start:end]
+        except StructError as e:
+            raise SerializationError('Could not deserialize message of type CreateEnv: {0}'.format(e))
+        
+        return msg
+
+class DestroyEnvMessage(object):
+    """ Message type to destroy an existing environment.
+        
+        The fields are:
+            commID  CommID which is used to identify the environment
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = MsgTypes.ENV_DESTROY
+    
+    def serialize(self, data):
+        buf = StringIO()
+        
+        try:
+            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
+            buf.write(data['commID'])
+        except KeyError as e:
+            raise SerializationError('Could not serialize message of type DestroyEnv: {0}'.format(e))
+        
+        return buf.getvalue()
+    
+    def deserialize(self, data):
+        msg = {}
+        
+        try:
+            start = 0
+            end = MsgDef.I_LEN
+            length, = MsgDef.I_STRUCT.unpack(data[start:end])
+            start = end
+            end += length
+            msg['commID'] = data[start:end]
+        except StructError as e:
+            raise SerializationError('Could not deserialize message of type DestroyEnv: {0}'.format(e))
+        
+        return msg

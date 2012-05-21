@@ -35,7 +35,7 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from Interfaces import IContentSerializer
+from Interfaces import IContentSerializer #@UnresolvedImport
 from SerializerUtil import serializeList, deserializeList
 import MsgDef
 import MsgTypes

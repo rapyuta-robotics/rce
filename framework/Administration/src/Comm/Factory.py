@@ -29,13 +29,13 @@ from twisted.python import log
 from twisted.internet.protocol import ServerFactory, ReconnectingClientFactory
 
 # Custom imports
-from Exceptions import InternalError, SerializationError
+from Exceptions import InternalError, InvalidRequest, SerializationError
 from Protocol import ReappengineProtocol
 from Message import MsgDef
 from Message import MsgTypes
 from Message.Base import Message
 from Message.Handler import MessageSender
-from Message.Interfaces import IPostInitTrigger, IServerImplementation
+from Interfaces import IPostInitTrigger, IServerImplementation #@UnresolvedImport
 
 class EmptyTrigger(object):
     """ PostInitTrigger which implements the necessary methods, but does nothing.
@@ -289,7 +289,12 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
             return
         
         # Save state
-        self._server.saveState(content)
+        try:
+            self._server.saveState(content)
+        except InvalidRequest as e:
+            log.msg('Could not save connection state: {0}'.format(e))
+            conn.transport.loseConnection()
+            return
         
         # Set protocol to initialized and register connection in manager
         conn.dest = origin
@@ -302,5 +307,30 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
     
     def unregisterConnection(self, conn):
         self._server.unregisterConnection(conn)
-        
         self._commManager.router.unregisterConnection(conn)
+
+class BaseServerImplementation(object):
+    """ ServerImplementation which implements the minimal necessary behavior.
+    """
+    implements(IServerImplementation)
+    
+    def __init__(self, commMngr):
+        """ Initialize the BaseServerImplementation.
+
+            @param commMngr:    CommManager which is responsible for handling the communication
+                                in this node.
+            @type  commMngr:    CommManager
+        """
+        self.commManager = commMngr
+    
+    def authOrigin(self, origin, key):
+        return True
+    
+    def getResponse(self, origin):
+        return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : '' }
+    
+    def saveState(self, content):
+        pass
+    
+    def unregisterConnection(self, conn):
+        pass

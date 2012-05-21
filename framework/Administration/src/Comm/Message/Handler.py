@@ -30,7 +30,7 @@ from twisted.internet.interfaces import IConsumer
 # Custom imports
 from Exceptions import InternalError, MessageLengthError
 import MsgDef
-from Interfaces import IReappengineProducer
+from Interfaces import IReappengineProducer #@UnresolvedImport
 
 class MessageSender(object):
     """ This class is used to provide a startpoint for the communication.

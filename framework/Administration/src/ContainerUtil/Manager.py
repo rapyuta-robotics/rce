@@ -24,11 +24,9 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import ClientContextFactory
-from twisted.internet.task import LoopingCall
 
 # Python specific imports
-import sys
+import os, sys
 
 # Custom imports
 from Comm.Message import MsgDef
@@ -37,22 +35,7 @@ from Comm.Message.Base import Message
 from Comm.Factory import ReappengineServerFactory
 from Comm.Message.ContainerType import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
 from Comm.Message.ContainerProcessor import StartContainerProcessor, StopContainerProcessor #@UnresolvedImport
-
-class ContainerServerFactory(ReappengineServerFactory):
-    """ Factory which is used in the container manager node for the connection to
-        the satellite node.
-    """
-    def filterMessage(self, msgType):
-        return msgType not in [ MsgTypes.ROUTE_INFO,
-                                MsgTypes.CONTAINER_START,
-                                MsgTypes.CONTAINER_STOP ]
-    
-    def postInitTrigger(self, origin):
-        msg = Message()
-        msg.msgType = MsgTypes.ROUTE_INFO
-        msg.dest = origin
-        msg.content = { None : MsgDef.NEIGHBOR_ADDR }
-        self.manager.sendMessage(msg)
+import settings
 
 class ContainerManager(object):
     """ Manager which handles container specific task.
@@ -65,6 +48,7 @@ class ContainerManager(object):
         """
         # References used by the container manager
         self._commMngr = commMngr
+        self._reactor = commMngr.reactor
         
         # Register Content Serializers
         self.registerContentSerializer(StartContainerMessage())
@@ -75,4 +59,82 @@ class ContainerManager(object):
         self._commMngr.registerMessageProcessor(StartContainerProcessor(self))
         self._commMngr.registerMessageProcessor(StopContainerProcessor(self))
     
+    def _createConfigFile(self, commID, ip):
+        """ Create a config file based on the given parameters.
+        """
+        with open(os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'config')), 'w') as f:
+            f.writeline('lxc.utsname = ros')
+            f.writeline('')
+            f.writeline('lxc.tty = 4')
+            f.writeline('lxc.pts = 1024')
+            f.writeline('lxc.rootfs = {rootfs}'.format(rootfs=settings.ROOTFS))
+            f.writeline('lxc.mount  = {fstab}'.format(fstab=os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'fstab'))))
+            f.writeline('')
+            f.writeline('lxc.network.type = veth')
+            f.writeline('lxc.network.flags = up')
+            f.writeline('lxc.network.name = eth0')
+            f.writeline('lxc.network.link = br0')
+            f.writeline('lxc.network.ipv4 = {ip}'.format(ip=ip))
+            f.writeline('')
+            f.writeline('lxc.cgroup.devices.deny = a')
+            f.writeline('# /dev/null and zero')
+            f.writeline('lxc.cgroup.devices.allow = c 1:3 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 1:5 rwm')
+            f.writeline('# consoles')
+            f.writeline('lxc.cgroup.devices.allow = c 5:1 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 5:0 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 4:0 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 4:1 rwm')
+            f.writeline('# /dev/{,u}random')
+            f.writeline('lxc.cgroup.devices.allow = c 1:9 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 1:8 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 136:* rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 5:2 rwm')
+            f.writeline('# rtc')
+            f.writeline('lxc.cgroup.devices.allow = c 254:0 rwm')
     
+    def _createFstabFile(self, commID, homeDir):
+        """ Create a fstab file based on the given parameters.
+        """
+        with open(os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'fstab')), 'w') as f:
+            f.writeline('proc     {rootfs}/proc      proc     nodev,noexec,nosuid 0 0'.format(rootfs=settings.ROOTFS))
+            f.writeline('devpts   {rootfs}/dev/pts   devpts   defaults            0 0'.format(rootfs=settings.ROOTFS))
+            f.writeline('sysfs    {rootfs}/sys       sysfs    defaults            0 0'.format(rootfs=settings.ROOTFS))
+            f.writeline('{homeDir}   {rootfs}/home/ros   none   bind 0 0'.format(homeDir=os.path.abspath(homeDir), rootfs=settings.ROOTFS))
+    
+    def _startContainer(self, commID, ip, homeDir, key):
+        """
+        """
+        # Create folder for config and fstab file
+        confDir = os.path.abspath(os.path.join(settings.CONF_DIR, commID))
+        
+        if os.path.isdir(confDir):
+            log.msg('There exists already a directory with the name "{0}".'.format(commID))
+            return
+        
+        os.mkdir(confDir)
+        
+        # Construct config file
+        self._createConfigFile(commID, ip)
+        
+        # Construct fstab file
+        self._createFstabFile(commID, homeDir)
+        
+        # Start container
+        # TODO:
+    
+    def startContainer(self, commID, homeDir, key):
+        """
+        """
+        d = self._reactor.deferToThread(self._startContainer, commID, homeDir, key)
+    
+    def _stopContainer(self, commID):
+        """
+        """
+        # Stop container
+        # TODO:
+    
+    def stopContainer(self, commID):
+        """
+        """
+        d = self._reactor.deferToThread(self._stopContainer, commID)

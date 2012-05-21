@@ -36,8 +36,8 @@ import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
 from Comm.Message.Base import validateSuffix
-from Comm.Message.Interfaces import IServerImplementation
-from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory
+from Comm.Interfaces import IServerImplementation #@UnresolvedImport
+from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory, BaseServerImplementation
 from Comm.CommManager import CommManager
 from SatelliteUtil.Manager import SatelliteManager #@UnresolvedImport
 from SatelliteUtil.Triggers import DefaultRoutingTrigger, SatelliteRoutingTrigger #@UnresolvedImport
@@ -49,79 +49,30 @@ class EnvironmentServerImplementation(object):
     """
     implements(IServerImplementation)
     
-    def __init__(self, commMngr):
+    def __init__(self, commMngr, satelliteMngr):
         """ Initialize the EnvironmentServerImplementation.
 
             @param commMngr:    CommManager which is responsible for handling the communication
                                 in this node.
             @type  commMngr:    CommManager
+            
+            @param satelliteMngr:   SatelliteManager which is used in this node.
+            @type  satelliteMngr:   SatelliteManager
         """
         self.commManager = commMngr
-        self._expectedConnections = {}
-        self._upConnections = {}
-    
-    def addExpectedConnection(self, commID, key):
-        """ Add a communication ID to the dictionary of expected incoming
-            connections.
-            
-            @param commID:  CommID of expected connection.
-            @type  commID:  str
-            
-            @param key:     Key which is used to authenticate the connection.
-            @type  key:     str
-        """
-        self._expectedConnections[commID] = key
+        self._satelliteManager = satelliteMngr
     
     def authOrigin(self, origin, key):
-        if origin not in self._expectedConnections:
-            log.msg('Received a initialization request from an unexpected source.')
-            return False
-        
-        if self._expectedConnections[origin] != key:
-            log.msg('Tried to initialize a connection without a valid key.')
-            return False
-        
-        return True
+        return self._satelliteManager.authentiateContainerConnection(origin, key)
     
     def getResponse(self, origin):    
         return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : generateID() }
     
     def saveState(self, content):
-        dest = content['dest']
-        del self._expectedConnections[dest]
-        self._upConnections[dest] = content['key']
+        self._satelliteManager.setConnectedFlagContainer(content['dest'], True, content['key'])
     
     def unregisterConnection(self, conn):
-        dest = conn.dest
-        self._expectedConnections[dest] = self._upConnections[dest]
-        del self._upConnections[dest]
-
-class SatelliteServerImplementation(object):
-    """ ServerImplementation which is used in the satellite node for the connection to the
-        other satellite nodes.
-    """
-    implements(IServerImplementation)
-    
-    def __init__(self, commMngr):
-        """ Initialize the EnvironmentServerImplementation.
-
-            @param commMngr:    CommManager which is responsible for handling the communication
-                                in this node.
-            @type  commMngr:    CommManager
-        """
-        self.commManager = commMngr
-    
-    def authOrigin(self, origin, key):
-        return True
-    
-    def getResponse(self, origin):
-        return { 'origin' : self.commmManager.commID, 'dest' : origin, 'key' : '' }
-    
-    def saveState(self, content):
-        pass
-    
-    def unregisterConnection(self, conn):
-        pass
+        self._satelliteManager.setConnectedFlagContainer(conn.dest, False)
 
 def main(reactor, ip, port, uid):
     log.startLogging(sys.stdout)
@@ -132,7 +83,7 @@ def main(reactor, ip, port, uid):
     
     # Create Manager
     commManager = CommManager(reactor, commID)
-    satelliteManager = SatelliteManager(ctx.getContext(), commManager)
+    satelliteManager = SatelliteManager(commManager, ctx.getContext())
     
     # Create triggers
     defaultTrigger = DefaultRoutingTrigger(commManager)
@@ -142,26 +93,36 @@ def main(reactor, ip, port, uid):
     log.msg('Initialize twisted')
     
     # Server for connections from the containers
-    factory = ReappengineServerFactory(commManager, EnvironmentServerImplementation(commManager), defaultTrigger)
+    factory = ReappengineServerFactory( commManager,
+                                        EnvironmentServerImplementation(commManager, satelliteManager),
+                                        defaultTrigger )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_RESPONSE,
                                       MsgTypes.ROS_MSG ])
     reactor.listenSSL(settings.PORT_SATELLITE_ENVIRONMENT, factory, ctx)
     
     # Server for connections from other satellites
-    factory = ReappengineServerFactory(commManager, SatelliteServerImplementation(commManager, satelliteManager), satelliteTrigger)
+    factory = ReappengineServerFactory( commManager,
+                                        BaseServerImplementation(commManager, satelliteManager),
+                                        satelliteTrigger )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_MSG ])
     reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
     
     # Client for connection to ContainerLauncher
-    factory = ReappengineClientFactory(commManager, MsgDef.PREFIX_CONTAINER_ADDR + uid, '', satelliteTrigger)
+    factory = ReappengineClientFactory( commManager,
+                                        MsgDef.PREFIX_CONTAINER_ADDR + uid,
+                                        '',
+                                        satelliteTrigger )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_STATUS ])
     reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)
     
     # Client for connection to Master
-    factory = ReappengineClientFactory(commManager, MsgDef.MASTER_ADDR, '', satelliteTrigger, True)
+    factory = ReappengineClientFactory( commManager,
+                                        MsgDef.MASTER_ADDR,
+                                        '',
+                                        satelliteTrigger )
     factory.addApprovedMessageTypes([ MsgTypes.ENV_CREATE,
                                       MsgTypes.ENV_DESTROY,
                                       MsgTypes.ROUTE_INFO,
@@ -173,10 +134,14 @@ def main(reactor, ip, port, uid):
     log.msg('Add periodic call for Load Balancer Update.')
     LoopingCall(satelliteManager.updateLoadInfo).start(settings.LOAD_INFO_UPDATE)
     
+    # Setup shutdown hooks
+    reactor.addSystemEventTrigger('before', 'shutdown', satelliteManager.shutdown)
+    reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
+    
     # Start twisted
     log.msg('Initialization completed')
     log.msg('Enter mainloop')
-    reactor.run()       # TODO: Call shutdown on manager before reactor is terminated.
+    reactor.run()
     log.msg('Leaving Satellite')
 
 def _get_argparse():

@@ -22,6 +22,11 @@
 #       
 #       
 
+#######################################
+###                                 ###
+###         Master settings         ###
+###                                 ###
+#######################################
 
 # Custom converters for django/piston input to ROS messages.
 CONVERTER_CLASSES = (
@@ -50,27 +55,65 @@ WAIT_FOR_SERVICE_TIMEOUT = 5
 # Path to directory where temporary files to store the results should be kept
 TMP_RESULT_DIR = '/var/www/tmp'
 
+#######################################
+###                                 ###
+###        Machine settings         ###
+###                                 ###
+#######################################
 
-#####################
-# New stuff
+# Absolute path to root file system for container
+ROOTFS = '/reappengine/container-fs/rootfs'
+
+# Absolute path to directory where config/stab files for containers should be stored
+CONF_DIR = '/reappengine'
+
+# Absolute path to source root directory
+ROOT_DIR = '/home/dominique/reappengine/framework/Administration/src'
+
+# Time interval in which the newest load information are sent to the master node/load balancer
+LOAD_INFO_UPDATE = 5
+
+#######################################
+###                                 ###
+###      Environment settings       ###
+###                                 ###
+#######################################
+
+# Time in seconds after which results are removed
+RESULT_TIMEOUT = 600
+
+#######################################
+###                                 ###
+###        Network settings         ###
+###                                 ###
+#######################################
+
+# IP address of Master
+IP_MASTER = 'localhost'
+
+# Port of Master for Satellites
+PORT_MASTER = 10010
+
+# Port of Master for UID Server
+PORT_UID = 10015
 
 # Port of Container Manager
-PORT_CONTAINER_MNGR = 10011
+PORT_CONTAINER_MNGR = 10020
 
 # Port of Satellite for other Satellites
-PORT_SATELLITE_SATELLITE = 10010
+PORT_SATELLITE_SATELLITE = 10025
 
 # Port of Satellite for Environment Nodes
 PORT_SATELLITE_ENVIRONMENT = 11010
+
+#######################################
+###                                 ###
+###        Message settings         ###
+###                                 ###
+#######################################
 
 # Maximal length for a message in bytes
 MAX_LENGTH_MESSAGE = 99999
 
 # Time in seconds after which queue messages are removed from the queue
 MSG_QUQUE_TIMEOUT = 30
-
-# Time in seconds after which results are removed
-RESULT_TIMEOUT = 600
-
-# Time interval in which the newest load information are sent to the master node/load balancer
-LOAD_INFO_UPDATE = 5

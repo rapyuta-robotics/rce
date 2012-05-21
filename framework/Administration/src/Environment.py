@@ -61,7 +61,9 @@ def main(reactor, ip, port, commID, satelliteID, key):
 
     # Initialize twisted
     log.msg('Initialize twisted')
-    factory = ReappengineClientFactory(commManager, satelliteID, key)
+    factory = ReappengineClientFactory( commManager,
+                                        satelliteID,
+                                        key )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE,

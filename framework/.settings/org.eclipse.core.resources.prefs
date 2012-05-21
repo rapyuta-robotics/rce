@@ -1,8 +1,9 @@
-#Sun May 20 22:37:32 CEST 2012
+#Mon May 21 18:51:50 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/FIFO.py=utf-8
 encoding//Administration/src/Comm/Factory.py=utf-8
+encoding//Administration/src/Comm/Interfaces.py=utf-8
 encoding//Administration/src/Comm/Message/Base.py=utf-8
 encoding//Administration/src/Comm/Message/Handler.py=utf-8
 encoding//Administration/src/Comm/Message/Interfaces.py=utf-8
@@ -13,6 +14,9 @@ encoding//Administration/src/Comm/Message/StdProcessor.py=utf-8
 encoding//Administration/src/Comm/Message/StdType.py=utf-8
 encoding//Administration/src/Comm/Protocol.py=utf-8
 encoding//Administration/src/Comm/Router.py=utf-8
+encoding//Administration/src/Comm/UIDClient.py=utf-8
+encoding//Administration/src/Comm/UIDServer.py=utf-8
+encoding//Administration/src/Container.py=utf-8
 encoding//Administration/src/ContainerUtil/Manager.py=utf-8
 encoding//Administration/src/ContainerUtil/Processor.py=utf-8
 encoding//Administration/src/ContainerUtil/Type.py=utf-8
@@ -21,6 +25,7 @@ encoding//Administration/src/Converter/Utility.py=utf-8
 encoding//Administration/src/Converter/_ImageConverter.py=utf-8
 encoding//Administration/src/Environment.py=utf-8
 encoding//Administration/src/Exceptions.py=utf-8
+encoding//Administration/src/Master.py=utf-8
 encoding//Administration/src/MasterUtil/DjangoDB.py=utf-8
 encoding//Administration/src/MasterUtil/Manager.py=utf-8
 encoding//Administration/src/MiscUtility.py=utf-8
@@ -44,6 +49,7 @@ encoding//Administration/src/SatelliteUtil/Manager.py=utf-8
 encoding//Administration/src/SatelliteUtil/Processor.py=utf-8
 encoding//Administration/src/SatelliteUtil/Triggers.py=utf-8
 encoding//Administration/src/SatelliteUtil/Type.py=utf-8
+encoding//Administration/src/reappengine.py=utf-8
 encoding//Administration/src/settings.py=utf-8
 encoding//Administration/src/trash/EnvironmentManager.py=utf-8
 encoding//Administration/src/trash/FileConverter.py=utf-8

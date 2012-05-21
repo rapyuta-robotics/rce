@@ -25,6 +25,7 @@
 # twisted specific imports
 from zope.interface import implements
 from twisted.python import log
+from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Protocol
 from twisted.internet.interfaces import IPushProducer, IConsumer
 
@@ -245,6 +246,5 @@ class ReappengineProtocol(Protocol):
         self._factory.unregisterConnection(self)
         
         # TODO: Is anything else necessary?
-        
-        reason.printTraceback(detail='verbose')
-
+        if not reason.check(ConnectionDone):
+            reason.printTraceback(detail='verbose')
