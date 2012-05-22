@@ -28,11 +28,14 @@ from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
 
 # Python specific imports
-import sys
+from datetime import datetime, timedelta
+import random
+import string
 
 # Custom imports
 import settings
 from Exceptions import InvalidRequest, InternalError
+from Comm.Message import MsgDef
 from Comm.Message.Base import Message, validateAddress
 from Comm.Message import MsgTypes
 from Comm.CommManager import CommManager
@@ -58,6 +61,16 @@ class MasterManager(object):
         """
         super(MasterManager, self).__init__(reactor, commID)
         
+        # List of all available satellites
+        # Key:   CommID
+        # Value: IP address of the satellite
+        self._satellites = {}
+        
+        # Dictionary of currently reserved, but not yet confirmed UIDs
+        # Key:   UID
+        # Value: Timestamp with expiration date
+        self._tmpUIDs = {}
+        
         # Setup list of valid message processors
         self.msgProcessors.extend([ ])
     
@@ -68,7 +81,59 @@ class MasterManager(object):
                         Container Node.
             @rtype:     str
         """
-        # TODO: Return a UID...
+        while True:
+            uid = ''.join(random.choice(string.ascii_uppercase) for _ in xrange(MsgDef.SUFFIX_LENGTH_ADDR))
+            
+            if '{0}{1}'.format(MsgDef.PREFIX_SATELLITE_ADDR, uid) not in self._satellites \
+                and uid not in self._tmpUIDs:
+                break
+        
+        self._tmpUIDs[uid] = datetime.now()
+        
+        return uid
+    
+    def checkUID(self, uid):
+        """ Check if the given UID is in the list of not yet confirmed UIDs.
+            
+            @param uid:     UID which should be verified.
+            @type  uid:     str
+            
+            @return:        True if the UID is valid; False otherwise
+            @rtype:         bool
+        """
+        return uid in self._tmpUIDs
+    
+    def addSatellite(self, commID, ip):
+        """
+        """
+        self._satellites[commID] = ip
+        del self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]]
+    
+    def removeSatellite(self, commID):
+        """
+        """
+        if commID in self._satellites:
+            # First add the UID again to the list of not yet confirmed UIDs in case
+            # the satellite just lost the connection and did not leave intentionally
+            self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]] = datetime.now()
+            del self._satellites[commID]
+    
+    def getSatellites(self):
+        """ Get a list of all available satellites and their connection information.
+            
+            @return:    List of connection information of all available satellites, where
+                        connection information a dictionary is with the keys ip, commID.
+            @rtype:     [ { str : str } ]
+        """
+        return [{ 'commID' : commID, 'ip' : ip } for commID, ip in self._satellites.iteritems()]
+    
+    def clean(self):
+        """
+        """
+        limit = datetime.now() - timedelta(seconds=settings.UID_TIMEOUT)
+        
+        for uid in [uid for uid, timestamp in self._tmpUIDs.iteritems() if timestamp > limit]:
+            del self._tmpUIDs[uid]
     
     def shutdown(self):
         """ Method is called when the manager/factory is stopped.

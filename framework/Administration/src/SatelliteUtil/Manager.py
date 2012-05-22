@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       SatelliteManager.py
+#       Manager.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -69,6 +69,11 @@ class Container(object):
         self._running = False
         self._connected = False
     
+    @property
+    def ip(self):
+        """ IP address of container. """
+        return self._ip
+    
     def authenticate(self, ip, key):
         """ Authenticate connection from container.
                             
@@ -122,6 +127,7 @@ class Container(object):
         msg.msgType = MsgTypes.CONTAINER_START
         msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
         msg.content = { 'commID' : self._commID,
+                        'ip'     : self._ip,
                         'home'   : self._homeDir,
                         'key'    : self._key }
         
@@ -161,6 +167,9 @@ class SatelliteManager(object):
         
         # SSL Context which is used to connect to other satellites
         self._ctx = ctx
+        
+        # IP table which is used for containers
+        self._ips = []
         
         # Storage for all running containers
         self._containers = {}
@@ -203,28 +212,39 @@ class SatelliteManager(object):
             log.msg('The home folder is not a valid directory.')
             return
         
-        key = generateID()
-        container = Container(commID, homeFolder, key)
+        for ip in xrange(2, 256):
+            if ip not in self._ips:
+                break
+        else:
+            log.msg('Can not add any new containers. Not enough IP addresses.')
+            return
         
+        key = generateID()
+        container = Container(commID, ip, homeFolder, key)
+        
+        self._ips.append(ip)
         container.start(self._commMngr)
         self._containers[commID] = container
     
-    def authentiateContainerConnection(self, commID, key):
+    def authentiateContainerConnection(self, commID, ip, key):
         """ Authenticate connection from container.
                             
             @param commID:  CommID from which the connection originated.
             @type  commID:  str
+                            
+            @param ip:      IP address from which the connection originated.
+            @type  ip:      str
             
             @param key:     Key which should be used for the authentication attempt.
             @type  key:     str
             
-            @return:        True if connection is successfully authentiated; False otherwise
+            @return:        True if connection is successfully authenticated; False otherwise
         """
         if commID not in self._containers:
             log.msg('Received a initialization request from an unexpected source.')
             return False
         
-        if not self._containers[commID].authenticate(key):
+        if not self._containers[commID].authenticate(ip, key):
             log.msg('Tried to initialize a connection without a valid key.')
             return False
         
@@ -265,6 +285,7 @@ class SatelliteManager(object):
             return
         
         self._containers[commID].stop(self._commMngr)
+        self._ips.remove(self._containers[commID].ip)
         del self._containers[commID]
     
     def getSatelliteRouting(self):

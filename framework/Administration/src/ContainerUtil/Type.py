@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       ContainerType.py
+#       Type.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -36,7 +36,6 @@ except ImportError:
 # Custom imports
 from Exceptions import SerializationError
 from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
-from Comm.Message.SerializerUtil import serializeDict, deserializeDict, serializeList, deserializeList
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 
@@ -45,8 +44,9 @@ class StartContainerMessage(object):
         
         The fields are:
             commID  CommID which is used to identify the container
+            ip      IP address which is used by the container
             home    Home directory which should be used
-            # TODO: Add fields
+            key     Key which is used by the environment node to authenticate himself
     """
     implements(IContentSerializer)
     
@@ -59,13 +59,14 @@ class StartContainerMessage(object):
             buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
             buf.write(data['commID'])
             
+            buf.write(MsgDef.I_STRUCT.pack(len(data['ip'])))
+            buf.write(data['ip'])
+            
             buf.write(MsgDef.I_STRUCT.pack(len(data['home'])))
             buf.write(data['home'])
             
             buf.write(MsgDef.I_STRUCT.pack(len(data['key'])))
             buf.write(data['key'])
-            
-            # TODO: Add additional fields
         except KeyError as e:
             raise SerializationError('Could not serialize message of type StartContainer: {0}'.format(e))
         
@@ -87,6 +88,13 @@ class StartContainerMessage(object):
             length, = MsgDef.I_STRUCT.unpack(data[start:end])
             start = end
             end += length
+            msg['ip'] = data[start:end]
+            
+            start = end
+            end += MsgDef.I_LEN
+            length, = MsgDef.I_STRUCT.unpack(data[start:end])
+            start = end
+            end += length
             msg['home'] = data[start:end]
             
             start = end
@@ -95,8 +103,6 @@ class StartContainerMessage(object):
             start = end
             end += length
             msg['key'] = data[start:end]
-            
-            # TODO: Add additional fields
         except StructError as e:
             raise SerializationError('Could not deserialize message of type StartContainer: {0}'.format(e))
         
@@ -140,36 +146,27 @@ class StopContainerMessage(object):
 
 class ContainerStatusMessage(object):
     """ Message type to # TODO: What exactly is this message used for?
-        
-        The fields are:
-            commID  CommID which is used to identify the environment
     """
     implements(IContentSerializer)
     
     IDENTIFIER = MsgTypes.CONTAINER_STATUS
     
     def serialize(self, data):
-        buf = StringIO()
-        
-        try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
-            buf.write(data['commID'])
-        except KeyError as e:
-            raise SerializationError('Could not serialize message of type ContainerStatus: {0}'.format(e))
-        
-        return buf.getvalue()
+        # TODO: What is part of the message
+        return ''
     
     def deserialize(self, data):
+        # TODO: What is part of the message
         msg = {}
         
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['commID'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type ContainerStatus: {0}'.format(e))
+        #try:
+        #    start = 0
+        #    end = MsgDef.I_LEN
+        #    length, = MsgDef.I_STRUCT.unpack(data[start:end])
+        #    start = end
+        #    end += length
+        #    msg['commID'] = data[start:end]
+        #except StructError as e:
+        #    raise SerializationError('Could not deserialize message of type ContainerStatus: {0}'.format(e))
         
         return msg

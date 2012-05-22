@@ -28,22 +28,28 @@ class IPostInitTrigger(Interface):
     """ Interface which declares the necessary method which all post init triggers
         have to implement.
     """
-    def trigger(origin): #@NoSelf
+    def trigger(origin, ip): #@NoSelf
         """ This method is called whenever the PostInitTrigger should be triggered.
             
             @param origin:  CommID of request origin.
             @type  origin:  str
+            
+            @param ip:      IP address of request origin.
+            @type  ip:      str
         """
 
 class IServerImplementation(Interface):
     """ Interface which declares the necessary methods which all server implementations
         have to implement.
     """
-    def authOrigin(origin, key): #@NoSelf
+    def authOrigin(origin, ip, key): #@NoSelf
         """ Authenticate the origin using the attached key from the InitRequest.
             
             @param origin:  CommID of request origin.
             @type  origin:  str
+            
+            @param ip:      IP address of the request origin.
+            @type  ip:      str
             
             @param key:     Key which was sent with the request.
             @type  key:     str

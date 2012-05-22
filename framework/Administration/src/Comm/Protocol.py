@@ -43,16 +43,21 @@ class ReappengineProtocol(Protocol):
     """
     implements(IPushProducer, IConsumer)
 
-    def __init__(self, factory):
+    def __init__(self, factory, addr):
         """ Instantiate the Reappengine Protocol.
             
             @param factory:     Factory which created this connection.
             @type  factory:     ReappengineFactory
+            
+            @param addr:    Address object which is given as argument to buildProtocol of
+                            the factory.
+            @type  addr:    twisted::address
         """
         # Reference to parent for using persistent data
         self._factory = factory
 
         # Protocol variables
+        self._destIP = addr.host
         self._dest = None
         self._initialized = False
         self._paused = False
@@ -65,6 +70,11 @@ class ReappengineProtocol(Protocol):
         
         # Reference on current producer
         self._producer = None
+    
+    @property
+    def ip(self):
+        """ IP address of node on the other end of this connection. """
+        return self._destIP
     
     @property
     def dest(self):

@@ -58,7 +58,7 @@ class Router(object):
         self._default = None
         
         # Setup periodic calling of clean method of manager
-        LoopingCall(self._clean).start(settings.MSG_QUQUE_TIMEOUT)
+        LoopingCall(self._clean).start(settings.MSG_QUQUE_TIMEOUT / 2)
     
     def registerConnection(self, conn):
         """ Callback for Protocol instance to register the connection.
@@ -221,5 +221,5 @@ class Router(object):
     def _clean(self):
         """ Method is used to clean up producer queue to remove old entries.
         """
-        for fifo in self._fifos:
+        for fifo in self._fifos.itervalues():
             fifo.clean()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       SatelliteTriggers.py
+#       Triggers.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -28,7 +28,7 @@ from zope.interface import implements
 # Custom imports
 from Comm.Message import  MsgTypes
 from Comm.Message.Base import Message
-from Comm.Message.Interfaces import IPostInitTrigger
+from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
 
 class DefaultRoutingTrigger(object):
     """ PostInitTrigger which is used to send the CommID of this node as default routing info.
@@ -44,7 +44,7 @@ class DefaultRoutingTrigger(object):
         """
         self.commManager = commMngr
     
-    def trigger(self, origin):
+    def trigger(self, origin, ip):
         msg = Message()
         msg.msgType = MsgTypes.ROUTE_INFO
         msg.dest = origin
@@ -69,7 +69,7 @@ class SatelliteRoutingTrigger(object):
         self.commManager = commMngr
         self.satelliteManager = satelliteMngr
     
-    def trigger(self, origin):
+    def trigger(self, origin, ip):
         msg = Message()
         msg.msgType = MsgTypes.ROUTE_INFO
         msg.dest = origin

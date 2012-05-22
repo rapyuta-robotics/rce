@@ -62,8 +62,8 @@ class EnvironmentServerImplementation(object):
         self.commManager = commMngr
         self._satelliteManager = satelliteMngr
     
-    def authOrigin(self, origin, key):
-        return self._satelliteManager.authentiateContainerConnection(origin, key)
+    def authOrigin(self, origin, ip, key):
+        return self._satelliteManager.authentiateContainerConnection(origin, ip, key)
     
     def getResponse(self, origin):    
         return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : generateID() }
@@ -109,7 +109,7 @@ def main(reactor, ip, port, uid):
                                       MsgTypes.ROS_MSG ])
     reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
     
-    # Client for connection to ContainerLauncher
+    # Client for connection to Container Node
     factory = ReappengineClientFactory( commManager,
                                         MsgDef.PREFIX_CONTAINER_ADDR + uid,
                                         '',

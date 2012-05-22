@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       ContainerProcessor.py
+#       Processor.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       

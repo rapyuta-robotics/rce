@@ -61,6 +61,8 @@ def main(reactor, ip, port, commID, satelliteID, key):
 
     # Initialize twisted
     log.msg('Initialize twisted')
+    
+    # Client for connection to satellite
     factory = ReappengineClientFactory( commManager,
                                         satelliteID,
                                         key )

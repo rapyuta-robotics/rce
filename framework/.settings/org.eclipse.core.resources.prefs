@@ -1,4 +1,4 @@
-#Mon May 21 18:51:50 CEST 2012
+#Tue May 22 20:02:24 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/FIFO.py=utf-8
@@ -49,7 +49,7 @@ encoding//Administration/src/SatelliteUtil/Manager.py=utf-8
 encoding//Administration/src/SatelliteUtil/Processor.py=utf-8
 encoding//Administration/src/SatelliteUtil/Triggers.py=utf-8
 encoding//Administration/src/SatelliteUtil/Type.py=utf-8
-encoding//Administration/src/reappengine.py=utf-8
+encoding//Administration/src/initSlave.py=utf-8
 encoding//Administration/src/settings.py=utf-8
 encoding//Administration/src/trash/EnvironmentManager.py=utf-8
 encoding//Administration/src/trash/FileConverter.py=utf-8

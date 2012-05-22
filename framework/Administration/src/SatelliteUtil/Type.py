@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       SatelliteType.py
+#       Type.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -57,9 +57,6 @@ class ConnectDirectiveMessage(object):
                 buf.write(MsgDef.I_STRUCT.pack(len(element['ip'])))
                 buf.write(element['ip'])
                 
-                buf.write(MsgDef.I_STRUCT.pack(len(element['port'])))
-                buf.write(element['port'])
-                
                 buf.write(MsgDef.I_STRUCT.pack(len(element['commID'])))
                 buf.write(element['commID'])
                 
@@ -82,13 +79,6 @@ class ConnectDirectiveMessage(object):
                 start = end
                 end += length
                 msg['ip'] = element[start:end]
-                
-                start = end
-                end += MsgDef.I_LEN
-                length, = MsgDef.I_STRUCT.unpack(element[start:end])
-                start = end
-                end += length
-                msg['port'] = element[start:end]
                 
                 start = end
                 end += MsgDef.I_LEN

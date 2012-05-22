@@ -268,7 +268,7 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
             return
         
         # Authenticate origin with key
-        if not self._server.authOrigin(origin, msg.content['key']):
+        if not self._server.authOrigin(origin, conn.ip, msg.content['key']):
             log.msg('Origin could not be authenticated.')
             conn.transport.loseConnection()
             return
@@ -323,7 +323,7 @@ class BaseServerImplementation(object):
         """
         self.commManager = commMngr
     
-    def authOrigin(self, origin, key):
+    def authOrigin(self, origin, ip, key):
         return True
     
     def getResponse(self, origin):

@@ -55,6 +55,9 @@ WAIT_FOR_SERVICE_TIMEOUT = 5
 # Path to directory where temporary files to store the results should be kept
 TMP_RESULT_DIR = '/var/www/tmp'
 
+# Time in seconds after which unused UIDs are freed up again.
+UID_TIMEOUT = 10
+
 #######################################
 ###                                 ###
 ###        Machine settings         ###

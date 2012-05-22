@@ -28,7 +28,7 @@ from twisted.python import log
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-from Comm.Message.Interfaces import IMessageProcessor
+from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 

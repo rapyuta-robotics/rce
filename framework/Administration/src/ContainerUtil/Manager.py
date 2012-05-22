@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       ContainerManager.py
+#       Manager.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -24,18 +24,25 @@
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.defer import Deferred
+from twisted.internet.protocol import ProcessProtocol
 
 # Python specific imports
-import os, sys
+import os
 
 # Custom imports
-from Comm.Message import MsgDef
-from Comm.Message import MsgTypes
-from Comm.Message.Base import Message
-from Comm.Factory import ReappengineServerFactory
 from Comm.Message.ContainerType import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
 from Comm.Message.ContainerProcessor import StartContainerProcessor, StopContainerProcessor #@UnresolvedImport
 import settings
+
+class LXCProtocol(ProcessProtocol):
+    """ Protocol which is used to handle the LXC commands.
+    """
+    def __init__(self, deferred):
+        self._deferred
+    
+    def processEnded(self, reason):
+        self._deferred.callback(reason)
 
 class ContainerManager(object):
     """ Manager which handles container specific task.
@@ -103,7 +110,7 @@ class ContainerManager(object):
             f.writeline('{homeDir}   {rootfs}/home/ros   none   bind 0 0'.format(homeDir=os.path.abspath(homeDir), rootfs=settings.ROOTFS))
     
     def _startContainer(self, commID, ip, homeDir, key):
-        """
+        """ Internally used method to start a container.
         """
         # Create folder for config and fstab file
         confDir = os.path.abspath(os.path.join(settings.CONF_DIR, commID))
@@ -121,20 +128,38 @@ class ContainerManager(object):
         self._createFstabFile(commID, homeDir)
         
         # Start container
-        # TODO:
+        deferred = Deferred()
+        
+        def callback(reason):
+            if reason.value.exitCode != 0:
+                log.msg(reason)
+        
+        deferred.addCallback(callback)
+        
+        cmd = ['/usr/bin/lxc-start', '-n', commID, '-f', os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'config'))]
+        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
     
-    def startContainer(self, commID, homeDir, key):
+    def startContainer(self, commID, ip, homeDir, key):
         """
         """
-        d = self._reactor.deferToThread(self._startContainer, commID, homeDir, key)
+        self._reactor.deferToThread(self._startContainer, commID, ip, homeDir, key)
     
     def _stopContainer(self, commID):
         """
         """
         # Stop container
-        # TODO:
+        deferred = Deferred()
+        
+        def callback(reason):
+            if reason.value.exitCode != 0:
+                log.msg(reason)
+        
+        deferred.addCallback(callback)
+        
+        cmd = ['/usr/bin/lxc-stop', '-n', commID]
+        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
     
     def stopContainer(self, commID):
         """
         """
-        d = self._reactor.deferToThread(self._stopContainer, commID)
+        self._reactor.deferToThread(self._stopContainer, commID)

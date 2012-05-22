@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       ROSType.py
+#       Type.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -35,7 +35,7 @@ except ImportError:
 
 # Custom imports
 from Exceptions import SerializationError
-from Comm.Message.Interfaces import IContentSerializer
+from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
 from Comm.Message.SerializerUtil import serializeList, deserializeList
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
