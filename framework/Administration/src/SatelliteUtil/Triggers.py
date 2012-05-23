@@ -63,7 +63,8 @@ class SatelliteRoutingTrigger(object):
                                 in this node.
             @type  commMngr:    CommManager
             
-            @param satelliteMngr:   SatelliteManager which is handles this node.
+            @param satelliteMngr:   SatelliteManager which is responsible for the handling of
+                                    this node.
             @type  satelliteMngr:   SatelliteManager
         """
         self.commManager = commMngr

@@ -35,6 +35,7 @@ from twisted.internet.task import LoopingCall
 import sys
 
 # Custom imports
+import settings
 from Comm.Message.Base import validateAddress
 from Comm.Message import MsgTypes
 from Comm.Factory import ReappengineClientFactory
@@ -71,7 +72,7 @@ def main(reactor, ip, port, commID, satelliteID, key):
                                       MsgTypes.ROS_REMOVE,
                                       MsgTypes.ROS_GET,
                                       MsgTypes.ROS_MSG ])
-    reactor.connectSSL(ip, port, factory, ClientContextFactory())
+    reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())
 
     # Add shutdown hooks
     log.msg('Add shutdown hooks')
@@ -108,7 +109,6 @@ def _get_argparse():
 
     parser.add_argument('commID', help='Communication address of this node.')
     parser.add_argument('ip', type=str, help='IP address of the satellite node to which the connection should be established.')
-    parser.add_argument('port', type=int, help='Port of the satellite node to which the connection should be established.')
     parser.add_argument('satelliteID', help='Communication address of the node to which a connection should be established.')
     parser.add_argument('key', help='Key which is used to identify this node with the satellite node.')
 

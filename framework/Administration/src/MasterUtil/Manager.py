@@ -68,7 +68,7 @@ class MasterManager(object):
         
         # Dictionary of currently reserved, but not yet confirmed UIDs
         # Key:   UID
-        # Value: Timestamp with expiration date
+        # Value: Timestamp with expiration date of UID
         self._tmpUIDs = {}
         
         # Setup list of valid message processors
@@ -134,10 +134,3 @@ class MasterManager(object):
         
         for uid in [uid for uid, timestamp in self._tmpUIDs.iteritems() if timestamp > limit]:
             del self._tmpUIDs[uid]
-    
-    def shutdown(self):
-        """ Method is called when the manager/factory is stopped.
-        """
-        super(MasterManager, self).shutdown()
-        
-        # Stop all satellites nodes

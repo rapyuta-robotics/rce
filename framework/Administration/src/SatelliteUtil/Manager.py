@@ -326,8 +326,3 @@ class SatelliteManager(object):
         msg.dest = settings.LOAD_INFO_UPDATE
         msg.content = None # TODO: Add meaningful information
         self._commMngr.sendMessage(msg)
-    
-    def shutdown(self):
-        """ Method is called when the manager/factory is stopped.
-        """
-        # TODO: Terminate the containers

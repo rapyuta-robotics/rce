@@ -71,7 +71,7 @@ ROOTFS = '/reappengine/container-fs/rootfs'
 CONF_DIR = '/reappengine'
 
 # Absolute path to source root directory
-ROOT_DIR = '/home/dominique/reappengine/framework/Administration/src'
+ROOT_DIR = '/home/dominique/reappengine'
 
 # Time interval in which the newest load information are sent to the master node/load balancer
 LOAD_INFO_UPDATE = 5

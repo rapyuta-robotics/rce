@@ -56,8 +56,8 @@ class MasterTrigger(object):
                                 in this node.
             @type  commMngr:    CommManager
             
-            @param masterMngr:  SatelliteManager which is handles this node.
-            @type  masterMngr:  SatelliteManager
+            @param masterMngr:  MasterManager which is responsible for the handling of this node.
+            @type  masterMngr:  MasterManager
         """
         self.commManager = commMngr
         self.masterManager = masterMngr
