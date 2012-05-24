@@ -22,8 +22,10 @@
 #       
 #       
 
+# twisted specific imports
 from twisted.internet.defer import Deferred
 
+# Python specific imports
 from threading import Thread, Event
 from functools import wraps
 from Queue import Queue, Empty

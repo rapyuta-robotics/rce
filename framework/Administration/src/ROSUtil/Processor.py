@@ -22,8 +22,10 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.python import log
 
 # Custom imports

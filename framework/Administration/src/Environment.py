@@ -42,7 +42,7 @@ from Comm.Factory import ReappengineClientFactory
 from Comm.CommManager import CommManager
 from ROSUtil.Manager import ROSManager #@UnresolvedImport
 
-def main(reactor, ip, port, commID, satelliteID, key):
+def main(reactor, ip, commID, satelliteID, key):
     # Start logger
     log.startLogging(sys.stdout)
     
@@ -72,7 +72,8 @@ def main(reactor, ip, port, commID, satelliteID, key):
                                       MsgTypes.ROS_REMOVE,
                                       MsgTypes.ROS_GET,
                                       MsgTypes.ROS_MSG ])
-    reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())
+    #reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())
+    reactor.connectTCP(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory)
 
     # Add shutdown hooks
     log.msg('Add shutdown hooks')
@@ -104,7 +105,7 @@ def main(reactor, ip, port, commID, satelliteID, key):
 def _get_argparse():
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(prog='Administrator',
+    parser = ArgumentParser(prog='Environment',
                             description='Administrator of App Nodes in Linux Container for the reappengine.')
 
     parser.add_argument('commID', help='Communication address of this node.')
@@ -128,4 +129,4 @@ if __name__ == '__main__':
         print 'SatelliteID is not a valid address.'
         exit(1)
     
-    main(reactor, args.ip, args.port, args.commID, args.satelliteID, args.key)
+    main(reactor, args.ip, args.commID, args.satelliteID, args.key)

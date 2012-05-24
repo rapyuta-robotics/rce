@@ -22,8 +22,10 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
 from twisted.internet.task import LoopingCall
@@ -76,7 +78,7 @@ def main(reactor):
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
-    ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem')
+    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem')
 
     # Create Manager
     commManager = CommManager(reactor, MsgDef.MASTER_ADDR)
@@ -99,7 +101,8 @@ def main(reactor):
                                       MsgTypes.LOAD_INFO,
                                       MsgTypes.ROS_RESPONSE,
                                       MsgTypes.ROS_MSG ])
-    reactor.listenSSL(settings.PORT_MASTER, factory, ctx)
+    #reactor.listenSSL(settings.PORT_MASTER, factory, ctx)
+    reactor.listenTCP(settings.PORT_MASTER, factory)
     
     # Server for outside connections
     ### 
@@ -112,7 +115,7 @@ def main(reactor):
     LoopingCall(masterManager.clean).start(settings.UID_TIMEOUT / 2)
     
     # Setup shutdown hooks
-    reactor.addSystemEventTrigger('before', 'shutdown', masterManager.shutdown)
+    #reactor.addSystemEventTrigger('before', 'shutdown', masterManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     # Start twisted (without signal handles as ROS also registers signal handlers)

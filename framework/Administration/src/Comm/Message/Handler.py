@@ -22,8 +22,10 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.python import log
 from twisted.internet.interfaces import IConsumer
 
@@ -50,6 +52,7 @@ class MessageSender(object):
 
             @raise:     InternalError, MessageLengthError
         """
+        log.msg('MessageSender: Prepare message: type "{0}"; destination "{1}".'.format(msg.msgType, msg.dest))
         self._origin = manager.commID
         self._consumer = None
 
@@ -163,6 +166,7 @@ class MessageReceiver(object):
         """ Method which is used by the producer to signal that he has
             finished sending data.
         """
+        log.msg('Message Receiver: {0} bytes received.'.format(len(self._recvBuf)))
         self._commManager.messageReceived(self._recvBuf, self._processMsg)
 
 class MessageForwarder(object):

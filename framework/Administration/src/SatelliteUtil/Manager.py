@@ -34,11 +34,10 @@ from Exceptions import InternalError, InvalidRequest
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message, validateAddress
-from Comm.Message.SatelliteType import ConnectDirectiveMessage, CreateEnvMessage, DestroyEnvMessage #@UnresolvedImport
-from Comm.Message.SatelliteProcessor import ConnectDirectiveProcessor, CreateEnvProcessor, DestroyEnvProcessor #@UnresolvedImport
-from Comm.Message.ContainerType import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
-from Comm.Message.ContainerProcessor import ContainerStatusProcessor #@UnresolvedImport
 from Comm.Factory import ReappengineClientFactory
+from ContainerUtil.Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
+from Type import ConnectDirectiveMessage, CreateEnvMessage, DestroyEnvMessage #@UnresolvedImport
+from Processor import ConnectDirectiveProcessor, CreateEnvProcessor, DestroyEnvProcessor, ContainerStatusProcessor #@UnresolvedImport
 from Triggers import SatelliteRoutingTrigger #@UnresolvedImport
 from MiscUtility import generateID
 
@@ -162,7 +161,7 @@ class SatelliteManager(object):
                             the other satellite nodes.
             @type  ctx:     # TODO: Determine type of argument
         """
-        # References used by the ROS manager
+        # References used by the manager
         self._commMngr = commMngr
         
         # SSL Context which is used to connect to other satellites
@@ -175,12 +174,12 @@ class SatelliteManager(object):
         self._containers = {}
         
         # Register Content Serializers
-        self.registerContentSerializers([ ConnectDirectiveMessage(),
-                                          CreateEnvMessage(),
-                                          DestroyEnvMessage(),
-                                          StartContainerMessage(),
-                                          StopContainerMessage(),
-                                          ContainerStatusMessage() ])    # <- necessary?
+        self._commMngr.registerContentSerializers([ ConnectDirectiveMessage(),
+                                                    CreateEnvMessage(),
+                                                    DestroyEnvMessage(),
+                                                    StartContainerMessage(),
+                                                    StopContainerMessage(),
+                                                    ContainerStatusMessage() ])    # <- necessary?
         # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
@@ -226,7 +225,7 @@ class SatelliteManager(object):
         container.start(self._commMngr)
         self._containers[commID] = container
     
-    def authentiateContainerConnection(self, commID, ip, key):
+    def authenticateContainerConnection(self, commID, ip, key):
         """ Authenticate connection from container.
                             
             @param commID:  CommID from which the connection originated.
@@ -297,13 +296,15 @@ class SatelliteManager(object):
         """
         return self._containers.keys()
     
-    def _connectToSatellite(self, commID, ip, port):
+    def _connectToSatellite(self, commID, ip):
         """ Connect to another satellite node.
         """
         factory = ReappengineClientFactory(self._commMngr, commID, '', SatelliteRoutingTrigger(self._commMngr, self))
         factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                           MsgTypes.ROS_MSG ])
-        self._commMngr.reactor.connectSSL(ip, port, factory, self._ctx)
+        #self._commMngr.reactor.connectSSL(ip, port, factory, self._ctx)
+        self._commMngr.reactor.connectTCP(ip, settings.PORT_SATELLITE_SATELLITE, factory)
+        # TODO: Set to SSL
     
     def connectToSatellites(self, satellites):
         """ Connect to specified satellites.
@@ -313,7 +314,7 @@ class SatelliteManager(object):
             @type  satellites:  [ { str : str } ]
         """
         for satellite in satellites:
-            self._connectToSatellite(satellite['commID'], satellite['ip'], satellite['port'])
+            self._connectToSatellite(satellite['commID'], satellite['ip'])
     
     def updateLoadInfo(self):
         """ This method is called regularly and is used to send the newest load info

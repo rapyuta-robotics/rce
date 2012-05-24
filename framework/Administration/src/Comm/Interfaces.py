@@ -22,6 +22,7 @@
 #       
 #       
 
+# zope specific imports
 from zope.interface import Interface
 
 class IPostInitTrigger(Interface):

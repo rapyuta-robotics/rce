@@ -22,8 +22,11 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface.verify import verifyObject
+from zope.interface.exceptions import Invalid
+
+# twisted specific imports
 from twisted.python import log
 
 # Custom imports
@@ -101,10 +104,17 @@ class CommManager(object):
             @type  serializers:     [ IContentSerializer ]
         """
         for serializer in serializers:
-            if not verifyObject(IContentSerializer, serializer):
-                raise InternalError('Can only add serializers which implement IContentSerializer.')
+            try:
+                verifyObject(IContentSerializer, serializer)
+            except Invalid as e:
+                raise InternalError(
+                    'Verification of the class "{0}" for the Interface "IContentSerializer" failed: {1}'.format(
+                        serializer.__class__.__name__,
+                        e 
+                    )
+                )
             
-            self._contentSerializer[serializer.IDENTIFER] = serializer
+            self._contentSerializer[serializer.IDENTIFIER] = serializer
     
     def registerMessageProcessors(self, processors):
         """ Method to register a message processor which are used for the incoming messages.
@@ -115,10 +125,17 @@ class CommManager(object):
             @type  processors:  [ IMessageProcessor ]
         """
         for processor in processors:
-            if not verifyObject(IMessageProcessor, processor):
-                raise InternalError('Can only add processors which implement IMessageProcessor.')
+            try:
+                verifyObject(IMessageProcessor, processor)
+            except Invalid as e:
+                raise InternalError(
+                    'Verification of the class "{0}" for the Interface "IMessageProcessor" failed: {1}'.format(
+                        processor.__class__.__name__,
+                        e
+                    )
+                )
             
-            self._processors.append[processor.IDENTIFER] = processor
+            self._processors[processor.IDENTIFIER] = processor
 
     def getNextConsumer(self, origin, dest=None, callback=None):
         """ This method is called by the protocol instances to get the next destination
@@ -146,6 +163,7 @@ class CommManager(object):
             if dest:
                 raise InternalError('Both arguments "dest" and "callback" are supplied.')
             
+            log.msg('CommManager: Received a consumer request with a callback.')
             return MessageReceiver(self, callback)
         
         if not dest:
@@ -153,6 +171,7 @@ class CommManager(object):
         
         # Check if the message is for this communication node
         if dest == self._commID or dest == MsgDef.NEIGHBOR_ADDR:
+            log.msg('CommManager: Received a consumer request with a destination.')
             return MessageReceiver(self, self._processMessage)
         
         # Message is not for this node; therefore, it should probably be forwarded
@@ -217,13 +236,11 @@ class CommManager(object):
                                 as a single argument a Message instance.
             @type  processMsg:  Callable
         """
-        log.msg('Message Receiver: {0} bytes received'.format(len(self._recvBuf)))
-        
         if not callable(processMsg):
             raise InternalError('Process Message callback is not a callable object.')
         
         try:
-            self._processMsg(Message.deserialize(self._recvBuf, self._contentSerializer))
+            processMsg(Message.deserialize(msg, self))
         except SerializationError as e:
             log.msg('Could not deserialize message: {0}'.format(e))
     

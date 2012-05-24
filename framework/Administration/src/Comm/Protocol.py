@@ -22,8 +22,10 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.python import log
 from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Protocol
@@ -34,7 +36,7 @@ from Exceptions import InternalError
 from Message import MsgDef
 from Message.Handler import Sink
 
-class ReappengineProtocol(Protocol):
+class ReappengineProtocol(Protocol, object):
     """ Reappengine Protocol.
 
         To send a message using this protocol a push producer should be
@@ -139,16 +141,18 @@ class ReappengineProtocol(Protocol):
                         #       At the moment the data is read but not saved or parsed.
                         log.msg('Message is too long and will be dropped.'.format(msgType))
                         self._msgDest = Sink()
-                    elif not self.initialized:
+                    elif not self._initialized:
                         # Other side is not yet authenticated
-                        self._msgDest = self._factory.commManager.nextConsumer(self._dest, callback=lambda msg: self._factory.processInitMessage(msg, self))
+                        log.msg('Received a message in uninitialized state.')
+                        self._msgDest = self._factory.commManager.getNextConsumer(self._dest, callback=lambda msg: self._factory.processInitMessage(msg, self))
                     elif self._factory.filterMessage(msgType):
                         # Message should be filtered out
                         log.msg('Message of type "{0}" has been filtered out.'.format(msgType))
                         self._msgDest = Sink()
                     else:
                         # Everything ok; get the next message consumer
-                        self._msgDest = self._factory.commManager.nextConsumer(self._dest, dest=self._msgDest)
+                        log.msg('Received a message in initialized state.')
+                        self._msgDest = self._factory.commManager.getNextConsumer(self._dest, dest=self._msgDest)
 
                     # Register this instance as a producer with the retrieved consumer
                     self._msgDest.registerProducer(self, True)

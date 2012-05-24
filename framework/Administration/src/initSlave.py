@@ -64,16 +64,16 @@ def main(reactor):
     
     deferred = Deferred()
     
-    def callback(uid):
+    def callback(suffix):
         cmd = [ '/usr/bin/python',
-                os.path.join(settings.ROOT_DIR, 'Container.py'),
-                uid ]
-        reactor.spawnProcess(LoggerProtocol(), cmd[0], cmd, env=os.environ, uid=0, gid=0)
+                os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Container.py'),
+                suffix ]
+        reactor.spawnProcess(LoggerProtocol(), cmd[0], cmd, env=os.environ) # uid=0, gid=0
         
         cmd = [ '/usr/bin/python',
-                os.path.join(settings.ROOT_DIR, 'Satellite.py'),
-                uid,
-                settings.IP_MASTER, settings.PORT_MASTER ]
+                os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Satellite.py'),
+                suffix,
+                settings.IP_MASTER ]
         reactor.spawnProcess(LoggerProtocol(), cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
     
     def errback(errMsg):

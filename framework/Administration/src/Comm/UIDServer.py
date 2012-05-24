@@ -22,8 +22,11 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface.verify import verifyObject
+from zope.interface.exceptions import Invalid
+
+# twisted specific imports
 from twisted.internet.protocol import Protocol, ServerFactory
 
 # Custom imports
@@ -57,8 +60,15 @@ class UIDServerFactory(ServerFactory):
             @param uidServer:   Instance which is used to provide the new UIDs.
             @type  uidServer:   IUIDServer
         """
-        if not verifyObject(IUIDServer, uidServer):
-            raise InternalError('UIDServer does not implement the interface "IUIDServer".')
+        try:
+            verifyObject(IUIDServer, uidServer)
+        except Invalid as e:
+            raise InternalError(
+                'Verification of the class "{0}" for the Interface "IUIDServer" failed: {1}'.format(
+                    uidServer.__class__.__name__,
+                    e
+                )
+            )
         
         self._uidServer = uidServer
     

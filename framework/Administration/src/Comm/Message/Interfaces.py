@@ -22,7 +22,10 @@
 #       
 #       
 
+# zope specific imports
 from zope.interface import Attribute, Interface
+
+# twisted specific imports
 from twisted.internet.interfaces import IPushProducer
 
 class IReappengineProducer(IPushProducer):

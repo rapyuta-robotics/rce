@@ -45,7 +45,7 @@ class ROSManager(object):
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
         """
-        # References used by the ROS manager
+        # References used by the manager
         self._launcher = launcher
         self._commMngr = commMngr
         

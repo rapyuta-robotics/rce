@@ -22,8 +22,11 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface.verify import verifyObject
+from zope.interface.exceptions import Invalid
+
+# twisted specific imports
 from twisted.python import log
 
 # Python specific imports
@@ -59,8 +62,15 @@ class ProducerFIFO(object):
     def add(self, producer):
         """ Add a new producer to the FIFO.
         """
-        if not verifyObject(IReappengineProducer, producer):
-            raise InternalError('Tried to add a producer which does not implement the IReappengineProducer interface.')
+        try:
+            verifyObject(IReappengineProducer, producer)
+        except Invalid as e:
+            raise InternalError(
+                'Verification of the producer class "{0}" for the Interface "IReappengineProducer" failed: {1}'.format(
+                    producer.__class__.__name__,
+                    e
+                )
+            )
         
         self._fifo.append((producer, datetime.now()))
     
@@ -82,6 +92,8 @@ class ProducerFIFO(object):
         """ Remove producers which have exceeded the timeout.
         """
         limit = datetime.now() - timedelta(seconds=settings.MSG_QUQUE_TIMEOUT)
+        
+        i = 0
         
         for i in xrange(len(self._fifo)):
             if self._fifo[i][1] > limit:

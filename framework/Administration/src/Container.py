@@ -23,10 +23,8 @@
 #       
 
 # twisted specific imports
-from zope.interface import implements
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
-from twisted.internet.task import LoopingCall
 
 # Python specific imports
 import sys
@@ -45,11 +43,11 @@ def main(reactor, uid):
     
     log.msg('Start initialization...')
     commID = MsgDef.PREFIX_CONTAINER_ADDR + uid
-    ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
+    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
     
     # Create Manager
     commManager = CommManager(reactor, commID)
-    containerManager = ContainerManager(ctx.getContext(), commManager)
+    containerManager = ContainerManager(commManager)
     
     # Initialize twisted
     log.msg('Initialize twisted')
@@ -60,10 +58,11 @@ def main(reactor, uid):
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_START,
                                       MsgTypes.CONTAINER_STOP ])
-    reactor.listenSSL(settings.PORT_CONTAINER_MNGR, factory, ctx)
+    #reactor.listenSSL(settings.PORT_CONTAINER_MNGR, factory, ctx)
+    reactor.listenTCP(settings.PORT_CONTAINER_MNGR, factory)
 
     # Setup shutdown hooks
-    reactor.addSystemEventTrigger('before', 'shutdown', containerManager.shutdown)
+    #reactor.addSystemEventTrigger('before', 'shutdown', containerManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     # Start twisted

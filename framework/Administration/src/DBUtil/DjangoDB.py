@@ -22,7 +22,7 @@
 #       
 #       
 
-# Django specific imports
+# django specific imports
 import django.conf #@UnresolvedImport
 
 # Python specific imports
@@ -130,7 +130,7 @@ class DjangoDB(CentralizedLoop):
     
         return tuple(parts)
     
-    # TODO: Necessary
+    # TODO: Necessary ???
     @CentralizedLoop.job
     def existsNode(self, key):
         """ Check if the given key is valid, i.e. if there is a matching

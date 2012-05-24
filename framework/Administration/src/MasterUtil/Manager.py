@@ -22,8 +22,10 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
 
@@ -41,6 +43,7 @@ from Comm.Message import MsgTypes
 from Comm.CommManager import CommManager
 from Comm.Factory import ReappengineServerFactory
 from Comm.Interfaces import IUIDServer #@UnresolvedImport
+from SatelliteUtil.Type import ConnectDirectiveMessage #@UnresolvedImport
 from MiscUtility import generateID
 
 class MasterManager(object):
@@ -49,17 +52,14 @@ class MasterManager(object):
     """
     implements(IUIDServer)
     
-    def __init__(self, reactor, commID):
-        """ Initialize the necessary variables for the base manager.
-
-            @param reactor:     TODO: Add description
-            @type  reactor:     reactor
-
-            @param commID:  CommID of this node which can be used by other
-                            nodes to identify this node.
-            @type  commID:  str
+    def __init__(self, commMngr):
+        """ Initialize the necessary variables for the MasterManager.
+            
+            @param commMngr:    CommManager which should be used to communicate.
+            @type  commMngr:    CommManager
         """
-        super(MasterManager, self).__init__(reactor, commID)
+        # References used by the manager
+        self._commMngr = commMngr
         
         # List of all available satellites
         # Key:   CommID
@@ -71,8 +71,21 @@ class MasterManager(object):
         # Value: Timestamp with expiration date of UID
         self._tmpUIDs = {}
         
-        # Setup list of valid message processors
-        self.msgProcessors.extend([ ])
+        # Register Content Serializers
+        self._commMngr.registerContentSerializers([ ConnectDirectiveMessage() ])#,
+        #                                  CreateEnvMessage(),
+        #                                  DestroyEnvMessage(),
+        #                                  StartContainerMessage(),
+        #                                  StopContainerMessage(),
+        #                                  ContainerStatusMessage() ])    # <- necessary?
+        # TODO: Check if all these Serializers are necessary
+        
+        # Register Message Processors
+        #self._commMngr.registerMessageProcessors([ ConnectDirectiveProcessor(self),
+        #                                           CreateEnvProcessor(self),
+        #                                           DestroyEnvProcessor(self),
+        #                                           ContainerStatusProcessor(self) ])
+        # TODO: Add all valid messages  
     
     def getUID(self):
         """ Callback method which provides a new UID for a machine.
@@ -101,13 +114,14 @@ class MasterManager(object):
             @return:        True if the UID is valid; False otherwise
             @rtype:         bool
         """
-        return uid in self._tmpUIDs
+        return True
+        #return uid in self._tmpUIDs
     
     def addSatellite(self, commID, ip):
         """
         """
         self._satellites[commID] = ip
-        del self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]]
+        #del self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]]
     
     def removeSatellite(self, commID):
         """

@@ -34,8 +34,8 @@ import shutil
 # Custom imports
 import settings
 from Comm.Message import MsgDef
-from Comm.Message.ContainerType import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
-from Comm.Message.ContainerProcessor import StartContainerProcessor, StopContainerProcessor #@UnresolvedImport
+from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
+from Processor import StartContainerProcessor, StopContainerProcessor #@UnresolvedImport
 
 class LXCProtocol(ProcessProtocol):
     """ Protocol which is used to handle the LXC commands.
@@ -55,11 +55,11 @@ class ContainerManager(object):
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
         """
-        # References used by the container manager
+        # References used by the manager
         self._commMngr = commMngr
         self._reactor = commMngr.reactor
         
-        # Validate loaded directories form settings
+        # Validate loaded directories from settings
         self._confDir = settings.CONF_DIR
         self._rootfs = settings.ROOTFS
         self._srcRoot = settings.ROOT_DIR
@@ -77,50 +77,50 @@ class ContainerManager(object):
         self._commIDs = []
         
         # Register Content Serializers
-        self.registerContentSerializer(StartContainerMessage())
-        self.registerContentSerializer(StopContainerMessage())
-        self.registerContentSerializer(ContainerStatusMessage())
+        self._commMngr.registerContentSerializers([ StartContainerMessage(),
+                                                    StopContainerMessage(),
+                                                    ContainerStatusMessage() ])
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessor(StartContainerProcessor(self))
-        self._commMngr.registerMessageProcessor(StopContainerProcessor(self))
+        self._commMngr.registerMessageProcessors([ StartContainerProcessor(self),
+                                                   StopContainerProcessor(self) ])
     
     def _createConfigFile(self, commID, ip):
         """ Create a config file based on the given parameters.
         """
         with open(os.path.join(self._confDir, commID, 'config'), 'w') as f:
-            f.writeline( 'lxc.utsname = ros' )
-            f.writeline( '' )
-            f.writeline( 'lxc.tty = 4' )
-            f.writeline( 'lxc.pts = 1024' )
+            f.writeline('lxc.utsname = ros')
+            f.writeline('')
+            f.writeline('lxc.tty = 4')
+            f.writeline('lxc.pts = 1024')
             f.writeline(
                 'lxc.rootfs = {rootfs}'.format(
                     rootfs=os.path.join(self._confDir, commID, 'fstab')
                 )
             )
-            f.writeline( '' )
-            f.writeline( 'lxc.network.type = veth' )
-            f.writeline( 'lxc.network.flags = up' )
-            f.writeline( 'lxc.network.name = eth0' )
-            f.writeline( 'lxc.network.link = br0' )
-            f.writeline( 'lxc.network.ipv4 = {ip}'.format(ip=ip) )
-            f.writeline( '' )
-            f.writeline( 'lxc.cgroup.devices.deny = a' )
-            f.writeline( '# /dev/null and zero' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 1:3 rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 1:5 rwm' )
-            f.writeline( '# consoles' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 5:1 rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 5:0 rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 4:0 rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 4:1 rwm' )
-            f.writeline( '# /dev/{,u}random' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 1:9 rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 1:8 rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 136:* rwm' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 5:2 rwm' )
-            f.writeline( '# rtc' )
-            f.writeline( 'lxc.cgroup.devices.allow = c 254:0 rwm' )
+            f.writeline('')
+            f.writeline('lxc.network.type = veth')
+            f.writeline('lxc.network.flags = up')
+            f.writeline('lxc.network.name = eth0')
+            f.writeline('lxc.network.link = br0')
+            f.writeline('lxc.network.ipv4 = {ip}'.format(ip=ip))
+            f.writeline('')
+            f.writeline('lxc.cgroup.devices.deny = a')
+            f.writeline('# /dev/null and zero')
+            f.writeline('lxc.cgroup.devices.allow = c 1:3 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 1:5 rwm')
+            f.writeline('# consoles')
+            f.writeline('lxc.cgroup.devices.allow = c 5:1 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 5:0 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 4:0 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 4:1 rwm')
+            f.writeline('# /dev/{,u}random')
+            f.writeline('lxc.cgroup.devices.allow = c 1:9 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 1:8 rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 136:* rwm')
+            f.writeline('lxc.cgroup.devices.allow = c 5:2 rwm')
+            f.writeline('# rtc')
+            f.writeline('lxc.cgroup.devices.allow = c 254:0 rwm')
     
     def _createFstabFile(self, commID, homeDir):
         """ Create a fstab file based on the given parameters.
@@ -151,13 +151,13 @@ class ContainerManager(object):
                 )
             )
             f.writeline(
-                '{srcDir}   {rootfsLib}   none   bind 0 0'.format(
+                '{srcDir}   {rootfsLib}   none   bind,ro 0 0'.format(
                     srcDir=self._srcRoot,
                     rootfsLib=os.path.join(self._rootfs, 'home/ros/lib')
                 )
             )
             f.writeline(
-                '{upstart}   {initDir}   none   bind 0 0'.format(
+                '{upstart}   {initDir}   none   bind,ro 0 0'.format(
                     upstart=os.path.join(self._confDir, commID, 'upstart'),
                     initDir=os.path.join(self._rootfs, 'etc/init/reappengine.conf')
                 )
@@ -230,10 +230,8 @@ class ContainerManager(object):
         deferred.addCallback(callback)
         
         cmd = [ '/usr/bin/lxc-start',
-                '-n',
-                commID,
-                '-f',
-                os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'config')) ]
+                '-n', commID,
+                '-f', os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'config')) ]
         self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
     
     def startContainer(self, commID, ip, homeDir, key):

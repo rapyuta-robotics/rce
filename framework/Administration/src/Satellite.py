@@ -22,8 +22,10 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
 from twisted.internet.task import LoopingCall
@@ -63,7 +65,7 @@ class EnvironmentServerImplementation(object):
         self._satelliteManager = satelliteMngr
     
     def authOrigin(self, origin, ip, key):
-        return self._satelliteManager.authentiateContainerConnection(origin, ip, key)
+        return self._satelliteManager.authenticateContainerConnection(origin, ip, key)
     
     def getResponse(self, origin):    
         return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : generateID() }
@@ -74,16 +76,16 @@ class EnvironmentServerImplementation(object):
     def unregisterConnection(self, conn):
         self._satelliteManager.setConnectedFlagContainer(conn.dest, False)
 
-def main(reactor, ip, port, uid):
+def main(reactor, ip, uid):
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
     commID = MsgDef.PREFIX_SATELLITE_ADDR + uid
-    ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
+    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
     
     # Create Manager
     commManager = CommManager(reactor, commID)
-    satelliteManager = SatelliteManager(commManager, ctx.getContext())
+    satelliteManager = SatelliteManager(commManager, None)#ctx.getContext())
     
     # Create triggers
     defaultTrigger = DefaultRoutingTrigger(commManager)
@@ -99,15 +101,17 @@ def main(reactor, ip, port, uid):
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_RESPONSE,
                                       MsgTypes.ROS_MSG ])
-    reactor.listenSSL(settings.PORT_SATELLITE_ENVIRONMENT, factory, ctx)
+    #reactor.listenSSL(settings.PORT_SATELLITE_ENVIRONMENT, factory, ctx)
+    reactor.listenTCP(settings.PORT_SATELLITE_ENVIRONMENT, factory)
     
     # Server for connections from other satellites
     factory = ReappengineServerFactory( commManager,
-                                        BaseServerImplementation(commManager, satelliteManager),
+                                        BaseServerImplementation(commManager),
                                         satelliteTrigger )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_MSG ])
-    reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
+    #reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
+    reactor.listenTCP(settings.PORT_SATELLITE_SATELLITE, factory)
     
     # Client for connection to Container Node
     factory = ReappengineClientFactory( commManager,
@@ -116,7 +120,8 @@ def main(reactor, ip, port, uid):
                                         satelliteTrigger )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_STATUS ])
-    reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)
+    #reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)
+    reactor.connectTCP('localhost', settings.PORT_CONTAINER_MNGR, factory)
     
     # Client for connection to Master
     factory = ReappengineClientFactory( commManager,
@@ -128,14 +133,15 @@ def main(reactor, ip, port, uid):
                                       MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONNECT,
                                       MsgTypes.ROS_MSG ])
-    reactor.connectSSL(ip, port, factory, ctx)
+    #reactor.connectSSL(ip, settings.PORT_MASTER, factory, ctx)
+    reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
     # Setup periodic calling of Load Balancer Updater
     log.msg('Add periodic call for Load Balancer Update.')
     LoopingCall(satelliteManager.updateLoadInfo).start(settings.LOAD_INFO_UPDATE)
     
     # Setup shutdown hooks
-    reactor.addSystemEventTrigger('before', 'shutdown', satelliteManager.shutdown)
+    #reactor.addSystemEventTrigger('before', 'shutdown', satelliteManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     # Start twisted
@@ -152,7 +158,6 @@ def _get_argparse():
 
     parser.add_argument('uid', help='Unique ID which is used to identify this machine.')
     parser.add_argument('ip', type=str, help='IP address of the Master node.')
-    parser.add_argument('port', type=int, help='Port of the Master node.')
 
     return parser
 
@@ -166,4 +171,4 @@ if __name__ == '__main__':
         print 'UID is not a valid.'
         exit(1)
     
-    main(reactor, args.ip, args.port, args.uid)
+    main(reactor, args.ip, args.uid)

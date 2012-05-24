@@ -68,6 +68,8 @@ class Router(object):
         """
         dest = conn.dest
         
+        log.msg('Router: Register connection from {0}'.format(dest))
+        
         if dest in self._connections:
             raise InternalError('There is already a connection registered for the same destination.')
         
@@ -76,7 +78,7 @@ class Router(object):
         
         if dest not in self._fifos:
             # If there is no FIFO yet for this destination create one
-            self._fifos[dest] = ProducerFIFO()
+            self._fifos[dest] = ProducerFIFO(dest)
         
         if dest not in self._dest:
             self._dest[dest] = set()
@@ -114,7 +116,7 @@ class Router(object):
         
         if dest not in self._fifos:
             # If there is no FIFO yet for this destination create one
-            self._fifos[dest] = ProducerFIFO()
+            self._fifos[dest] = ProducerFIFO(dest)
         
         # Add message to the queue
         self._fifos[dest].add(producer)
@@ -189,7 +191,7 @@ class Router(object):
         oldestTimestamp = None
         
         if route == self._default:
-            dests = self._fifos.key()
+            dests = self._fifos.keys()
         else:
             dests = self._dest[route]
         

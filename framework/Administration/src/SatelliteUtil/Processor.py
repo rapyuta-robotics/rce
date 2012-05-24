@@ -22,7 +22,7 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
 
 # Custom imports
@@ -47,7 +47,7 @@ class ConnectDirectiveProcessor(SatelliteProcessorBase):
     IDENTIFIER = MsgTypes.CONNECT
     
     def processMessage(self, msg):
-        self.manager.connectToSatellites(msg)
+        self.manager.connectToSatellites(msg.content)
 
 class LoadInfoProcessor(SatelliteProcessorBase):
     """ Message processor to update the load information with the load balancer.

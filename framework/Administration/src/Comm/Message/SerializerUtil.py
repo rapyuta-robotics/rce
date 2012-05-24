@@ -153,7 +153,7 @@ def deserializeList(data):
         @raise:     SerializationError if the format does not match that of a
                     serialized list.
     """
-    data = []
+    msg = []
 
     try:
         start = 0
@@ -171,8 +171,8 @@ def deserializeList(data):
             if length == _NONE_LEN and value == _NONE:
                 value = None
             
-            data.append(value)
+            msg.append(value)
     except StructError as e:
         raise SerializationError('Could not deserialize List: {0}'.format(e))
     
-    return data
+    return msg

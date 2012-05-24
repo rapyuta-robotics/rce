@@ -22,7 +22,7 @@
 #       
 #       
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
 
 # Custom imports
