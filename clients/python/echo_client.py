@@ -2,7 +2,7 @@
 from twisted.internet import reactor
 from autobahn.websocket import WebSocketClientFactory, WebSocketClientProtocol, connectWS
 
-import json
+
 
 class EchoClientProtocol(WebSocketClientProtocol):
 
@@ -24,4 +24,6 @@ if __name__ == '__main__':
     factory = WebSocketClientFactory("ws://localhost:9000")
     factory.protocol = EchoClientProtocol
     connectWS(factory)
+    print 'calling reactor.run() ..'
     reactor.run()
+    print 'Done'
