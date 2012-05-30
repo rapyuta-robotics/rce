@@ -30,7 +30,7 @@ from twisted.internet.task import LoopingCall
 import settings
 from Exceptions import InternalError
 from FIFO import ProducerFIFO
-from Message.Base import validateAddress
+from CommUtil import validateAddress #@UnresolvedImport
 
 class Router(object):
     """ Class which is responsible for routing the communication.
@@ -195,7 +195,7 @@ class Router(object):
         else:
             dests = self._dest[route]
         
-        while True:
+        while 1:
             for dest in dests:
                 fifo = self._fifos[dest]
                 

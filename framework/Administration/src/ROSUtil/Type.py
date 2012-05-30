@@ -24,58 +24,76 @@
 
 # zope specific imports
 from zope.interface import implements
-
-# Python specific imports
-from struct import error as StructError
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from zope.interface.verify import verifyClass
+from zope.interface.exceptions import Invalid
 
 # Custom imports
-from Exceptions import SerializationError
+from Exceptions import InternalError, SerializationError
 from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
-from Comm.Message.SerializerUtil import serializeList, deserializeList
-from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
-from Serializer import serialize as rosSerialize, deserialize as rosDeserialize
+from Interfaces import ISerializable #@UnresolvedImport
+#from Serializer import serialize as rosSerialize, deserialize as rosDeserialize
 
-class ROSAddNodeMessage(object):
-    """ Message type to add a/multiple node(s).
+class ROSAddMessage(object):
+    """ Message type to add a node.
     """
     implements(IContentSerializer)
     
     IDENTIFIER = MsgTypes.ROS_ADD
     
-    def serialize(self, data):
-        if not isinstance(data, list):
-            raise SerializationError('Content of the message ROSAddNode has to be a list.')
-        
-        data = map(rosSerialize, data)
-        return serializeList(data)
+    def __init__(self):
+        self._componentCls = {}
     
-    def deserialize(self, data):
-        data = deserializeList(data)
-        return map(rosDeserialize, data)
+    def registerComponent(self, component):
+        """ Register a component class which should be used to (de-)serialize the
+            component which should be added.
+            
+            @raise:     InternalError if the component class does not implement the
+                        "ISerializable" interface.
+        """
+        try:
+            verifyClass(ISerializable, component)
+        except Invalid as e:
+            raise InternalError(
+                'Verification of the class "{0}" for the Interface "ISerializable" failed: {1}'.format(
+                    component.__name__,
+                    e
+                )
+            )
+        
+        self._componentCls[component.IDENTIFIER] = component
+    
+    def serialize(self, s, data):
+        try:
+            cls = self._componentCls[data.IDENTIFIER]
+        except AttributeError:
+            raise SerializationError('''The object's class does not implement the interface "ISerializable".''')
+        except KeyError:
+            raise SerializationError('''The object's class is not registered.''')
+        
+        if not isinstance(data, cls):
+            raise SerializationError('The object is of invalid type.')
+        
+        s.addElement(data.IDENTIFIER)
+        data.serialize(s)
+    
+    def deserialize(self, s):
+        cls = self._componentCls[s.getElement()]
 
-class ROSRemoveNodeMessage(object):
+class ROSRemoveMessage(object):
     """ Message type to remove a/multiple node(s).
         
-        Should be a list of ROSUtil.Node
+        Should be an Unique Identifier for a ROSUtil.Node
     """
     implements(IContentSerializer)
     
     IDENTIFIER = MsgTypes.ROS_REMOVE
     
-    def serialize(self, data):
-        if not isinstance(data, list):
-            raise SerializationError('Content of the message ROSRemoveNode has to be a list.')
-        
-        return serializeList(data)
+    def serialize(self, s, data):
+        s.addElement(data)
     
-    def deserialize(self, data):
-        return map(rosDeserialize, data)
+    def deserialize(self, s):
+        return s.getElement()
 
 class ROSMsgMessage(object):
     """ Message type for a single ROS message.
@@ -92,64 +110,25 @@ class ROSMsgMessage(object):
     
     IDENTIFIER = MsgTypes.ROS_MSG
     
-    def serialize(self, data):
+    def serialize(self, s, data):
         if not isinstance(data, dict):
             raise SerializationError('Content of the message ROSMessage has to be a dictionary.')
         
-        buf = StringIO()
-        
         try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['msg'])))
-            buf.write(data['msg'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['name'])))
-            buf.write(data['name'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['uid'])))
-            buf.write(data['uid'])
-            
-            if data['push']:
-                buf.write(1)
-            else:
-                buf.write(0)
+            s.addElement(data['msg'])
+            s.addElement(data['name'])
+            s.addElement(data['uid'])
+            s.addBool(data['push'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type ROSMessage: {0}'.format(e))
-        
-        return buf.getvalue()
     
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['msg'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['name'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['uid'] = data[start:end]
-            
-            start = end
-            end += 1
-            msg['push'] = bool(data[start:end])
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type ROSMessage: {0}'.format(e))
-        
-        return msg
+    def deserialize(self, s):
+        return { 'msg'  : s.getElement(),
+                 'name' : s.getElement(),
+                 'uid'  : s.getElement(),
+                 'push' : s.getBool() }
 
+### TODO: Not used for pure push implementation
 class ROSResponseMessage(object):
     """ Message type to send back an ID which can be used to retrieve a result later.
         
@@ -162,44 +141,21 @@ class ROSResponseMessage(object):
     
     IDENTIFIER = MsgTypes.ROS_RESPONSE
     
-    def serialize(self, data):
+    def serialize(self, s, data):
         if not isinstance(data, dict):
             raise SerializationError('Content of the message ROSResponse has to be a dictionary.')
         
-        buf = StringIO()
-        
         try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['msg'])))
-            buf.write(data['msg'])
-            
-            if data['error']:
-                buf.write(1)
-            else:
-                buf.write(0)
+            s.addElement(data['msg'])
+            s.addBool(data['error'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type ROSResponse: {0}'.format(e))
-        
-        return buf.getvalue()
     
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['msg'] = data[start:end]
-            
-            start = end
-            end += 1
-            msg['error'] = bool(data[start:end])
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type ROSResponse: {0}'.format(e))
-        
-        return msg
+    def deserialize(self, s):
+        return { 'msg'   : s.getElement(),
+                 'error' : s.getBool() }
 
+### TODO: Not used for pure push implementation
 class ROSGetMessage(object):
     """ Message type to request a result using an ID.
         
@@ -211,41 +167,16 @@ class ROSGetMessage(object):
     
     IDENTIFIER = MsgTypes.ROS_GET
     
-    def serialize(self, data):
+    def serialize(self,s,  data):
         if not isinstance(data, dict):
             raise SerializationError('Content of the message ROSResponse has to be a dictionary.')
         
-        buf = StringIO()
-        
         try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['name'])))
-            buf.write(data['name'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['uid'])))
-            buf.write(data['uid'])
+            s.addElement(data['name'])
+            s.addElement(data['uid'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type ROSGet: {0}'.format(e))
-        
-        return buf.getvalue()
     
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['name'] = data[start:end]
-            
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['uid'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type ROSGet: {0}'.format(e))
-        
-        return msg
+    def deserialize(self, s):
+        return { 'name' : s.getElement(),
+                 'uid'  : s.getElement() }

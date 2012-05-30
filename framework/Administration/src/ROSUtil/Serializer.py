@@ -39,8 +39,8 @@ _MAP = {
 
 _deserialize = deserialize
 
-def deserialize(data):
-    return _deserialize(data, _MAP)
+def deserialize(fifo):
+    return _deserialize(fifo, _MAP)
 
 deserialize.__doc__ = _deserialize.__doc__
 

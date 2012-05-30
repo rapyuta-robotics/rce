@@ -27,7 +27,6 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import DefaultOpenSSLContextFactory
 
 # Python specific imports
 from datetime import datetime, timedelta
@@ -36,15 +35,12 @@ import string
 
 # Custom imports
 import settings
-from Exceptions import InvalidRequest, InternalError
 from Comm.Message import MsgDef
-from Comm.Message.Base import Message, validateAddress
+from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
-from Comm.CommManager import CommManager
-from Comm.Factory import ReappengineServerFactory
 from Comm.Interfaces import IUIDServer #@UnresolvedImport
-from SatelliteUtil.Type import ConnectDirectiveMessage #@UnresolvedImport
-from MiscUtility import generateID
+from SatelliteUtil.Type import ConnectDirectiveMessage, CreateEnvMessage, DestroyEnvMessage #@UnresolvedImport
+from DBUtil.DjangoDB import DjangoDB
 
 class MasterManager(object):
     """ Manager which is used for master node who is responsible for the management
@@ -61,6 +57,9 @@ class MasterManager(object):
         # References used by the manager
         self._commMngr = commMngr
         
+        # Reference for connection to django DB
+        self._django = DjangoDB(commMngr.reactor)
+        
         # List of all available satellites
         # Key:   CommID
         # Value: IP address of the satellite
@@ -72,12 +71,9 @@ class MasterManager(object):
         self._tmpUIDs = {}
         
         # Register Content Serializers
-        self._commMngr.registerContentSerializers([ ConnectDirectiveMessage() ])#,
-        #                                  CreateEnvMessage(),
-        #                                  DestroyEnvMessage(),
-        #                                  StartContainerMessage(),
-        #                                  StopContainerMessage(),
-        #                                  ContainerStatusMessage() ])    # <- necessary?
+        self._commMngr.registerContentSerializers([ ConnectDirectiveMessage(),
+                                                    CreateEnvMessage(),
+                                                    DestroyEnvMessage() ])
         # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
@@ -94,7 +90,7 @@ class MasterManager(object):
                         Container Node.
             @rtype:     str
         """
-        while True:
+        while 1:
             uid = ''.join(random.choice(string.ascii_uppercase) for _ in xrange(MsgDef.SUFFIX_LENGTH_ADDR))
             
             if '{0}{1}'.format(MsgDef.PREFIX_SATELLITE_ADDR, uid) not in self._satellites \
@@ -114,17 +110,17 @@ class MasterManager(object):
             @return:        True if the UID is valid; False otherwise
             @rtype:         bool
         """
-        return True
-        #return uid in self._tmpUIDs
+        return uid in self._tmpUIDs
     
     def addSatellite(self, commID, ip):
+        """ Callback method for the factory to register a satellite connection.
         """
-        """
+        log.msg('Register satellite with ID: "{0}"; IP: "{1}"'.format(commID, ip))
         self._satellites[commID] = ip
-        #del self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]]
+        del self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]]
     
     def removeSatellite(self, commID):
-        """
+        """ Callback method for the factory to unregister a satellite connection.
         """
         if commID in self._satellites:
             # First add the UID again to the list of not yet confirmed UIDs in case
@@ -148,3 +144,22 @@ class MasterManager(object):
         
         for uid in [uid for uid, timestamp in self._tmpUIDs.iteritems() if timestamp > limit]:
             del self._tmpUIDs[uid]
+    
+    
+    ############################################
+    ############################################
+    ############################################
+    
+    def addContainer(self, commID, home, satelliteID):
+        msg = Message()
+        msg.msgType = MsgTypes.ENV_CREATE
+        msg.dest = satelliteID
+        msg.content = { 'commID' : commID, 'home' : home }
+        self._commMngr.sendMessage(msg)
+    
+    def removeContainer(self, commID, satelliteID):
+        msg = Message()
+        msg.msgType = MsgTypes.ENV_DESTROY
+        msg.dest = satelliteID
+        msg.content = { 'commID' : commID }
+        self._commMngr.sendMessage(msg)

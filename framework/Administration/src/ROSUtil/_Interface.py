@@ -346,7 +346,7 @@ class ServiceInterface(InterfaceBase):
         self._manager.runTaskInSeparateThread(task.run)
         
         if pushResult[0]:
-            while True:
+            while 1:
                 uid = generateID()
     
                 with self._tasksLock:
@@ -388,7 +388,7 @@ class ServiceInterface(InterfaceBase):
     def _clean(self):
         """ This method is used to remove old results from storage.
         """
-        while True:
+        while 1:
             time.sleep(settings.RESULT_TIMEOUT/4)
             
             timeout = datetime.now() - timedelta(seconds=settings.RESULT_TIMEOUT)

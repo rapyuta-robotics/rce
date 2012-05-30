@@ -46,10 +46,11 @@ class CentralizedLoop(Thread):
         """
         super(CentralizedLoop, self).__init__()
         
+        self._terminate = Event()
+        
         self._reactor = reactor
         self._tiggerID = reactor.addSystemEventTrigger('before', 'shutdown', self._terminate.set)
         
-        self._terminate = Event()
         self._queue = Queue()
     
     def __del__(self):

@@ -28,6 +28,9 @@
         AI  Routing information
         AC  Connection directives
         
+        DR  Database request
+        DB  Database response
+        
         CS  Start container
         CH  Stop container
         CO  Container Status
@@ -47,6 +50,9 @@
 INIT_REQUEST = 'AR'
 ROUTE_INFO = 'AI'
 CONNECT = 'AC'
+
+DB_REQUEST = 'DR'
+DB_RESPONSE = 'DB'
 
 CONTAINER_START = 'CS'
 CONTAINER_STOP = 'CH'

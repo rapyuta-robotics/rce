@@ -25,19 +25,9 @@
 # zope specific imports
 from zope.interface import implements
 
-# Python specific imports
-from struct import error as StructError
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 # Custom imports
 from Exceptions import SerializationError
 from Interfaces import IContentSerializer #@UnresolvedImport
-from SerializerUtil import serializeList, deserializeList
-import MsgDef
 import MsgTypes
 
 class InitMessage(object):
@@ -46,57 +36,19 @@ class InitMessage(object):
         The fields are:
             dest    CommID of destination
             origin  CommID of origin
-            key     Key to authenticate the node
     """
     implements(IContentSerializer)
     
     IDENTIFIER = MsgTypes.INIT_REQUEST
     
-    def serialize(self, data):
-        buf = StringIO()
-        
+    def serialize(self, s, data):
         try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['dest'])))
-            buf.write(data['dest'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['origin'])))
-            buf.write(data['origin'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['key'])))
-            buf.write(data['key'])
+            s.addElement(data['remoteID'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type InitMessage: {0}'.format(e))
-        
-        return buf.getvalue()
     
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['dest'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['origin'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['key'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type InitMessage: {0}'.format(e))
-        
-        return msg
+    def deserialize(self, s):
+        return { 'remoteID' : s.getElement() }
 
 class RouteMessage(object):
     """ Message type to provide other nodes with routing information.
@@ -107,46 +59,21 @@ class RouteMessage(object):
     
     IDENTIFIER = MsgTypes.ROUTE_INFO
     
-    def _serializeElement(self, element):
-        if len(element) != 2:
-            raise SerializationError('List element is not a 2-tuple.')
-        
-        buf = StringIO()
-        
-        try:
-            buf.write(MsgDef.I_STRUCT.pack(len(element[0])))
-            buf.write(element[0])
-            
-            buf.write(MsgDef.B_STRUCT.pack(element[1]))
-        except KeyError as e:
-            raise SerializationError('Could not serialize element: {0}'.format(e))
-        
-        return buf.getvalue()
-    
-    def serialize(self, data):
+    def serialize(self, s, data):
         if not isinstance(data, list):
             raise SerializationError('Content of the message has to be a list.')
         
-        data = map(self._serializeElement, data)
+        s.addInt(len(data))
         
-        return serializeList(data)
-    
-    def _deserializeElement(self, data):
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            dest = data[start:end]
+        for element in data:
+            if len(element) != 2:
+                raise SerializationError('List element is not a 2-tuple.')
             
-            start = end
-            end += MsgDef.I_LEN
-            addFlag, = MsgDef.B_STRUCT.unpack(data[start:end])
-        except StructError as e:
-            raise SerializationError('Could not deserialize element: {0}'.format(e))
-        
-        return (dest, addFlag)
+            try:
+                s.addElement(element[0])
+                s.addBool(element[1])
+            except IndexError as e:
+                raise SerializationError('Could not serialize element: {0}'.format(e))
     
-    def deserialize(self, data):
-        return map(self._deserializeElement, deserializeList(data))
+    def deserialize(self, s):
+        return [(s.getElement(), s.getBool()) for _ in xrange(s.getInt())]

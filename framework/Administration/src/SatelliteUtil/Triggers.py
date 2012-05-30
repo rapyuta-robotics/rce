@@ -30,13 +30,11 @@ from Comm.Message import  MsgTypes
 from Comm.Message.Base import Message
 from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
 
-class DefaultRoutingTrigger(object):
-    """ PostInitTrigger which is used to send the CommID of this node as default routing info.
+class CommonRoutingTrigger(object):
+    """ Class which implements a common method for the triggers.
     """
-    implements(IPostInitTrigger)
-    
     def __init__(self, commMngr):
-        """ Initialize the DefaultRoutingTrigger.
+        """ Initialize the CommonRoutingTrigger.
 
             @param commMngr:    CommManager which is responsible for handling the communication
                                 in this node.
@@ -44,20 +42,30 @@ class DefaultRoutingTrigger(object):
         """
         self.commManager = commMngr
     
-    def trigger(self, origin, ip):
+    def sendRoutingInfo(self, origin, info):
+        """ Internally used method.
+        """
         msg = Message()
         msg.msgType = MsgTypes.ROUTE_INFO
         msg.dest = origin
-        msg.content = { None : self.commManager.commID }
+        msg.content = info
         self.commManager.sendMessage(msg)
 
-class SatelliteRoutingTrigger(object):
+class BaseRoutingTrigger(object):
+    """ PostInitTrigger which is used to send the CommID of this node as default routing info.
+    """
+    implements(IPostInitTrigger)
+    
+    def trigger(self, origin, ip):
+        self.sendRoutingInfo(origin, [ (None, True) ])
+
+class SatelliteRoutingTrigger(CommonRoutingTrigger):
     """ PostInitTrigger which is used to send the available container IDs as routing info.
     """
     implements(IPostInitTrigger)
     
     def __init__(self, commMngr, satelliteMngr):
-        """ Initialize the DefaultRoutingTrigger.
+        """ Initialize the SatelliteRoutingTrigger.
 
             @param commMngr:    CommManager which is responsible for handling the communication
                                 in this node.
@@ -67,12 +75,34 @@ class SatelliteRoutingTrigger(object):
                                     this node.
             @type  satelliteMngr:   SatelliteManager
         """
-        self.commManager = commMngr
+        super(SatelliteRoutingTrigger, self).__init__(commMngr)
+        
         self.satelliteManager = satelliteMngr
     
     def trigger(self, origin, ip):
-        msg = Message()
-        msg.msgType = MsgTypes.ROUTE_INFO
-        msg.dest = origin
-        msg.content = self.satelliteManager.getSatelliteRouting()
-        self.commManager.sendMessage(msg)
+        self.sendRoutingInfo(origin, self.satelliteManager.getSatelliteRouting())
+
+class EnvironmentRoutingTrigger(CommonRoutingTrigger):
+    """ PostInitTrigger which is used to send the CommID of this node as default routing info
+        and additionally add set the container to connected.
+    """
+    implements(IPostInitTrigger)
+    
+    def __init__(self, commMngr, satelliteMngr):
+        """ Initialize the SatelliteRoutingTrigger.
+
+            @param commMngr:    CommManager which is responsible for handling the communication
+                                in this node.
+            @type  commMngr:    CommManager
+            
+            @param satelliteMngr:   SatelliteManager which is responsible for the handling of
+                                    this node.
+            @type  satelliteMngr:   SatelliteManager
+        """
+        super(EnvironmentRoutingTrigger, self).__init__(commMngr)
+        
+        self.satelliteManager = satelliteMngr
+    
+    def trigger(self, origin, ip):
+        self.sendRoutingInfo(origin, [ (None, True) ])
+        self.satelliteManager.setConnectedFlagContainer(origin, True)

@@ -137,7 +137,7 @@ class ROSManager(object):
         if self.isShutdown:
             return
 
-        while True:
+        while 1:
             uid = generateID()
 
             if uid not in self._runningNodes.keys():
@@ -208,7 +208,7 @@ class ROSManager(object):
         self._commMngr.reactor.callInThread(func, args, kw)
 
     def shutdown(self):
-        """ Method is called when the manager/factory is stopped.
+        """ Method is called when the manager is stopped.
         """
         if self.isShutdown:
             return

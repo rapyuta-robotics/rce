@@ -34,7 +34,7 @@ from twisted.internet.interfaces import IPushProducer, IConsumer
 # Custom imports
 from Exceptions import InternalError
 from Message import MsgDef
-from Message.Handler import Sink
+from Message.Handler import receive
 
 class ReappengineProtocol(Protocol, object):
     """ Reappengine Protocol.
@@ -56,7 +56,7 @@ class ReappengineProtocol(Protocol, object):
             @type  addr:    twisted::address
         """
         # Reference to parent for using persistent data
-        self._factory = factory
+        self.factory = factory
 
         # Protocol variables
         self._destIP = addr.host
@@ -64,10 +64,12 @@ class ReappengineProtocol(Protocol, object):
         self._initialized = False
         self._paused = False
         
-        # Variables to store current message
+        # Input buffer which is used for data between message FIFO changes
         self._recvBuf = ''
+        
+        # Variables to store current message
+        self._msgHandler = None
         self._currentMsgLength = -1
-        self._msgDest = ''
         self._parsedBytes = 0
         
         # Reference on current producer
@@ -108,85 +110,95 @@ class ReappengineProtocol(Protocol, object):
         return self._paused
     
     def connectionMade(self):
-        """ This method is called once the connection is established.
+        """ This method is called by twisted once the connection is established.
         """
-        self._factory.startInit(self)
+        self.factory.startInit(self)
     
     def dataReceived(self, data):
-        """ Convert received raw data into appropriate messages.
+        """ Process received raw data. (Called by twisted.)
         """
-        # First add new data to existing buffer
-        self._recvBuf += data
-
+        # If there is any data stored in receive buffer add it to newly received data
+        if self._recvBuf:
+            data = self._recvBuf + data
+            self._recvBuf = ''
+        
         # Run processing as long as there is no pause requested
         while not self._paused:
-            # Calculate current length of buffer
-            lenBuf = len(self._recvBuf)
+            lenBuf = len(data)
             
-            # If there is nothing to do return
+            # If there is no more data to process leave the method
             if not lenBuf:
-                break
-
-            # Next check if we are currently processing a message
+                return
+            
+            # Check if we are currently processing a message
             if self._currentMsgLength == -1:        # Indicates that there is no message
                 # Check if there is enough data available to parse necessary part of the header
                 if lenBuf > MsgDef.POS_DEST + MsgDef.ADDRESS_LENGTH:
-                    # Parse header
-                    self._currentMsgLength, = MsgDef.I_STRUCT.unpack(self._recvBuf[:MsgDef.I_LEN])
-                    self._msgDest = self._recvBuf[MsgDef.POS_DEST:MsgDef.POS_DEST + MsgDef.ADDRESS_LENGTH]
-                    msgType = self._recvBuf[MsgDef.POS_MSG_TYPE:MsgDef.POS_MSG_TYPE + MsgDef.MSG_TYPE_LENGTH]
+                    # Parse necessary parts of header
+                    self._currentMsgLength, = MsgDef.I_STRUCT.unpack(data[:MsgDef.I_LEN])
+                    self._msgDest = data[MsgDef.POS_DEST:MsgDef.POS_DEST + MsgDef.ADDRESS_LENGTH]
+                    msgType = data[MsgDef.POS_MSG_TYPE:MsgDef.POS_MSG_TYPE + MsgDef.MSG_TYPE_LENGTH]
                     
-                    if self._currentMsgLength > MsgDef.MAX_LENGTH:
-                        # TODO: What to do with message which is too long?
-                        #       At the moment the data is read but not saved or parsed.
-                        log.msg('Message is too long and will be dropped.'.format(msgType))
-                        self._msgDest = Sink()
-                    elif not self._initialized:
-                        # Other side is not yet authenticated
-                        log.msg('Received a message in uninitialized state.')
-                        self._msgDest = self._factory.commManager.getNextConsumer(self._dest, callback=lambda msg: self._factory.processInitMessage(msg, self))
-                    elif self._factory.filterMessage(msgType):
-                        # Message should be filtered out
-                        log.msg('Message of type "{0}" has been filtered out.'.format(msgType))
-                        self._msgDest = Sink()
+                    if self._initialized:
+                        protocol = None
                     else:
-                        # Everything ok; get the next message consumer
-                        log.msg('Received a message in initialized state.')
-                        self._msgDest = self._factory.commManager.getNextConsumer(self._dest, dest=self._msgDest)
+                        protocol = self
+                    
+                    # Get the correct message handler
+                    self._msgHandler = receive( self.factory,
+                                                msgType,
+                                                self._currentMsgLength,
+                                                self._dest,
+                                                self._msgDest,
+                                                protocol )
 
                     # Register this instance as a producer with the retrieved consumer
-                    self._msgDest.registerProducer(self, True)
+                    self._msgHandler.registerProducer(self, True)
                     continue    # Important: Start loop again to make sure that we are not on hold!
                 else:
-                    # Not enough data available return
+                    # Not enough data available to process header return
+                    self._recvBuf = data
                     break
             
             # Check if we have reached the end of a message in the buffer
             if lenBuf + self._parsedBytes >= self._currentMsgLength:
                 # We have reached the end
-                self._msgDest.write(self._recvBuf[:self._currentMsgLength - self._parsedBytes])
-                self._msgDest.unregisterProducer()
-                self._recvBuf = self._recvBuf[self._currentMsgLength - self._parsedBytes:]
+                self._msgHandler.write(data[:self._currentMsgLength - self._parsedBytes])
+                data = data[self._currentMsgLength - self._parsedBytes:]
+                
+                # Process the message
+                self._msgHandler.unregisterProducer()
 
                 # Reset message specific variables
                 self._currentMsgLength = -1
-                self._msgDest = ''
+                self._msgHandler = None
                 self._parsedBytes = 0
             else:
                 # We haven't reached the end of the message yet
-                self._msgDest.write(self._recvBuf)
-                self._recvBuf = ''
+                self._msgHandler.write(data)
 
                 # Update number of parsed bytes
                 self._parsedBytes += lenBuf
+    
+    def processMessage(self, msg):
+        """ Callback from MessageHandler. This method is used when a message has been
+            received, but the connection is not yet initialized.
 
+            @param msg:     Received message which should contain a InitRequest.
+            @type  msg:     Message
+        """
+        self.factory.processInitMessage(msg, self)
+    
     def requestSend(self):
         """ Request that this protocol instance sends a message.
         """
-        if not self._producer and self.initialized:
-            producer = self._factory.commManager.router.getNextProducer(self._dest)
+        log.msg('Protocol received send request. (Producer: {0}, Initialized: {1})'.format(self._producer, self._initialized))
+        if not self._producer and self._initialized:
+            log.msg('Protocol try to get a new message to send.')
+            producer = self.factory.commManager.router.getNextProducer(self._dest)
             
             if producer:
+                log.msg('Protocol requested a new message to send.')
                 producer.send(self)
 
     def registerProducer(self, producer, streaming):
@@ -257,7 +269,7 @@ class ReappengineProtocol(Protocol, object):
         """ Method which is called when the connection is lost.
         """
         # Unregister the connection from the factory
-        self._factory.unregisterConnection(self)
+        self.factory.unregisterConnection(self)
         
         # TODO: Is anything else necessary?
         if not reason.check(ConnectionDone):

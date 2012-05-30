@@ -24,12 +24,14 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.defer import Deferred
+from twisted.internet.defer import Deferred, DeferredList
 from twisted.internet.protocol import ProcessProtocol
+from twisted.internet.threads import deferToThread
 
 # Python specific imports
 import os
 import shutil
+from threading import Event
 
 # Custom imports
 import settings
@@ -41,7 +43,7 @@ class LXCProtocol(ProcessProtocol):
     """ Protocol which is used to handle the LXC commands.
     """
     def __init__(self, deferred):
-        self._deferred
+        self._deferred = deferred
     
     def processEnded(self, reason):
         self._deferred.callback(reason)
@@ -85,42 +87,44 @@ class ContainerManager(object):
         self._commMngr.registerMessageProcessors([ StartContainerProcessor(self),
                                                    StopContainerProcessor(self) ])
     
-    def _createConfigFile(self, commID, ip):
+    def _createConfigFile(self, commID):
         """ Create a config file based on the given parameters.
         """
+        content = '\n'.join([ 'lxc.utsname = ros',
+                              '',
+                              'lxc.tty = 4',
+                              'lxc.pts = 1024',
+                              'lxc.rootfs = {rootfs}'.format(rootfs=self._rootfs),
+                              'lxc.mount = {fstab}'.format(
+                                  fstab=os.path.join(self._confDir, commID, 'fstab')
+                              ),
+                              '',
+                              'lxc.network.type = veth',
+                              'lxc.network.flags = up',
+                              'lxc.network.name = eth0',
+                              'lxc.network.link = br0',
+                              'lxc.network.ipv4 = 0.0.0.0',
+                              '',
+                              'lxc.cgroup.devices.deny = a',
+                              '# /dev/null and zero',
+                              'lxc.cgroup.devices.allow = c 1:3 rwm',
+                              'lxc.cgroup.devices.allow = c 1:5 rwm',
+                              '# consoles',
+                              'lxc.cgroup.devices.allow = c 5:1 rwm',
+                              'lxc.cgroup.devices.allow = c 5:0 rwm',
+                              'lxc.cgroup.devices.allow = c 4:0 rwm',
+                              'lxc.cgroup.devices.allow = c 4:1 rwm',
+                              '# /dev/{,u}random',
+                              'lxc.cgroup.devices.allow = c 1:9 rwm',
+                              'lxc.cgroup.devices.allow = c 1:8 rwm',
+                              'lxc.cgroup.devices.allow = c 136:* rwm',
+                              'lxc.cgroup.devices.allow = c 5:2 rwm',
+                              '# rtc',
+                              'lxc.cgroup.devices.allow = c 254:0 rwm',
+                              '' ])
+        
         with open(os.path.join(self._confDir, commID, 'config'), 'w') as f:
-            f.writeline('lxc.utsname = ros')
-            f.writeline('')
-            f.writeline('lxc.tty = 4')
-            f.writeline('lxc.pts = 1024')
-            f.writeline(
-                'lxc.rootfs = {rootfs}'.format(
-                    rootfs=os.path.join(self._confDir, commID, 'fstab')
-                )
-            )
-            f.writeline('')
-            f.writeline('lxc.network.type = veth')
-            f.writeline('lxc.network.flags = up')
-            f.writeline('lxc.network.name = eth0')
-            f.writeline('lxc.network.link = br0')
-            f.writeline('lxc.network.ipv4 = {ip}'.format(ip=ip))
-            f.writeline('')
-            f.writeline('lxc.cgroup.devices.deny = a')
-            f.writeline('# /dev/null and zero')
-            f.writeline('lxc.cgroup.devices.allow = c 1:3 rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 1:5 rwm')
-            f.writeline('# consoles')
-            f.writeline('lxc.cgroup.devices.allow = c 5:1 rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 5:0 rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 4:0 rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 4:1 rwm')
-            f.writeline('# /dev/{,u}random')
-            f.writeline('lxc.cgroup.devices.allow = c 1:9 rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 1:8 rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 136:* rwm')
-            f.writeline('lxc.cgroup.devices.allow = c 5:2 rwm')
-            f.writeline('# rtc')
-            f.writeline('lxc.cgroup.devices.allow = c 254:0 rwm')
+            f.write(content)
     
     def _createFstabFile(self, commID, homeDir):
         """ Create a fstab file based on the given parameters.
@@ -128,82 +132,83 @@ class ContainerManager(object):
         if not os.path.isabs(homeDir):
             raise ValueError('Home directory is not an absoulte path.')
         
+        content = '\n'.join([ 'proc     {proc}      proc     nodev,noexec,nosuid 0 0'.format(
+                                  proc=os.path.join(self._rootfs, 'proc')
+                              ),
+                              'devpts   {devpts}   devpts   defaults            0 0'.format(
+                                  devpts=os.path.join(self._rootfs, 'dev/pts')
+                              ),
+                              'sysfs    {sysfs}       sysfs    defaults            0 0'.format(
+                                  sysfs=os.path.join(self._rootfs, 'sys')
+                              ),
+                              '{homeDir}   {rootfsHome}   none   bind 0 0'.format(
+                                  homeDir=homeDir,
+                                  rootfsHome=os.path.join(self._rootfs, 'home/ros')
+                              ),
+                              '{srcDir}   {rootfsLib}   none   bind,ro 0 0'.format(
+                                  srcDir=self._srcRoot,
+                                  rootfsLib=os.path.join(self._rootfs, 'opt/reappengine')
+                              ),
+                              '{upstart}   {initDir}   none   bind,ro 0 0'.format(
+                                  upstart=os.path.join(self._confDir, commID, 'upstart'),
+                                  initDir=os.path.join(self._rootfs, 'etc/init/reappengine.conf')
+                              ),
+                              '' ])
+        
         with open(os.path.join(self._confDir, commID, 'fstab'), 'w') as f:
-            f.writeline(
-                'proc     {proc}      proc     nodev,noexec,nosuid 0 0'.format(
-                    proc=os.path.join(self._rootfs, 'proc')
-                )
-            )
-            f.writeline(
-                'devpts   {devpts}   devpts   defaults            0 0'.format(
-                    devpts=os.path.join(self._rootfs, 'dev/pts')
-                )
-            )
-            f.writeline(
-                'sysfs    {sysfs}       sysfs    defaults            0 0'.format(
-                    sysfs=os.path.join(self._rootfs, 'sys')
-                )
-            )
-            f.writeline(
-                '{homeDir}   {rootfsHome}   none   bind 0 0'.format(
-                    homeDir=homeDir,
-                    rootfsHome=os.path.join(self._rootfs, 'home/ros')
-                )
-            )
-            f.writeline(
-                '{srcDir}   {rootfsLib}   none   bind,ro 0 0'.format(
-                    srcDir=self._srcRoot,
-                    rootfsLib=os.path.join(self._rootfs, 'home/ros/lib')
-                )
-            )
-            f.writeline(
-                '{upstart}   {initDir}   none   bind,ro 0 0'.format(
-                    upstart=os.path.join(self._confDir, commID, 'upstart'),
-                    initDir=os.path.join(self._rootfs, 'etc/init/reappengine.conf')
-                )
-            )
+            f.write(content)
     
-    def _createUpstartScript(self, commID, ip, key):
+    def _createUpstartScript(self, commID):
         """ Create an upstart script based on the given parameters.
         """
+        content = '\n'.join([ '# description',
+                              'author "Dominique Hunziker"',
+                              'description "reappengine - ROS framework for managing and using ROS nodes"',
+                              '',
+                              '# start/stop conditions',
+                              'start on runlevel [2345]',
+                              'stop on runlevel [016])',
+                              '',
+                              '# timeout before the process is killed; generous as a lot of processes have',
+                              '# to be terminated by the reappengine',
+                              'kill timeout 30',
+                              '',
+                              'script',
+                              '\t# setup environment',
+                              '\t. /etc/environment',
+                              #'\t. /opt/ros/fuerte/setup.sh',
+                              '\t',
+                              '\t# start environment node',
+#                              '\t'+' '.join([ 'start-stop-daemon',
+#                                              '-c', 'ros:ros',
+#                                              '-d', '/home/ros',
+#                                              '--retry', '5',
+#                                              '--exec', 'python',
+#                                              '--',
+#                                              '/home/ros/lib/framework/Administration/src/Environment.py',
+#                                              '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
+#                                                               self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
+#                              '' ])
+                              ### TODO: For debugging purposes use a simple node.
+                              '\t'+' '.join([ 'start-stop-daemon',
+                                              '-c', 'ros:ros',
+                                              '-d', '/home/ros',
+                                              '--retry', '5',
+                                              '--exec', 'python',
+                                              '--',
+                                              '/home/ros/lib/framework/Administration/src/Dummy.py',
+                                              str(8090) ]),
+                              'end script',
+                              '' ])
+        
         with open(os.path.join(self._confDir, commID, 'upstart'), 'w') as f:
-            f.writeline('# description')
-            f.writeline('author "Dominique Hunziker"')
-            f.writeline('description "reappengine - ROS framework for managing and using ROS nodes"')
-            f.writeline('')
-            f.writeline('# start/stop conditions')
-            f.writeline('start on runlevel [2345]')
-            f.writeline('stop on runlevel [016])')
-            f.writeline('')
-            f.writeline('# timeout before the process is killed; generous as a lot of processes have')
-            f.writeline('# to be terminated by the reappengine')
-            f.writeline('kill timeout 30')
-            f.writeline('')
-            f.writeline('script')
-            f.writeline('\t# setup environment')
-            f.writeline('\t. /etc/environment')
-            f.writeline('\t. /opt/ros/fuerte/setup.sh')
-            f.writeline('\t')
-            f.writeline('\t# start environment node')
-            f.writeline('\t'+' '.join([ 'start-stop-daemon',
-                                        '-c', 'ros:ros',
-                                        '-d', '/home/ros',
-                                        '--retry', '5',
-                                        '--exec', 'python',
-                                        '--',
-                                        '/home/ros/lib/framework/Administration/src/Environment.py',
-                                        commID,
-                                        ip,
-                                        '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
-                                                         self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:]),
-                                       key ]))
-            f.writeline('end script')
+            f.write(content)
     
-    def _startContainer(self, commID, ip, homeDir, key):
+    def _startContainer(self, commID, homeDir):
         """ Internally used method to start a container.
         """
         # Create folder for config and fstab file
-        confDir = os.path.abspath(os.path.join(settings.CONF_DIR, commID))
+        confDir = os.path.join(self._confDir, commID)
         
         if os.path.isdir(confDir):
             log.msg('There exists already a directory with the name "{0}".'.format(commID))
@@ -211,14 +216,16 @@ class ContainerManager(object):
         
         os.mkdir(confDir)
         
+        log.msg('Create files...')
+        
         # Construct config file
-        self._createConfigFile(commID, ip)
+        self._createConfigFile(commID)
         
         # Construct fstab file
         self._createFstabFile(commID, homeDir)
         
         # Construct startup script
-        self._createUpstartScript(commID, ip, key)
+        self._createUpstartScript(commID)
         
         # Start container
         deferred = Deferred()
@@ -229,20 +236,23 @@ class ContainerManager(object):
         
         deferred.addCallback(callback)
         
+        log.msg('Start container...')
         cmd = [ '/usr/bin/lxc-start',
                 '-n', commID,
-                '-f', os.path.abspath(os.path.join(settings.CONF_DIR, commID, 'config')) ]
-        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
+                '-f', os.path.join(self._confDir, commID, 'config'),
+                '-d' ]
+        #self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
     
-    def startContainer(self, commID, ip, homeDir, key):
-        """
+    def startContainer(self, commID, homeDir):
+        """ Callback for message processor to stop a container.
         """
         if commID in self._commIDs:
             log.msg('There is already a container registered under the same CommID.')
             return
         
         self._commIDs.append(commID)
-        self._reactor.deferToThread(self._startContainer, commID, ip, homeDir, key)
+        #deferToThread(self._startContainer, commID, ip, homeDir, key)
+        self._startContainer(commID, homeDir)
     
     def _stopContainer(self, commID):
         """ Internally used method to stop a container.
@@ -253,21 +263,37 @@ class ContainerManager(object):
         def callback(reason):
             if reason.value.exitCode != 0:
                 log.msg(reason)
+            
+            # Delete config folder
+            shutil.rmtree(os.path.join(self._confDir, commID))
         
         deferred.addCallback(callback)
         
         cmd = ['/usr/bin/lxc-stop', '-n', commID]
         self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
         
-        # Delete config folder
-        shutil.rmtree(os.path.join(self._confDir, commID))
+        return deferred
     
     def stopContainer(self, commID):
-        """
+        """ Callback for message processor to stop a container.
         """
         if commID not in self._commIDs:
             log.msg('There is no container registered under this CommID.')
             return
         
-        self._reactor.deferToThread(self._stopContainer, commID)
+        deferToThread(self._stopContainer, commID)
         self._commIDs.remove(commID)
+    
+    def shutdown(self):
+        """ Method is called when the manager is stopped.
+        """
+        event = Event()
+        deferreds = []
+        
+        for commID in self._commIDs:
+            deferreds.append(self._stopContainer(commID))
+        
+        deferredList = DeferredList(deferreds)
+        deferredList.addCallback(event.set)
+        
+        event.wait()

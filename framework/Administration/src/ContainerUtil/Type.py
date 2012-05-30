@@ -25,18 +25,9 @@
 # zope specific imports
 from zope.interface import implements
 
-# Python specific imports
-from struct import error as StructError
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 # Custom imports
 from Exceptions import SerializationError
 from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
-from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 
 class StartContainerMessage(object):
@@ -44,69 +35,22 @@ class StartContainerMessage(object):
         
         The fields are:
             commID  CommID which is used to identify the container
-            ip      IP address which is used by the container
             home    Home directory which should be used
-            key     Key which is used by the environment node to authenticate himself
     """
     implements(IContentSerializer)
     
     IDENTIFIER = MsgTypes.CONTAINER_START
     
-    def serialize(self, data):
-        buf = StringIO()
-        
+    def serialize(self, s, data):
         try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
-            buf.write(data['commID'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['ip'])))
-            buf.write(data['ip'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['home'])))
-            buf.write(data['home'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['key'])))
-            buf.write(data['key'])
+            s.addElement(data['commID'])
+            s.addElement(data['home'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type StartContainer: {0}'.format(e))
-        
-        return buf.getvalue()
     
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['commID'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['ip'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['home'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['key'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type StartContainer: {0}'.format(e))
-        
-        return msg
+    def deserialize(self, s):
+        return { 'commID' : s.getElement(),
+                 'home'   : s.getElement() }
 
 class StopContainerMessage(object):
     """ Message type to stop a container.
@@ -118,31 +62,14 @@ class StopContainerMessage(object):
     
     IDENTIFIER = MsgTypes.CONTAINER_STOP
     
-    def serialize(self, data):
-        buf = StringIO()
-        
+    def serialize(self, s, data):
         try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
-            buf.write(data['commID'])
+            s.addElement(data['commID'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type StopContainer: {0}'.format(e))
-        
-        return buf.getvalue()
     
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['commID'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type StopContainer: {0}'.format(e))
-        
-        return msg
+    def deserialize(self, s):
+        return { 'commID' : s.getElement() }
 
 class ContainerStatusMessage(object):
     """ Message type to # TODO: What exactly is this message used for?
@@ -151,7 +78,7 @@ class ContainerStatusMessage(object):
     
     IDENTIFIER = MsgTypes.CONTAINER_STATUS
     
-    def serialize(self, data):
+    def serialize(self, s, data):
         # TODO: What is part of the message
         return ''
     

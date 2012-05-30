@@ -22,35 +22,25 @@
 #       
 #       
 
-# Python specific imports
-from struct import Struct
+""" Message Content Identifier of ROS Messages of Reappengine Protocol:
 
-# Constants for (de-)serialization
-STRUCT_I = Struct('!I')
-LEN_I = STRUCT_I.size
+        I   IntParam
+        S   StrParam
+        F   FloatParam
+        B   BoolParam
+        X   FileParam
+        V   ServiceInterface
+        P   PublisherInterface
+        C   SubscriberInterface
+        N   Node
+"""
 
-class ContentDefinition(object):
-    """ Message Content Identifier of ROS Messages of Reappengine Protocol:
-
-            I   IntParam
-            S   StrParam
-            F   FloatParam
-            B   BoolParam
-            X   FileParam
-            V   ServiceInterface
-            P   PublisherInterface
-            C   SubscriberInterface
-            N   Node
-    """
-    __slots__ = ['PARAM_INT', 'PARAM_STR', 'PARAM_FLOAT', 'PARAM_BOOL', 'PARAM_FILE',
-                 'INTERFACE_SRV', 'INTERFACE_PUB', 'INTERFACE_SUB', 'NODE']
-
-    PARAM_INT = 'I'
-    PARAM_STR = 'S'
-    PARAM_FLOAT = 'F'
-    PARAM_BOOL = 'B'
-    PARAM_FILE = 'X'
-    INTERFACE_SRV = 'V'
-    INTERFACE_PUB = 'P'
-    INTERFACE_SUB = 'C'
-    NODE = 'N'
+PARAM_INT = 'I'
+PARAM_STR = 'S'
+PARAM_FLOAT = 'F'
+PARAM_BOOL = 'B'
+PARAM_FILE = 'X'
+INTERFACE_SRV = 'V'
+INTERFACE_PUB = 'P'
+INTERFACE_SUB = 'C'
+NODE = 'N'

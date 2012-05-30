@@ -87,7 +87,7 @@ class NodeParser(ParserBase):
             @param namespace:   Namespace which should be used.
             @type  namespace:   str
 
-            @raise:     InternalError if there is a problem with the database.
+            @raise:     InternalError if there is a problem with the namespace name.
                         InvalidRequest if the namespace is not valid.
         """
         # First make sure, that the received string is a str object and not unicode

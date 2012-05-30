@@ -39,53 +39,6 @@ class IPostInitTrigger(Interface):
             @type  ip:      str
         """
 
-class IServerImplementation(Interface):
-    """ Interface which declares the necessary methods which all server implementations
-        have to implement.
-    """
-    def authOrigin(origin, ip, key): #@NoSelf
-        """ Authenticate the origin using the attached key from the InitRequest.
-            
-            @param origin:  CommID of request origin.
-            @type  origin:  str
-            
-            @param ip:      IP address of the request origin.
-            @type  ip:      str
-            
-            @param key:     Key which was sent with the request.
-            @type  key:     str
-            
-            @return:        Return True if the origin was successfully authenticated.
-        """
-    
-    def getResponse(origin): #@NoSelf
-        """ Generate the dictionary for the returned InitRequest message.
-            
-            This method has to be implemented.
-            
-            @param origin:  CommID of request origin.
-            @type  origin:  str
-            
-            @return:        Dictionary containing all necessary fields for the InitRequest
-                            message:    dest, origin, key
-        """
-    
-    def saveState(content): #@NoSelf
-        """ Save the state of the connection. This method is called after the response
-            message has been successfully sent and before the connection is set to
-            initialized.
-            
-            @param content:     Previously constructed message content.
-            @type  content:     dict
-        """
-    
-    def unregisterConnection(conn): #@NoSelf
-        """ This method should be called to remove any references to the given connection.
-            
-            @param conn:    Protocol instance who should be unregistered.
-            @type  conn:    ReappengineProtocol
-        """
-
 class IUIDServer(Interface):
     """ Interface which declares the necessary method which all UID server implementations
         have to implement.

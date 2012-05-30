@@ -32,7 +32,6 @@ import sys
 import settings
 from Exceptions import InvalidRequest
 from Base import CentralizedLoop #@UnresolvedImport
-from ROSUtil.Parser import createParameterParser, createInterfaceParser, createNodeParser
 
 # Setup django DB connection
 django.conf.settings.configure(
@@ -171,8 +170,7 @@ class DjangoDB(CentralizedLoop):
         node = self._getNode(pkg, exe)
         params = self._getParam(node)
         interfaces = self._getInterface(node)
-    
-        config = [createParameterParser(param.name, param.paramType, param.opt, param.default) for param in params]
-        interfaces = [createInterfaceParser(interface.msgType, '{0}/{1}'.format(pkg.name, interface.msgDef), interface.name) for interface in interfaces]
-    
-        return createNodeParser(pkg.name, node.name, config, interfaces)
+        
+        params = [(param.name, param.paramType, param.opt, param.default) for param in params]
+        interfaces = [(interface.msgType, '{0}/{1}'.format(pkg.name, interface.msgDef), interface.name) for interface in interfaces]
+        return (pkg.name, node.name, params, interfaces)

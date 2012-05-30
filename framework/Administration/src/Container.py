@@ -33,9 +33,9 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
-from Comm.Message.Base import validateSuffix
-from Comm.Factory import ReappengineServerFactory, BaseServerImplementation
+from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
+from Comm.CommUtil import validateSuffix #@UnresolvedImport
 from ContainerUtil.Manager import ContainerManager #@UnresolvedImport
 
 def main(reactor, uid):
@@ -53,8 +53,7 @@ def main(reactor, uid):
     log.msg('Initialize twisted')
     
     # Server for connection(s) from the satellite
-    factory = ReappengineServerFactory( commManager,
-                                        BaseServerImplementation(commManager) ) # , trigger)
+    factory = ReappengineServerFactory(commManager) # , trigger)
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_START,
                                       MsgTypes.CONTAINER_STOP ])
@@ -69,12 +68,12 @@ def main(reactor, uid):
     log.msg('Initialization completed')
     log.msg('Enter mainloop')
     reactor.run() 
-    log.msg('Leaving Satellite')
+    log.msg('Leaving ContainerManager')
 
 def _get_argparse():
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(prog='Container',
+    parser = ArgumentParser(prog='ContainerManager',
                             description='# TODO: Add description')
 
     parser.add_argument('uid', help='Unique ID which is used to identify this machine.')

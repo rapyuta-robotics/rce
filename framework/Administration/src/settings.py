@@ -44,7 +44,7 @@ DJANGO_DB = {   'DATABASE_ENGINE': 'django.db.backends.sqlite3',
                 'DATABASE_NAME': '/var/django/reappengine/data/users.db',
                 'TIME_ZONE' : 'Europe/Zurich' }
 
-DJANGO_ROOT_DIR = '/home/dominique/ROS/framework/django'
+DJANGO_ROOT_DIR = '/home/dominique/reappengine/framework/django'
 
 # Time in seconds after which inactive entries in the databases are removed.
 TIMEOUT = 600
@@ -68,7 +68,7 @@ UID_TIMEOUT = 10
 ROOTFS = '/reappengine/container-fs/rootfs'
 
 # Absolute path to directory where config/stab files for containers should be stored
-CONF_DIR = '/reappengine'
+CONF_DIR = '/reappengine/config'
 
 # Absolute path to source root directory
 ROOT_DIR = '/home/dominique/reappengine'
@@ -94,11 +94,11 @@ RESULT_TIMEOUT = 600
 # IP address of Master
 IP_MASTER = 'localhost'
 
-# Port of Master for Satellites
-PORT_MASTER = 10010
-
 # Port of Master for UID Server
-PORT_UID = 10015
+PORT_UID = 10013
+
+# Port of Database
+PORT_DB = 10015
 
 # Port of Container Manager
 PORT_CONTAINER_MNGR = 10020
