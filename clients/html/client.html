@@ -79,11 +79,12 @@ window.onload = function() {
   var wsuri = "ws://localhost:9000";
 	if ("WebSocket" in window) {
 		webSocket = new WebSocket(wsuri);
-		document.getElementById('robotStatus').innerText = "WebSockets connection estabilised. But no container assigned.";
+		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+		//TODO: Is it really establised ? 
 	}else {
 		//Firefox currently prefixes the WebSocket object
 		webSocket = new MozWebSocket(wsuri);
-		document.getElementById('robotStatus').innerText = "WebSockets connection estabilised. But no container assigned.";
+		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
 	}
 	
 	webSocket.onmessage = function(e) {
@@ -136,7 +137,7 @@ function sendCommand() {
 		if(robotStatus != "Container Assigned"){
 			raiseError("Can not send other msgs before creating a container");
 			okToSend = false;
-		}
+			}
 	}
 	if(okToSend){
 		webSocket.send(msg_json);
