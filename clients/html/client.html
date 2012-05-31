@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>2 Column CSS Layout - concise design</title>
+<style type='text/css'>
+.mask{
+   position: relative;
+   overflow: hidden;
+   margin: 0px auto;
+   width: 80%;
+   background-color: #ffffff
+}
+.header{
+   float: left;
+   width: 100%;
+   height: 10px;
+   background-color: #ffffff;
+   padding:15px
+}
+.colleft{
+	position: relative;
+	width: 100%;
+	right: 50%;
+	background-color: #ffffff
+}
+.col1{
+	position: relative;
+	overflow: hidden;
+	float: left;
+	width: 48%;
+	left: 101%;
+	background-color: #ffffff
+}
+.col2{
+	position: relative;
+	overflow: hidden;
+	float: left;
+	width: 48%;
+	left: 3%;
+	background-color: #ffffff
+}
+.footer{
+	float: left;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 25px
+}
+body {
+	padding: 0px;
+	margin: 0px;
+	font-size: 90%;
+	background-color: #ffffff
+}
+</style>
+<script type="text/javascript">
+	window.onload = function() {
+		var wsuri = "ws://localhost:9000";
+		if ("WebSocket" in window) {
+			webSocket = new WebSocket(wsuri);
+		}else {
+			//Firefox currently prefixes the WebSocket object
+			webSocket = new MozWebSocket(wsuri);
+		}
+		
+		webSocket.onmessage = function(e) {
+		document.getElementById('box2').value = e.data
+		}	
+
+	}
+
+	function onSubmitClick() {
+		webSocket.send(document.getElementById('box1').value);
+	}
+</script>
+
+
+</head>
+<body>
+<div class="mask">
+	<div class="header">
+		RoboEarth Cloud Engine - HTML Client
+	</div>
+	<div class="colleft">
+		<div class="col1">
+			<textarea id='box1'></textarea><br>
+			<button onclick='onSubmitClick(); return false'>send command</button>
+		</div>
+		<div class="col2">
+			<textarea id='box2'></textarea><br>
+		</div> 
+	</div> 
+	<div class="footer">
+		RoboEarth: Building an internet for Robots. <br> Part of the Cognitive Systems and Robotics Initiative from the European Union Seventh Framework Programme FP7/2007-2013.
+	</div>
+</div>
+</body>
+</html>
