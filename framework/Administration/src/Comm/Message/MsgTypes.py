@@ -38,6 +38,10 @@
         EC  Create environment
         ED  Destroy environment
         
+        IR  CommID request
+        IB  CommID response
+        ID  CommID delete
+        
         LI  Load Information
         
         RA  Add ROS component
@@ -60,6 +64,10 @@ CONTAINER_STATUS = 'CO'
 
 ENV_CREATE = 'EC'
 ENV_DESTROY = 'ED'
+
+ID_REQUEST = 'IR'
+ID_RESPONSE = 'IB'
+ID_DEL = 'ID'
 
 LOAD_INFO = 'LI'
 

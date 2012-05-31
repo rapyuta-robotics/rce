@@ -32,7 +32,6 @@ from Exceptions import InternalError, SerializationError
 from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
 from Comm.Message import MsgTypes
 from Interfaces import ISerializable #@UnresolvedImport
-#from Serializer import serialize as rosSerialize, deserialize as rosDeserialize
 
 class ROSAddMessage(object):
     """ Message type to add a node.
@@ -99,7 +98,7 @@ class ROSMsgMessage(object):
     """ Message type for a single ROS message.
         
         The fields are:
-            msg     Serialized ROS Message
+            msg     Serialized ROS Message (Serialize: MessageFIFO; Deserialize: str)
             name    Interface name which should be used to send the message
                     or an empty string if the message was received
             uid     Unique ID to identify the message
@@ -115,7 +114,7 @@ class ROSMsgMessage(object):
             raise SerializationError('Content of the message ROSMessage has to be a dictionary.')
         
         try:
-            s.addElement(data['msg'])
+            s.addFIFO(data['msg'])
             s.addElement(data['name'])
             s.addElement(data['uid'])
             s.addBool(data['push'])

@@ -22,9 +22,12 @@
 #       
 #       
 
+# ROS specific imports
+import genpy
+
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.threads import deferToThread 
+from twisted.internet.defer import Deferred, DeferredList
 
 # Python specific imports
 import os
@@ -40,9 +43,9 @@ from Comm.CommUtil import validateAddress #@UnresolvedImport
 
 from ContainerUtil.Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
 from ROSUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
-from Type import ConnectDirectiveMessage #@UnresolvedImport
+from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage #@UnresolvedImport
 
-from Processor import ConnectDirectiveProcessor, ContainerStatusProcessor, ROSMsgProcessor #@UnresolvedImport
+from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ContainerStatusProcessor, ROSMsgProcessor #@UnresolvedImport
 from Triggers import SatelliteRoutingTrigger #@UnresolvedImport
 
 from DBUtil.DBInterface import DBInterface #@UnresolvedImport
@@ -50,12 +53,19 @@ from DBUtil.DBInterface import DBInterface #@UnresolvedImport
 from ROSUtil.Parser import createParameterParser, createInterfaceParser, createNodeParser
 
 from Converter.Core import Converter #@UnresolvedImport
+from Comm.Message.FIFO import MessageFIFO
 
 class _Container(object):
     """ Class which represents a container.
     """
-    def __init__(self, commID, homeDir):
+    def __init__(self, commMngr, robotID, commID, homeDir):
         """ Initialize the Container.
+            
+            @param commMngr:    CommManager which should be used to communicate.
+            @type  commMngr:    CommManager
+            
+            @param robotID:     ID of the robot to which this container belongs.
+            @type  robotID:     str
             
             @param commID:  CommID which is used for the environment node inside the container
                             and which is used to identify the container.
@@ -64,11 +74,22 @@ class _Container(object):
             @param homeDir:     Directory which should be used as home directory for container.
             @type  homeDir:     str
         """
+        self._commManager = commMngr
+        self._robotID = robotID
         self._commID = commID
         self._homeDir = homeDir
         
+        # Key:     Interface name
+        # Value:   ROS Message class
+        self._interfaces = {}
+        
         self._running = False
         self._connected = False
+    
+    def checkOwner(self, robotID):
+        """ Check if the robot is the owner of this container.
+        """
+        return self._robotID == robotID
     
     def setConnectedFlag(self, flag):
         """ Set the 'connected' flag for the container.
@@ -90,7 +111,7 @@ class _Container(object):
         else:
             self._connected = False
     
-    def start(self, commManager):
+    def start(self):
         """ Send a Request to start the container.
         """
         if self._running:
@@ -98,15 +119,63 @@ class _Container(object):
         
         msg = Message()
         msg.msgType = MsgTypes.CONTAINER_START
-        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
+        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
         msg.content = { 'commID' : self._commID,
                         'home'   : self._homeDir }
         
         log.msg('Start container "{0}".'.format(self._commID))
-        commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg)
         self._running = True
     
-    def stop(self, commManager):
+    def addInterface(self, name, msgType):
+        """ Send a Request to add an Interface.
+        """
+        if not self._connected:
+            raise InternalError('Container has to be connected before an interface can be added.')
+        
+        if name in self._interfaces:
+            raise InvalidRequest('Can not add the interface. Name already exists.')
+        
+        MsgCls = genpy.message.get_message_class(msgType)
+        
+        # TODO: Check if necessary...
+        #if not MsgCls:
+        #    MsgCls = genpy.message.get_service_class(msgType)
+
+        if not MsgCls:
+            raise ValueError('Message class for the interface could not be loaded.')
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_ADD
+        msg.dest = self._commID
+        msg.content = {} # TODO: Add correct content
+        self._commManager.sendMessage(msg)
+        
+        self._interfaces[name] = MsgCls
+    
+    def getMessageClass(self, name):
+        """ Get the message class associated with the interface matching the given name.
+        """
+        return self._interfaces[name]
+    
+    def removeInterface(self, name):
+        """ Send a Request to remove an Interface.
+        """
+        if not self._connected:
+            raise InternalError('Container has to be connected before an interface can be removed.')
+        
+        if name not in self._interfaces:
+            raise InvalidRequest('Can not remove the interface. Name does not exist.')
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_REMOVE
+        msg.dest = self._commID
+        msg.content = {} # TODO: Add correct content
+        self._commManager.sendMessage(msg)
+        
+        del self._interfaces[name]
+    
+    def stop(self):
         """ Send a Request to stop the container.
         """
         if not self._running:
@@ -114,11 +183,11 @@ class _Container(object):
         
         msg = Message()
         msg.msgType = MsgTypes.CONTAINER_STOP
-        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
+        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
         msg.content = { 'commID' : self._commID }
         
         log.msg('Start container "{0}".'.format(self._commID))
-        commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg)
         self._running = False
 
 class SatelliteManager(object):
@@ -146,8 +215,14 @@ class SatelliteManager(object):
         # Storage for all running containers
         self._containers = {}
         
+        # Storage for pending requests for a new CommID
+        self._pendingCommIDReq = []
+        
         # Register Content Serializers
         self._commMngr.registerContentSerializers([ ConnectDirectiveMessage(),
+                                                    GetCommIDRequestMessage(),
+                                                    GetCommIDResponseMessage(),
+                                                    DelCommIDRequestMessage(),
                                                     StartContainerMessage(),
                                                     StopContainerMessage(),
                                                     ContainerStatusMessage(),    # <- necessary?
@@ -158,6 +233,7 @@ class SatelliteManager(object):
         
         # Register Message Processors
         self._commMngr.registerMessageProcessors([ ConnectDirectiveProcessor(self),
+                                                   GetCommIDProcessor(self),
                                                    ContainerStatusProcessor(self),
                                                    ROSMsgProcessor(self) ])
         # TODO: Add all valid messages
@@ -165,46 +241,33 @@ class SatelliteManager(object):
     ##################################################
     ### DB Interactions
     
-    def _validateRobot(self, robotID, containerID):
-        """ Check if the robot is authorized to modify the indicated container.
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @param containerID:     Identifier of the container which should be modified.
-                                    This corresponds to the communication ID of the container.
-            @type  containerID:     str
-            
-            @return:    True if the robot could be validated; False otherwise.
-        """
-        return self._dbInterface.validateRobot(robotID, containerID)
-        # TODO: Implement method in the DB server.
-        # TODO: At the moment dbInterface returns Deferred!!!
-    
     def _getRobotSpecs(self, robotID):
         """ Get the specifications for the robot.
             
             @param robotID:     Unique Identifier of the robot.
             @type  robotID:     str
             
-            @return:    Home folder which belongs to the robot.
-            @rtype:     str
+            @return:    Deferred which will fire as soon as a response was received with the
+                        following argument:
+                            Home folder which belongs to the robot.
+                            str
+            @rtype:     Deferred
         """
         return self._dbInterface.getRobotSpecs(robotID)
-        # TODO: Implement method in the DB server.
-        # TODO: At the moment dbInterface returns Deferred!!!
     
-    def _getNodeDefParser(self, uid):
+    def _getNodeDefParser(self, nodeID):
         """ Get the node definition.
             
-            @param uid:     Unique Identifier of the node.
-            @type  uid:     str
+            @param nodeID:  Unique Identifier of the node.
+            @type  nodeID:  str
             
-            @return:    NodeParser which can be used to parse the received message data.
+            @return:    Deferred which will fire as soon as a response was received with the
+                        following argument:
+                            NodeParser which can be used to parse the received message data.
+                            NodeParser
+            @rtype:     Deferred
         """
-        pkgName, nodeName, params, interfaces = self._dbInterface.getNodeSpecs(uid)
-        # TODO: Implement method in the DB server.
-        # TODO: At the moment dbInterface returns Deferred!!!
+        pkgName, nodeName, params, interfaces = self._dbInterface.getNodeSpecs(nodeID)
     
         params = [createParameterParser(*param) for param in params]
         interfaces = [createInterfaceParser(*interface) for interface in interfaces]
@@ -214,31 +277,30 @@ class SatelliteManager(object):
     ##################################################
     ### Container
     
-    def _createContainer(self, robotID):
-        """ Internally used method to send a start container request to the container node.
+    def _getContainer(self, robotID, containerID):
+        """ Check if the robot is authorized to modify the indicated container. If the
+            robot has the permission return the container instance.
             
-            For more details refer to 'createContainer'.
+            @param robotID:     Unique Identifier of the robot.
+            @type  robotID:     str
+            
+            @param containerID:     Identifier of the container which should be modified.
+                                    This corresponds to the communication ID of the container.
+            @type  containerID:     str
+            
+            @return:    Container instance which matches the given containerID
+            
+            @raise:     InvalidRequest if the robotID / containerID pair could not be matched.
         """
-        homeFolder = self._getRobotSpecs(robotID)
+        container = self._containers.get(containerID, None)
         
-        commID = 'TODO' # TODO: Generate a unique commID for container
+        if not container:
+            raise InvalidRequest('ContainerID does not match any container.')
         
-        if not validateAddress(commID):
-            log.msg('The CommID is not a valid address.')
-            return
+        if not container.checkOwner(robotID):
+            raise InvalidRequest('Robot is not the owner of the container.')
         
-        if commID in self._containers:
-            log.msg('There is already a container with the same CommID.')
-            return
-        
-        if not os.path.isdir(homeFolder):
-            log.msg('The home folder is not a valid directory.')
-            return
-        
-        container = _Container(commID, homeFolder)
-        
-        container.start(self._commMngr)
-        self._containers[commID] = container
+        return container
     
     def createContainer(self, robotID):
         """ Callback for RobotServerFactory. # TODO: Add description
@@ -246,7 +308,35 @@ class SatelliteManager(object):
             @param robotID:     Unique Identifier of the robot.
             @type  robotID:     str
         """
-        deferToThread(self._createContainer, robotID)
+        def processRobotSpecs(results):
+            if not (results[0][0] and results[1][0]):
+                log.msg('Could not get necessary data to start a new container.')
+                return
+            
+            homeFolder = results[0][1]
+            commID = results[1][1]
+            
+            if not validateAddress(commID):
+                log.msg('The CommID is not a valid address.')
+                return
+            
+            if commID in self._containers:
+                log.msg('There is already a container with the same CommID.')
+                return
+            
+            if not os.path.isdir(homeFolder):
+                log.msg('The home folder is not a valid directory.')
+                return
+            
+            container = _Container(commID, homeFolder)
+            
+            container.start(self._commMngr)
+            self._containers[commID] = container
+        
+        deferredRobot = self._getRobotSpecs(robotID)
+        deferredCommID = self._getNewCommID()
+        deferredList = DeferredList([deferredRobot, deferredCommID])
+        deferredList.addCallback(processRobotSpecs)
     
     def authenticateContainerConnection(self, commID):
         """ Callback for EnvironmentServerFactory to authenticate connection from container.
@@ -284,21 +374,6 @@ class SatelliteManager(object):
         
         self._containers[commID].setConnectedFlag(flag)
     
-    def _destroyContainer(self, robotID, containerID):
-        """ Internally used method to send a stop container request to the container node.
-            
-            For more details refer to 'destroyContainer'.
-        """
-        if not self._validateRobot(robotID, containerID):
-            raise InvalidRequest('')    # TODO: Add error
-        
-        if containerID not in self._containers:
-            log.msg('Tried to terminate a nonexistent container.')
-            return
-        
-        self._containers[containerID].stop(self._commMngr)
-        del self._containers[containerID]
-    
     def destroyContainer(self, robotID, containerID):
         """ Callback for RobotServerFactory. # TODO: Add description
             
@@ -309,29 +384,14 @@ class SatelliteManager(object):
                                     This corresponds to the communication ID of the container.
             @type  containerID:     str
         """
-        deferToThread(self._destroyContainer, robotID, containerID)
+        container = self._getContainer(robotID, containerID)
+        container.stop(self._commMngr)
+        del self._containers[containerID]
     
     ##################################################
     ### ROS
     
-    def _addNode(self, robotID, containerID, nodeID, config, binary):
-        """ Internally method used to send add a node to a container.
-            
-            For more details refer to 'addNode'.
-        """
-        if not self._validateRobot(robotID, containerID):
-            raise InvalidRequest('')    # TODO: Add error
-        
-        parser = self._getNodeDefParser(nodeID)
-        parser.parse(config, binary) # TODO: Check code for parsing
-        
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_ADD
-        msg.dest = containerID
-        msg.content = parser.serialize() # TODO: Check code for serializing
-        self._commMngr.sendMessage(msg)
-    
-    def addNode(self, robotID, containerID, nodeID, config, binary):
+    def addNode(self, robotID, containerID, nodeID, config):
         """ Callback for RobotServerFactory. # TODO: Add description
             
             @param robotID:     Unique Identifier of the robot.
@@ -343,32 +403,24 @@ class SatelliteManager(object):
             
             # TODO: Add description
         """
-        deferToThread(self._addNode, robotID, containerID, nodeID, config, binary)
-    
-    def _sendROSMsgToContainer(self, robotID, containerID, msgType, msg, binary):
-        """ Internally method used to send a ROS message to a container.
+        self._getContainer(robotID, containerID)
+        
+        def parseAndSend(parser):
+            def _parseAndSend():
+                parser.parse(config) # TODO: Check code for parsing ; Remove binary/files
+                
+                msg = Message()
+                msg.msgType = MsgTypes.ROS_ADD
+                msg.dest = containerID
+                msg.content = parser.serialize() # TODO: Check code for serializing
+                self._commMngr.sendMessage(msg)
             
-            For more details refer to 'sendROSMsgToContainer'.
-        """
-        if not self._validateRobot(robotID, containerID):
-            raise InvalidRequest('')    # TODO: Add error
+            self._commMngr.reactor.callInThread(_parseAndSend)
         
-        try:
-            rosMsg = self._converter.decode(msgType, msg['???'], binary)    # TODO: What exactly
-        except (TypeError, ValueError) as e:
-            raise InvalidRequest(str(e))
-        
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_MSG
-        msg.dest = containerID
-        msg.content = { 'msg'  : rosMsg,
-                        'name' : msg['???'],    # TODO: What exactly (Interface Name requiered)
-                        'uid'  : robotID,
-                        'push' : True }
-        
-        self._commMngr.sendMessage(msg)
+        deferred = self._getNodeDefParser(nodeID)
+        deferred.addCallback(parseAndSend)
     
-    def sendROSMsgToContainer(self, robotID, containerID, msgType, msg, binary):
+    def sendROSMsgToContainer(self, robotID, containerID, interfaceName, msg):
         """ Callback for RobotServerFactory. # TODO: Add description
             
             @param robotID:     Unique Identifier of the robot.
@@ -380,28 +432,48 @@ class SatelliteManager(object):
             
             # TODO: Add description
         """
-        deferToThread(self._sendROSMsgToContainer, containerID, msgType, msg, binary)
+        container = self._getContainer(robotID, containerID)
+        MsgCls = container.getMessageClass(interfaceName)
+        
+        def convertAndSend():
+            try:
+                rosMsg = self._converter.decode(MsgCls, msg)
+            except (TypeError, ValueError) as e:
+                raise InvalidRequest(str(e))
+            
+            fifo = MessageFIFO()
+            rosMsg.serialize(fifo)
+            
+            msg = Message()
+            msg.msgType = MsgTypes.ROS_MSG
+            msg.dest = containerID
+            msg.content = { 'msg'  : fifo,
+                            'name' : interfaceName,
+                            'uid'  : robotID,
+                            'push' : True }
+            
+            self._commMngr.sendMessage(msg)
+        
+        self._commMngr.reactor.callInThread(convertAndSend)
     
-    def sendROSMsgToRobot(self, robotID, msgType, msg):
+    def sendROSMsgToRobot(self, robotID, containerID, interfaceName, msg):
         """ # TODO: Add description
         """
-        msg = self._converter.encode(msg)
+        container = self._getContainer(robotID, containerID)
+        MsgCls = container.getMessageClass(interfaceName)
         
-        # TODO: Send to robot using robotID
-    
-    def _removeNode(self, robotID, containerID, nodeID):
-        """ Internally method used to send remove a node from a container.
+        def convertAndSend():
+            rosMsg = MsgCls()
+            rosMsg.deserialize(msg)
             
-            For more details refer to 'removeNode'.
-        """
-        if not self._validateRobot(robotID, containerID):
-            raise InvalidRequest('')    # TODO: Add error
+            try:
+                msg = self._converter.encode(rosMsg)
+            except (TypeError, ValueError) as e:
+                raise InvalidRequest(str(e))
+            
+            # TODO: Send to robot using robotID
         
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_REMOVE
-        msg.dest = containerID
-        msg.content = nodeID
-        self._commMngr.sendMessage(msg)
+        self._commMngr.reactor.callInThread(convertAndSend)
     
     def removeNode(self, robotID, containerID, nodeID):
         """ Callback for RobotServerFactory. # TODO: Add description
@@ -415,10 +487,16 @@ class SatelliteManager(object):
             
             # TODO: Add description
         """
-        deferToThread(self._removeNode, robotID, containerID, nodeID)
+        self._getContainer(robotID, containerID)
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_REMOVE
+        msg.dest = containerID
+        msg.content = nodeID
+        self._commMngr.sendMessage(msg)
     
     ##################################################
-    ### Routing / Management
+    ### Routing
     
     def getSatelliteRouting(self):
         """ Callback for PostInitTrigger.
@@ -434,7 +512,9 @@ class SatelliteManager(object):
     def _connectToSatellite(self, commID, ip):
         """ Connect to another satellite node.
         """
-        factory = ReappengineClientFactory(self._commMngr, commID, '', SatelliteRoutingTrigger(self._commMngr, self))
+        factory = ReappengineClientFactory( self._commMngr, commID,
+                                            '',
+                                            SatelliteRoutingTrigger(self._commMngr, self) )
         factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                           MsgTypes.ROS_MSG ])
         #self._commMngr.reactor.connectSSL(ip, port, factory, self._ctx)
@@ -451,6 +531,33 @@ class SatelliteManager(object):
         for satellite in satellites:
             self._connectToSatellite(satellite['commID'], satellite['ip'])
     
+    ##################################################
+    ### Management
+    
+    def _getNewCommID(self):
+        """ Internally used method to request a new unique CommID.
+            
+            @return:    Deferred which will fire as soon as the new CommID is available.
+            @rtype:     Deferred
+        """
+        deferred = Deferred()
+        self._pendingCommIDReq.append(deferred)
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ID_REQUEST
+        msg.dest = MsgDef.MASTER_ADDR
+        self._commMngr.sendMessage(msg)
+        
+        return deferred
+    
+    def setNewCommID(self, commID):
+        """ Callback method used to set new unique CommID.
+            
+            @param CommID:  New CommID which will be used for a waiting container.
+            @type  CommID:  str
+        """
+        self._pendingCommIDReq.pop().callback(commID)
+    
     def updateLoadInfo(self):
         """ This method is called regularly and is used to send the newest load info
             to the master node/load balancer.
@@ -462,3 +569,11 @@ class SatelliteManager(object):
         msg.dest = settings.LOAD_INFO_UPDATE
         msg.content = None # TODO: Add meaningful information
         self._commMngr.sendMessage(msg)
+    
+    def shutdown(self):
+        """ Method is called when the manager is stopped.
+        """
+        for container in self._containers.itervalues():
+            container.stop()
+        
+        self._containers = {}

@@ -36,6 +36,8 @@ from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
+from Type import DBRequestMessage, DBResponseMessage #@UnresolvedImport
+
 class DBBase(object):
     """ Provides the base class which can be subclassed and to which the remotely callable
         methods can be added.
@@ -52,6 +54,13 @@ class DBBase(object):
             @type  commMngr:    CommManager
         """
         self._commManager = commMngr
+        
+        # Register Content Serializers
+        self._commMngr.registerContentSerializers([ DBRequestMessage(),
+                                                    DBResponseMessage() ])
+        
+        # Register Message Processors
+        self._commMngr.registerMessageProcessors([ self ])
     
     def _send(self, resp, status, uid, dest):
         """ Internally used method to send a response.

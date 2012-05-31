@@ -61,7 +61,7 @@ def main(reactor, uid):
     reactor.listenTCP(settings.PORT_CONTAINER_MNGR, factory)
 
     # Setup shutdown hooks
-    #reactor.addSystemEventTrigger('before', 'shutdown', containerManager.shutdown)
+    reactor.addSystemEventTrigger('before', 'shutdown', containerManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     # Start twisted

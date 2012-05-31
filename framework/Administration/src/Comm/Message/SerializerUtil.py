@@ -143,6 +143,21 @@ class Serializer(object):
         for element in data:
             self.addElement(element)
     
+    def addFIFO(self, fifo):
+        """ Add the serialized data of the FIFO to the current FIFO..
+    
+            @param data:    FIFO containing serialized data which should be added.
+            @type  data:    MessageFIFO
+    
+            @raise:         SerializationError if content is not a MessageFIFO.
+        """
+        if not isinstance(fifo, MessageFIFO):
+            raise SerializationError('fifo is not of type MessageFIFO.')
+        
+        buf = fifo.getMsg()
+        self.addInt(len(buf))
+        self._buf += buf
+    
     def addCustom(self, data, serializer):
         """ Serialize the custom component.
             

@@ -50,6 +50,45 @@ class ConnectDirectiveMessage(object):
     def deserialize(self, s):
         return [{ 'commID' : s.getElement(), 'ip' : s.getElement() } for _ in xrange(s.getInt())]
 
+class GetCommIDRequestMessage(object):
+    """ Message type to request a new unique communication ID.
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = MsgTypes.ID_REQUEST
+    
+    def serialize(self, s, data):
+        pass
+    
+    def deserialize(self, s):
+        pass
+
+class GetCommIDResponseMessage(object):
+    """ Message type to respond to a request for a new unique communication ID.
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = MsgTypes.ID_REQUEST
+    
+    def serialize(self, s, data):
+        s.addElement(data['commID'])
+    
+    def deserialize(self, s):
+        return { 'commID' : s.getElement() }
+
+class DelCommIDRequestMessage(object):
+    """ Message type to remove a communication ID from the list of currently used IDs.
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = MsgTypes.ID_DEL
+    
+    def serialize(self, s, data):
+        s.addElement(data['commID'])
+    
+    def deserialize(self, s):
+        return { 'commID' : s.getElement() }
+
 class LoadInfoMessage(object):
     """ Message type to provide the load balancer with the necessary information.
     """

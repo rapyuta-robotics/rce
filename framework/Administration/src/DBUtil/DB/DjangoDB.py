@@ -56,7 +56,7 @@ class DjangoDBError(Exception):
     """
     pass
 
-class DjangoDB(CentralizedLoop):
+class Django(CentralizedLoop):
     """ This class provides the necessary methods to access the django database.
     """
     def _getPackage(self, pkg):

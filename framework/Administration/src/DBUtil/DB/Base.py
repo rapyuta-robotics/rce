@@ -59,7 +59,7 @@ class CentralizedLoop(Thread):
         """
         self._reactor.removeSystemEventTrigger(self._tiggerID)
     
-    def _loop(self):
+    def run(self):
         """ Mainloop of CentralizedLoop.
         """
         self.init()

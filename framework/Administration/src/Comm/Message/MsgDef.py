@@ -68,8 +68,8 @@ SUFFIX_LENGTH_ADDR = ADDRESS_LENGTH - ADDRESS_LENGTH / 2
 # Used to identify a message which is intended for direct neighbor
 NEIGHBOR_ADDR = '!' * ADDRESS_LENGTH
 
-# Used for master node
-#MASTER_ADDR = '$' * ADDRESS_LENGTH
+# Used for master/load balancer node
+MASTER_ADDR = '$' * ADDRESS_LENGTH
 
 # Used for DB node
 DB_ADDR = '?' * ADDRESS_LENGTH

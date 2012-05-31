@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Master.py
+#       DB.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,13 +22,9 @@
 #       
 #       
 
-# zope specific imports
-from zope.interface import implements
-
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
-from twisted.internet.task import LoopingCall
 
 # Python specific imports
 import sys
@@ -37,13 +33,41 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
-from Comm.Message.Base import Message
-from Comm.Interfaces import IServerImplementation #@UnresolvedImport
-from Comm.UIDServer import UIDServerFactory #@UnresolvedImport
 from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
-from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
-from MasterUtil.Manager import MasterManager #@UnresolvedImport
+
+from DBUtil.DBBase import DBBase #@UnresolvedImport
+from DBUtil.DB.DjangoDB import Django #@UnresolvedImport
+
+class DBManager(DBBase):
+    """ Manager which is used to handle the database requests.
+    """
+    def __init__(self, commMngr):
+        """ Initialize the DBManager.
+
+            @param commMngr:    CommManager which is responsible for handling the communication
+                                in this node.
+            @type  commMngr:    CommManager
+        """
+        super(DBManager, self).__init__(commMngr)
+        
+        self._django = Django(commMngr.reactor)
+        self._django.start()
+    
+    def getRobotSpecs(self, robotID):
+        """ # TODO: Add description.
+            
+            @return:    Path to the robot's home folder.
+            @rtype:     str
+        """
+        return '/reappengine/home' # TODO: Add actual code here
+    
+    def getNodeSpecs(self, nodeID):
+        """ # TODO: Add description
+            
+            
+        """
+        return self._django.getNode(nodeID)
 
 def main(reactor):
     # Start logger
@@ -54,55 +78,19 @@ def main(reactor):
 
     # Create Manager
     commManager = CommManager(reactor, MsgDef.MASTER_ADDR)
-    masterManager = MasterManager(commManager)
-    
-    # Create Trigger
-    trigger = MasterTrigger(commManager, masterManager)
+    DBManager(commManager)
     
     # Initialize twisted
     log.msg('Initialize twisted')
     
-    # Server for UID distribution
-    reactor.listenTCP(settings.PORT_UID, UIDServerFactory(masterManager))
-    
     # Server for connections from the satellites
-    factory = ReappengineServerFactory( commManager,
-                                        MasterServerImplementation(commManager, masterManager),
-                                        trigger )
-    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,  # TODO: <- Necessary?
-                                      MsgTypes.LOAD_INFO ])
-    #reactor.listenSSL(settings.PORT_MASTER, factory, ctx)
-    reactor.listenTCP(settings.PORT_MASTER, factory)
-    
-    # Server for initial outside connections
-    ### 
-    ### TODO: Add outside connection here!
-    ###
-    
-    # Setup periodic calling of Clean Up
-    log.msg('Add periodic call for Clean Up.')
-    LoopingCall(masterManager.clean).start(settings.UID_TIMEOUT / 2)
+    factory = ReappengineServerFactory( commManager )
+    factory.addApprovedMessageTypes([ MsgTypes.DB_REQUEST ])
+    #reactor.listenSSL(settings.PORT_DB, factory, ctx)
+    reactor.listenTCP(settings.PORT_DB, factory)
     
     # Setup shutdown hooks
-    #reactor.addSystemEventTrigger('before', 'shutdown', masterManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
-    
-    ### TODO: Debugging only
-    def test1():
-        log.msg('Start test 1...')
-        uid = masterManager.getSatellites()[0]['commID']
-        log.msg('test 1: Start container commID: "{0}", satelliteID: "{1}".'.format('TESTID', uid))
-        masterManager.addContainer('TESTID', '/reappengine/home', uid)
-    
-    def test2():
-        log.msg('Start test 2...')
-        uid = masterManager.getSatellites()[0]['commID']
-        log.msg('test 2: Stop container commID: "{0}", satelliteID: "{1}".'.format('TESTID', uid))
-        masterManager.removeContainer('TESTID', uid)
-    
-    reactor.callLater(10, test1)
-    #reactor.callLater(20, test2)
-    #reactor.callLater(30, test1)
     
     # Start twisted (without signal handles as ROS also registers signal handlers)
     log.msg('Initialization completed')

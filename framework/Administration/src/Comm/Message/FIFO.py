@@ -64,3 +64,8 @@ class MessageFIFO(object):
             n = lenBuf
         
         return (''.join(self._buf.popleft() for _ in xrange(n)), n)
+    
+    def write(self, data):
+        """ Synonym for 'push'. Used for serialization of ROS messages.
+        """
+        self.push(data)

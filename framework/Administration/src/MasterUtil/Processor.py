@@ -28,50 +28,39 @@ from zope.interface import implements
 # Custom imports
 from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
 from Comm.Message import MsgTypes
+from Comm.Message.Base import Message
 
-class SatelliteProcessorBase(object):
-    """ Base class for all standard processors.
+class MasterProcessorBase(object):
+    """ Base message processor for Master node.
     """
     implements(IMessageProcessor)
     
-    def __init__(self, manager):
-        """ @param manager:     SatelliteManager which is used in this node.
-            @type  manager:     SatelliteManager
+    def __init__(self, manager, commManager):
+        """ @param manager:     ROSManager which is used in this node.
+            @type  manager:     ROSManager
+            
+            @param commManager:     CommManager which is used in this node.
+            @type  commManager:     CommManager
         """
         self.manager = manager
+        self.commManager = commManager
 
-class ConnectDirectiveProcessor(SatelliteProcessorBase):
-    """ Message processor which executes the directives from the message and connects
-        to all specified nodes.
-    """
-    IDENTIFIER = MsgTypes.CONNECT
-    
-    def processMessage(self, msg):
-        self.manager.connectToSatellites(msg.content)
-
-class GetCommIDProcessor(SatelliteProcessorBase):
+class GetCommIDProcessor(MasterProcessorBase):
     """ Message processor for a getCommID request.
     """
     IDENTIFIER = MsgTypes.ID_REQUEST
     
     def processMessage(self, msg):
-        self.manager.setNewCommId(msg.content['commID'])
+        resp = Message()
+        resp.msgType = MsgTypes.ID_RESPONSE
+        resp.dest = msg.origin
+        resp.content = { 'commID' : self.manager.getCommID() }
+        self.commManager.sendMessage(resp)
 
-class LoadInfoProcessor(SatelliteProcessorBase):
-    """ Message processor to update the load information with the load balancer.
+class DelCommIDProcessor(MasterProcessorBase):
+    """ Message processor for a delCommID request.
     """
-    IDENTIFIER = MsgTypes.LOAD_INFO
+    IDENTIFIER = MsgTypes.ID_DEL
     
     def processMessage(self, msg):
-        pass # TODO: Add
-
-class ROSMsgProcessor(SatelliteProcessorBase):
-    """ Message processor to handle and convert a ROS message for forwarding to robot.
-    """
-    IDENTIFIER = MsgTypes.ROS_MSG
-    
-    def processMessage(self, msg):
-        self.manager.sendROSMsgToRobot( msg.content['uid'],
-                                        msg.origin,
-                                        msg.content['name'],
-                                        msg.content['msg'] )
+        self.manager.delCommID(msg.content['commID'])

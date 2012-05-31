@@ -26,7 +26,6 @@
 from twisted.python import log
 from twisted.internet.defer import Deferred, DeferredList
 from twisted.internet.protocol import ProcessProtocol
-from twisted.internet.threads import deferToThread
 
 # Python specific imports
 import os
@@ -251,8 +250,8 @@ class ContainerManager(object):
             return
         
         self._commIDs.append(commID)
-        #deferToThread(self._startContainer, commID, ip, homeDir, key)
-        self._startContainer(commID, homeDir)
+        #self._reactor.callInThread(self._startContainer, commID, homeDir)
+        self._startContainer(commID, homeDir)   # TODO: Temporary; switch to callInThread
     
     def _stopContainer(self, commID):
         """ Internally used method to stop a container.
@@ -266,6 +265,9 @@ class ContainerManager(object):
             
             # Delete config folder
             shutil.rmtree(os.path.join(self._confDir, commID))
+            
+            # Remove commID from internal list
+            self._reactor.callFromThread(self._commIDs.remove, commID)
         
         deferred.addCallback(callback)
         
@@ -281,8 +283,7 @@ class ContainerManager(object):
             log.msg('There is no container registered under this CommID.')
             return
         
-        deferToThread(self._stopContainer, commID)
-        self._commIDs.remove(commID)
+        self._reactor.callInThread(self._stopContainer, commID)
     
     def shutdown(self):
         """ Method is called when the manager is stopped.
