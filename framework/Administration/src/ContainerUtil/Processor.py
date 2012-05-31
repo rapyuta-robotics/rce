@@ -46,7 +46,8 @@ class StartContainerProcessor(ContainerProcessorBase):
     IDENTIFIER = MsgTypes.CONTAINER_START
     
     def processMessage(self, msg):
-        self.manager.startContainer(msg['commID'], msg['ip'], msg['homeDir'], msg['key'])
+        msg = msg.content
+        self.manager.startContainer(msg['commID'], msg['home'])
 
 class StopContainerProcessor(ContainerProcessorBase):
     """ Message processor to stop a container.
@@ -54,4 +55,4 @@ class StopContainerProcessor(ContainerProcessorBase):
     IDENTIFIER = MsgTypes.CONTAINER_STOP
     
     def processMessage(self, msg):
-        self.manager.stopContainer(msg['commID'])
+        self.manager.stopContainer(msg.content['commID'])

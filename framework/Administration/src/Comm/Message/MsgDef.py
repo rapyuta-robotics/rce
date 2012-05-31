@@ -35,6 +35,7 @@ CHUNK_SIZE = 8192
 ####################
 # Constants which are used to (de-)serialize booleans / integers
 B_STRUCT = Struct('!B')
+B_LEN = B_STRUCT.size
 
 I_STRUCT = Struct('!I')
 I_LEN = I_STRUCT.size
@@ -62,13 +63,16 @@ PREFIX_LENGTH_ADDR = ADDRESS_LENGTH / 2
 SUFFIX_LENGTH_ADDR = ADDRESS_LENGTH - ADDRESS_LENGTH / 2
 
 # Used to identify a client which needs an address from server
-NEED_ADDR = '?' * ADDRESS_LENGTH
+#NEED_ADDR = '?' * ADDRESS_LENGTH
 
 # Used to identify a message which is intended for direct neighbor
 NEIGHBOR_ADDR = '!' * ADDRESS_LENGTH
 
 # Used for master node
-MASTER_ADDR = '$' * ADDRESS_LENGTH
+#MASTER_ADDR = '$' * ADDRESS_LENGTH
+
+# Used for DB node
+DB_ADDR = '?' * ADDRESS_LENGTH
 
 # Used prefix for satellite nodes
 PREFIX_SATELLITE_ADDR = '+' * PREFIX_LENGTH_ADDR

@@ -29,12 +29,14 @@ from zope.interface.exceptions import Invalid
 # twisted specific imports
 from twisted.python import log
 
+# Python specific imports
+from threading import Lock
+
 # Custom imports
-from Exceptions import InternalError, SerializationError
+from Exceptions import InternalError
 from Message.Interfaces import IContentSerializer, IMessageProcessor #@UnresolvedImport
 from Message import MsgDef
-from Message.Base import Message
-from Message.Handler import MessageReceiver, MessageForwarder, MessageSender, Sink
+from Message.Handler import send
 from Message.StdType import InitMessage, RouteMessage
 from Message.StdProcessor import RouteProcessor
 from Router import Router
@@ -64,6 +66,9 @@ class CommManager(object):
         # Message number counter
         self._msgNr = 0
         
+        # Lock to be sure of thread-safety
+        self._msgNrLock = Lock()
+        
         # Content serializers
         self._contentSerializer = {}
         self.registerContentSerializers([ InitMessage(),
@@ -77,13 +82,6 @@ class CommManager(object):
     def commID(self):
         """ Communication ID of this node. """
         return self._commID
-    
-    @commID.setter
-    def commID(self, value):
-        if self._commID != MsgDef.NEED_ADDR:
-            raise InternalError('Can not assign a new CommID to node which already has a CommID.')
-        
-        self._commID = value
     
     @property
     def reactor(self):
@@ -102,6 +100,9 @@ class CommManager(object):
             
             @param serializers:     Content serializers which should be registered.
             @type  serializers:     [ IContentSerializer ]
+            
+            @raise:     InternalError if the serializers do not implement the "IContentSerializer"
+                        interface.
         """
         for serializer in serializers:
             try:
@@ -123,6 +124,9 @@ class CommManager(object):
                                 
             @param processors:  Processor which should be registered.
             @type  processors:  [ IMessageProcessor ]
+            
+            @raise:     InternalError if the processors do not implement the "IMessageProcessor"
+                        interface.
         """
         for processor in processors:
             try:
@@ -136,60 +140,15 @@ class CommManager(object):
                 )
             
             self._processors[processor.IDENTIFIER] = processor
-
-    def getNextConsumer(self, origin, dest=None, callback=None):
-        """ This method is called by the protocol instances to get the next destination
-            point for the received message.
-            
-            Either the argument 'dest' or the argument 'callback' has to be provided. If both
-            or none of the two are provided an error is raised.
-            If 'dest' is provided the standard message handling is used. The returned value is
-            either a MessageForwarder instance or a MessageReceiver instance.
-            If 'callback' is provided the returned MessageReceiver instance gets the argument
-            as callback function.
-            
-            @param origin:  The communication ID from which the received message originated.
-            @type  origin:  str
-            
-            @param dest:    The destination address of the received message.
-            @type  dest:    str
-            
-            @param callback:    Custom callback which should be used for the MessageReceiver.
-            @type  callback:    Callable
-
-            @return:    The correct Message handler to where the message should be forwarded.
-        """
-        if callable(callback):
-            if dest:
-                raise InternalError('Both arguments "dest" and "callback" are supplied.')
-            
-            log.msg('CommManager: Received a consumer request with a callback.')
-            return MessageReceiver(self, callback)
-        
-        if not dest:
-            raise InternalError('None of the arguments "dest" and "callback" are supplied.')
-        
-        # Check if the message is for this communication node
-        if dest == self._commID or dest == MsgDef.NEIGHBOR_ADDR:
-            log.msg('CommManager: Received a consumer request with a destination.')
-            return MessageReceiver(self, self._processMessage)
-        
-        # Message is not for this node; therefore, it should probably be forwarded
-        
-        if dest[:MsgDef.PREFIX_LENGTH_ADDR] == MsgDef.PREFIX_CONTAINER_ADDR:
-            # Tried to send a message to Container Manager via this node which is not allowed for security reasons.
-            log.msg('Received a message to a container manager via this node. Message is dropped.')
-            return Sink()
-        
-        forwarder = MessageForwarder(origin)
-        self._router.registerProducer(forwarder, dest)
-        return forwarder
     
     def getMessageNr(self):
         """ Returns a new message number.
         """
-        self._msgNr = (self._msgNr + 1) % MsgDef.MAX_INT
-        return self._msgNr
+        with self._msgNrLock:
+            nr = self._msgNr
+            self._msgNr = (self._msgNr + 1) % MsgDef.MAX_INT
+        
+        return nr
     
     def getSerializer(self, msgType):
         """ Returns the ContentSerializer matching the given msgType or None if there
@@ -197,23 +156,15 @@ class CommManager(object):
         """
         return self._contentSerializer.get(msgType, None)
     
-    def _sendMessage(self, msg):
-        """ Send a message.
-        """
-        try:
-            self._router.registerProducer(MessageSender(self, msg), msg.dest)
-        except SerializationError as e:
-            log.msg('Message could not be sent: {0}'.format(str(e)))
-    
     def sendMessage(self, msg):
         """ Send a message.
 
-            @param msg:     Message which should be sent to destination.
+            @param msg:     Message which should be sent.
             @type  msg:     Message
         """
-        self._reactor.callFromThread(self._sendMessage, msg)
+        send(self, msg)
     
-    def _processMessage(self, msg):
+    def processMessage(self, msg):
         """ Process the message using the registered message processors.
             
             @param msg:     Received message.
@@ -223,26 +174,6 @@ class CommManager(object):
             self._processors[msg.msgType].processMessage(msg)
         else:
             log.msg('Received a message whose type can not be handled by this CommManager.')
-
-    def messageReceived(self, msg, processMsg):
-        """ This method is called with the received still serialized message.
-            
-            @param msg:     Serialized message.
-            @type  msg:     str
-
-            @param processMsg:  Callback which should be used when the message
-                                has been completely received and successfully
-                                deserialized. The callback function should take
-                                as a single argument a Message instance.
-            @type  processMsg:  Callable
-        """
-        if not callable(processMsg):
-            raise InternalError('Process Message callback is not a callable object.')
-        
-        try:
-            processMsg(Message.deserialize(msg, self))
-        except SerializationError as e:
-            log.msg('Could not deserialize message: {0}'.format(e))
     
     def shutdown(self):
         """ Method which should be used when the CommManager is terminated.

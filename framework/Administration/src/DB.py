@@ -45,64 +45,6 @@ from Comm.CommManager import CommManager
 from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
 from MasterUtil.Manager import MasterManager #@UnresolvedImport
 
-class MasterServerImplementation(object):
-    """ ServerImplementation which is used in the master node for the connections to the
-        satellite nodes.
-    """
-    implements(IServerImplementation)
-    
-    def __init__(self, commMngr, masterMngr):
-        """ Initialize the MasterServerImplementation.
-
-            @param commMngr:    CommManager which is responsible for handling the communication
-                                in this node.
-            @type  commMngr:    CommManager
-            
-            @param masterMngr:  MasterManager which is used in this node.
-            @type  masterMngr:  MasterManager
-        """
-        self.commManager = commMngr
-        self._masterManager = masterMngr
-    
-    def authOrigin(self, origin, ip, key):
-        return self._masterManager.checkUID(origin[MsgDef.PREFIX_LENGTH_ADDR:])
-    
-    def getResponse(self, origin):    
-        return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : '' }
-    
-    def saveState(self, content):
-        pass
-    
-    def unregisterConnection(self, conn):
-        self._masterManager.removeSatellite(conn.dest)
-
-class MasterTrigger(object):
-    """ PostInitTrigger which is used to send the available satellite as connection directive.
-    """
-    implements(IPostInitTrigger)
-    
-    def __init__(self, commMngr, masterMngr):
-        """ Initialize the DefaultRoutingTrigger.
-
-            @param commMngr:    CommManager which is responsible for handling the communication
-                                in this node.
-            @type  commMngr:    CommManager
-            
-            @param masterMngr:  MasterManager which is responsible for the handling of this node.
-            @type  masterMngr:  MasterManager
-        """
-        self.commManager = commMngr
-        self.masterManager = masterMngr
-    
-    def trigger(self, origin, ip):
-        msg = Message()
-        msg.msgType = MsgTypes.CONNECT
-        msg.dest = origin
-        msg.content = self.masterManager.getSatellites()
-        self.commManager.sendMessage(msg)
-        
-        self.masterManager.addSatellite(origin, ip)
-
 def main(reactor):
     # Start logger
     log.startLogging(sys.stdout)

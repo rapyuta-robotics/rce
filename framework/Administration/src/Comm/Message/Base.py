@@ -22,70 +22,10 @@
 #       
 #       
 
-# Python specific imports
-import string
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 # Custom imports
 from Exceptions import SerializationError
 import MsgDef
-
-def validateSuffix(suffix):
-    """ Validate the given suffix.
-                        
-        @param addr:    Suffix which should be validated.
-        @type  addr:    str
-        
-        @return:    True if the suffix is valid; False otherwise.
-        rtype:      bool
-    """
-    if len(suffix) != MsgDef.SUFFIX_LENGTH_ADDR:
-        return False
-    
-    for c in suffix:
-        if c not in string.ascii_uppercase:
-            return False
-    
-    return True
-
-def validateAddress(addr, allowNeighbor=False):
-    """ Validate the given address.
-                        
-        @param addr:    Address which should be validated.
-        @type  addr:    str
-        
-        @param allowNeighbor:   Flag to indicate whether the special address for
-                                a neighbor should return True or False.
-        @type  allowNeighbor:   bool
-        
-        @return:    True if the address is valid; False otherwise.
-        rtype:      bool
-    """
-    if len(addr) != MsgDef.ADDRESS_LENGTH:
-        return False
-    
-    if addr == MsgDef.MASTER_ADDR:
-        return True
-    
-    if addr == MsgDef.NEIGHBOR_ADDR:
-        return allowNeighbor
-    
-    prefix = addr[:MsgDef.PREFIX_LENGTH_ADDR]
-    
-    if prefix == MsgDef.PREFIX_SATELLITE_ADDR:
-        addr = addr[MsgDef.PREFIX_LENGTH_ADDR:]
-    elif prefix == MsgDef.PREFIX_CONTAINER_ADDR:
-        addr = addr[MsgDef.PREFIX_LENGTH_ADDR:] 
-    
-    for c in addr:
-        if c not in string.ascii_uppercase:
-            return False
-    
-    return True
+from SerializerUtil import Serializer, Deserializer
 
 class Message(object):
     """ This class represents a message which should be sent from one
@@ -111,6 +51,9 @@ class Message(object):
             @param manager:     CommManager which has all ContentSerializer registered.
             @type  manager:     CommManager
             
+            @return:    Message FIFO containing serialized message.
+            @rtype:     MessageFIFO
+            
             @raise:     SerializationError
         """
         if self.msgType is None:
@@ -127,25 +70,26 @@ class Message(object):
         if not serializer:
             raise SerializationError('The message can not be serialized (Unknown message type).')
         
+        s = Serializer()
+        serializer.serialize(s, self.content)
+        
         self.msgNumber = manager.getMessageNr()
         self.origin = manager.commID
-        content = serializer.serialize(self.content)
         
-        buf = StringIO()
-        buf.write(MsgDef.I_STRUCT.pack(len(content) + MsgDef.HEADER_LENGTH))
-        buf.write(self.dest)
-        buf.write(self.origin)
-        buf.write(self.msgType)
-        buf.write(MsgDef.I_STRUCT.pack(self.msgNumber))
-        buf.write(content)
-        return buf.getvalue()
+        buf = s.getMsg()
+        s.addHeader( len(buf) + MsgDef.HEADER_LENGTH,
+                     self.dest,
+                     self.origin,
+                     self.msgType,
+                     self.msgNumber )
+        return buf
 
     @classmethod
-    def deserialize(cls, data, manager):
+    def deserialize(cls, fifo, manager):
         """ Deserialize the message.
             
-            @param data:    Serialized message.
-            @type  data:    str
+            @param fifo:    Message FIFO containing the serialized message.
+            @type  fifo:    MessageFIFO
             
             @param manager:     CommManager which has all ContentSerializer registered.
             @type  manager:     CommManager
@@ -155,26 +99,24 @@ class Message(object):
 
             @raise:     SerializationError
         """
-        if MsgDef.HEADER_LENGTH > len(data):
+        bufLen = len(fifo)
+        
+        if MsgDef.HEADER_LENGTH > bufLen:
             raise SerializationError('The received message does not contain a complete header.')
-
-        msgLen, = MsgDef.I_STRUCT.unpack(data[:MsgDef.I_LEN])
-
-        if msgLen != len(data):
-            raise SerializationError('The received message does not match the specified length.')
-
+        
+        s = Deserializer(fifo)
+        
         msg = cls()
+        msgLen, msg.dest, msg.origin, msg.msgType, msg.msgNumber = s.getHeader()
 
-        msg.dest = data[MsgDef.POS_DEST:MsgDef.POS_DEST + MsgDef.ADDRESS_LENGTH]
-        msg.origin = data[MsgDef.POS_ORIGIN:MsgDef.POS_ORIGIN + MsgDef.ADDRESS_LENGTH]
-        msg.msgType = data[MsgDef.POS_MSG_TYPE:MsgDef.POS_MSG_TYPE + MsgDef.MSG_TYPE_LENGTH]
-        msg.msgNumber = MsgDef.I_STRUCT.unpack(data[MsgDef.POS_MSG_NUMBER:MsgDef.POS_MSG_NUMBER + MsgDef.I_LEN])
+        if msgLen != bufLen:
+            raise SerializationError('The received message does not match the specified length.')
         
         serializer = manager.getSerializer(msg.msgType)
         
         if not serializer:
             raise SerializationError('The message can not be serialized (Unknown message type).')
         
-        msg.content = serializer.deserialize(data[MsgDef.HEADER_LENGTH:])
+        msg.content = serializer.deserialize(s)
         
         return msg

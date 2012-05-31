@@ -25,19 +25,9 @@
 # zope specific imports
 from zope.interface import implements
 
-# Python specific imports
-from struct import error as StructError
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 # Custom imports
 from Exceptions import SerializationError
 from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
-from Comm.Message.SerializerUtil import serializeList, deserializeList
-from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 
 class ConnectDirectiveMessage(object):
@@ -47,51 +37,18 @@ class ConnectDirectiveMessage(object):
     
     IDENTIFIER = MsgTypes.CONNECT
     
-    def serialize(self, data):
-        satellites = []
+    def serialize(self, s, data):
+        s.addInt(len(data))
         
-        try:
-            for element in data:
-                buf = StringIO()
-                
-                buf.write(MsgDef.I_STRUCT.pack(len(element['ip'])))
-                buf.write(element['ip'])
-                
-                buf.write(MsgDef.I_STRUCT.pack(len(element['commID'])))
-                buf.write(element['commID'])
-                
-                satellites.append(buf.getvalue())
-        except KeyError as e:
-            raise SerializationError('Could not serialize message of type ConnectDirective: {0}'.format(e))
-        
-        return serializeList(satellites)
+        for element in data:
+            try:
+                s.addElement(element['commID'])
+                s.addElement(element['ip'])
+            except KeyError as e:
+                raise SerializationError('Could not serialize message of type ConnectDirective: {0}'.format(e))
     
-    def deserialize(self, data):
-        satellites = []
-        
-        try:
-            for element in deserializeList(data):
-                msg = {}
-                
-                start = 0
-                end = MsgDef.I_LEN
-                length, = MsgDef.I_STRUCT.unpack(element[start:end])
-                start = end
-                end += length
-                msg['ip'] = element[start:end]
-                
-                start = end
-                end += MsgDef.I_LEN
-                length, = MsgDef.I_STRUCT.unpack(element[start:end])
-                start = end
-                end += length
-                msg['commID'] = element[start:end]
-                
-                satellites.append(msg)
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type ConnectDirective: {0}'.format(e))
-        
-        return satellites
+    def deserialize(self, s):
+        return [{ 'commID' : s.getElement(), 'ip' : s.getElement() } for _ in xrange(s.getInt())]
 
 class LoadInfoMessage(object):
     """ Message type to provide the load balancer with the necessary information.
@@ -100,91 +57,8 @@ class LoadInfoMessage(object):
     
     IDENTIFIER = MsgTypes.LOAD_INFO
     
-    def serialize(self, data):
+    def serialize(self, s, data):
         pass # TODO: Add
     
     def deserialize(self, data):
         pass # TODO: Add
-
-class CreateEnvMessage(object):
-    """ Message type to create a new environment.
-        
-        The fields are:
-            commID  CommID which is used to identify the environment
-            home    Home directory which should be used
-    """
-    implements(IContentSerializer)
-    
-    IDENTIFIER = MsgTypes.ENV_CREATE
-    
-    def serialize(self, data):
-        buf = StringIO()
-        
-        try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
-            buf.write(data['commID'])
-            
-            buf.write(MsgDef.I_STRUCT.pack(len(data['home'])))
-            buf.write(data['home'])
-        except KeyError as e:
-            raise SerializationError('Could not serialize message of type CreateEnv: {0}'.format(e))
-        
-        return buf.getvalue()
-    
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['commID'] = data[start:end]
-            
-            start = end
-            end += MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['home'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type CreateEnv: {0}'.format(e))
-        
-        return msg
-
-class DestroyEnvMessage(object):
-    """ Message type to destroy an existing environment.
-        
-        The fields are:
-            commID  CommID which is used to identify the environment
-    """
-    implements(IContentSerializer)
-    
-    IDENTIFIER = MsgTypes.ENV_DESTROY
-    
-    def serialize(self, data):
-        buf = StringIO()
-        
-        try:
-            buf.write(MsgDef.I_STRUCT.pack(len(data['commID'])))
-            buf.write(data['commID'])
-        except KeyError as e:
-            raise SerializationError('Could not serialize message of type DestroyEnv: {0}'.format(e))
-        
-        return buf.getvalue()
-    
-    def deserialize(self, data):
-        msg = {}
-        
-        try:
-            start = 0
-            end = MsgDef.I_LEN
-            length, = MsgDef.I_STRUCT.unpack(data[start:end])
-            start = end
-            end += length
-            msg['commID'] = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize message of type DestroyEnv: {0}'.format(e))
-        
-        return msg

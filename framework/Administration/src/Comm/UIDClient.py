@@ -32,7 +32,7 @@ class UIDClientProtocol(Protocol):
     def __init__(self, deferred):
         """ Initialize UIDClientProtocol.
             
-            @param deferred:    Deferred which should be called with the reveived UID.
+            @param deferred:    Deferred which should be called with the received UID.
             @type  deferred:    Deferred
         """
         self._deferred = deferred

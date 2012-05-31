@@ -32,13 +32,13 @@ from twisted.python import log
 from twisted.internet.protocol import ServerFactory, ReconnectingClientFactory
 
 # Custom imports
-from Exceptions import InternalError, InvalidRequest, SerializationError
+from Exceptions import InternalError, SerializationError
 from Protocol import ReappengineProtocol
 from Message import MsgDef
 from Message import MsgTypes
 from Message.Base import Message
-from Message.Handler import MessageSender
-from Interfaces import IPostInitTrigger, IServerImplementation #@UnresolvedImport
+from Message.Handler import _Sender
+from Interfaces import IPostInitTrigger #@UnresolvedImport
 
 class EmptyTrigger(object):
     """ PostInitTrigger which implements the necessary methods, but does nothing.
@@ -61,9 +61,12 @@ class ReappengineFactory(object):
             @param trigger:     Instance which should be used as PostInitTrigger.
                                 If argument is omitted the PostInitTrigger does nothing.
             @type  trigger:     IPostInitTrigger
+            
+            @raise:     InternalError if the trigger does not implement the "IPostInitTrigger"
+                        interface.
         """
         self._commManager = commMngr
-        self._filter = set()
+        self._filter = set([MsgTypes.INIT_REQUEST])
         
         try:
             verifyObject(IPostInitTrigger, trigger)
@@ -136,7 +139,7 @@ class ReappengineFactory(object):
 class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
     """ Factory which is used for client connections.
     """
-    def __init__(self, commMngr, satelliteID, key, trigger=EmptyTrigger(), overrideCommID=False):
+    def __init__(self, commMngr, satelliteID, trigger=EmptyTrigger()):
         """ Initialize the ReappengineClientFactory.
 
             @param commMngr:    CommManager which is responsible for handling the communication
@@ -146,25 +149,13 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
             @param satelliteID:     CommID of the satellite node.
             @type  satelliteID:     str
             
-            @param key:     Key which should be sent together with the initialization
-                            request.
-            @type  key:     str
-            
             @param trigger:     Instance which should be used as PostInitTrigger.
                                 If argument is omitted the PostInitTrigger does nothing.
             @type  trigger:     IPostInitTrigger
-            
-            @param overrideCommID:  Flag to indicate whether the received ID should
-                                    be used as a new CommID for this node.
-            @type  overrideCommID:  bool
         """
         ReappengineFactory.__init__(self, commMngr, trigger)
         
         self._satelliteID = satelliteID
-        self._key = key
-        self._override = overrideCommID
-        
-        self.addApprovedMessageTypes([ MsgTypes.INIT_REQUEST ])
     
     def buildProtocol(self, addr):
         """ Builds a new protocol instance.
@@ -182,12 +173,11 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
         msg.msgType = MsgTypes.INIT_REQUEST
         msg.dest = MsgDef.NEIGHBOR_ADDR
         
-        msg.content = { 'origin' : self._commManager.commID,
-                        'dest'   : self._satelliteID,
-                        'key'    : self._key }
+        msg.content = { 'remoteID'   : self._satelliteID }
         
         try:
-            MessageSender(self._commManager, msg).send(conn)
+            buf = msg.serialize(self._commManager)
+            _Sender(len(buf), self._commManager.commID, msg.dest, buf).send(conn)
         except SerializationError as e:
             log.msg('Could not serialize message: {0}'.format(e))
             conn.transport.loseConnection()
@@ -200,18 +190,17 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
             conn.transport.loseConnection()
             return
         
-        origin = msg.content['origin']
+        origin = msg.origin
         
-        if origin != self._satelliteID or msg.origin != self._satelliteID:
-            log.msg('Received origin address does not match this node satellite address for initialization of protocol instance.')
+        if origin != self._satelliteID:
+            log.msg('Received origin ID does not match this node satellite ID for initialization of protocol instance.')
             conn.transport.loseConnection()
             return
         
-        self._key = msg.content['key']
-        
-        if self._override:
-            self._commManager.commID = msg.content['dest']
-            self._override = False
+        if msg.content['remoteID'] != self._commManager.commID:
+            log.msg('Received remote ID does not match this node communication ID for initialization of protocol instance.')
+            conn.transport.loseConnection()
+            return
         
         # Set protocol to initialized and register connection in manager
         conn.dest = origin
@@ -225,37 +214,6 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
 class ReappengineServerFactory(ReappengineFactory, ServerFactory):
     """ Factory which is used for server connections.
     """
-    def __init__(self, commMngr, serverImpl, trigger=EmptyTrigger()):
-        """ Initialize the ReappengineServerFactory.
-            
-            @param commMngr:    CommManager instance which should be used with this
-                                factory and its build protocols.
-            @type  commMngr:    CommManager
-            
-            @param serverImpl:  Instance which should be used as server implementation. The
-                                instance defines the behavior of the server factory.
-            @type  serverImpl:  IServerImplementation
-            
-            @param trigger:     Instance which should be used as PostInitTrigger.
-                                If argument is omitted the PostInitTrigger does nothing.
-            @type  trigger:     IPostInitTrigger
-        """
-        ReappengineFactory.__init__(self, commMngr, trigger)
-        
-        try:
-            verifyObject(IServerImplementation, serverImpl)
-        except Invalid as e:
-            raise InternalError(
-                'Verification of the class "{0}" for the Interface "IServerImplementation" failed: {1}'.format(
-                    serverImpl.__class__.__name__,
-                    e
-                )
-            )
-        
-        self._server = serverImpl
-        
-        self.addApprovedMessageTypes([ MsgTypes.INIT_REQUEST ])
-    
     def buildProtocol(self, addr):
         """ Builds a new protocol instance.
 
@@ -274,44 +232,29 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
             conn.transport.loseConnection()
             return
         
-        if msg.content['dest'] != self._commManager.commID:
-            log.msg('Received destination address does not match this node for initialization of protocol instance.')
+        if msg.content['remoteID'] != self._commManager.commID:
+            log.msg('Received remote ID does not match this node for initialization of protocol instance.')
             conn.transport.loseConnection()
             return
         
-        origin = msg.content['origin']
-        
-        if msg.origin != origin:
-            log.msg('Received origin address does not match the specification of the initialization request.')
-            conn.transport.loseConnection()
-            return
+        origin = msg.origin
         
         # Authenticate origin with key
-        if not self._server.authOrigin(origin, conn.ip, msg.content['key']):
+        if not self.authOrigin(origin):
             log.msg('Origin could not be authenticated.')
             conn.transport.loseConnection()
             return
         
-        # Generate content
-        content = self._server.getResponse(origin)
-        
         msg = Message()
         msg.msgType = MsgTypes.INIT_REQUEST
         msg.dest = origin
-        msg.content = content
+        msg.content = { 'remoteID' : origin }
         
         try:
-            MessageSender(self._commManager, msg).send(conn)
+            buf = msg.serialize(self._commManager)
+            _Sender(len(buf), self._commManager.commID, msg.dest, buf).send(conn)
         except SerializationError as e:
             log.msg('Could not serialize message: {0}'.format(e))
-            conn.transport.loseConnection()
-            return
-        
-        # Save state
-        try:
-            self._server.saveState(content)
-        except InvalidRequest as e:
-            log.msg('Could not save connection state: {0}'.format(e))
             conn.transport.loseConnection()
             return
         
@@ -324,32 +267,12 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
         # Trigger the post init method
         self._trigger.trigger(origin, conn.ip)
     
-    def unregisterConnection(self, conn):
-        self._server.unregisterConnection(conn)
-        self._commManager.router.unregisterConnection(conn)
-
-class BaseServerImplementation(object):
-    """ ServerImplementation which implements the minimal necessary behavior.
-    """
-    implements(IServerImplementation)
-    
-    def __init__(self, commMngr):
-        """ Initialize the BaseServerImplementation.
-
-            @param commMngr:    CommManager which is responsible for handling the communication
-                                in this node.
-            @type  commMngr:    CommManager
+    def authOrigin(self, origin):
+        """ Authenticate the origin of the InitRequest.
+            
+            @param origin:  CommID of request origin.
+            @type  origin:  str
+            
+            @return:        Return True if the origin was successfully authenticated.
         """
-        self.commManager = commMngr
-    
-    def authOrigin(self, origin, ip, key):
         return True
-    
-    def getResponse(self, origin):
-        return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : '' }
-    
-    def saveState(self, content):
-        pass
-    
-    def unregisterConnection(self, conn):
-        pass

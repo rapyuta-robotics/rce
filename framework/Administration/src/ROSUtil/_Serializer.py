@@ -22,47 +22,55 @@
 #       
 #       
 
+# zope specific imports
+from zope.interface.verify import verifyObject
+from zope.interface.exceptions import Invalid
+
 # Custom imports
-from Exceptions import SerializationError
+from Exceptions import InternalError, SerializationError
+from Interfaces import ISerializable #@UnresolvedImport
 
-from ._ParserBase import ParserBase
-
-def serialize(obj):
-    """ Serialize a Parser instance.
+def serialize(serializer, obj):
+    """ Serialize a ROS component instance.
+        
+        @param serializer:  Serializer instance into which the parser should be serialized.
+        @type  serializer:  Comm.Message.SerializerUtil.Serializer
 
         @param obj:     Parser instance which should be serialized.
         @type  obj:     Subclass of ParserBase
 
-        @return:    Serialized object as a string.
-        @rtype:     str
-
-        @raise:     SerializationError if the object is not a subclass
-                    of ParserBase.
+        @raise:     InternalError if the object is not a subclass of ParserBase.
+                    SerializationError can be raise by the serializer.
     """
-    if not isinstance(obj, ParserBase):
-        raise SerializationError('The object is not a subclass of ParserBase.')
+    try:
+        verifyObject(ISerializable, obj)
+    except Invalid as e:
+        raise InternalError(
+            'Verification of the class "{0}" for the Interface "ISerializable" failed: {1}'.format(
+                obj.__class__.__name__,
+                e
+            )
+        )
 
-    return obj.serialize()
+    return obj.serialize(serializer)
 
-def deserialize(data, clsMap):
+def deserialize(serializer, clsMap):
     """ Deserializes a prior serialized string from a Parser.
 
-        @param data:    Data string which contains the serialized
-                        object.
-        @type  data:    str
+        @param serializer:  Data string which contains the serialized object.
+        @type  serializer:  Comm.Message.SerializerUtil.Serializer
 
-        @param clsMap:  Map which contains the valid ContentDefinitions
-                        as key and their matching classes as value.
+        @param clsMap:  Map which contains the valid ContentDefinitions as key and
+                        their matching classes as value.
         @type  clsMap:  dict
 
         @return:    Deserialized object
 
-        @raise:     SerializationError if the data string could not
-                    be deserialized.
+        @raise:     SerializationError if the message could not be deserialized.
     """
-    cls = clsMap.get(data[:1], None)
-
+    cls = clsMap.get(serializer.getElement(1), None)
+    
     if not cls:
         raise SerializationError('Data string does not contain a valid ROS element.')
 
-    return cls.deserialize(data[1:])
+    return cls.deserialize(serializer)

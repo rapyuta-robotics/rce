@@ -52,22 +52,26 @@ class IContentSerializer(Interface):
         have to implement.
         
         The content serializer classes will be instantiated once and will be used for all
-        received
-        and sent messages. 
+        received and sent messages. 
     """
     IDENTIFIER = Attribute("""
     Identifier which is used to select the appropriate Processor.
-    Valid values are registered in MsgTypes.
     """)
     
-    def serialize(data): #@NoSelf
+    def serialize(fifo, data): #@NoSelf
         """ Serialize the content/data and return it.
+            
+            @param fifo:    Message FIFO into which the message content should be serialized.
+            @type  fifo:    MessageFIFO
             
             @raise:     SerializationError
         """
     
-    def deserialize(data): #@NoSelf
+    def deserialize(fifo): #@NoSelf
         """ Deserialize the content/data and return it.
+            
+            @param fifo:    Message FIFO containing the serialized message content.
+            @type  fifo:    MessageFIFO
             
             @raise:     SerializationError
         """

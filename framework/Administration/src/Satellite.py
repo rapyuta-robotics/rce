@@ -22,8 +22,6 @@
 #       
 #       
 
-# zope specific imports
-from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
@@ -37,43 +35,34 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
-from Comm.Message.Base import validateSuffix
-from Comm.Interfaces import IServerImplementation #@UnresolvedImport
-from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory, BaseServerImplementation
+from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory
 from Comm.CommManager import CommManager
+from Comm.CommUtil import validateSuffix #@UnresolvedImport
 from SatelliteUtil.Manager import SatelliteManager #@UnresolvedImport
-from SatelliteUtil.Triggers import DefaultRoutingTrigger, SatelliteRoutingTrigger #@UnresolvedImport
-from MiscUtility import generateID
+from SatelliteUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger #@UnresolvedImport
 
-class EnvironmentServerImplementation(object):
-    """ ServerImplementation which is used in the satellite node for the connections to the
-        environment nodes.
+class EnvironmentServerFactory(ReappengineServerFactory):
+    """ ReappengineServerFactory which is used in the satellite node for the connections
+        to the environment nodes.
     """
-    implements(IServerImplementation)
-    
     def __init__(self, commMngr, satelliteMngr):
-        """ Initialize the EnvironmentServerImplementation.
-
-            @param commMngr:    CommManager which is responsible for handling the communication
-                                in this node.
+        """ Initialize the EnvironmentServerFactory.
+            
+            @param commMngr:    CommManager instance which should be used with this
+                                factory and its build protocols.
             @type  commMngr:    CommManager
             
             @param satelliteMngr:   SatelliteManager which is used in this node.
             @type  satelliteMngr:   SatelliteManager
         """
-        self.commManager = commMngr
+        super(EnvironmentServerFactory, self).__init__(commMngr, EnvironmentRoutingTrigger(commMngr, satelliteMngr))
         self._satelliteManager = satelliteMngr
     
-    def authOrigin(self, origin, ip, key):
-        return self._satelliteManager.authenticateContainerConnection(origin, ip, key)
-    
-    def getResponse(self, origin):    
-        return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : generateID() }
-    
-    def saveState(self, content):
-        self._satelliteManager.setConnectedFlagContainer(content['dest'], True, content['key'])
+    def authOrigin(self, origin):
+        return self._satelliteManager.authenticateContainerConnection(origin)
     
     def unregisterConnection(self, conn):
+        super(EnvironmentServerFactory, self).unregisterConnection(conn)
         self._satelliteManager.setConnectedFlagContainer(conn.dest, False)
 
 def main(reactor, ip, uid):
@@ -87,17 +76,12 @@ def main(reactor, ip, uid):
     commManager = CommManager(reactor, commID)
     satelliteManager = SatelliteManager(commManager, None)#ctx.getContext())
     
-    # Create triggers
-    defaultTrigger = DefaultRoutingTrigger(commManager)
-    satelliteTrigger = SatelliteRoutingTrigger(commManager, satelliteManager)
-    
     # Initialize twisted
     log.msg('Initialize twisted')
     
     # Server for connections from the containers
-    factory = ReappengineServerFactory( commManager,
-                                        EnvironmentServerImplementation(commManager, satelliteManager),
-                                        defaultTrigger )
+    factory = EnvironmentServerFactory( commManager,
+                                        satelliteManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_RESPONSE,
                                       MsgTypes.ROS_MSG ])
@@ -106,8 +90,7 @@ def main(reactor, ip, uid):
     
     # Server for connections from other satellites
     factory = ReappengineServerFactory( commManager,
-                                        BaseServerImplementation(commManager),
-                                        satelliteTrigger )
+                                        SatelliteRoutingTrigger(commManager, satelliteManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_MSG ])
     #reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
@@ -117,7 +100,7 @@ def main(reactor, ip, uid):
     factory = ReappengineClientFactory( commManager,
                                         MsgDef.PREFIX_CONTAINER_ADDR + uid,
                                         '',
-                                        satelliteTrigger )
+                                        BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_STATUS ])
     #reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)
@@ -127,14 +110,16 @@ def main(reactor, ip, uid):
     factory = ReappengineClientFactory( commManager,
                                         MsgDef.MASTER_ADDR,
                                         '',
-                                        satelliteTrigger )
-    factory.addApprovedMessageTypes([ MsgTypes.ENV_CREATE,
-                                      MsgTypes.ENV_DESTROY,
-                                      MsgTypes.ROUTE_INFO,
-                                      MsgTypes.CONNECT,
-                                      MsgTypes.ROS_MSG ])
+                                        BaseRoutingTrigger(commManager) )
+    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
+                                      MsgTypes.CONNECT ])
     #reactor.connectSSL(ip, settings.PORT_MASTER, factory, ctx)
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
+    
+    # Server for connections from robots, i.e. the web, brokered by the master node
+    ### 
+    ### TODO: Add outside connection here!
+    ###
     
     # Setup periodic calling of Load Balancer Updater
     log.msg('Add periodic call for Load Balancer Update.')
