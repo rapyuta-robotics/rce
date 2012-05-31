@@ -1,76 +1,251 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>2 Column CSS Layout - concise design</title>
+<title>The RoboEarth Cloud Engine - HTML Client</title>
 <style type='text/css'>
 .mask{
-   position: relative;
-   overflow: hidden;
-   margin: 0px auto;
-   width: 80%;
-   background-color: #ffffff
+  position: relative;
+  overflow: hidden;
+  margin: 0px auto;
+  width: 80%;
+  background-color: #ffffff
 }
 .header{
-   float: left;
-   width: 100%;
-   height: 10px;
-   background-color: #ffffff;
-   padding:15px
+  float: left;
+  width: 100%;
+  height: 10px;
+  background-color: #ffffff;
+  padding:15px
 }
 .colleft{
-	position: relative;
-	width: 100%;
-	right: 50%;
-	background-color: #ffffff
+  position: relative;
+  width: 100%;
+  right: 50%;
+  background-color: #ffffff
 }
 .col1{
-	position: relative;
-	overflow: hidden;
-	float: left;
-	width: 48%;
-	left: 101%;
-	background-color: #ffffff
+  position: relative;
+  overflow: hidden;
+  float: left;
+  width: 48%;
+  left: 101%;
+  background-color: #ffffff
 }
 .col2{
-	position: relative;
-	overflow: hidden;
-	float: left;
-	width: 48%;
-	left: 3%;
-	background-color: #ffffff
+  position: relative;
+  overflow: hidden;
+  float: left;
+  width: 48%;
+  left: 3%;
+  background-color: #ffffff
 }
 .footer{
-	float: left;
-	width: 100%;
-	background-color: #ffffff;
-	padding: 25px
+  float: left;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 25px
 }
 body {
-	padding: 0px;
-	margin: 0px;
-	font-size: 90%;
-	background-color: #ffffff
+  padding: 0px;
+  margin: 0px;
+  font-size: 90%;
+  background-color: #ffffff
 }
 </style>
+
+<script type="text/javascript" src="jquery-1.7.2.js"></script>
 <script type="text/javascript">
-	window.onload = function() {
-		var wsuri = "ws://localhost:9000";
-		if ("WebSocket" in window) {
-			webSocket = new WebSocket(wsuri);
-		}else {
-			//Firefox currently prefixes the WebSocket object
-			webSocket = new MozWebSocket(wsuri);
+
+var receivedMsgNum = 0;
+
+//generate dummyID for the robot
+var robotUniqueID = guidGenerator();
+
+var robotStatus = "Not connected";
+var containerID = "--";
+
+var cmd_CS = new Object();
+cmd_CS.type="CS";
+cmd_CS.dest="$$$$$$";
+cmd_CS.orig=robotUniqueID;
+
+var cmd_CH = new Object();
+cmd_CH.type="CH";
+cmd_CH.dest="$$$$$$";
+cmd_CH.orig=robotUniqueID;
+cmd_CH.data="TBD";
+
+window.onload = function() {
+  var wsuri = "ws://localhost:9000";
+	if ("WebSocket" in window) {
+		webSocket = new WebSocket(wsuri);
+		document.getElementById('robotStatus').innerText = "WebSockets connection estabilised. But no container assigned.";
+	}else {
+		//Firefox currently prefixes the WebSocket object
+		webSocket = new MozWebSocket(wsuri);
+		document.getElementById('robotStatus').innerText = "WebSockets connection estabilised. But no container assigned.";
+	}
+	
+	webSocket.onmessage = function(e) {
+		receivedMsgNum += 1;
+		var infoString = 'received message # '+receivedMsgNum+'\r\n';
+		document.getElementById('box2').value = (infoString + e.data + '\r\n---\r\n\r\n') + document.getElementById('box2').value;
+		//if message is a CSR update container ID
+		var msg = jQuery.parseJSON(e.data)
+		if(msg.type == "CSR"){
+			 containerID = msg.data.containerID;
+			 updateRobotStatus("Container Assigned");
+			 updateContainerID(msg.data.containerID);
 		}
-		
-		webSocket.onmessage = function(e) {
-		document.getElementById('box2').value = e.data
-		}	
-
 	}
+}
 
-	function onSubmitClick() {
-		webSocket.send(document.getElementById('box1').value);
+function sendCommand() {
+	var okToSend = true;
+	var msg_json = document.getElementById('box1').value;
+	try
+	{
+		msg = jQuery.parseJSON( msg_json );
 	}
+	catch(e)
+	{
+		document.getElementById('errorMsg').innerText = "Msg is not a well-formed JSON string "
+		okToSend = false;
+	}
+	
+	//container creation checks
+	if(msg.type=="CS"){
+		if(robotStatus == "Container Assigned"){
+				raiseError("Robot is already assigned a container");
+				okToSend = false;
+		}
+	}
+	
+	//container delete checks
+	if(msg.type=="CH"){
+		if(robotStatus != "Container Assigned"){
+			raiseError("You can not delete a non assigned container");
+			okToSend = false;
+		}else{
+			updateRobotStatus("Container not Assigned");
+			updateContainerID('--')
+		}
+	}
+	
+	if(msg.type=="CM" || msg.type=="CC"){
+		if(robotStatus != "Container Assigned"){
+			raiseError("Can not send other msgs before creating a container");
+			okToSend = false;
+		}
+	}
+	if(okToSend){
+		webSocket.send(msg_json);
+	}
+}
+
+function guidGenerator() {
+	var S4 = function() {
+		return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	};
+	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+function loadCS(){
+  jsonStr = JSON.stringify(cmd_CS);
+  SetCommand(jsonStr);
+}
+
+function loadCH(){
+	if(robotStatus == "Container Assigned"){
+		containerDetails = new Object();
+		containerDetails.containerID = containerID;
+		cmd_CH.data = containerDetails;
+		jsonStr = JSON.stringify(cmd_CH);
+		SetCommand(jsonStr);
+	}else{
+		raiseError("You can not delete a non assigned container");
+		clearCommandConsole();
+	}
+}
+
+function loadCM(){
+	if(robotStatus == "Container Assigned"){
+		var dataMsg = new Object()
+		dataMsg.firstname = 'fn';
+		dataMsg.lastname = 'ln';
+	
+		var cmd_CM = new Object();
+		cmd_CM.type="CC";
+		cmd_CM.dest="$$$$$$";
+		cmd_CM.orig=robotUniqueID;
+		cmd_CM.data = new Object();
+
+		cmd_CM.data.type = 'my_msgs/fullname';
+		cmd_CM.data.interfaceID = 'iid1';
+		cmd_CM.data.msgID = 'mid1';
+		cmd_CM.data.msg = dataMsg;
+	
+		jsonStr = JSON.stringify(cmd_CM);
+		SetCommand(jsonStr);
+	}else{
+		raiseError("Can not send other msgs before creating a container");
+	}
+}
+
+function loadCC(){
+	if(robotStatus == "Container Assigned"){
+		var params = new Object();
+		params.key1 = 'value1';
+		params.key2 = 'value2';
+	
+		var nodeConfig1 = new Object()
+		nodeConfig1.nodeID = 'nid1';
+		nodeConfig1.nodeName = 'nn1';
+		nodeConfig1.namespaceID = 'ns1';
+		nodeConfig1.parameters = params;
+	
+		var nodeConfig = new Array(nodeConfig1);
+	
+		var cmd_CC = new Object();
+		cmd_CC.type="CC";
+		cmd_CC.dest="$$$$$$";
+		cmd_CC.orig=robotUniqueID;
+		cmd_CC.data = new Object();
+		cmd_CC.data.add = nodeConfig;
+		cmd_CC.data.remove = new Array("ns2/nid1");
+
+		jsonStr = JSON.stringify(cmd_CC);
+		SetCommand(jsonStr);
+	}else{
+		raiseError("Can not send other msgs before creating a container");
+	}
+}
+
+function raiseError(error){
+	document.getElementById('errorMsg').innerText = error;
+}
+
+function updateRobotStatus(status){
+	document.getElementById('errorMsg').innerText = status;
+	robotStatus = status;
+}
+
+function clearCommandConsole(){
+	document.getElementById('box1').value = "";
+}
+
+function SetCommand(cmd){
+	document.getElementById('box1').value = cmd;
+}
+
+function clearErrorMsg(){
+	document.getElementById('errorMsg').innerText = "--";
+}
+
+function updateContainerID(id){
+	containerID = id; 
+	document.getElementById('containerID').innerText = id;
+}
 </script>
 
 
@@ -82,15 +257,34 @@ body {
 	</div>
 	<div class="colleft">
 		<div class="col1">
-			<textarea id='box1'></textarea><br>
-			<button onclick='onSubmitClick(); return false'>send command</button>
+      <br>Command (JSON) <br>
+			<textarea rows="10" cols="40" id='box1'></textarea><br>
+			<button onclick='sendCommand(); return false'>send command</button><br>
+      ---<br>
+      <button onclick='loadCS(); return false'>load CS msg</button><br>
+      Send a create container request to the RoboEarth Cloud Engine<br>
+      ---<br>
+      <button onclick='loadCH(); return false'>load CH msg</button><br>
+      Send a distroy container request to the RoboEarth Cloud Engine<br>
+      ---<br>
+      <button onclick='loadCC(); return false'>load sample CC msg</button><br>
+      Send a configure component request to the RoboEarth Cloud Engine<br>
+      ---<br>
+      <button onclick='loadCM(); return false'>load sample CM msg</button><br>
+      Send a data message to the RoboEarth Cloud Engine<br>
+      ---<br>
+      <b>Robot Status:</b> <div id='robotStatus'>Not connected</div>
+      <b>container ID:</b> <div id='containerID'>--</div>
+      <b>Error:</b> <div id='errorMsg'>--</div>
+      <button onclick='clearErrorMsg(); return false'>clear</button>
 		</div>
 		<div class="col2">
-			<textarea id='box2'></textarea><br>
+      <br>Cloud Engine Response (JSON)<br>
+			<textarea rows="33" cols="40" id='box2'></textarea><br>
 		</div> 
 	</div> 
 	<div class="footer">
-		RoboEarth: Building an internet for Robots. <br> Part of the Cognitive Systems and Robotics Initiative from the European Union Seventh Framework Programme FP7/2007-2013.
+		RoboEarth: Building an Internet for robots. <br> Part of the Cognitive Systems and Robotics Initiative from the European Union Seventh Framework Programme FP7/2007-2013.
 	</div>
 </div>
 </body>

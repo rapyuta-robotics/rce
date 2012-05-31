@@ -61,7 +61,8 @@ class CommManager(object):
         self._reactor = reactor
         
         # Reference to Router
-        self._router = Router()
+        
+ = Router()
         
         # Message number counter
         self._msgNr = 0
