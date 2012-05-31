@@ -27,8 +27,8 @@ print(cmd_CSR_js)
 
 # Configuration Message - Distroy Container
 cmd_CH = {
-            "type":"CH",
-            "dest":"$$$$$$",
+  "type":"CH",
+  "dest":"$$$$$$",
             "orig":"robotUniqueID",  
             "data":{"containerID":"cid"}
             }
@@ -62,11 +62,12 @@ print(cmd_CC_js)
 msg = {"linear":{"x":0,"y":0,"z":0},"angular":{"x":0,"y":0,"z":0}};
 cmd_RM = {
     "type":"RM",
-    "dest":["destination_container/robot","interfaceID"],
+    "dest":"destination_container/robot",
     "orig":"origin_container/robot",
     "data":{
         "type":"geometry_msgs/Twist",
         "msgID":"mid",
+        "interfaceID":'iid',
         "msg":msg}
     }
 
