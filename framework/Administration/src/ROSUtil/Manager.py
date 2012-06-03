@@ -29,9 +29,12 @@ import roslaunch.core
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
-from Type import ROSAddNodeMessage, ROSRemoveNodeMessage, ROSMsgMessage, ROSResponseMessage, ROSGetMessage #@UnresolvedImport
-from Processor import ROSAddNodeProcessor, ROSRemoveNodeProcessor, ROSMessageContainerProcessor, ROSGetProcessor #@UnresolvedImport
+from Type import ROSAddMessage, ROSRemoveMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage #@UnresolvedImport
+from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSMessageContainerProcessor #, ROSGetProcessor #@UnresolvedImport
 from MiscUtility import generateID
+
+from Node import NodeForwarder #@UnresolvedImport
+from Interface import ServiceInterface, PublisherInterface, SubscriberInterface #@UnresolvedImport
 
 class ROSManager(object):
     """ Manager which handles ROS specific tasks.
@@ -56,20 +59,28 @@ class ROSManager(object):
         # Flag to indicate shutdown
         self.isShutdown = False
         
+        rosAdd = ROSAddMessage()
+        rosAdd.registerComponents([ NodeForwarder,
+                                    ServiceInterface,
+                                    PublisherInterface,
+                                    SubscriberInterface ])
+        
         # Register Content Serializers
-        self._commMngr.registerContentSerializers([ ROSAddNodeMessage(),
-                                                    ROSRemoveNodeMessage(),
+        self._commMngr.registerContentSerializers([ rosAdd,
+                                                    ROSRemoveMessage(),
                                                     ROSMsgMessage(),
-                                                    ROSResponseMessage(),
-                                                    ROSGetMessage() ])
+                                                    # ROSResponseMessage(),
+                                                    # ROSGetMessage()
+                                                   ])
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessors([ ROSAddNodeProcessor(self, commMngr),
-                                                   ROSRemoveNodeProcessor(self, commMngr),
+        self._commMngr.registerMessageProcessors([ ROSAddProcessor(self, commMngr),
+                                                   ROSRemoveProcessor(self, commMngr),
                                                    ROSMessageContainerProcessor(self, commMngr),
-                                                   ROSGetProcessor(self, commMngr) ])
-
-    def registerInterface(self, interface):
+                                                   # ROSGetProcessor(self, commMngr)
+                                                  ])
+    
+    def addInterface(self, interface):
         """ Callback for Interface instance to register the interface.
 
             @param interface:   Interface which should be registered.
@@ -95,7 +106,7 @@ class ROSManager(object):
         
         return self._interfaces[name]
     
-    def unrgisterInterface(self, interface):
+    def removeInterface(self, interface):
         """ Callback for Interface instance to unregister the interface.
         """
         self._interfaces.pop(interface.interfaceName, None)

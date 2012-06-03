@@ -31,9 +31,10 @@ from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 
 # ROS import
-import reappengine.ROS
+import reappengine.ROS      # TODO: Probably remove and initialize the environment somehow differently
 import rosgraph.names
-import roslib.packages      # TODO: Find replacement functions for roslib.packages functions
+import roslib.packages      # TODO: Find replacement function for roslib.packages function
+import rospkg
 
 MAX_LENGTH = 30
 
@@ -68,8 +69,9 @@ class Package(models.Model):
     def clean(self):
         """ Custom clean method to validate package """
         try:
-            roslib.packages.get_pkg_dir(self.name, True, '', self.user.get_profile().path)
-        except roslib.packages.InvalidROSPkgException:
+            rp = rospkg.RosPack(self.user.get_profile().path)
+            rp.get_path(self.name)
+        except rospkg.ResourceNotFound:
             raise ValidationError('Package is not valid.')
 
         if Package.objects.filter(~Q(user=self.user) & Q(name=self.name)):
@@ -85,7 +87,7 @@ class Node(models.Model):
         try:
             if not roslib.packages.find_node(self.pkg.name, self.name):
                 raise ValidationError('Node executable is not valid.')
-        except roslib.packages.InvalidROSPkgException:
+        except rospkg.ResourceNotFound:
             raise ValidationError('Package is not valid.')
 
         if Node.objects.filter(name=self.name, pkg=self.pkg):
@@ -141,8 +143,9 @@ class Interface(models.Model):
     def clean(self):
         """ Custom clean method to validate interface """
         try:
-            pkgDir = roslib.packages.get_pkg_dir(self.node.pkg.name)
-        except roslib.packages.InvalidROSPkgException:
+            rp = rospkg.RosPack()
+            pkgDir = rp.get_path(self.node.pkg.name)
+        except rospkg.ResourceNotFound:
             raise ValidationError('Package is not valid.')
 
         if self.msgType == 'srv':

@@ -84,16 +84,4 @@ class ContainerStatusMessage(object):
     
     def deserialize(self, data):
         # TODO: What is part of the message
-        msg = {}
-        
-        #try:
-        #    start = 0
-        #    end = MsgDef.I_LEN
-        #    length, = MsgDef.I_STRUCT.unpack(data[start:end])
-        #    start = end
-        #    end += length
-        #    msg['commID'] = data[start:end]
-        #except StructError as e:
-        #    raise SerializationError('Could not deserialize message of type ContainerStatus: {0}'.format(e))
-        
-        return msg
+        return {}

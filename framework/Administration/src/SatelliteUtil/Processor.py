@@ -75,3 +75,12 @@ class ROSMsgProcessor(SatelliteProcessorBase):
                                         msg.origin,
                                         msg.content['name'],
                                         msg.content['msg'] )
+
+### TODO: Not used
+class ContainerStatusProcessor(SatelliteProcessorBase):
+    """ # TODO: Add description
+    """
+    IDENTIFIER = MsgTypes.CONTAINER_STATUS
+    
+    def processMessage(self, msg):
+        pass # TODO: Add

@@ -22,9 +22,6 @@
 #       
 #       
 
-# ROS specific imports
-import genpy
-
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.defer import Deferred, DeferredList
@@ -34,161 +31,62 @@ import os
 
 # Custom imports
 import settings
-from Exceptions import InternalError, InvalidRequest
+from Exceptions import InvalidRequest, InternalError
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 from Comm.Factory import ReappengineClientFactory
 from Comm.CommUtil import validateAddress #@UnresolvedImport
 
-from ContainerUtil.Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
+from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage #@UnresolvedImport
 from ROSUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
 from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage #@UnresolvedImport
 
-from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ContainerStatusProcessor, ROSMsgProcessor #@UnresolvedImport
+from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor #@UnresolvedImport
 from Triggers import SatelliteRoutingTrigger #@UnresolvedImport
 
 from DBUtil.DBInterface import DBInterface #@UnresolvedImport
 
-from ROSUtil.Parser import createParameterParser, createInterfaceParser, createNodeParser
+from ROSComponents.NodeParser import NodeParser #@UnresolvedImport
+from ROSComponents.ParameterParser import IntParamParser, StrParamParser, FloatParamParser, BoolParamParser, FileParamParser #@UnresolvedImport
 
 from Converter.Core import Converter #@UnresolvedImport
-from Comm.Message.FIFO import MessageFIFO
 
-class _Container(object):
-    """ Class which represents a container.
+from _Container import Container #@UnresolvedImport
+
+def _createParameterParser(name, paramType, opt=False, default=None):
+    """ Creates a new parameter instance depending of paramType.
+
+        @param name:    Name of the parameter
+        @type  name:    str
+
+        @param paramType:   String which represents the type of parameter
+                            to create. Possible values are:
+                                int, str, float, bool, file
+        @type  paramType:   str
+
+        @param opt:     Flag which indicates whether the configuration
+                        parameter is optional or not
+        @type  opt:     bool
+
+        @param default: Default value for the case where the parameter
+                        is optional
+
+        @raise:     InternalError in case the opt flag is set but no
+                    default value is given.
     """
-    def __init__(self, commMngr, robotID, commID, homeDir):
-        """ Initialize the Container.
-            
-            @param commMngr:    CommManager which should be used to communicate.
-            @type  commMngr:    CommManager
-            
-            @param robotID:     ID of the robot to which this container belongs.
-            @type  robotID:     str
-            
-            @param commID:  CommID which is used for the environment node inside the container
-                            and which is used to identify the container.
-            @type  commID:  str
-            
-            @param homeDir:     Directory which should be used as home directory for container.
-            @type  homeDir:     str
-        """
-        self._commManager = commMngr
-        self._robotID = robotID
-        self._commID = commID
-        self._homeDir = homeDir
-        
-        # Key:     Interface name
-        # Value:   ROS Message class
-        self._interfaces = {}
-        
-        self._running = False
-        self._connected = False
-    
-    def checkOwner(self, robotID):
-        """ Check if the robot is the owner of this container.
-        """
-        return self._robotID == robotID
-    
-    def setConnectedFlag(self, flag):
-        """ Set the 'connected' flag for the container.
-            
-            @param flag:    Flag which should be set. True for connected and False for
-                            not connected.
-            @type  flag:    bool
-            
-            @raise:         InvalidRequest if the container is already registered as connected.
-        """
-        if not self._running:
-            raise InvalidRequest('Tried to manipulate "connected" flag of container which is not running.')
-        
-        if flag:
-            if self._connected:
-                raise InvalidRequest('Tried to set container to connected which already is registered as connected.')
-            
-            self._connected = True
-        else:
-            self._connected = False
-    
-    def start(self):
-        """ Send a Request to start the container.
-        """
-        if self._running:
-            raise InternalError('Container can be started only once.')
-        
-        msg = Message()
-        msg.msgType = MsgTypes.CONTAINER_START
-        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
-        msg.content = { 'commID' : self._commID,
-                        'home'   : self._homeDir }
-        
-        log.msg('Start container "{0}".'.format(self._commID))
-        self._commManager.sendMessage(msg)
-        self._running = True
-    
-    def addInterface(self, name, msgType):
-        """ Send a Request to add an Interface.
-        """
-        if not self._connected:
-            raise InternalError('Container has to be connected before an interface can be added.')
-        
-        if name in self._interfaces:
-            raise InvalidRequest('Can not add the interface. Name already exists.')
-        
-        MsgCls = genpy.message.get_message_class(msgType)
-        
-        # TODO: Check if necessary...
-        #if not MsgCls:
-        #    MsgCls = genpy.message.get_service_class(msgType)
-
-        if not MsgCls:
-            raise ValueError('Message class for the interface could not be loaded.')
-        
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_ADD
-        msg.dest = self._commID
-        msg.content = {} # TODO: Add correct content
-        self._commManager.sendMessage(msg)
-        
-        self._interfaces[name] = MsgCls
-    
-    def getMessageClass(self, name):
-        """ Get the message class associated with the interface matching the given name.
-        """
-        return self._interfaces[name]
-    
-    def removeInterface(self, name):
-        """ Send a Request to remove an Interface.
-        """
-        if not self._connected:
-            raise InternalError('Container has to be connected before an interface can be removed.')
-        
-        if name not in self._interfaces:
-            raise InvalidRequest('Can not remove the interface. Name does not exist.')
-        
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_REMOVE
-        msg.dest = self._commID
-        msg.content = {} # TODO: Add correct content
-        self._commManager.sendMessage(msg)
-        
-        del self._interfaces[name]
-    
-    def stop(self):
-        """ Send a Request to stop the container.
-        """
-        if not self._running:
-            raise InternalError('Container has to be started before it can be stopped.')
-        
-        msg = Message()
-        msg.msgType = MsgTypes.CONTAINER_STOP
-        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
-        msg.content = { 'commID' : self._commID }
-        
-        log.msg('Start container "{0}".'.format(self._commID))
-        self._commManager.sendMessage(msg)
-        self._running = False
+    if paramType == 'int':
+        return IntParamParser(name, opt, default)
+    elif paramType == 'str':
+        return StrParamParser(name, opt, default)
+    elif paramType == 'float':
+        return FloatParamParser(name, opt, default)
+    elif paramType == 'bool':
+        return BoolParamParser(name, opt, default)
+    elif paramType == 'file':
+        return FileParamParser(name, opt, default)
+    else:
+        raise InternalError('Could not identify the type of the configuration parameter.')
 
 class SatelliteManager(object):
     """ Manager which is used for the satellites nodes, which represent the communication
@@ -225,7 +123,7 @@ class SatelliteManager(object):
                                                     DelCommIDRequestMessage(),
                                                     StartContainerMessage(),
                                                     StopContainerMessage(),
-                                                    ContainerStatusMessage(),    # <- necessary?
+                                                    #ContainerStatusMessage(),    # <- necessary?
                                                     ROSAddMessage(),
                                                     ROSRemoveMessage(),
                                                     ROSMsgMessage() ])
@@ -234,7 +132,7 @@ class SatelliteManager(object):
         # Register Message Processors
         self._commMngr.registerMessageProcessors([ ConnectDirectiveProcessor(self),
                                                    GetCommIDProcessor(self),
-                                                   ContainerStatusProcessor(self),
+                                                   #ContainerStatusProcessor(self),
                                                    ROSMsgProcessor(self) ])
         # TODO: Add all valid messages
     
@@ -267,12 +165,8 @@ class SatelliteManager(object):
                             NodeParser
             @rtype:     Deferred
         """
-        pkgName, nodeName, params, interfaces = self._dbInterface.getNodeSpecs(nodeID)
-    
-        params = [createParameterParser(*param) for param in params]
-        interfaces = [createInterfaceParser(*interface) for interface in interfaces]
-    
-        return createNodeParser(pkgName, nodeName, params, interfaces)
+        pkgName, nodeName, params = self._dbInterface.getNodeSpecs(nodeID)
+        return NodeParser(pkgName, nodeName, [_createParameterParser(*param) for param in params])
     
     ##################################################
     ### Container
@@ -328,7 +222,7 @@ class SatelliteManager(object):
                 log.msg('The home folder is not a valid directory.')
                 return
             
-            container = _Container(commID, homeFolder)
+            container = Container(commID, homeFolder)
             
             container.start(self._commMngr)
             self._containers[commID] = container
@@ -403,22 +297,9 @@ class SatelliteManager(object):
             
             # TODO: Add description
         """
-        self._getContainer(robotID, containerID)
-        
-        def parseAndSend(parser):
-            def _parseAndSend():
-                parser.parse(config) # TODO: Check code for parsing ; Remove binary/files
-                
-                msg = Message()
-                msg.msgType = MsgTypes.ROS_ADD
-                msg.dest = containerID
-                msg.content = parser.serialize() # TODO: Check code for serializing
-                self._commMngr.sendMessage(msg)
-            
-            self._commMngr.reactor.callInThread(_parseAndSend)
-        
+        container = self._getContainer(robotID, containerID)
         deferred = self._getNodeDefParser(nodeID)
-        deferred.addCallback(parseAndSend)
+        deferred.addCallback(container.addNode, config)
     
     def sendROSMsgToContainer(self, robotID, containerID, interfaceName, msg):
         """ Callback for RobotServerFactory. # TODO: Add description
@@ -432,48 +313,12 @@ class SatelliteManager(object):
             
             # TODO: Add description
         """
-        container = self._getContainer(robotID, containerID)
-        MsgCls = container.getMessageClass(interfaceName)
-        
-        def convertAndSend():
-            try:
-                rosMsg = self._converter.decode(MsgCls, msg)
-            except (TypeError, ValueError) as e:
-                raise InvalidRequest(str(e))
-            
-            fifo = MessageFIFO()
-            rosMsg.serialize(fifo)
-            
-            msg = Message()
-            msg.msgType = MsgTypes.ROS_MSG
-            msg.dest = containerID
-            msg.content = { 'msg'  : fifo,
-                            'name' : interfaceName,
-                            'uid'  : robotID,
-                            'push' : True }
-            
-            self._commMngr.sendMessage(msg)
-        
-        self._commMngr.reactor.callInThread(convertAndSend)
+        self._getContainer(robotID, containerID).send(msg, interfaceName, robotID)
     
     def sendROSMsgToRobot(self, robotID, containerID, interfaceName, msg):
         """ # TODO: Add description
         """
-        container = self._getContainer(robotID, containerID)
-        MsgCls = container.getMessageClass(interfaceName)
-        
-        def convertAndSend():
-            rosMsg = MsgCls()
-            rosMsg.deserialize(msg)
-            
-            try:
-                msg = self._converter.encode(rosMsg)
-            except (TypeError, ValueError) as e:
-                raise InvalidRequest(str(e))
-            
-            # TODO: Send to robot using robotID
-        
-        self._commMngr.reactor.callInThread(convertAndSend)
+        self._getContainer(robotID, containerID).receive(msg, interfaceName, robotID)
     
     def removeNode(self, robotID, containerID, nodeID):
         """ Callback for RobotServerFactory. # TODO: Add description
@@ -487,13 +332,7 @@ class SatelliteManager(object):
             
             # TODO: Add description
         """
-        self._getContainer(robotID, containerID)
-        
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_REMOVE
-        msg.dest = containerID
-        msg.content = nodeID
-        self._commMngr.sendMessage(msg)
+        self._getContainer(robotID, containerID).removeNode(nodeID)
     
     ##################################################
     ### Routing

@@ -99,7 +99,6 @@ def main(reactor, ip, uid):
     # Client for connection to Container Node
     factory = ReappengineClientFactory( commManager,
                                         MsgDef.PREFIX_CONTAINER_ADDR + uid,
-                                        '',
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_STATUS ])
@@ -109,7 +108,6 @@ def main(reactor, ip, uid):
     # Client for connection to Master
     factory = ReappengineClientFactory( commManager,
                                         MsgDef.MASTER_ADDR,
-                                        '',
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONNECT ])

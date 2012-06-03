@@ -27,7 +27,7 @@ import genpy.message
 import rospy.rostime
 
 # zope specific imports
-from zope.interface.verify import verifyObject
+from zope.interface.verify import verifyClass
 from zope.interface.exceptions import Invalid
 
 # Python specific imports
@@ -229,7 +229,7 @@ def _initialize_Converter():
         convClass = getattr(mod, className)
         
         try:
-            verifyObject(IROSConverter, convClass)
+            verifyClass(IROSConverter, convClass)
         except Invalid as e:
             raise InternalError(
                 'Verification of the class "{0}" for the Interface "IROSConverter" failed: {1}'.format(

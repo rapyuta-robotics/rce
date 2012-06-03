@@ -36,7 +36,8 @@ import sys
 
 # Custom imports
 import settings
-from Comm.Message.Base import validateAddress
+from Comm.CommUtil import validateAddress #@UnresolvedImport
+from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Factory import ReappengineClientFactory
 from Comm.CommManager import CommManager
@@ -65,15 +66,20 @@ def main(reactor, ip, commID, satelliteID, key):
     
     # Client for connection to satellite
     factory = ReappengineClientFactory( commManager,
-                                        satelliteID,
-                                        key )
+                                        satelliteID )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE,
-                                      MsgTypes.ROS_GET,
+                                      # MsgTypes.ROS_GET,    # Only push valid; no pull
                                       MsgTypes.ROS_MSG ])
     #reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())
     reactor.connectTCP(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory)
+    
+    # Client for connection to launcher
+    factory = ReappengineClientFactory( commManager,
+                                        MsgDef.LAUNCHER_ADDR )
+    #reactor.connectSSL('localhost', settings.PORT_LAUNCHER, factory, ClientContextFactory())
+    reactor.connectTCP('localhost', settings.PORT_LAUNCHER, factory)
 
     # Add shutdown hooks
     log.msg('Add shutdown hooks')

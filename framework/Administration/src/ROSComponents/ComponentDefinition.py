@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       _ParserBase.py
+#       ComponentDefintion.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -22,17 +22,30 @@
 #       
 #       
 
-# Custom imports
-from Exceptions import SerializationError
+""" Message Content Identifier of ROS Messages of Reappengine Protocol:
+        
+        N   Node
 
-class ParserBase(object):
-    """ Used to simplify the identification of parser instances.
-    """
-    IDENTIFIER = None
+        I   IntParam
+        S   StrParam
+        F   FloatParam
+        B   BoolParam
+        X   FileParam
+        
+        V   ServiceInterface
+        P   PublisherInterface
+        C   SubscriberInterface
+"""
 
-    def serialize(self):
-        """ Serialize the object represented by this parser.
+NODE = 'N'
 
-            @raise:     SerializationError
-        """
-        raise SerializationError('This Parser does not implement a serialize method.')
+PARAM_INT = 'I'
+PARAM_STR = 'S'
+PARAM_FLOAT = 'F'
+PARAM_BOOL = 'B'
+PARAM_FILE = 'X'
+
+INTERFACE_SRV = 'V'
+INTERFACE_PUB = 'P'
+INTERFACE_SUB = 'C'
+

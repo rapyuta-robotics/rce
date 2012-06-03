@@ -31,7 +31,7 @@ from zope.interface.exceptions import Invalid
 from Exceptions import InternalError, SerializationError
 from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
 from Comm.Message import MsgTypes
-from Interfaces import ISerializable #@UnresolvedImport
+from ROSComponents.Interfaces import ISerializable #@UnresolvedImport
 
 class ROSAddMessage(object):
     """ Message type to add a node.
@@ -43,24 +43,35 @@ class ROSAddMessage(object):
     def __init__(self):
         self._componentCls = {}
     
-    def registerComponent(self, component):
+    def registerComponents(self, componentList):
         """ Register a component class which should be used to (de-)serialize the
             component which should be added.
             
             @raise:     InternalError if the component class does not implement the
                         "ISerializable" interface.
         """
-        try:
-            verifyClass(ISerializable, component)
-        except Invalid as e:
-            raise InternalError(
-                'Verification of the class "{0}" for the Interface "ISerializable" failed: {1}'.format(
-                    component.__name__,
-                    e
+        for component in componentList:
+            try:
+                verifyClass(ISerializable, component)
+            except Invalid as e:
+                raise InternalError(
+                    'Verification of the class "{0}" for the Interface "ISerializable" failed: {1}'.format(
+                        component.__name__,
+                        e
+                    )
                 )
-            )
-        
-        self._componentCls[component.IDENTIFIER] = component
+            
+            self._componentCls[component.IDENTIFIER] = component
+    
+    # TODO: Not really necessary; just for completeness
+    def unregisterComponent(self, component):
+        """ Unregister a component class.
+            
+            @param component:   # TODO:
+            @type  component:   # TODO:
+        """
+        # TODO: What exactly?
+        # del self._componentCls[???]
     
     def serialize(self, s, data):
         try:
@@ -73,11 +84,12 @@ class ROSAddMessage(object):
         if not isinstance(data, cls):
             raise SerializationError('The object is of invalid type.')
         
-        s.addElement(data.IDENTIFIER)
+        s.addIdentifier(data.IDENTIFIER, 1)
         data.serialize(s)
     
     def deserialize(self, s):
-        cls = self._componentCls[s.getElement()]
+        Cls = self._componentCls[s.getIdentifier(1)]
+        return Cls.deserialize(s)
 
 class ROSRemoveMessage(object):
     """ Message type to remove a/multiple node(s).

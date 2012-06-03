@@ -23,12 +23,16 @@
 #       
 
 # zope specific imports
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
 
 class ISerializable(Interface):
     """ Interface which declares the necessary methods which all serializable objects
         have to implement.
     """
+    IDENTIFIER = Attribute("""
+    Identifier which is used to select the appropriate object class.
+    """)
+    
     def serialize(serializer): #@NoSelf
         """ This method is called whenever the object should be serialized.
             

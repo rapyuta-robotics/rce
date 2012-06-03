@@ -31,8 +31,12 @@ from twisted.python import log
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
+from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
+
+from ROSComponents.Node import NodeForwarder #@UnresolvedImport
+from ROSComponents.InterfaceMonitor import ServiceInterface, PublisherInterface, SubscriberInterface #@UnresolvedImport
 
 class ROSProcessorBase(object):
     """ Message processor base class for ROS Processors.
@@ -49,19 +53,28 @@ class ROSProcessorBase(object):
         self.manager = manager
         self.commManager = commManager
 
-class ROSAddNodeProcessor(ROSProcessorBase):
-    """ Message processor to add a/multiple node(s).
+class ROSAddProcessor(ROSProcessorBase):
+    """ Message processor to add a single component which can be a node or an interface.
     """
     IDENTIFIER = MsgTypes.ROS_ADD
     
+    _INTERFACES = { ServiceInterface.IDENTIFIER    : ServiceInterface,
+                    PublisherInterface.IDENTIFIER  : PublisherInterface,
+                    SubscriberInterface.IDENTIFIER : SubscriberInterface }
+    
     def processMessage(self, msg):
-        for node in msg.content:
-            try:
-                self.manager.addNode(node)
-            except InternalError as e:
-                log.msg('Could not add Node: {0}'.format(e))
+        if isinstance(msg, NodeForwarder):
+            fwdMsg = Message()
+            fwdMsg.msgType = MsgTypes.ROS_ADD
+            fwdMsg.dest = MsgDef.LAUNCHER_ADDR
+            fwdMsg.content = msg
+            self.commManager.sendMessage(fwdMsg)
+        elif msg.IDENTIFIER in self._INTERFACES:
+            self._INTERFACES[msg.IDENTIFIER](msg, self.manager)
+        else:
+            raise InvalidRequest('Unknown component received to add.')
 
-class ROSRemoveNodeProcessor(ROSProcessorBase):
+class ROSRemoveProcessor(ROSProcessorBase):
     """ Message processor to remove a/multiple node(s).
         
         Should be a list of ROSUtil.Node
@@ -102,15 +115,7 @@ class ROSMessageContainerProcessor(ROSProcessorBase):
             
             self.commManager.sendMessage(respMsg)
 
-class ROSMessageMasterProcessor(ROSProcessorBase):
-    """ Message processor for a single ROS message in the master node.
-    """
-    IDENTIFIER = MsgTypes.ROS_MSG
-    
-    def processMessage(self, msg):
-        pass
-        # TODO: Add logic to process message in master node
-
+### TODO: Not used for pure push implementation
 class ROSGetProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message request.
     """

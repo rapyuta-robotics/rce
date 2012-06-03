@@ -169,8 +169,8 @@ class Django(CentralizedLoop):
         pkg = self._getPackage(pkg)
         node = self._getNode(pkg, exe)
         params = self._getParam(node)
-        interfaces = self._getInterface(node)
+        #interfaces = self._getInterface(node)
         
         params = [(param.name, param.paramType, param.opt, param.default) for param in params]
-        interfaces = [(interface.msgType, '{0}/{1}'.format(pkg.name, interface.msgDef), interface.name) for interface in interfaces]
-        return (pkg.name, node.name, params, interfaces)
+        #interfaces = [(interface.msgType, '{0}/{1}'.format(pkg.name, interface.msgDef), interface.name) for interface in interfaces]
+        return (pkg.name, node.name, params) #, interfaces)

@@ -30,14 +30,8 @@
 
 # Custom converters for django/piston input to ROS messages.
 CONVERTER_CLASSES = (
-    'Converter._ImageConverter.ImageConverter',
+    'SatelliteUtil.Converter._ImageConverter.ImageConverter',
 )
-
-# Definition of prefix for reference from data to files
-REFERENCE_PREFIX = 'ReF'
-
-# Definition of separator for reference from data to files
-REFERENCE_SEPARATOR = '!'
 
 # Definition of django database
 DJANGO_DB = {   'DATABASE_ENGINE': 'django.db.backends.sqlite3',
@@ -94,6 +88,9 @@ RESULT_TIMEOUT = 600
 # IP address of Master
 IP_MASTER = 'localhost'
 
+# Port of Master
+PORT_MASTER = 10011
+
 # Port of Master for UID Server
 PORT_UID = 10013
 
@@ -108,6 +105,9 @@ PORT_SATELLITE_SATELLITE = 10025
 
 # Port of Satellite for Environment Nodes
 PORT_SATELLITE_ENVIRONMENT = 11010
+
+# Port of Launcher
+PORT_LAUNCHER = 11011
 
 #######################################
 ###                                 ###

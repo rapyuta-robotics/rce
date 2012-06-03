@@ -83,7 +83,7 @@ class Router(object):
         if dest not in self._dest:
             self._dest[dest] = set()
         
-        # Add direct route to routing
+        # Add direct route to routing table
         self._routes[dest] = dest
         self._dest[dest].add(dest)
         

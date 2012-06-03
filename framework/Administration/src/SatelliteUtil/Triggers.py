@@ -33,6 +33,8 @@ from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
 class CommonRoutingTrigger(object):
     """ Class which implements a common method for the triggers.
     """
+    implements(IPostInitTrigger)
+    
     def __init__(self, commMngr):
         """ Initialize the CommonRoutingTrigger.
 
@@ -51,19 +53,15 @@ class CommonRoutingTrigger(object):
         msg.content = info
         self.commManager.sendMessage(msg)
 
-class BaseRoutingTrigger(object):
+class BaseRoutingTrigger(CommonRoutingTrigger):
     """ PostInitTrigger which is used to send the CommID of this node as default routing info.
     """
-    implements(IPostInitTrigger)
-    
     def trigger(self, origin, ip):
         self.sendRoutingInfo(origin, [ (None, True) ])
 
 class SatelliteRoutingTrigger(CommonRoutingTrigger):
     """ PostInitTrigger which is used to send the available container IDs as routing info.
     """
-    implements(IPostInitTrigger)
-    
     def __init__(self, commMngr, satelliteMngr):
         """ Initialize the SatelliteRoutingTrigger.
 
@@ -86,8 +84,6 @@ class EnvironmentRoutingTrigger(CommonRoutingTrigger):
     """ PostInitTrigger which is used to send the CommID of this node as default routing info
         and additionally add set the container to connected.
     """
-    implements(IPostInitTrigger)
-    
     def __init__(self, commMngr, satelliteMngr):
         """ Initialize the SatelliteRoutingTrigger.
 

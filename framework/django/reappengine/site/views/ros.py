@@ -27,8 +27,8 @@ import glob
 import stat
 
 # ROS import
-import reappengine.ROS
-import roslib.packages      # TODO: Find replacement functions for roslib.packages functions
+import reappengine.ROS      # TODO: Probably remove and initialize the environment somehow differently
+import rospkg
 
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -92,8 +92,7 @@ def service(request):
 
     # Package Form
     packageForm = PackageForm(prefix='package')
-    root_path = request.user.get_profile().path
-    pkgs = (('', 'Select...'),) + tuple((pkg, pkg) for pkg in roslib.packages.list_pkgs_by_path(root_path))
+    pkgs = (('', 'Select...'),) + tuple((pkg, pkg) for pkg in rospkg.RosPack(request.user.get_profile().path).list())
     packageForm.register(pkgs)
 
     # Node Form
@@ -122,8 +121,9 @@ def feedService(request):
         return HttpResponseBadRequest()
 
     try:
-        pkg = roslib.packages.get_pkg_dir(pkg, False)
-    except roslib.packages.InvalidROSPkgException:
+        rp = rospkg.RosPack()
+        pkg = rp.get_path(pkg)
+    except rospkg.ResourceNotFound:
         return HttpResponseBadRequest()
 
     if interfaceType != 'srv':
@@ -152,15 +152,16 @@ def feedNode(request):
     len_root_path = len(root_path)
 
     try:
-        pkg = roslib.packages.get_pkg_dir(pkg)
-    except roslib.packages.InvalidROSPkgException:
+        rp = rospkg.RosPack()
+        pkg = rp.get_path(pkg)
+    except rospkg.ResourceNotFound:
         return HttpResponseBadRequest()
 
     exes = []
 
     for p, dirs, files in os.walk(pkg):
-        for file in files:
-            test_path = os.path.join(p, file)
+        for f in files:
+            test_path = os.path.join(p, f)
             s = os.stat(test_path)
             if (s.st_mode & (stat.S_IRUSR | stat.S_IXUSR) == (stat.S_IRUSR | stat.S_IXUSR)) and test_path.startswith(root_path):
                 exes.append(test_path[len_root_path:])

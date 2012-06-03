@@ -47,7 +47,7 @@ class IROSConverter(Interface):
             @raise:     TypeError, ValueError
         """
     
-    def decode(rosMsgType, imgObj): #@NoSelf
+    def decode(rosMsgType, data): #@NoSelf
         """ Generate a ROS message from dictionary.
 
             @param rosMsgType:  String defining the ROS message type, i.e.

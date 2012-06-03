@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       _Interface.py
+#       InterfaceMonitor.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -28,63 +28,30 @@ import genpy
 
 # Python specific imports
 from threading import Event, Lock, Thread
-from struct import error as StructError
 from datetime import datetime, timedelta
 import time
 
 # Custom imports
 import settings
 from Exceptions import InternalError, SerializationError
-from ContentDefinition import STRUCT_I, LEN_I
+import ComponentDefinition #@UnresolvedImport
 from MiscUtility import generateID
 
-class InterfaceBase(object):
-    """ Base class which represents an interface for a node.
+class _InterfaceMonitor(object):
+    """ Base class which is used to handle and monitor an interface.
     """
-
-    def __init__(self, interfaceName):
+    def __init__(self, interface, manager):
         """ Initialize the Interface instance.
 
-            @param interfaceName:   ROS name of the interface.
-            @type  interfaceName:   str
+            @param interface:   Interface instance.
+            @type  interface:   Interface
         """
-        self.interfaceName = interfaceName
-        self._manager = None
+        self.interfaceName = interface.interfaceName
+        self._manager = manager
         self.ready = False
         
         # Dictionary of all push receivers
         self.pushReceivers = {}
-
-    @classmethod
-    def deserialize(cls, data):
-        """ Deserialize the Interface instance.
-        """
-        try:
-            start = 0
-            end = LEN_I
-            length, = STRUCT_I.unpack(data[start:end])
-            start = end
-            end += length
-            name = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize Interface: {0}'.format(e))
-
-        return cls(name)
-
-    def registerManager(self, manager):
-        """ This method is used to register the manager instance, which is needed
-            for callback functionalities.
-
-            @param manager: Manager instance which should be registered.
-            @type  manager: Manager
-
-            @raise:     InternalError if there is already a manager
-                        registered.
-        """
-        if self._manager:
-            raise InternalError('There is already a manager registered.')
-
-        self._manager = manager
 
     def _start(self):
         """ This method should be overwritten to implement necessary start
@@ -122,7 +89,7 @@ class InterfaceBase(object):
         if commID in self.pushReceivers:
             raise InternalError('"{0}" is already registered as a receiver for this interface.'.format(commID))
         
-        self.pushReceivers[commID] = str
+        self.pushReceivers[commID] = name
     
     def _send(self, msg, pushResult):
         """ This method should be overwritten to implement the send functionality.
@@ -149,7 +116,7 @@ class InterfaceBase(object):
                         sent one if the pushResult flag is False or the .
             @rtype:     str
         """
-        if self.ready:
+        if not self.ready:
             raise InternalError('Interface is not ready to send a message.')
 
         return self._send(msg, pushResult)
@@ -175,7 +142,7 @@ class InterfaceBase(object):
             @return:    Received message in serialized form.
             @rtype:     str
         """
-        if self.ready:
+        if not self.ready:
             raise InternalError('Interface is not ready to receive a message.')
 
         return self._receive(taskID)
@@ -199,9 +166,10 @@ class InterfaceBase(object):
         self.ready = False
         self._manager.unregisterInterface(self)
 
-class ServiceInterface(InterfaceBase):
-    """ Represents a service interface for a node.
+class ServiceInterface(_InterfaceMonitor):
+    """ Class which is used to handle and monitor a service interface.
     """
+    IDENTIFIER = ComponentDefinition.INTERFACE_SRV
     
     class ServiceTask(object):
         """ Data container for a single Task, which consists of a
@@ -299,11 +267,11 @@ class ServiceInterface(InterfaceBase):
             else:
                 return None
 
-    def __init__(self, cls, interfaceName):
-        super(ServiceInterface, self).__init__(interfaceName)
+    def __init__(self, interface):
+        super(ServiceInterface, self).__init__(interface)
 
         try:
-            self.srvCls = genpy.message.get_service_class(cls)
+            self.srvCls = genpy.message.get_service_class(interface.srvClass)
         except (ValueError):
             raise SerializationError('Could not load Service class.')
 
@@ -317,29 +285,7 @@ class ServiceInterface(InterfaceBase):
         t.daemon = True
         t.start()
 
-    @classmethod
-    def deserialize(cls, data):
-        try:
-            start = 0
-            end = LEN_I
-            length, = STRUCT_I.unpack(data[start:end])
-            start = end
-            end += length
-            name = data[start:end]
-
-            start = end
-            end += LEN_I
-            length, = STRUCT_I.unpack(data[start:end])
-            start = end
-            end += length
-            cls = data[start:end]
-        except StructError as e:
-            raise SerializationError('Could not deserialize Interface: {0}'.format(e))
-
-        return cls(cls, name)
-
-    __init__.__doc__ = InterfaceBase.__init__.__doc__
-    deserialize.__func__.__doc__ = InterfaceBase.deserialize.__func__.__doc__
+    __init__.__doc__ = _InterfaceMonitor.__init__.__doc__
 
     def _send(self, msg, pushResult):
         task = ServiceInterface.ServiceTask(self, msg, pushResult)
@@ -359,7 +305,8 @@ class ServiceInterface(InterfaceBase):
             return uid
         else:
             return None
-
+    
+    ### TODO: Not used in pure push implementation
     def _receive(self, taskID):
         with self._tasksLock:
             try:
@@ -398,9 +345,10 @@ class ServiceInterface(InterfaceBase):
                     if self._tasks.lastAccessed and self._tasks.lastAccessed > timeout:
                         del self._tasks[key]
 
-class PublisherInterface(InterfaceBase):
+class PublisherInterface(_InterfaceMonitor):
     """ Represents a publisher interface for a node.
     """
+    IDENTIFIER = ComponentDefinition.INTERFACE_PUB
 
     def _start(self):
         self._publisher = rospy.Publisher(self.interfaceName, rospy.AnyMsg, latch=True)
@@ -422,17 +370,18 @@ class PublisherInterface(InterfaceBase):
         self._publisher.unregister()
         self._publisher = None
 
-class SubscriberInterface(InterfaceBase):
+class SubscriberInterface(_InterfaceMonitor):
     """ Represents a subscriber interface for a node.
     """
+    IDENTIFIER = ComponentDefinition.INTERFACE_SUB
 
-    def __init__(self, interfaceName):
-        super(SubscriberInterface, self).__init__(interfaceName)
+    def __init__(self, interface):
+        super(SubscriberInterface, self).__init__(interface)
 
         self._lastMsg = None
         self._msgLock = Lock()
 
-    __init__.__doc__ = InterfaceBase.__init__.__doc__
+    __init__.__doc__ = _InterfaceMonitor.__init__.__doc__
 
     def _start(self):
         self._subscriber = rospy.Subscriber(self.interfaceName, rospy.AnyMsg, self._callbackFunc)

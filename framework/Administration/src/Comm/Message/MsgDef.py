@@ -74,6 +74,8 @@ MASTER_ADDR = '$' * ADDRESS_LENGTH
 # Used for DB node
 DB_ADDR = '?' * ADDRESS_LENGTH
 
+LAUNCHER_ADDR = '*' * ADDRESS_LENGTH
+
 # Used prefix for satellite nodes
 PREFIX_SATELLITE_ADDR = '+' * PREFIX_LENGTH_ADDR
 

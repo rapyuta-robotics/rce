@@ -68,6 +68,26 @@ class Serializer(object):
         self._buf.pushFront(dest)
         self._buf.pushFront(_I_STRUCT.pack(length))
     
+    def addIdentifier(self, identifier, length):
+        """ Serialize a single identifier.
+            
+            @param identifier:  Identifier which should be a string.
+            @type  identifier:  str
+            
+            @param length:  Length of the identifier.
+                            The length should be predefined as it is only used to make sure that
+                            the correct number of bytes are written. The information itself is
+                            not added to the message.
+            @type  length:  int
+            
+            @raise:     SerializaitonError if the length of the identifier does not match the
+                        given length.
+        """
+        if len(identifier) != length:
+            raise SerializationError('Length of the identifier does not match the specification.')
+        
+        self._buf.push(identifier)
+    
     def addBool(self, b):
         """ Serialize a single boolean.
             
@@ -158,20 +178,6 @@ class Serializer(object):
         self.addInt(len(buf))
         self._buf += buf
     
-    def addCustom(self, data, serializer):
-        """ Serialize the custom component.
-            
-            @param data:    Custom component which should be serialized.
-            @type  data:    Arbitrary
-            
-            @param serializer:  Serializer class which should be used to serialize the
-                                custom component.
-            @type  serializer:  IContentSerializer (IDENTIFIER will be ignored.)
-    
-            @raise:         SerializationError may be raised by the serializer.
-        """
-        serializer.serialize(self._buf, data)
-    
     def getMsg(self):
         """ Get the message which has been assembled until now.
             
@@ -202,6 +208,19 @@ class Deserializer(object):
         msgType = self._buf.pop(MsgDef.MSG_TYPE_LENGTH)[0]
         msgNr = _I_STRUCT.unpack(self._buf.pop(_I_LEN)[0])[0]
         return (length, dest, origin, msgType, msgNr)
+    
+    def getIdentifier(self, length):
+        """ Serialize a single identifier.
+            
+            @param length:  Length of the identifier.
+                            The length should be predefined as it is only used to know how many
+                            bytes should be read.
+            @type  length:  int
+            
+            @param identifier:  Deserialized identifier.
+            @type  identifier:  str
+        """
+        return self._buf.pop(length)
     
     def getBool(self):
         """ Deserialize a single boolean.
@@ -287,16 +306,10 @@ class Deserializer(object):
         """
         return [self.getElement() for _ in xrange(self.getInt())]
     
-    def addCustom(self, serializer):
-        """ Deserialize the custom component.
+    def getFIFO(self):
+        """ Get the FIFO containing the remaining data.
             
-            @param serializer:  Serializer class which should be used to deserialize the
-                                custom component.
-            @type  serializer:  IContentSerializer (IDENTIFIER will be ignored.)
-            
-            @return:    Custom component.
-            @rtype:     Arbitrary
-    
-            @raise:         SerializationError may be raised by the serializer.
+            @return:    Remaining serialized message.
+            @rtype:     MessageFIFO
         """
-        return serializer.deserialize(self._buf)
+        return self._buf
