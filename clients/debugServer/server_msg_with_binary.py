@@ -8,6 +8,12 @@ class EchoServerProtocol(WebSocketServerProtocol):
 
     completelyReceivedMsgs = []
     incompleteMsgs = []
+
+    def generteURIList(msg, list):
+        
+        
+            
+        
     
     def onMessage(self, msg, binary):
         if not binary:
