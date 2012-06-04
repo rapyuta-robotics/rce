@@ -115,9 +115,8 @@ def main(reactor, ip, uid):
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
     # Server for connections from robots, i.e. the web, brokered by the master node
-    ### 
-    ### TODO: Add outside connection here!
-    ###
+##    factory = WebSocketServerFactory(satelliteManager, "ws://localhost:9000")
+##    listenWS(factory)
     
     # Setup periodic calling of Load Balancer Updater
     log.msg('Add periodic call for Load Balancer Update.')
