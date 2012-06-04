@@ -60,6 +60,8 @@ print(cmd_CC_js)
 
 # Data Messages
 msg = {"linear":{"x":0,"y":0,"z":0},"angular":{"x":0,"y":0,"z":0}};
+
+
 cmd_RM = {
     "type":"RM",
     "dest":"destination_container/robot",

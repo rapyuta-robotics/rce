@@ -27,7 +27,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
 				self.cmd_CSR['data']['containerID']=uuid.uuid4().hex
 				self.sendMessage(json.dumps(self.cmd_CSR))
 			else:
-				pass
+				self.sendMessage('received Message # '+str(self.incoming_msg_count))
 		else:
 			pass
 

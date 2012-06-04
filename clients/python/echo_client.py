@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 from threading import Thread
 from Queue import Queue
+
 from autobahn.websocket import WebSocketClientFactory, WebSocketClientProtocol, connectWS
+import json
 
 class Container(object):
 
@@ -67,7 +69,7 @@ class RoboEarthCloudEngine(object):
             }
         cmd_CS_js = json.dumps(cmd_CS)
         container = Container(self)
-        self.pendingContainer.append(container)
+        self.pendingContainer.put(container)
         self.send(cmd_CS_js)
         return container
         
@@ -119,6 +121,8 @@ class Protocol(WebSocketClientProtocol):
 
 def main():
     print 'I was here'
+    #print(globals())
+    engine.createContainer()
 
 if __name__ == '__main__':
     from twisted.internet import reactor
