@@ -88,6 +88,7 @@ def _createParameterParser(name, paramType, opt=False, default=None):
     else:
         raise InternalError('Could not identify the type of the configuration parameter.')
 
+# TODO: Add (un)registerRobot method
 class SatelliteManager(object):
     """ Manager which is used for the satellites nodes, which represent the communication
         relay for the container nodes on a single machine.
@@ -110,8 +111,8 @@ class SatelliteManager(object):
         # SSL Context which is used to connect to other satellites
         self._ctx = ctx
         
-        # Storage for all running containers
-        self._containers = {}
+        # Storage for all connected robots
+        self._robots = {}
         
         # Storage for pending requests for a new CommID
         self._pendingCommIDReq = []
@@ -139,7 +140,7 @@ class SatelliteManager(object):
     ##################################################
     ### DB Interactions
     
-    def _getRobotSpecs(self, robotID):
+    def getRobotSpecs(self, robotID):
         """ Get the specifications for the robot.
             
             @param robotID:     Unique Identifier of the robot.
@@ -153,7 +154,7 @@ class SatelliteManager(object):
         """
         return self._dbInterface.getRobotSpecs(robotID)
     
-    def _getNodeDefParser(self, nodeID):
+    def getNodeDefParser(self, nodeID):
         """ Get the node definition.
             
             @param nodeID:  Unique Identifier of the node.
@@ -170,6 +171,9 @@ class SatelliteManager(object):
     
     ##################################################
     ### Container
+    
+    def registerContainer(self, container):
+        self._containers["What to add here"] = container
     
     def _getContainer(self, robotID, containerID):
         """ Check if the robot is authorized to modify the indicated container. If the
@@ -195,42 +199,6 @@ class SatelliteManager(object):
             raise InvalidRequest('Robot is not the owner of the container.')
         
         return container
-    
-    def createContainer(self, robotID):
-        """ Callback for RobotServerFactory. # TODO: Add description
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-        """
-        def processRobotSpecs(results):
-            if not (results[0][0] and results[1][0]):
-                log.msg('Could not get necessary data to start a new container.')
-                return
-            
-            homeFolder = results[0][1]
-            commID = results[1][1]
-            
-            if not validateAddress(commID):
-                log.msg('The CommID is not a valid address.')
-                return
-            
-            if commID in self._containers:
-                log.msg('There is already a container with the same CommID.')
-                return
-            
-            if not os.path.isdir(homeFolder):
-                log.msg('The home folder is not a valid directory.')
-                return
-            
-            container = Container(commID, homeFolder)
-            
-            container.start(self._commMngr)
-            self._containers[commID] = container
-        
-        deferredRobot = self._getRobotSpecs(robotID)
-        deferredCommID = self._getNewCommID()
-        deferredList = DeferredList([deferredRobot, deferredCommID])
-        deferredList.addCallback(processRobotSpecs)
     
     def authenticateContainerConnection(self, commID):
         """ Callback for EnvironmentServerFactory to authenticate connection from container.
@@ -268,71 +236,13 @@ class SatelliteManager(object):
         
         self._containers[commID].setConnectedFlag(flag)
     
-    def destroyContainer(self, robotID, containerID):
-        """ Callback for RobotServerFactory. # TODO: Add description
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @param containerID:     Identifier of the container which should be modified.
-                                    This corresponds to the communication ID of the container.
-            @type  containerID:     str
-        """
-        container = self._getContainer(robotID, containerID)
-        container.stop(self._commMngr)
-        del self._containers[containerID]
-    
     ##################################################
     ### ROS
-    
-    def addNode(self, robotID, containerID, nodeID, config):
-        """ Callback for RobotServerFactory. # TODO: Add description
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @param containerID:     Identifier of the container which should be modified.
-                                    This corresponds to the communication ID of the container.
-            @type  containerID:     str
-            
-            # TODO: Add description
-        """
-        container = self._getContainer(robotID, containerID)
-        deferred = self._getNodeDefParser(nodeID)
-        deferred.addCallback(container.addNode, config)
-    
-    def sendROSMsgToContainer(self, robotID, containerID, interfaceName, msg):
-        """ Callback for RobotServerFactory. # TODO: Add description
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @param containerID:     Identifier of the container which should be modified.
-                                    This corresponds to the communication ID of the container.
-            @type  containerID:     str
-            
-            # TODO: Add description
-        """
-        self._getContainer(robotID, containerID).send(msg, interfaceName, robotID)
     
     def sendROSMsgToRobot(self, robotID, containerID, interfaceName, msg):
         """ # TODO: Add description
         """
         self._getContainer(robotID, containerID).receive(msg, interfaceName, robotID)
-    
-    def removeNode(self, robotID, containerID, nodeID):
-        """ Callback for RobotServerFactory. # TODO: Add description
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @param containerID:     Identifier of the container which should be modified.
-                                    This corresponds to the communication ID of the container.
-            @type  containerID:     str
-            
-            # TODO: Add description
-        """
-        self._getContainer(robotID, containerID).removeNode(nodeID)
     
     ##################################################
     ### Routing
@@ -373,7 +283,7 @@ class SatelliteManager(object):
     ##################################################
     ### Management
     
-    def _getNewCommID(self):
+    def getNewCommID(self):
         """ Internally used method to request a new unique CommID.
             
             @return:    Deferred which will fire as soon as the new CommID is available.

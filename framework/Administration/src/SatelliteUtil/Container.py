@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       _Container.py
+#       Container.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -31,7 +31,7 @@ from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
-from _Interface import Interface #@UnresolvedImport
+from Interface import Interface #@UnresolvedImport
 
 class Container(object):
     """ Class which represents a container.
@@ -42,8 +42,8 @@ class Container(object):
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
             
-            @param robotID:     ID of the robot to which this container belongs.
-            @type  robotID:     str
+            @param robot:       ID of the robot to which this container belongs.
+            @type  robot:       Robot
             
             @param commID:  CommID which is used for the environment node inside the container
                             and which is used to identify the container.
