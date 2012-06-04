@@ -5,7 +5,7 @@ import json
 cmd_CS = {
             "type":"CS",
             "dest":"$$$$$$",
-            "orig":"robotUniqueID",
+            "orig":"robotUniqueID", # Redundant
             "data":None
             }
 
@@ -42,18 +42,25 @@ nodeConfigs = [{
     "nodeID":"nid",
     "nodeName":"nn",
     "namespaceID":"ns",
-    #"interfaceID":["iid"], # TODO
-    "parameters":{"parameterName":"parameterValue"} #TODO: Delete/Add parameters 
     }]
 cmd_CC = {
             "type":"CC",
             "dest":"containerID_receivedFrom_cmd_CSR",
             "orig":"robotUniqueID",
             "data":{
-                    "add":nodeConfigs,
-                    "remove":["nameSpaceID/nodeID"]
+                    "addNodes":nodeConfigs,
+                    "removeNodes":["nameSpaceID/nodeID"],
+                    "addInterfaces":[{"interfaceName":"inm",
+                                    "type":"type", # Options: Publisher/Subscriber/Service 
+                                    "class":"className"} # msgType for Publisher/Subscriber | srvType for Service
+                                    ],
+                    "removeInterfces":["inm"],
+                    "setParam":{"paramName":"paramValue"},
+                    "deleteParam" : ["paramName"]
                     }
             }
+
+#TODO: Future we will be able to send a full roslauch file for nodes and parameters.
 
 cmd_CC_js = json.dumps(cmd_CC)
 print(cmd_CC_js)
@@ -61,15 +68,14 @@ print(cmd_CC_js)
 # Data Messages
 msg = {"linear":{"x":0,"y":0,"z":0},"angular":{"x":0,"y":0,"z":0}};
 
-
 cmd_RM = {
     "type":"RM",
     "dest":"destination_container/robot",
     "orig":"origin_container/robot",
     "data":{
-        "type":"geometry_msgs/Twist", # Service type 
+        "type":"geometry_msgs/Twist", # Service/Msg type # This is actually redundant: Interface has all details
         "msgID":"mid",  # Applicable only to services. Only if you want to maintain correspondence between request and response.
-        "interfaceID":'iid',
+        "interfaceID":'iid', # Corresponds to the receiver in rosbridge
         "msg":msg} # In case of srv call: _request_class of the srv class
     }
 
