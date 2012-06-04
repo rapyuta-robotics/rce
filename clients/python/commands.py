@@ -42,8 +42,8 @@ nodeConfigs = [{
     "nodeID":"nid",
     "nodeName":"nn",
     "namespaceID":"ns",
-    #"interfaceID":["iid"],
-    "parameters":{"parameterName":"parameterValue"}
+    #"interfaceID":["iid"], # TODO
+    "parameters":{"parameterName":"parameterValue"} #TODO: Delete/Add parameters 
     }]
 cmd_CC = {
             "type":"CC",
@@ -67,10 +67,10 @@ cmd_RM = {
     "dest":"destination_container/robot",
     "orig":"origin_container/robot",
     "data":{
-        "type":"geometry_msgs/Twist",
-        "msgID":"mid",
+        "type":"geometry_msgs/Twist", # Service type 
+        "msgID":"mid",  # Applicable only to services. Only if you want to maintain correspondence between request and response.
         "interfaceID":'iid',
-        "msg":msg}
+        "msg":msg} # In case of srv call: _request_class of the srv class
     }
 
 cmd_RM_js = json.dumps(cmd_RM)

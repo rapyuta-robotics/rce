@@ -4,20 +4,40 @@ from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol, 
 
 import json
 import uuid
+from Queue import Queue
 
+from ROSProxy import ROSProxy
 
-class EchoServerProtocol(WebSocketServerProtocol):
+class Container(object):
+    def __init__(self, connection):
+        self.connection = connection
+        self.containerID = None
 
+class connectionManager(object):
+    def __init__(self, protocol):
+        self.proxy = ROSProxy()
+        self.comntainerQueue = Queue()
+        self.protocol()
+        
+    def createContainer(self, robotUID):
+        pass
+        
+    
+class CloudEngineProtocol(WebSocketServerProtocol):
+    
 	incoming_msg_count = 0 
-
 	cmd_CSR = {"type":"CSR", "dest":None, "orig":"$$$$$$", "data":{"containerID":None}}
 
 	def onConnect(self, _):
-		print 'Connection established'
+		pass
 		  
+    def connectionMade(self):
+        self.connectionManager = connectionManager(self)
+        
 	def onMessage(self, msg, binary):
-		self.incoming_msg_count += 1
-		print('received Message # '+str(self.incoming_msg_count))
+        # Debug 
+        self.incoming_msg_count += 1
+        print('received Message # '+str(self.incoming_msg_count))
 
 		if not binary:
 			cmd = json.loads(msg)
@@ -31,10 +51,8 @@ class EchoServerProtocol(WebSocketServerProtocol):
 		else:
 			pass
 
-
-           
 if __name__ == '__main__':
 	factory = WebSocketServerFactory("ws://localhost:9000")
-	factory.protocol = EchoServerProtocol
+	factory.protocol = CloudEngineProtocol
 	listenWS(factory)
 	reactor.run()

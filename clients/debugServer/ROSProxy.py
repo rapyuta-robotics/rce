@@ -1,7 +1,7 @@
 """This module provides a class that allows for (slightly) easier dynamic access to ROS"""
 
 """Original code from http://www.ros.org/wiki/rosbridge package
-    modified to fit RoboEarth Cloud Engine specs"""
+    modified to fit RoboEarth Cloud Engine needs"""
 
 import roslib; roslib.load_manifest('rospy')
 import rospy
@@ -17,28 +17,6 @@ class ROSProxy(object):
 	def __init__(self):
 		self.mans = {}
 		self.mods = {}
-
-	def __GetTopics(self):
-		return [x[0] for x in rospy.get_published_topics()]
-	topics = property(fget=__GetTopics)
-
-	def __GetServices(self):
-		return rosservice.get_service_list()
-	services = property(fget=__GetServices)
-
-	def typeStringFromTopic(self, topic):
-		try:
-			return [x[1] for x in rospy.get_published_topics() if x[0] == topic][0]
-		except:
-			print "Can't find topic %s" % (topic,)
-			return None
-
-	def typeStringFromService(self, service):
-		try:
-			return rosservice.get_service_type(service)
-		except:
-			print "Can't find service %s" % (service,)
-			return None
 
 	def __classFromTypeString(self, typeString, subname):
 		basemodule, itype = typeString.split('/')
@@ -68,12 +46,6 @@ class ROSProxy(object):
 
 	def srvClassFromTypeString(self, typeString):
 		return self.__classFromTypeString(typeString, 'srv')
-
-	def classFromTopic(self, topic):
-		return self.msgClassFromTypeString(self.typeStringFromTopic(topic))
-
-	def classFromService(self, service):
-		return self.srvClassFromTypeString(self.typeStringFromService(service))
 
 	def callService(self, service, arguments, callback=False, wait=True):
 		def defCallback(x):
