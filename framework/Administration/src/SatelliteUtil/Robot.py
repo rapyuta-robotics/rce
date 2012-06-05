@@ -28,11 +28,11 @@ from twisted.internet.defer import DeferredList
 
 # Python specific imports
 import os
+import uuid
 
 # Custom imports
 from Comm.CommUtil import validateAddress
 from Container import Container
-import uuid
 
 class Robot(object):
     """ Class which represents a robot. It is associated with a websocket connection.
