@@ -116,7 +116,7 @@ class Robot(object):
             and should now be processed and forwarded.
             
             @param containerTag:    Container tag which is used to identify a previously
-                                    started container which should be used as messag
+                                    started container which should be used as message
                                     destination.
             @type  containerTag:    str
             
@@ -142,9 +142,8 @@ class Robot(object):
     def sendROSMsgToRobot(self, containerTag, msg):
         """ Method is called when a message should be sent to the robot.
             
-            @param containerTag:    Container tag which is used to identify a previously
-                                    started container which should be used as messag
-                                    destination.
+            @param containerTag:    Container tag which is used to identify the container
+                                    from which the message originated.
             @type  containerTag:    str
             
             @param msg:     Corresponds to the dictionary of the field 'data' of the received
