@@ -36,59 +36,22 @@ from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 from Comm.Factory import ReappengineClientFactory
-from Comm.CommUtil import validateAddress #@UnresolvedImport
+from Comm.CommUtil import validateAddress
 
-from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage #@UnresolvedImport
+from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
 from ROSUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
-from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage #@UnresolvedImport
+from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
-from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor #@UnresolvedImport
-from Triggers import SatelliteRoutingTrigger #@UnresolvedImport
+from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor
+from Triggers import SatelliteRoutingTrigger
 
-from DBUtil.DBInterface import DBInterface #@UnresolvedImport
+from DBUtil.DBInterface import DBInterface
 
-from ROSComponents.NodeParser import NodeParser #@UnresolvedImport
-from ROSComponents.ParameterParser import IntParamParser, StrParamParser, FloatParamParser, BoolParamParser, FileParamParser #@UnresolvedImport
+from ROSComponents.NodeParser import NodeParser
+from ROSComponents.ParameterParser import IntParamParser, StrParamParser, FloatParamParser, BoolParamParser, FileParamParser
 
-from Converter.Core import Converter #@UnresolvedImport
+from Converter.Core import Converter
 
-from _Container import Container #@UnresolvedImport
-
-def _createParameterParser(name, paramType, opt=False, default=None):
-    """ Creates a new parameter instance depending of paramType.
-
-        @param name:    Name of the parameter
-        @type  name:    str
-
-        @param paramType:   String which represents the type of parameter
-                            to create. Possible values are:
-                                int, str, float, bool, file
-        @type  paramType:   str
-
-        @param opt:     Flag which indicates whether the configuration
-                        parameter is optional or not
-        @type  opt:     bool
-
-        @param default: Default value for the case where the parameter
-                        is optional
-
-        @raise:     InternalError in case the opt flag is set but no
-                    default value is given.
-    """
-    if paramType == 'int':
-        return IntParamParser(name, opt, default)
-    elif paramType == 'str':
-        return StrParamParser(name, opt, default)
-    elif paramType == 'float':
-        return FloatParamParser(name, opt, default)
-    elif paramType == 'bool':
-        return BoolParamParser(name, opt, default)
-    elif paramType == 'file':
-        return FileParamParser(name, opt, default)
-    else:
-        raise InternalError('Could not identify the type of the configuration parameter.')
-
-# TODO: Add (un)registerRobot method
 class SatelliteManager(object):
     """ Manager which is used for the satellites nodes, which represent the communication
         relay for the container nodes on a single machine.
@@ -168,6 +131,38 @@ class SatelliteManager(object):
         """
         pkgName, nodeName, params = self._dbInterface.getNodeSpecs(nodeID)
         return NodeParser(pkgName, nodeName, [_createParameterParser(*param) for param in params])
+    
+    ##################################################
+    ### Robot
+    
+    def registerRobot(self, robot):
+        """ Callback method for robots to register themselves with the manager.
+            
+            @param robot:   Robot which should be registered. The robot needs to have
+                            an unique robotID.
+            @type  robot:   Robot
+        """
+        uid = robot.robotID
+        
+        if uid in self._robots:
+            raise InvalidRequest('Robot with the same ID is already registered.')
+        
+        self._robots[uid] = robot
+    
+    # TODO: Needs to be called from somewhere!
+    def unregisterRobot(self, robot):
+        """ 
+            
+            @param robot:   Robot which should be unregistered. The robot needs to have
+                            an unique robotID.
+            @type  robot:   Robot
+        """
+        uid = robot.robotID
+        
+        if uid not in self._robots:
+            raise InvalidRequest('Robot is not registered.')
+        
+        del self._robots[uid]
     
     ##################################################
     ### Container

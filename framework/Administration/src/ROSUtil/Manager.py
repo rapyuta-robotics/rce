@@ -29,12 +29,12 @@ import roslaunch.core
 from Exceptions import InvalidRequest, InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
-from Type import ROSAddMessage, ROSRemoveMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage #@UnresolvedImport
-from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSMessageContainerProcessor #, ROSGetProcessor #@UnresolvedImport
+from Type import ROSAddMessage, ROSRemoveMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
+from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSMessageContainerProcessor #, ROSGetProcessor
 from MiscUtility import generateID
 
-from Node import NodeForwarder #@UnresolvedImport
-from Interface import ServiceInterface, PublisherInterface, SubscriberInterface #@UnresolvedImport
+from ROSComponents.Node import NodeForwarder
+from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
 
 class ROSManager(object):
     """ Manager which handles ROS specific tasks.

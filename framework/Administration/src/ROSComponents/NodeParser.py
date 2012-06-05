@@ -27,7 +27,7 @@ import rosgraph.names
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-from Node import Node #@UnresolvedImport
+from Node import Node
 
 class NodeParser(object):
     """ Class which is used to parse the incoming request to start a node. This class is

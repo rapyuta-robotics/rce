@@ -31,7 +31,7 @@ from twisted.internet.interfaces import IConsumer
 
 # Custom imports
 from Exceptions import InternalError, SerializationError
-from Interfaces import IReappengineProducer #@UnresolvedImport
+from Interfaces import IReappengineProducer
 import MsgDef
 from Base import Message
 from FIFO import MessageFIFO

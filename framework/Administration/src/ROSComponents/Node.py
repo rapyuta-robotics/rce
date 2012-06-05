@@ -26,9 +26,9 @@
 from zope.interface import implements
 
 # Custom imports
-import ComponentDefinition #@UnresolvedImport
-from Interfaces import ISerializable #@UnresolvedImport
-from Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam #@UnresolvedImport
+import ComponentDefinition
+from Interfaces import ISerializable
+from Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 
 class Node(object):
     """ Class which represents a node.

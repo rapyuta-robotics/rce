@@ -27,7 +27,7 @@ from zope.interface import implements
 
 # Custom imports
 from Exceptions import SerializationError
-from Interfaces import IContentSerializer #@UnresolvedImport
+from Interfaces import IContentSerializer
 import MsgTypes
 
 class InitMessage(object):

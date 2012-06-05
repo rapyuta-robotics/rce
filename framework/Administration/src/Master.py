@@ -38,43 +38,11 @@ import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
 from Comm.Message.Base import Message
-from Comm.Interfaces import IServerImplementation #@UnresolvedImport
-from Comm.UIDServer import UIDServerFactory #@UnresolvedImport
+from Comm.UIDServer import UIDServerFactory
 from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
-from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
-from MasterUtil.Manager import MasterManager #@UnresolvedImport
-
-class MasterServerImplementation(object):
-    """ ServerImplementation which is used in the master node for the connections to the
-        satellite nodes.
-    """
-    implements(IServerImplementation)
-    
-    def __init__(self, commMngr, masterMngr):
-        """ Initialize the MasterServerImplementation.
-
-            @param commMngr:    CommManager which is responsible for handling the communication
-                                in this node.
-            @type  commMngr:    CommManager
-            
-            @param masterMngr:  MasterManager which is used in this node.
-            @type  masterMngr:  MasterManager
-        """
-        self.commManager = commMngr
-        self._masterManager = masterMngr
-    
-    def authOrigin(self, origin, ip, key):
-        return self._masterManager.checkUID(origin[MsgDef.PREFIX_LENGTH_ADDR:])
-    
-    def getResponse(self, origin):    
-        return { 'origin' : self.commManager.commID, 'dest' : origin, 'key' : '' }
-    
-    def saveState(self, content):
-        pass
-    
-    def unregisterConnection(self, conn):
-        self._masterManager.removeSatellite(conn.dest)
+from Comm.Interfaces import IPostInitTrigger
+from MasterUtil.Manager import MasterManager
 
 class MasterTrigger(object):
     """ PostInitTrigger which is used to send the available satellite as connection directive.
@@ -103,6 +71,30 @@ class MasterTrigger(object):
         
         self.masterManager.addSatellite(origin, ip)
 
+class MasterServerFactory(ReappengineServerFactory):
+    """ ReappengineServerFactory which is used in the master node for the connections to the
+        satellite nodes.
+    """
+    def __init__(self, commMngr, masterMngr):
+        """ Initialize the MasterServerFactory.
+
+            @param commMngr:    CommManager which is responsible for handling the communication
+                                in this node.
+            @type  commMngr:    CommManager
+            
+            @param masterMngr:  MasterManager which is used in this node.
+            @type  masterMngr:  MasterManager
+        """
+        super(MasterServerFactory, self).__init__(commMngr, MasterTrigger(commMngr, masterMngr))
+        self._masterManager = masterMngr
+    
+    def authOrigin(self, origin):
+        return self._masterManager.checkUID(origin[MsgDef.PREFIX_LENGTH_ADDR:])
+    
+    def unregisterConnection(self, conn):
+        super(MasterServerFactory, self).unregisterConnection(conn)
+        self._masterManager.removeSatellite(conn.dest)
+
 def main(reactor):
     # Start logger
     log.startLogging(sys.stdout)
@@ -114,9 +106,6 @@ def main(reactor):
     commManager = CommManager(reactor, MsgDef.MASTER_ADDR)
     masterManager = MasterManager(commManager)
     
-    # Create Trigger
-    trigger = MasterTrigger(commManager, masterManager)
-    
     # Initialize twisted
     log.msg('Initialize twisted')
     
@@ -124,9 +113,8 @@ def main(reactor):
     reactor.listenTCP(settings.PORT_UID, UIDServerFactory(masterManager))
     
     # Server for connections from the satellites
-    factory = ReappengineServerFactory( commManager,
-                                        MasterServerImplementation(commManager, masterManager),
-                                        trigger )
+    factory = MasterServerFactory( commManager,
+                                   masterManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,  # TODO: <- Necessary?
                                       MsgTypes.LOAD_INFO ])
     #reactor.listenSSL(settings.PORT_MASTER, factory, ctx)

@@ -28,7 +28,7 @@ from zope.interface import implements
 # Custom imports
 from Comm.Message import  MsgTypes
 from Comm.Message.Base import Message
-from Comm.Interfaces import IPostInitTrigger #@UnresolvedImport
+from Comm.Interfaces import IPostInitTrigger
 
 class CommonRoutingTrigger(object):
     """ Class which implements a common method for the triggers.

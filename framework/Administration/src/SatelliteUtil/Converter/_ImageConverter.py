@@ -37,7 +37,7 @@ except ImportError:
 import Image
 
 # Custom imports
-from Interfaces import IROSConverter #@UnresolvedImport
+from Interfaces import IROSConverter
 
 class ImageConverter(object):
     """ Convert images from Django style to ROS style and back.

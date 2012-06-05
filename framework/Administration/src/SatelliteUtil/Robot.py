@@ -22,11 +22,26 @@
 #       
 #       
 
+# twisted specific imports
+from twisted.python import log
+from twisted.internet.defer import DeferredList
+
+# Python specific imports
+import os
+
 # Custom imports
+from Comm.CommUtil import validateAddress
 from Container import Container
 
 class Robot(object):
+    """ Class which represents a robot. It is associated with a websocket connection.
+        A robot can have multiple containers.
+    """
     def __init__(self, robotID, connection, manager):
+        """ Initialize the Robot.
+            
+            # TODO: Add description
+        """
         self._robotID = robotID
         self._connection = connection
         self._manager = manager
@@ -69,7 +84,7 @@ class Robot(object):
             
             # Register container in the manager
         
-        deferredRobot = self._manager.getRobotSpecs(robotID)
+        deferredRobot = self._manager.getRobotSpecs(self._robotID)
         deferredCommID = self._manager.getNewCommID()
         deferredList = DeferredList([deferredRobot, deferredCommID])
         deferredList.addCallback(processRobotSpecs)
@@ -83,13 +98,13 @@ class Robot(object):
         deferred.addCallback(self._containers[containerTag].addNode, config)
     
     def addInterface(self, containerTag, name, interfaceType, className):
-        self._containers[containerTag].addInterface(interfaceName, className, interfaceType)
+        self._containers[containerTag].addInterface(name, className, interfaceType)
     
     def addParameter(self, containerTag, name, value):
         pass
     
     def sendROSMsgToContainer(self, containerTag, interfaceName, msg):
-        self._containers[containerTag].send(msg, interfaceName, robotID)
+        self._containers[containerTag].send(msg, interfaceName, self._robotID)
     
     def sendROSMsgToRobot(self, msg):
         # TODO: Add header and separate binary files if necessary

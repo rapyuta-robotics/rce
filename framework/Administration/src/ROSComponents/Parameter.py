@@ -26,9 +26,9 @@
 from zope.interface import implements
 
 # Custom imports
-import ComponentDefinition #@UnresolvedImport
+import ComponentDefinition
 
-from Interfaces import ISerializable #@UnresolvedImport
+from Interfaces import ISerializable
 
 class _ParamBase(object):
     """ Base class which represents an parameter for a node.

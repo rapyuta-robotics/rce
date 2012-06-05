@@ -9,8 +9,8 @@ from twisted.internet.defer import Deferred
 
 import sys
 
-from Comm.UIDServer import IUIDServer, UIDServerFactory #@UnresolvedImport
-from Comm.UIDClient import UIDClientFactory #@UnresolvedImport
+from Comm.UIDServer import IUIDServer, UIDServerFactory
+from Comm.UIDClient import UIDClientFactory
 
 class UIDServer(object):
     implements(IUIDServer)

@@ -34,7 +34,7 @@ from threading import Lock
 
 # Custom imports
 from Exceptions import InternalError
-from Message.Interfaces import IContentSerializer, IMessageProcessor #@UnresolvedImport
+from Message.Interfaces import IContentSerializer, IMessageProcessor
 from Message import MsgDef
 from Message.Handler import send
 from Message.StdType import InitMessage, RouteMessage

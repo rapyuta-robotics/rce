@@ -26,7 +26,7 @@
 from zope.interface import implements
 
 # Custom imports
-from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
+from Comm.Message.Interfaces import IMessageProcessor
 from Comm.Message import MsgTypes
 
 class SatelliteProcessorBase(object):

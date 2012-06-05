@@ -27,7 +27,7 @@ from zope.interface import implements
 
 # Custom imports
 from Exceptions import SerializationError
-from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
+from Comm.Message.Interfaces import IContentSerializer
 from Comm.Message import MsgTypes
 
 class ConnectDirectiveMessage(object):

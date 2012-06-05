@@ -34,7 +34,7 @@ import time
 # Custom imports
 import settings
 from Exceptions import InternalError, SerializationError
-import ComponentDefinition #@UnresolvedImport
+import ComponentDefinition
 from MiscUtility import generateID
 
 class _InterfaceMonitor(object):

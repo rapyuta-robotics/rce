@@ -32,11 +32,11 @@ from twisted.internet.defer import maybeDeferred
 import json
 
 # Custom imports
-from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
+from Comm.Message.Interfaces import IMessageProcessor
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
-from Type import DBRequestMessage, DBResponseMessage #@UnresolvedImport
+from Type import DBRequestMessage, DBResponseMessage
 
 class DBBase(object):
     """ Provides the base class which can be subclassed and to which the remotely callable

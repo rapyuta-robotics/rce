@@ -34,7 +34,7 @@ import tempfile
 
 # Custom imports
 from Exceptions import InternalError
-import ComponentDefinition #@UnresolvedImport
+import ComponentDefinition
 
 class _ParamMonitor(object):
     """ Base class which provides the basic functionalities to handle incoming parameters.

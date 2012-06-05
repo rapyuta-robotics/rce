@@ -32,7 +32,7 @@ from Comm.Message.Base import Message
 from Comm.Message.FIFO import MessageFIFO
 
 class Interface(object):
-    """ Class which represents an interface.
+    """ Class which represents an interface. It is associated with a container.
     """
     def __init__(self, commMngr, name, msgType, interfaceType):
         """ Initialize the Interface.

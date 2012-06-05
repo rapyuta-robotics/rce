@@ -36,12 +36,12 @@ import sys
 
 # Custom imports
 import settings
-from Comm.CommUtil import validateAddress #@UnresolvedImport
+from Comm.CommUtil import validateAddress
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Factory import ReappengineClientFactory
 from Comm.CommManager import CommManager
-from ROSUtil.Manager import ROSManager #@UnresolvedImport
+from ROSUtil.Manager import ROSManager
 
 def main(reactor, ip, commID, satelliteID, key):
     # Start logger

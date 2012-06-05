@@ -33,7 +33,7 @@ import os
 
 # Custom imports
 from Exceptions import InternalError
-from ParameterMonitor import IntMonitor, StrMonitor, FloatMonitor, BoolMonitor, FileMonitor #@UnresolvedImport
+from ParameterMonitor import IntMonitor, StrMonitor, FloatMonitor, BoolMonitor, FileMonitor
 
 class ROSNodeProtocol(ProcessProtocol):
     """ Protocol which is used to handle the ROS nodes.

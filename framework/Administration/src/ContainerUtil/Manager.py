@@ -35,8 +35,8 @@ from threading import Event
 # Custom imports
 import settings
 from Comm.Message import MsgDef
-from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
-from Processor import StartContainerProcessor, StopContainerProcessor #@UnresolvedImport
+from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage
+from Processor import StartContainerProcessor, StopContainerProcessor
 
 class LXCProtocol(ProcessProtocol):
     """ Protocol which is used to handle the LXC commands.

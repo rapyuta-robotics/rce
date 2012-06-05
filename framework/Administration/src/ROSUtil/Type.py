@@ -29,9 +29,9 @@ from zope.interface.exceptions import Invalid
 
 # Custom imports
 from Exceptions import InternalError, SerializationError
-from Comm.Message.Interfaces import IContentSerializer #@UnresolvedImport
+from Comm.Message.Interfaces import IContentSerializer
 from Comm.Message import MsgTypes
-from ROSComponents.Interfaces import ISerializable #@UnresolvedImport
+from ROSComponents.Interfaces import ISerializable
 
 class ROSAddMessage(object):
     """ Message type to add a node.

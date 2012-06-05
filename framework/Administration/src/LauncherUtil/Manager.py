@@ -34,10 +34,10 @@ from threading import Event
 import settings
 from Exceptions import InvalidRequest
 from Comm.Message import MsgDef
-from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage #@UnresolvedImport
-from Processor import StartContainerProcessor, StopContainerProcessor #@UnresolvedImport
+from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage
+from Processor import StartContainerProcessor, StopContainerProcessor
 
-from NodeMonitor import NodeMonitor #@UnresolvedImport
+from NodeMonitor import NodeMonitor
 
 class LauncherManager(object):
     """ Manager which handles launching the ROS nodes.

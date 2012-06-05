@@ -23,7 +23,7 @@
 #       
 
 # django specific imports
-import django.conf #@UnresolvedImport
+import django.conf
 
 # Python specific imports
 import sys
@@ -31,7 +31,7 @@ import sys
 # Custom imports
 import settings
 from Exceptions import InvalidRequest
-from Base import CentralizedLoop #@UnresolvedImport
+from Base import CentralizedLoop
 
 # Setup django DB connection
 django.conf.settings.configure(

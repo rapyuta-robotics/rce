@@ -35,8 +35,8 @@ from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
 from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
-from Comm.CommUtil import validateSuffix #@UnresolvedImport
-from ContainerUtil.Manager import ContainerManager #@UnresolvedImport
+from Comm.CommUtil import validateSuffix
+from ContainerUtil.Manager import ContainerManager
 
 def main(reactor, uid):
     log.startLogging(sys.stdout)

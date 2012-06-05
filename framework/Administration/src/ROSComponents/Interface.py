@@ -27,8 +27,8 @@ from zope.interface import implements
 
 # Custom imports
 from Exceptions import InternalError
-import ComponentDefinition #@UnresolvedImport
-from Interfaces import ISerializable #@UnresolvedImport
+import ComponentDefinition
+from Interfaces import ISerializable
 
 class _InterfaceBase(object):
     """ Base class which represents an interface for a node.

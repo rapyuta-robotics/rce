@@ -31,7 +31,7 @@ from twisted.internet.protocol import Protocol, ServerFactory
 
 # Custom imports
 from Exceptions import InternalError
-from Interfaces import IUIDServer #@UnresolvedImport
+from Interfaces import IUIDServer
 
 class UIDServerProtocol(Protocol):
     """ Protocol which is used by the server to send a new UID for a machine.

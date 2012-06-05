@@ -30,13 +30,13 @@ from twisted.python import log
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
+from Comm.Message.Interfaces import IMessageProcessor
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
-from ROSComponents.Node import NodeForwarder #@UnresolvedImport
-from ROSComponents.InterfaceMonitor import ServiceInterface, PublisherInterface, SubscriberInterface #@UnresolvedImport
+from ROSComponents.Node import NodeForwarder
+from ROSComponents.InterfaceMonitor import ServiceInterface, PublisherInterface, SubscriberInterface
 
 class ROSProcessorBase(object):
     """ Message processor base class for ROS Processors.

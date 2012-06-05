@@ -1,4 +1,4 @@
-#Mon Jun 04 00:04:54 CEST 2012
+#Mon Jun 04 23:03:02 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/CommUtil.py=utf-8
@@ -52,15 +52,17 @@ encoding//Administration/src/ROSUtil/Processor.py=utf-8
 encoding//Administration/src/ROSUtil/Type.py=utf-8
 encoding//Administration/src/ROSUtil/__init__.py=utf-8
 encoding//Administration/src/Satellite.py=utf-8
+encoding//Administration/src/SatelliteUtil/Container.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/Core.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/Interfaces.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/Utility.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/_ImageConverter.py=utf-8
+encoding//Administration/src/SatelliteUtil/Copy\ of\ Manager.py=utf-8
+encoding//Administration/src/SatelliteUtil/Interface.py=utf-8
 encoding//Administration/src/SatelliteUtil/Manager.py=utf-8
 encoding//Administration/src/SatelliteUtil/Processor.py=utf-8
+encoding//Administration/src/SatelliteUtil/Robot.py=utf-8
 encoding//Administration/src/SatelliteUtil/Triggers.py=utf-8
-encoding//Administration/src/SatelliteUtil/_Container.py=utf-8
-encoding//Administration/src/SatelliteUtil/_Interface.py=utf-8
 encoding//Administration/src/initSlave.py=utf-8
 encoding//Administration/src/settings.py=utf-8
 encoding//Administration/src/trash/EnvironmentManager.py=utf-8

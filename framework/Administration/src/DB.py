@@ -36,8 +36,8 @@ from Comm.Message import  MsgTypes
 from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
 
-from DBUtil.DBBase import DBBase #@UnresolvedImport
-from DBUtil.DB.DjangoDB import Django #@UnresolvedImport
+from DBUtil.DBBase import DBBase
+from DBUtil.DB.DjangoDB import Django
 
 class DBManager(DBBase):
     """ Manager which is used to handle the database requests.

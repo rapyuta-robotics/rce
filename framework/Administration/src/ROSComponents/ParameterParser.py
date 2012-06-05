@@ -27,8 +27,8 @@ import os
 
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
-import ComponentDefinition #@UnresolvedImport
-from Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam #@UnresolvedImport
+import ComponentDefinition
+from Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 
 class _ParameterParser(object):
     """ Abstract base class which represents and provides a factory method

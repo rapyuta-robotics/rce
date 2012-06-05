@@ -32,7 +32,7 @@ import os, sys
 
 # Custom imports
 import settings
-from Comm.UIDClient import UIDClientFactory #@UnresolvedImport
+from Comm.UIDClient import UIDClientFactory
 
 class LoggerProtocol(ProcessProtocol):
     """ Simple ProcessProtocol which forwards the stdout of the subprocesses to the
@@ -51,18 +51,16 @@ class LoggerProtocol(ProcessProtocol):
         self._buff = lines[-1]
         
         for line in lines[:-1]:
-            #log.msg(line)
-            print line
+            log.msg(line)
  
     def processEnded(self, reason):
         """ Callback which is called by twisted when the subprocess has ended.
         """
         if reason.value.exitCode != 0:
-            #log.msg(reason)
-            print reason
+            log.msg(reason)
 
 def main(reactor):
-    #log.startLogging(sys.stdout)
+    log.startLogging(sys.stdout)
     
     deferred = Deferred()
     
@@ -79,7 +77,7 @@ def main(reactor):
         reactor.spawnProcess(LoggerProtocol(), cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
     
     def errback(errMsg):
-        #log.msg(errMsg)
+        log.msg(errMsg)
         print errMsg
         reactor.stop()
     

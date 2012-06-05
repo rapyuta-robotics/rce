@@ -27,7 +27,7 @@ import os.path
 import sqlite3
 
 # Custom imports
-from ThreadUtil import CentralizedLoop #@UnresolvedImport
+from ThreadUtil import CentralizedLoop
 
 class SQLiteError(Exception):
     """ This error is raised if an error occurred in conjunction with

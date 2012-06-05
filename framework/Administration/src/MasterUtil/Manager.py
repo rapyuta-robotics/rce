@@ -36,8 +36,8 @@ import string
 # Custom imports
 import settings
 from Comm.Message import MsgDef
-from Comm.Interfaces import IUIDServer #@UnresolvedImport
-from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage #@UnresolvedImport
+from Comm.Interfaces import IUIDServer
+from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
 class MasterManager(object):
     """ Manager which is used for master node who is responsible for the management

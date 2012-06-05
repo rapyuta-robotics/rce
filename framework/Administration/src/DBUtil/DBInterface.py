@@ -32,7 +32,7 @@ from twisted.internet.defer import Deferred
 import json
 
 # Custom imports
-from Comm.Message.Interfaces import IMessageProcessor #@UnresolvedImport
+from Comm.Message.Interfaces import IMessageProcessor
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message

@@ -30,7 +30,7 @@ from twisted.internet.task import LoopingCall
 import settings
 from Exceptions import InternalError
 from FIFO import ProducerFIFO
-from CommUtil import validateAddress #@UnresolvedImport
+from CommUtil import validateAddress
 
 class Router(object):
     """ Class which is responsible for routing the communication.

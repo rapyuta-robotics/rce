@@ -31,34 +31,33 @@ from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
-from Interface import Interface #@UnresolvedImport
+from Interface import Interface
 
 class Container(object):
-    """ Class which represents a container.
+    """ Class which represents a container. It is associated with a robot.
+        A container can have multiple interfaces.
     """
-    def __init__(self, commMngr, robotID, commID, homeDir):
+    def __init__(self, commMngr, robot, commID, homeDir):
         """ Initialize the Container.
             
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
             
-            @param robot:       ID of the robot to which this container belongs.
+            @param robot:       Robot instance to which this container belongs.
             @type  robot:       Robot
             
-            @param commID:  CommID which is used for the environment node inside the container
-                            and which is used to identify the container.
-            @type  commID:  str
+            @param commID:      CommID which is used for the environment node inside the
+                                container and which is used to identify the container.
+            @type  commID:      str
             
             @param homeDir:     Directory which should be used as home directory for container.
             @type  homeDir:     str
         """
         self._commManager = commMngr
-        self._robotID = robotID
+        self._robot = robot
         self._commID = commID
         self._homeDir = homeDir
         
-        # Key:     Interface name
-        # Value:   ROS Message class
         self._interfaces = {}
         
         self._running = False
@@ -67,7 +66,7 @@ class Container(object):
     def checkOwner(self, robotID):
         """ Check if the robot is the owner of this container.
         """
-        return self._robotID == robotID
+        return self._robot.robotID == robotID
     
     def setConnectedFlag(self, flag):
         """ Set the 'connected' flag for the container.

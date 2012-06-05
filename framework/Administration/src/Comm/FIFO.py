@@ -35,7 +35,7 @@ from datetime import datetime, timedelta
 # Custom imports
 import settings
 from Exceptions import InternalError
-from Message.Interfaces import IReappengineProducer #@UnresolvedImport
+from Message.Interfaces import IReappengineProducer
 
 class ProducerFIFO(object):
     """ FIFO which is used for buffering the outgoing messages to a specific destination.

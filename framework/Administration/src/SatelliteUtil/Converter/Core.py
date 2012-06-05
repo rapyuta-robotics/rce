@@ -37,7 +37,7 @@ import datetime
 # Custom imports
 import settings
 from Exceptions import InternalError
-from Interfaces import IROSConverter #@UnresolvedImport
+from Interfaces import IROSConverter
 
 class _DurationConverter(object):
     """ Convert ROS Duration type to django style and back.

@@ -37,9 +37,9 @@ from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
 from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory
 from Comm.CommManager import CommManager
-from Comm.CommUtil import validateSuffix #@UnresolvedImport
-from SatelliteUtil.Manager import SatelliteManager #@UnresolvedImport
-from SatelliteUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger #@UnresolvedImport
+from Comm.CommUtil import validateSuffix
+from SatelliteUtil.Manager import SatelliteManager
+from SatelliteUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger
 
 class EnvironmentServerFactory(ReappengineServerFactory):
     """ ReappengineServerFactory which is used in the satellite node for the connections

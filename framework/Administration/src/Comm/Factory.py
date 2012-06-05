@@ -38,7 +38,7 @@ from Message import MsgDef
 from Message import MsgTypes
 from Message.Base import Message
 from Message.Handler import _Sender
-from Interfaces import IPostInitTrigger #@UnresolvedImport
+from Interfaces import IPostInitTrigger
 
 class EmptyTrigger(object):
     """ PostInitTrigger which implements the necessary methods, but does nothing.
