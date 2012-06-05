@@ -24,6 +24,10 @@
 
 """ Message Content Identifier of ROS Messages of Reappengine Protocol:
         
+        n   Node (for removal)
+        i   Interface (for removal)
+        p   Parameter (for removal)
+        
         N   Node
 
         I   IntParam
@@ -36,6 +40,10 @@
         P   PublisherInterface
         C   SubscriberInterface
 """
+
+RM_NODE = 'n'
+RM_INTERFACE = 'i'
+RM_PARAMETER = 'p'
 
 NODE = 'N'
 

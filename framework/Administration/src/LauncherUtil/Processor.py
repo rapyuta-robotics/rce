@@ -26,50 +26,45 @@
 from zope.interface import implements
 
 # Custom imports
+from Exceptions import InvalidRequest
 from Comm.Message.Interfaces import IMessageProcessor
 from Comm.Message import MsgTypes
 
-class SatelliteProcessorBase(object):
-    """ Base class for all standard processors.
+from ROSComponents import ComponentDefinition
+
+class LauncherProcessorBase(object):
+    """ Message processor base class for Launcher Processors.
     """
     implements(IMessageProcessor)
     
     def __init__(self, manager):
-        """ @param manager:     SatelliteManager which is used in this node.
-            @type  manager:     SatelliteManager
+        """ @param manager:     LauncherManager which is used in this node.
+            @type  manager:     LauncherManager
         """
         self.manager = manager
 
-class ConnectDirectiveProcessor(SatelliteProcessorBase):
-    """ Message processor which executes the directives from the message and connects
-        to all specified nodes.
+class ROSAddProcessor(LauncherProcessorBase):
+    """ Message processor to add a single node.
     """
-    IDENTIFIER = MsgTypes.CONNECT
+    IDENTIFIER = MsgTypes.ROS_ADD
     
     def processMessage(self, msg):
-        self.manager.connectToSatellites(msg.content)
+        msg = msg.content
+        
+        if msg.IDENTIFIER != ComponentDefinition.NODE:
+            raise InvalidRequest('Unknown type to add received.')
+        
+        self.manager.addNode(msg)
 
-class GetCommIDProcessor(SatelliteProcessorBase):
-    """ Message processor for a getCommID request.
+class ROSRemoveProcessor(LauncherProcessorBase):
+    """ Message processor to remove a single node.
     """
-    IDENTIFIER = MsgTypes.ID_REQUEST
+    IDENTIFIER = MsgTypes.ROS_REMOVE
     
     def processMessage(self, msg):
-        self.manager.setNewCommId(msg.content['commID'])
-
-class ROSMsgProcessor(SatelliteProcessorBase):
-    """ Message processor to handle and convert a ROS message for forwarding to robot.
-    """
-    IDENTIFIER = MsgTypes.ROS_MSG
-    
-    def processMessage(self, msg):
-        self.manager.receivedROSMessage(msg)
-
-### TODO: Not used
-class ContainerStatusProcessor(SatelliteProcessorBase):
-    """ # TODO: Add description
-    """
-    IDENTIFIER = MsgTypes.CONTAINER_STATUS
-    
-    def processMessage(self, msg):
-        pass # TODO: Add
+        msg = msg.content
+        
+        if msg['type'] != ComponentDefinition.RM_NODE:
+            raise InvalidRequest('Unknown type to remove received.')
+        
+        self.manager.removeNode(msg['tag'])

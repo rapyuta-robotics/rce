@@ -23,7 +23,7 @@
 #       
 
 # ROS specific imports
-import roslib.packages      # TODO: Find replacement function for roslib.packages function
+import roslib.packages      # TODO: Find replacement for roslib.packages function
 
 # twisted specific imports
 from twisted.internet.protocol import ProcessProtocol
@@ -33,7 +33,6 @@ import os
 
 # Custom imports
 from Exceptions import InternalError
-from ParameterMonitor import IntMonitor, StrMonitor, FloatMonitor, BoolMonitor, FileMonitor
 
 class ROSNodeProtocol(ProcessProtocol):
     """ Protocol which is used to handle the ROS nodes.
@@ -56,12 +55,6 @@ class NodeMonitor(object):
     _STOP_ESCALATION = [ ( 'INT',   15),
                          ('TERM',    2),
                          ('KILL', None) ]
-    
-    _PARAMS = { IntMonitor.IDENTIFIER   : IntMonitor,
-                StrMonitor.IDENTIFIER   : StrMonitor,
-                FloatMonitor.IDENTIFIER : FloatMonitor,
-                BoolMonitor.IDENTIFIER  : BoolMonitor,
-                FileMonitor.IDENTIFIER  : FileMonitor }
     
     def __init__(self, reactor, node):
         """ Initialize the NodeMonitor instance.
@@ -90,9 +83,8 @@ class NodeMonitor(object):
             raise InternalError('Can not launch an already running node.')
         
         self.started = True
-        self._paramMonitors = [self._PARAMS[param.IDENTIFIER](param.name, param.value) for param in self._node.params]
-        
-        cmd = [ roslib.packages.find_node(self._node.pkg, self._node.exe) ]
+        cmd = [ roslib.packages.find_node(self._node.pkg, self._node.exe),
+                '__name:={0}'.format(self._node.name) ]
         self._reactor.spawnProcess(ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
 
     def isAlive(self):

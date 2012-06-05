@@ -173,6 +173,11 @@ class SatelliteManager(object):
         """
         self._containers[container.commID] = container
     
+    def unregisterContainer(self, container):
+        """ Unregister a container.
+        """
+        del self._containers[container.commID]
+    
     def authenticateContainerConnection(self, commID):
         """ Callback for EnvironmentServerFactory to authenticate connection from container.
                             
@@ -208,11 +213,6 @@ class SatelliteManager(object):
                 return
         
         self._containers[commID].setConnectedFlag(flag)
-    
-    def unregisterContainer(self, container):
-        """ Unregister a container.
-        """
-        del self._containers[container.commID]
     
     ##################################################
     ### ROS

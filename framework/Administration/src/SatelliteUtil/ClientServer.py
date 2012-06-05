@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from twisted.internet import reactor
+# -*- coding: utf-8 -*-
+
 from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol, listenWS
 from Exceptions import InvalidRequest, InternalError
 from Queue import Queue
@@ -16,10 +17,7 @@ class frontEndMsgHandler(object):
     
     def __init__(self, protocol):
         self.protocol = protocol
-        
-    def binaryMsgHandle(self, msg):
-        pass 
-        
+    
     def recursiveURISearch(self, multiddict):
         valueList = []
         for k,v in multiddict.items():
@@ -44,7 +42,7 @@ class frontEndMsgHandler(object):
                     self.protocol._robot.addNode(msg['dest'],nodeConfig)
                 
             if 'removeNodes' in msg['data']:
-                for nodesID in msg['data']['removeNodes']:
+                for nodeID in msg['data']['removeNodes']:
                     self.protocol._robot.removeNode(msg['dest'],nodeID)
                 
             if 'addInterfaces' in msg['data']:

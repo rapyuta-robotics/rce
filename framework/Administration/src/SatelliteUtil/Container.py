@@ -22,6 +22,9 @@
 #       
 #       
 
+# ROS specific imports
+import rosgraph.names
+
 # twisted specific imports
 from twisted.python import log
 
@@ -32,6 +35,10 @@ from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
 from Interface import Interface
+
+from ROSComponents import ComponentDefinition
+from ROSComponents.Node import Node
+from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 
 class Container(object):
     """ Class which represents a container. It is associated with a robot.
@@ -63,6 +70,7 @@ class Container(object):
         self._homeDir = homeDir
         
         self._interfaces = {}
+        self._rosAddrs = set()
         
         self._running = False
         self._connected = False
@@ -128,43 +136,167 @@ class Container(object):
         self._commManager.sendMessage(msg)
         self._running = False
     
-    def addNode(self, parser, config):
-        """ # TODO: Add description
-        """
-        def parseAndSend():
-            parser.parse(config) # TODO: Check code for parsing ; Remove binary/files
+    def addNode(self, tag, pkg, exe, name):
+        """ Add a node to the ROS environment in the container.
             
-            msg = Message()
-            msg.msgType = MsgTypes.ROS_ADD
-            msg.dest = self._commID
-            msg.content = parser.serialize() # TODO: Check code for serializing
-            self._commMngr.sendMessage(msg)
+            @param tag:     Tag which is used to identify the ROS node which
+                            should added.
+            @type  tag:     str
+
+            @param pkg:     Package name where the node can be found.
+            @type  pkg:     str
+
+            @param exe:     Name of executable which should be launched.
+            @type  exe:     str
+            
+            @param name:    Name which the node should use as a ROS address
+                            in the environment.
+            @type  name:    str
+            
+            @raise:     InvalidRequest if the name is not a valid ROS name.
+        """
+        # First make sure, that the received strings are str objects and not unicode
+        if isinstance(pkg, unicode):
+            try:
+                pkg = str(pkg)
+            except UnicodeEncodeError:
+                raise InternalError('The package {0} is not valid.'.format(pkg))
         
-        self._commMngr.reactor.callInThread(parseAndSend)
+        if isinstance(exe, unicode):
+            try:
+                exe = str(exe)
+            except UnicodeEncodeError:
+                raise InternalError('The executable {0} is not valid.'.format(exe))
+        
+        if isinstance(name, unicode):
+            try:
+                name = str(name)
+            except UnicodeEncodeError:
+                raise InternalError('The executable {0} is not valid.'.format(name))
+        
+        if not rosgraph.names.is_legal_name(name):
+            raise InvalidRequest('The name "{0}" is not valid.'.format(name))
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_ADD
+        msg.content = Node(tag, pkg, exe, name)
+        self.send(msg)
     
-    def removeNode(self, nodeID):
-        """ # TODO: Add description
+    def removeNode(self, tag):
+        """ Remove a node from the ROS environment in the container.
+            
+            @param tag:     Tag which is used to identify the ROS node which should
+                            be removed.
+            @type  tag:     str
         """
         msg = Message()
         msg.msgType = MsgTypes.ROS_REMOVE
-        msg.dest = self._commID
-        msg.content = nodeID
-        self._commManager.sendMessage(msg)
+        msg.content = { 'type' : ComponentDefinition.RM_PARAMETER,
+                        'tag'  : tag }
+        self.send(msg)
+    
+    def addParameter(self, name, value, paramType):
+        """ Add a parameter to the parameter server in the container.
+            
+            @param name:    Name of the parameter which should be added.
+            @type  name:    str
+            
+            @param value:   Value of the parameter which should be added.
+            @type  value:   Depends on @param paramType
+            
+            @param paramType:   Type of the parameter to add. Valid options are:
+                                    int, str, float, bool, file
+            @type  paramType:   str
+            
+            @raise:     InvalidRequest if the name is not a valid ROS name.
+        """
+        if not rosgraph.names.is_legal_name(name):
+            raise InvalidRequest('The name "{0}" is not valid.'.format(name))
+        
+        if paramType == 'int':
+            content = IntParam(name, value)
+        elif paramType == 'str':
+            content = StrParam(name, value)
+        elif paramType == 'float':
+            content = FloatParam(name, value)
+        elif paramType == 'bool':
+            content = BoolParam(name, value)
+        elif paramType == 'file':
+            content = FileParam(name, value)
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_ADD
+        msg.content = content
+        self.send(msg)
+    
+    def removeParameter(self, name):
+        """ Remove a parameter from the parameter server in the container.
+            
+            @param name:    Name of the parameter which should be removed.
+            @type  name:    str
+        """
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_REMOVE
+        msg.content = { 'type' : ComponentDefinition.RM_PARAMETER,
+                        'tag'  : name }
+        self.send(msg)
+    
+    def reserveAddr(self, addr):
+        """ Callback method for Interface to reserve the ROS address.
+            
+            @param addr:    ROS address which should be reserved.
+            @type  adrr:    str
+            
+            @raise:     ValueError if the address is already in use.
+        """
+        if addr in self._rosAddrs:
+            raise ValueError('Address already is in use.')
+        
+        self._rosAddrs.add(addr)
+    
+    def freeAddr(self, addr):
+        """ Callback method for Interface to free the ROS address.
+            
+            @param addr:    ROS address which should be freed.
+            @type  adrr:    str
+        """
+        if addr not in self._rosAddrs:
+            log.msg('Tried to free an address which was not reserved.')
+        else:
+            self._rosAddrs.remove(addr)
     
     def addInterface(self, interfaceTag, rosAddr, msgType, interfaceType):
-        """ # TODO: Add description
+        """ Add an interface to the container.
+            
+            @param interfaceTag:    Tag which is used to identify the interface to add.
+            @type  interfaceTag:    str
+            
+            @param rosAddr:     ROS name/address which the interface should use.
+            @type  rosAddr:     str
+            
+            @param msgType:     Message type/Service type consisting of the package and the name
+                                of the message/service, i.e. 'std_msgs/Int32'.
+            @type  msgType:     str
+            
+            @param interfaceType:   Type of the interface. Valid types are 'service', 'publisher',
+                                    and 'subscriber'.
+            @type  interfaceType:   str
         """
         if interfaceTag in self._interfaces:
-            raise InvalidRequest('Another interface with the same tag already exists.')
-        
-        self._interfaces[interfaceTag] = Interface( self._commManager,
-                                                    interfaceTag,
-                                                    rosAddr,
-                                                    msgType,
-                                                    interfaceType )
+            if not self._interfaces[interfaceTag].validate(interfaceTag, rosAddr, msgType, interfaceType):
+                raise InvalidRequest('Another interface with the same tag already exists.')
+        else:
+            self._interfaces[interfaceTag] = Interface( self._commManager,
+                                                        interfaceTag,
+                                                        rosAddr,
+                                                        msgType,
+                                                        interfaceType )
     
     def removeInterface(self, interfaceTag):
-        """ Send a Request to remove an Interface.
+        """ Remove an interface to the container.
+            
+            @param interfaceTag:    Tag which is used to identify the interface to remove.
+            @type  interfaceTag:    str
         """
         if interfaceTag not in self._interfaces:
             raise InvalidRequest('Can not remove the interface. Tag does not exist.')
@@ -172,7 +304,9 @@ class Container(object):
         del self._interfaces[interfaceTag]
     
     def activateInterface(self, interfaceTag, user):
-        """ # TODO: Add description
+        """ Activate an interface for a user.
+            
+            # TODO: Add description
         """
         if not self._connected:
             raise InternalError('Container has to be connected before an interface can be activated.')

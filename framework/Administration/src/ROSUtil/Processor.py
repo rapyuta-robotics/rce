@@ -35,8 +35,10 @@ from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 
+from ROSComponents import ComponentDefinition
 from ROSComponents.Node import NodeForwarder
-from ROSComponents.InterfaceMonitor import ServiceInterface, PublisherInterface, SubscriberInterface
+from ROSComponents.InterfaceMonitor import ServiceMonitor, PublisherMonitor, SubscriberMonitor
+from ROSComponents.ParameterMonitor import IntMonitor, StrMonitor, FloatMonitor, BoolMonitor, FileMonitor
 
 class ROSProcessorBase(object):
     """ Message processor base class for ROS Processors.
@@ -54,15 +56,23 @@ class ROSProcessorBase(object):
         self.commManager = commManager
 
 class ROSAddProcessor(ROSProcessorBase):
-    """ Message processor to add a single component which can be a node or an interface.
+    """ Message processor to add a single component which can be a node, interface
+        or parameter.
     """
     IDENTIFIER = MsgTypes.ROS_ADD
     
-    _INTERFACES = { ServiceInterface.IDENTIFIER    : ServiceInterface,
-                    PublisherInterface.IDENTIFIER  : PublisherInterface,
-                    SubscriberInterface.IDENTIFIER : SubscriberInterface }
+    _INTERFACES = { ServiceMonitor.IDENTIFIER    : ServiceMonitor,
+                    PublisherMonitor.IDENTIFIER  : PublisherMonitor,
+                    SubscriberMonitor.IDENTIFIER : SubscriberMonitor }
+    _PARAMETERS = { IntMonitor.IDENTIFIER   : IntMonitor,
+                    StrMonitor.IDENTIFIER   : StrMonitor,
+                    FloatMonitor.IDENTIFIER : FloatMonitor,
+                    BoolMonitor.IDENTIFIER  : BoolMonitor,
+                    FileMonitor.IDENTIFIER  : FileMonitor }
     
     def processMessage(self, msg):
+        msg = msg.content
+        
         if isinstance(msg, NodeForwarder):
             fwdMsg = Message()
             fwdMsg.msgType = MsgTypes.ROS_ADD
@@ -71,22 +81,33 @@ class ROSAddProcessor(ROSProcessorBase):
             self.commManager.sendMessage(fwdMsg)
         elif msg.IDENTIFIER in self._INTERFACES:
             self._INTERFACES[msg.IDENTIFIER](msg, self.manager)
+        elif msg.IDENTIFIER in self._PARAMETERS:
+            self._PARAMETERS[msg.IDENTIFIER](msg, self.manager)
         else:
-            raise InvalidRequest('Unknown component received to add.')
+            raise InvalidRequest('Unknown component to add received.')
 
 class ROSRemoveProcessor(ROSProcessorBase):
-    """ Message processor to remove a/multiple node(s).
-        
-        Should be a list of ROSUtil.Node
+    """ Message processor to remove a single component which can be a node, interface
+        or parameter.
     """
     IDENTIFIER = MsgTypes.ROS_REMOVE
     
     def processMessage(self, msg):
-        for uid in msg.content:
-            try:
-                self.manager.removeNode(uid)
-            except InvalidRequest as e:
-                log.msg('Could not remove Node: {0}'.format(e))
+        msg = msg.content
+        rmType = msg['type']
+        
+        if rmType == ComponentDefinition.RM_NODE:
+            fwdMsg = Message()
+            fwdMsg.msgType = MsgTypes.ROS_REMOVE
+            fwdMsg.dest = MsgDef.LAUNCHER_ADDR
+            fwdMsg.content = msg
+            self.commManager.sendMessage(fwdMsg)
+        elif rmType == ComponentDefinition.RM_INTERFACE:
+            self.manager.removeInterface(msg['tag'])
+        elif rmType == ComponentDefinition.RM_PARAMETER:
+            self.manager.removeParameter(msg['tag'])
+        else:
+            raise InvalidRequest('Unknown type to remove received.')
 
 class ROSMessageContainerProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message in the container node.

@@ -31,6 +31,7 @@ import os
 import uuid
 
 # Custom imports
+from Exceptions import InvalidRequest
 from Comm.CommUtil import validateAddress
 from Container import Container
 
@@ -101,15 +102,144 @@ class Robot(object):
         self._satelliteManager.unregisterContainer(container)
     
     # Note to Dominique: Interface changed. Please check with commands.py
-    def addNode(self, containerTag, config):
-        deferred = self._satelliteManager.getNodeDefParser(config['nodeID'])
-        deferred.addCallback(self._containers[containerTag].addNode, config)
+    def addNode(self, containerTag, nodeTag, package, executable, nodeName):
+        """ Add a node to the ROS environment in the container matching the
+            given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the node should be added.
+            @type  containerTag:    str
+            
+            @param nodeTag:     Tag which is used to identify the ROS node which
+                                should added.
+            @type  nodeTag:     str
+
+            @param package:     Package name where the node can be found.
+            @type  package:     str
+
+            @param executable:  Name of executable which should be launched.
+            @type  executable:  str
+            
+            @param nodeName:    Name which the node should use as a ROS address
+                                in the environment.
+            @type  nodeName:    str
+            
+            @raise:     InvalidRequest if the nodeName is not a valid ROS name.
+                        InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].addNode(nodeTag, package, executable, nodeName)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
     
-    def addInterface(self, containerTag, name, interfaceType, className):
-        self._containers[containerTag].addInterface(name, className, interfaceType)
+    def removeNode(self, containerTag, nodeTag):
+        """ Remove a node from the ROS environment in the container matching the
+            given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container from which the node should be removed.
+            @type  containerTag:    str
+            
+            @param nodeTag:     Tag which is used to identify the ROS node which
+                                should removed.
+            @type  nodeTag:     str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].removeNode(nodeTag)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
     
-    def addParameter(self, containerTag, name, value):
-        pass
+    def addInterface(self, containerTag, interfaceTag, name, interfaceType, className):
+        """ Add an interface to the container matching the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the interface should be added.
+            @type  containerTag:    str
+            
+            @param interfaceTag:    Tag which is used to identify the interface to add.
+            @type  interfaceTag:    str
+            
+            @param name:    ROS name/address which the interface should use.
+            @type  name:    str
+            
+            @param interfaceType:   Type of the interface. Valid types are 'service', 'publisher',
+                                    and 'subscriber'.
+            @type  interfaceType:   str
+            
+            @param className:   Message type/Service type consisting of the package and the name
+                                of the message/service, i.e. 'std_msgs/Int32'.
+            @type  className:   str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].addInterface(interfaceTag, name, className, interfaceType)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def removeInterface(self, containerTag, interfaceTag):
+        """ Remove an interface to the container matching the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container from which the interface should be removed.
+            @type  containerTag:    str
+            
+            @param interfaceTag:    Tag which is used to identify the interface to remove.
+            @type  interfaceTag:    str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].removeInterface(interfaceTag)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def addParameter(self, containerTag, name, value, paramType):
+        """ Add a parameter to the parameter server in the container matching the
+            given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the parameter should be added.
+            @type  containerTag:    str
+            
+            @param name:    Name of the parameter which should be added.
+            @type  name:    str
+            
+            @param value:   Value of the parameter which should be added.
+            @type  value:   Depends on @param paramType
+            
+            @param paramType:   Type of the parameter to add. Valid options are:
+                                    int, str, float, bool, file
+            @type  paramType:   str
+            
+            @raise:     InvalidRequest if the name is not a valid ROS name.
+                        InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].addParameter(name, value, paramType)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def removeParameter(self, containerTag, name):
+        """ Remove a parameter from the parameter server in the container matching
+            the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container from which the parameter should be
+                                    removed.
+            @type  containerTag:    str
+            
+            @param name:    Name of the parameter which should be removed.
+            @type  name:    str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].removeParameter(name)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
     
     def sendROSMsgToContainer(self, containerTag, msg):
         """ Method is called when a complete message has been received by the robot
@@ -158,12 +288,3 @@ class Robot(object):
                 self._connection.sendMessage(binData['URI']+(binData['binaryData'].getvalue()),binary=true)
         
         self._connection.sendMsg("Add Message here!")
-    
-    def removeParameter(self, containerTag, name):
-        pass
-    
-    def removeInterface(self, containerTag, name):
-        self._containers[containerTag].removeInterface(name)
-    
-    def removeNode(self, containerTag, nodeID):
-        self._containers[containerTag].removeNode(nodeID)

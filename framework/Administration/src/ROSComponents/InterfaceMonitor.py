@@ -46,13 +46,19 @@ class _InterfaceMonitor(object):
             @param interface:   Interface instance.
             @type  interface:   Interface
         """
-        self.interfaceName = interface.interfaceName
+        self._interfaceName = interface.name
+        self._interfaceTag = interface.tag
         self._manager = manager
         self.ready = False
         
         # Dictionary of all push receivers
         self.pushReceivers = {}
-
+    
+    @property
+    def tag(self):
+        """ Tag which is used to identify the interface. """
+        return self._interfaceTag
+    
     def _start(self):
         """ This method should be overwritten to implement necessary start
             up procedures.
@@ -166,7 +172,7 @@ class _InterfaceMonitor(object):
         self.ready = False
         self._manager.unregisterInterface(self)
 
-class ServiceInterface(_InterfaceMonitor):
+class ServiceMonitor(_InterfaceMonitor):
     """ Class which is used to handle and monitor a service interface.
     """
     IDENTIFIER = ComponentDefinition.INTERFACE_SRV
@@ -226,8 +232,8 @@ class ServiceInterface(_InterfaceMonitor):
             msg._buff = self._msg
 
             try:
-                rospy.wait_for_service(self._srv.interfaceName, timeout=settings.WAIT_FOR_SERVICE_TIMEOUT)
-                serviceFunc = rospy.ServiceProxy(self._srv.interfaceName, self._srv.srvCls)
+                rospy.wait_for_service(self._srv._interfaceName, timeout=settings.WAIT_FOR_SERVICE_TIMEOUT)
+                serviceFunc = rospy.ServiceProxy(self._srv._interfaceName, self._srv.srvCls)
                 response = serviceFunc(msg)
             except rospy.ROSInterruptException:
                 return
@@ -268,7 +274,7 @@ class ServiceInterface(_InterfaceMonitor):
                 return None
 
     def __init__(self, interface):
-        super(ServiceInterface, self).__init__(interface)
+        super(ServiceMonitor, self).__init__(interface)
 
         try:
             self.srvCls = genpy.message.get_service_class(interface.srvClass)
@@ -288,7 +294,7 @@ class ServiceInterface(_InterfaceMonitor):
     __init__.__doc__ = _InterfaceMonitor.__init__.__doc__
 
     def _send(self, msg, pushResult):
-        task = ServiceInterface.ServiceTask(self, msg, pushResult)
+        task = ServiceMonitor.ServiceTask(self, msg, pushResult)
         self._manager.runTaskInSeparateThread(task.run)
         
         if pushResult[0]:
@@ -345,13 +351,13 @@ class ServiceInterface(_InterfaceMonitor):
                     if self._tasks.lastAccessed and self._tasks.lastAccessed > timeout:
                         del self._tasks[key]
 
-class PublisherInterface(_InterfaceMonitor):
+class PublisherMonitor(_InterfaceMonitor):
     """ Represents a publisher interface for a node.
     """
     IDENTIFIER = ComponentDefinition.INTERFACE_PUB
 
     def _start(self):
-        self._publisher = rospy.Publisher(self.interfaceName, rospy.AnyMsg, latch=True)
+        self._publisher = rospy.Publisher(self._interfaceName, rospy.AnyMsg, latch=True)
 
     def _send(self, msgData, _):
         msg = rospy.AnyMsg()
@@ -370,13 +376,13 @@ class PublisherInterface(_InterfaceMonitor):
         self._publisher.unregister()
         self._publisher = None
 
-class SubscriberInterface(_InterfaceMonitor):
+class SubscriberMonitor(_InterfaceMonitor):
     """ Represents a subscriber interface for a node.
     """
     IDENTIFIER = ComponentDefinition.INTERFACE_SUB
 
     def __init__(self, interface):
-        super(SubscriberInterface, self).__init__(interface)
+        super(SubscriberMonitor, self).__init__(interface)
 
         self._lastMsg = None
         self._msgLock = Lock()
@@ -384,7 +390,7 @@ class SubscriberInterface(_InterfaceMonitor):
     __init__.__doc__ = _InterfaceMonitor.__init__.__doc__
 
     def _start(self):
-        self._subscriber = rospy.Subscriber(self.interfaceName, rospy.AnyMsg, self._callbackFunc)
+        self._subscriber = rospy.Subscriber(self._interfaceName, rospy.AnyMsg, self._callbackFunc)
 
     def _receive(self, taskID):
         with self._msgLock:

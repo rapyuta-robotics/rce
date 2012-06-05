@@ -35,11 +35,14 @@ class _InterfaceBase(object):
     """
     implements(ISerializable)
     
-    def __init__(self, interfaceName):
+    def __init__(self, interfaceName, interfaceTag):
         """ Initialize the Interface instance.
 
-            @param interfaceName:   ROS name of the interface.
+            @param interfaceName:   ROS address of the interface.
             @type  interfaceName:   str
+
+            @param interfaceTag:    Tag which is used to identify the interface.
+            @type  interfaceTag:    str
         """
         if isinstance(interfaceName, unicode):
             try:
@@ -48,11 +51,17 @@ class _InterfaceBase(object):
                 raise InternalError('The interface name {0} is not valid.'.format(interfaceName))
         
         self._interfaceName = interfaceName
+        self._interfaceTag = interfaceTag
     
     @property
-    def interfaceName(self):
+    def name(self):
         """ ROS name of the interface. """
         return self._interfaceName
+    
+    @property
+    def tag(self):
+        """ Tag which is used to identify the interface. """
+        return self._interfaceTag
     
     def serialize(self, s):
         """ Serialize the Interface object.
@@ -80,14 +89,14 @@ class ServiceInterface(_InterfaceBase):
     """
     IDENTIFIER = ComponentDefinition.INTERFACE_SRV
     
-    def __init__(self, interfaceName, srvClass):
+    def __init__(self, interfaceName, interfaceTag, srvClass):
         """ Initialize the Interface instance.
 
             @param interfaceName:   ROS name of the interface.
             @type  interfaceName:   str
 
-            @param interfaceType:   Interface type.
-            @type  interfaceType:   str
+            @param interfaceTag:    Tag which is used to identify the interface.
+            @type  interfaceTag:    str
 
             @param srvClass:        Service class (only used for service interfaces).
             @type  srvClass:        str
