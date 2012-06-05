@@ -34,13 +34,14 @@ from Comm.Message.FIFO import MessageFIFO
 class Interface(object):
     """ Class which represents an interface. It is associated with a container.
     """
-    def __init__(self, commMngr, name, msgType, interfaceType):
+    def __init__(self, container, tag, rosAddr, msgType, interfaceType):
         """ Initialize the Interface.
             
              # TODO: Add description
         """
-        self._commManager = commMngr
-        self._name = name
+        self._container = container
+        self._tag = tag
+        self._rosAddr = rosAddr
         self._msgType = msgType
         self._interfaceType = interfaceType
         
@@ -55,10 +56,21 @@ class Interface(object):
         
         self._ref = []
     
-    def validate(self, name, msgType, interfaceType):
+    def validate(self, tag, rosAddr, msgType, interfaceType):
         """ # TODO: Add description
         """
-        return name == self._name and msgType == self._msgType and interfaceType == self._interfaceType
+        return ( tag == self._tag and
+                 rosAddr == self._rosAddr and
+                 msgType == self._msgType and
+                 interfaceType == self._interfaceType )
+    
+    def _stop(self):
+        """ Internal method to send a request to stop the interface.
+        """
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_REMOVE
+        msg.content = {} # TODO: Add correct content
+        self._container.send(msg)
     
     def registerUser(self, uid):
         """ # TODO: Add description
@@ -68,9 +80,13 @@ class Interface(object):
             # therefore, add it
             msg = Message()
             msg.msgType = MsgTypes.ROS_ADD
-            msg.dest = self._commID
             msg.content = {} # TODO: Add correct content
-            self._commManager.sendMessage(msg)
+            self._container.send(msg)
+        
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_ADD_USER
+        msg.content = {} # TODO: Add correct content
+        self._container.send(msg)
         
         self._ref.append(uid)
     
@@ -82,17 +98,25 @@ class Interface(object):
         if not self._ref:
             # There are no more references to this interface;
             # therefore, remove it
+            self._stop()
+        else:
             msg = Message()
-            msg.msgType = MsgTypes.ROS_REMOVE
-            msg.dest = self._commID
+            msg.msgType = MsgTypes.ROS_REMOVE_USER
             msg.content = {} # TODO: Add correct content
-            self._commManager.sendMessage(msg)
+            self._container.send(msg)
     
-    def send(self, msg, containerID, sender):
+    def send(self, msg, sender):
         """ # TODO: Add description
+            
+            @param msg:     Corresponds to the dictionary of the field 'data' of the received
+                            message. (Necessary keys: type, msgID, msg)
+            @type  msg:     { str : ... }
         """
+        if msg['type'] != self._msgType:
+            raise InvalidRequest('Sent message type does not match the used message for this interface.')
+        
         try:
-            rosMsg = self._converter.decode(self._MsgCls, msg)
+            rosMsg = self._converter.decode(self._MsgCls, msg['msg'])
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
@@ -101,23 +125,35 @@ class Interface(object):
         
         msg = Message()
         msg.msgType = MsgTypes.ROS_MSG
-        msg.dest = containerID
         msg.content = { 'msg'  : fifo,
-                        'name' : self._name,
-                        'uid'  : sender,
-                        'push' : True }
+                        'tag'  : self._tag,
+                        'user' : sender,
+                        'push' : True,
+                        'id'   : msg['msgID'] }
         
-        self._commMngr.sendMessage(msg)
+        self._container.send(msg)
     
-    def receive(self, msg, receiver):
+    def receive(self, msg):
         """ # TODO: Add description
+            
+            @param msg:     Content of received ROS message.
+            @type  msg:     { str : ... }
         """
         rosMsg = self._MsgCls()
-        rosMsg.deserialize(msg)
+        rosMsg.deserialize(msg['msg'])
         
         try:
-            msg = self._converter.encode(rosMsg)
+            jsonMsg = self._converter.encode(rosMsg)
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
-        # TODO: Send to robot using receiver
+        self._container.receivedFromInterface({ 'type'         : self._msgType, 
+                                                'msgID'        : msg['id'],
+                                                'interfaceTag' : msg['tag'],
+                                                'msg'          : jsonMsg })
+    
+    def __del__(self):
+        """ Destructor.
+        """
+        if self._ref:
+            self._stop()

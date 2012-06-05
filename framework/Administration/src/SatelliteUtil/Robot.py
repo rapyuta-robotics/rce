@@ -38,17 +38,20 @@ class Robot(object):
     """ Class which represents a robot. It is associated with a websocket connection.
         A robot can have multiple containers.
     """
-    def __init__(self, robotID, connection, manager):
+    def __init__(self, commMngr, satelliteMngr, connection, robotID):
         """ Initialize the Robot.
             
             # TODO: Add description
         """
-        self._robotID = robotID
+        self._commManager = commMngr
+        self._satelliteManager = satelliteMngr
         self._connection = connection
-        self._manager = manager
+        self._robotID = robotID
         
-        self._manager.registerRobot(self)
         self._containers = {}
+        
+        # Register robot with Satellite Manager
+        self._satelliteManager.registerRobot(self)
     
     @property
     def robotID(self):
@@ -76,27 +79,30 @@ class Robot(object):
                 log.msg('The home folder is not a valid directory.')
                 return
             
-            container = Container(commID, homeFolder)
+            container = Container(self._commManager, self, commID, homeFolder)
             
-            container.start(self._commMngr)
+            # Send request to start the container
+            container.start()
             
             # Register container in this robot instance
-            self._containers[commID] = container
+            self._containers[containerTag] = container
             
             # Register container in the manager
+            self._satelliteManager.registerContainer(container)
         
-        deferredRobot = self._manager.getRobotSpecs(self._robotID)
-        deferredCommID = self._manager.getNewCommID()
+        deferredRobot = self._satelliteManager.getRobotSpecs(self._robotID)
+        deferredCommID = self._satelliteManager.getNewCommID()
         deferredList = DeferredList([deferredRobot, deferredCommID])
         deferredList.addCallback(processRobotSpecs)
     
     def destroyContainer(self, containerTag):
-        self._containers[containerTag].stop(self._commMngr)
-        del self._containers[containerTag]
+        self._containers[containerTag].stop()
+        container = self._containers.pop(containerTag)
+        self._satelliteManager.unregisterContainer(container)
     
     # Note to Dominique: Interface changed. Please check with commands.py
     def addNode(self, containerTag, config):
-        deferred = self._manager.getNodeDefParser(config['nodeID'])
+        deferred = self._satelliteManager.getNodeDefParser(config['nodeID'])
         deferred.addCallback(self._containers[containerTag].addNode, config)
     
     def addInterface(self, containerTag, name, interfaceType, className):
@@ -105,8 +111,20 @@ class Robot(object):
     def addParameter(self, containerTag, name, value):
         pass
     
-    def sendROSMsgToContainer(self, containerTag, interfaceName, msg):
-        self._containers[containerTag].send(msg, interfaceName, self._robotID)
+    def sendROSMsgToContainer(self, containerTag, msg):
+        """ Method is called when a complete message has been received by the robot
+            and should now be processed and forwarded.
+            
+            @param containerTag:    Container tag which is used to identify a previously
+                                    started container which should be used as messag
+                                    destination.
+            @type  containerTag:    str
+            
+            @param msg:     Corresponds to the dictionary of the field 'data' of the received
+                            message. (Necessary keys: type, msgID, interfaceTag, msg)
+            @type  msg:     { str : ... }
+        """
+        self._containers[containerTag].send(msg)
     
     def recursiveBinaryDataSearch(self, multiddict):
         URIBinary = []
@@ -121,7 +139,18 @@ class Robot(object):
                 multiddict[k] = tmpURI
         return URIBinary, multiddict
     
-    def sendROSMsgToRobot(self, msg):
+    def sendROSMsgToRobot(self, containerTag, msg):
+        """ Method is called when a message should be sent to the robot.
+            
+            @param containerTag:    Container tag which is used to identify a previously
+                                    started container which should be used as messag
+                                    destination.
+            @type  containerTag:    str
+            
+            @param msg:     Corresponds to the dictionary of the field 'data' of the received
+                            message. (Necessary keys: type, msgID, interfaceTag, msg)
+            @type  msg:     { str : ... }
+        """
         URIBinary,msgURI = recursiveBinaryDataSearch(msg)
         
         self._connection.sendMessage(msgURI)

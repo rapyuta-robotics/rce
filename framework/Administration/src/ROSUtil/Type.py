@@ -70,8 +70,7 @@ class ROSAddMessage(object):
             @param component:   # TODO:
             @type  component:   # TODO:
         """
-        # TODO: What exactly?
-        # del self._componentCls[???]
+        del self._componentCls[" TODO: Depends on type of component"]
     
     def serialize(self, s, data):
         try:
@@ -92,7 +91,7 @@ class ROSAddMessage(object):
         return Cls.deserialize(s)
 
 class ROSRemoveMessage(object):
-    """ Message type to remove a/multiple node(s).
+    """ Message type to remove a node.
         
         Should be an Unique Identifier for a ROSUtil.Node
     """
@@ -111,11 +110,12 @@ class ROSMsgMessage(object):
         
         The fields are:
             msg     Serialized ROS Message (Serialize: MessageFIFO; Deserialize: str)
-            name    Interface name which should be used to send the message
-                    or an empty string if the message was received
-            uid     Unique ID to identify the message
+            tag     Interface Tag which should be used to send the message or from which
+                    the message was received
+            user    # TODO: Add description
             push    Flag to indicate whether the response message, if it exists,
                     should be pushed back or stored for polling
+            uid     Unique ID to identify the message (only necessary when push flag is False)
     """
     implements(IContentSerializer)
     
@@ -127,7 +127,8 @@ class ROSMsgMessage(object):
         
         try:
             s.addFIFO(data['msg'])
-            s.addElement(data['name'])
+            s.addElement(data['tag'])
+            s.addElement(data['user'])
             s.addElement(data['uid'])
             s.addBool(data['push'])
         except KeyError as e:
@@ -135,7 +136,8 @@ class ROSMsgMessage(object):
     
     def deserialize(self, s):
         return { 'msg'  : s.getElement(),
-                 'name' : s.getElement(),
+                 'tag'  : s.getElement(),
+                 'user' : s.getElement(),
                  'uid'  : s.getElement(),
                  'push' : s.getBool() }
 

@@ -37,7 +37,7 @@ class Container(object):
     """ Class which represents a container. It is associated with a robot.
         A container can have multiple interfaces.
     """
-    def __init__(self, commMngr, robot, commID, homeDir):
+    def __init__(self, commMngr, robot, tag, commID, homeDir):
         """ Initialize the Container.
             
             @param commMngr:    CommManager which should be used to communicate.
@@ -45,6 +45,9 @@ class Container(object):
             
             @param robot:       Robot instance to which this container belongs.
             @type  robot:       Robot
+            
+            @param tag:         Tag which is used by the robot to identify this container.
+            @type  tag:         str
             
             @param commID:      CommID which is used for the environment node inside the
                                 container and which is used to identify the container.
@@ -55,6 +58,7 @@ class Container(object):
         """
         self._commManager = commMngr
         self._robot = robot
+        self._tag = tag
         self._commID = commID
         self._homeDir = homeDir
         
@@ -63,10 +67,15 @@ class Container(object):
         self._running = False
         self._connected = False
     
-    def checkOwner(self, robotID):
-        """ Check if the robot is the owner of this container.
-        """
-        return self._robot.robotID == robotID
+    @property
+    def tag(self):
+        """ Tag of the container used by the robot. """
+        return self._tag
+    
+    @property
+    def commID(self):
+        """ Communication ID of the container. """
+        return self._commID
     
     def setConnectedFlag(self, flag):
         """ Set the 'connected' flag for the container.
@@ -104,97 +113,6 @@ class Container(object):
         self._commManager.sendMessage(msg)
         self._running = True
     
-    def addNode(self, parser, config):
-        """ # TODO: Add description
-        """
-        def parseAndSend():
-            parser.parse(config) # TODO: Check code for parsing ; Remove binary/files
-            
-            msg = Message()
-            msg.msgType = MsgTypes.ROS_ADD
-            msg.dest = self._containerID
-            msg.content = parser.serialize() # TODO: Check code for serializing
-            self._commMngr.sendMessage(msg)
-        
-        self._commMngr.reactor.callInThread(parseAndSend)
-    
-    def addInterface(self, name, msgType, interfaceType):
-        """ # TODO: Add description
-        """
-        if name in self._interfaces:
-            raise InvalidRequest('Another interface with the same name already exists.')
-        
-        self._interfaces[name] = Interface(self._commManager, name, msgType, interfaceType)
-    
-    def activateInterface(self, name, user):
-        """ # TODO: Add description
-        """
-        if not self._connected:
-            raise InternalError('Container has to be connected before an interface can be activated.')
-        
-        try:
-            self._interfaces[name].registerUser(user)
-        except KeyError:
-            raise InternalError('Can not activate an interface which does not exist.')
-    
-    def send(self, msg, interfaceName, sender):
-        """ # TODO: Add description
-        """
-        try:
-            self._commMngr.reactor.callInThread(
-                self._interfaces[interfaceName].send,
-                msg,
-                self._commID,
-                sender
-            )
-        except KeyError:
-            raise InternalError('Can not send message. Interface does not exist.')
-    
-    def receive(self, msg, interfaceName, receiver):
-        """ # TODO: Add description
-        """
-        try:
-            self._commMngr.reactor.callInThread(
-                self._interfaces[interfaceName].receive,
-                msg,
-                receiver
-            )
-        except KeyError:
-            raise InternalError('Can not send message. Interface does not exist.')
-    
-    def getInterface(self, name):
-        """ Get the interface instance associated with the interface matching the given name.
-        """
-        return self._interfaces[name]
-    
-    def deactivateInterface(self, name, user):
-        """ # TODO: Add description
-        """
-        if not self._connected:
-            raise InternalError('Container has to be connected before an interface can be deactivated.')
-        
-        try:
-            self._interfaces[name].unregisterUser(user)
-        except KeyError:
-            raise InternalError('Can not deactivate an interface which does not exist.')
-    
-    def removeInterface(self, name):
-        """ Send a Request to remove an Interface.
-        """
-        if name not in self._interfaces:
-            raise InvalidRequest('Can not remove the interface. Name does not exist.')
-        
-        del self._interfaces[name]
-    
-    def removeNode(self, nodeID):
-        """ # TODO: Add description
-        """
-        msg = Message()
-        msg.msgType = MsgTypes.ROS_REMOVE
-        msg.dest = self._containerID
-        msg.content = nodeID
-        self._commMngr.sendMessage(msg)
-    
     def stop(self):
         """ Send a Request to stop the container.
         """
@@ -209,3 +127,125 @@ class Container(object):
         log.msg('Start container "{0}".'.format(self._commID))
         self._commManager.sendMessage(msg)
         self._running = False
+    
+    def addNode(self, parser, config):
+        """ # TODO: Add description
+        """
+        def parseAndSend():
+            parser.parse(config) # TODO: Check code for parsing ; Remove binary/files
+            
+            msg = Message()
+            msg.msgType = MsgTypes.ROS_ADD
+            msg.dest = self._commID
+            msg.content = parser.serialize() # TODO: Check code for serializing
+            self._commMngr.sendMessage(msg)
+        
+        self._commMngr.reactor.callInThread(parseAndSend)
+    
+    def removeNode(self, nodeID):
+        """ # TODO: Add description
+        """
+        msg = Message()
+        msg.msgType = MsgTypes.ROS_REMOVE
+        msg.dest = self._commID
+        msg.content = nodeID
+        self._commManager.sendMessage(msg)
+    
+    def addInterface(self, interfaceTag, rosAddr, msgType, interfaceType):
+        """ # TODO: Add description
+        """
+        if interfaceTag in self._interfaces:
+            raise InvalidRequest('Another interface with the same tag already exists.')
+        
+        self._interfaces[interfaceTag] = Interface( self._commManager,
+                                                    interfaceTag,
+                                                    rosAddr,
+                                                    msgType,
+                                                    interfaceType )
+    
+    def removeInterface(self, interfaceTag):
+        """ Send a Request to remove an Interface.
+        """
+        if interfaceTag not in self._interfaces:
+            raise InvalidRequest('Can not remove the interface. Tag does not exist.')
+        
+        del self._interfaces[interfaceTag]
+    
+    def activateInterface(self, interfaceTag, user):
+        """ # TODO: Add description
+        """
+        if not self._connected:
+            raise InternalError('Container has to be connected before an interface can be activated.')
+        
+        try:
+            self._interfaces[interfaceTag].registerUser(user)
+        except KeyError:
+            raise InternalError('Can not activate an interface which does not exist.')
+    
+    def deactivateInterface(self, interfaceTag, user):
+        """ # TODO: Add description
+        """
+        if not self._connected:
+            raise InternalError('Container has to be connected before an interface can be deactivated.')
+        
+        try:
+            self._interfaces[interfaceTag].unregisterUser(user)
+        except KeyError:
+            raise InternalError('Can not deactivate an interface which does not exist.')
+    
+    def send(self, msg):
+        """ Send a message to the container.
+            
+            @param msg:     Message which should be sent to the container. The message
+                            has to be a Message instance which contains all data
+                            except the destination which are necessary to send the message.
+            @type  msg:     Message
+        """
+        if not isinstance(msg, Message):
+            raise InternalError('Can not send an object which is not of type "Message".')
+        
+        msg.dest = self._commID
+        self._commManager.reactor.callInThread(self._commManager.sendMessage, msg)
+    
+    def receive(self, msg):
+        """ Process a received ROS message.
+            
+            @param msg:     Received message.
+            @type  msg:     Message
+        """
+        msg = msg.content
+        
+        if msg['user'] != self._robot.robotID:
+            log.msg('Received a ROS message from a container with an invalid destination.')
+            return
+        
+        try:
+            self._interfaces[msg['tag']].receive(msg)
+        except KeyError:
+            raise InternalError('Can not process received message. Interface does not exist.')
+    
+    def sendToInterface(self, msg):
+        """ Send a message to the interface matching the given tag. (Called by the Robot)
+            
+            @param msg:     Corresponds to the dictionary of the field 'data' of the received
+                            message. (Necessary keys: type, msgID, interfaceTag, msg)
+            @type  msg:     { str : ... }
+        """
+        try:
+            self._commMngr.reactor.callInThread(
+                self._interfaces[msg['interfaceTag']].send,
+                msg,
+                self._robot.robotID
+            )
+        except KeyError:
+            raise InternalError('Can not send message. Interface does not exist.')
+    
+    def receivedFromInterface(self, msg):
+        """ Received a message from an interface and should now be processed.
+            (Called by the Interface)
+            
+            @param msg:     Message which was received in form of a dictionary matching
+                            the structure of the ROS message.
+            @type  msg:     { str : ... }
+        """
+        self._robot.sendROSMsgToRobot(self._tag, msg)

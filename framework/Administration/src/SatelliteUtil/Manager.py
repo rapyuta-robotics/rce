@@ -74,8 +74,9 @@ class SatelliteManager(object):
         # SSL Context which is used to connect to other satellites
         self._ctx = ctx
         
-        # Storage for all connected robots
+        # Storage for all connected robots and all containers
         self._robots = {}
+        self._containers = {}
         
         # Storage for pending requests for a new CommID
         self._pendingCommIDReq = []
@@ -151,7 +152,7 @@ class SatelliteManager(object):
     
     # TODO: Needs to be called from somewhere!
     def unregisterRobot(self, robot):
-        """ 
+        """ Unregister robot from the manager.
             
             @param robot:   Robot which should be unregistered. The robot needs to have
                             an unique robotID.
@@ -168,32 +169,9 @@ class SatelliteManager(object):
     ### Container
     
     def registerContainer(self, container):
-        self._containers["What to add here"] = container
-    
-    def _getContainer(self, robotID, containerID):
-        """ Check if the robot is authorized to modify the indicated container. If the
-            robot has the permission return the container instance.
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @param containerID:     Identifier of the container which should be modified.
-                                    This corresponds to the communication ID of the container.
-            @type  containerID:     str
-            
-            @return:    Container instance which matches the given containerID
-            
-            @raise:     InvalidRequest if the robotID / containerID pair could not be matched.
+        """ Register a container.
         """
-        container = self._containers.get(containerID, None)
-        
-        if not container:
-            raise InvalidRequest('ContainerID does not match any container.')
-        
-        if not container.checkOwner(robotID):
-            raise InvalidRequest('Robot is not the owner of the container.')
-        
-        return container
+        self._containers[container.commID] = container
     
     def authenticateContainerConnection(self, commID):
         """ Callback for EnvironmentServerFactory to authenticate connection from container.
@@ -231,13 +209,27 @@ class SatelliteManager(object):
         
         self._containers[commID].setConnectedFlag(flag)
     
+    def unregisterContainer(self, container):
+        """ Unregister a container.
+        """
+        del self._containers[container.commID]
+    
     ##################################################
     ### ROS
     
-    def sendROSMsgToRobot(self, robotID, containerID, interfaceName, msg):
-        """ # TODO: Add description
+    def receivedROSMessage(self, msg):
+        """ Callback to process a received ROS message from a container.
+            
+            @param msg:     Received message.
+            @type  msg:     Message
         """
-        self._getContainer(robotID, containerID).receive(msg, interfaceName, robotID)
+        try:
+            container = self._containers[msg.origin]
+        except KeyError:
+            log.msg('Received a ROS message from an invalid source.')
+            return
+        
+        container.receive(msg)
     
     ##################################################
     ### Routing

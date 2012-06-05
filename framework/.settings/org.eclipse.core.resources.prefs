@@ -1,4 +1,4 @@
-#Mon Jun 04 23:03:02 CEST 2012
+#Tue Jun 05 13:20:30 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/CommUtil.py=utf-8
@@ -57,7 +57,6 @@ encoding//Administration/src/SatelliteUtil/Converter/Core.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/Interfaces.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/Utility.py=utf-8
 encoding//Administration/src/SatelliteUtil/Converter/_ImageConverter.py=utf-8
-encoding//Administration/src/SatelliteUtil/Copy\ of\ Manager.py=utf-8
 encoding//Administration/src/SatelliteUtil/Interface.py=utf-8
 encoding//Administration/src/SatelliteUtil/Manager.py=utf-8
 encoding//Administration/src/SatelliteUtil/Processor.py=utf-8
