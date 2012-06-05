@@ -6,7 +6,7 @@ cmd_CS = {
             "type":"CS",
             "dest":"$$$$$$",
             "orig":"robotUniqueID", # Redundant
-            "data":None
+            "data":{"containerTag":"cTag"} #This tag will be used as a reference in the future
             }
 
 cmd_CS_js = json.dumps(cmd_CS)
@@ -18,7 +18,7 @@ cmd_CSR = {
             "type":"CSR",
             "dest":"robotUniqueID",
             "orig":"$$$$$$",
-            "data":{"containerID":"cid"}
+            "data":{"containerTag":"cTag"} # Is this necessary ? 
             }
 
 cmd_CSR_js = json.dumps(cmd_CSR)
@@ -37,7 +37,7 @@ cmd_CH_js = json.dumps(cmd_CH)
 
 print(cmd_CH_js)            
 
-# Configuration Message - Change Components
+# Configuration Message - Change Components - For a specific container 
 nodeConfigs = [{
     "nodeID":"nid",
     "nodeName":"nn",
@@ -45,14 +45,14 @@ nodeConfigs = [{
     }]
 cmd_CC = {
             "type":"CC",
-            "dest":"containerID_receivedFrom_cmd_CSR",
+            "dest":"containerTag",
             "orig":"robotUniqueID",
             "data":{
                     "addNodes":nodeConfigs,
                     "removeNodes":["nameSpaceID/nodeID"],
-                    "addInterfaces":[{"interfaceName":"inm",
-                                    "type":"type", # Options: Publisher/Subscriber/Service 
-                                    "class":"className"} # msgType for Publisher/Subscriber | srvType for Service
+                    "addInterfaces":[{"name":"inm",
+                                    "interfaceType":"type", # Options: Publisher/Subscriber/Service 
+                                    "className":"className"} # msgType for Publisher/Subscriber | srvType for Service
                                     ],
                     "removeInterfces":["inm"],
                     "setParam":{"paramName":"paramValue"},
@@ -75,7 +75,7 @@ cmd_RM = {
     "data":{
         "type":"geometry_msgs/Twist", # Service/Msg type # This is actually redundant: Interface has all details
         "msgID":"mid",  # Applicable only to services. Only if you want to maintain correspondence between request and response.
-        "interfaceID":'iid', # Corresponds to the receiver in rosbridge
+        "interfaceName":'inm', # Corresponds to the receiver in rosbridge
         "msg":msg} # In case of srv call: _request_class of the srv class
     }
 

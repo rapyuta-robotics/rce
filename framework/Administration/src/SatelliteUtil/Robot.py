@@ -32,6 +32,7 @@ import os
 # Custom imports
 from Comm.CommUtil import validateAddress
 from Container import Container
+import uuid
 
 class Robot(object):
     """ Class which represents a robot. It is associated with a websocket connection.
@@ -93,8 +94,9 @@ class Robot(object):
         self._containers[containerTag].stop(self._commMngr)
         del self._containers[containerTag]
     
-    def addNode(self, containerTag, nodeID, config):
-        deferred = self._manager.getNodeDefParser(nodeID)
+    # Note to Dominique: Interface changed. Please check with commands.py
+    def addNode(self, containerTag, config):
+        deferred = self._manager.getNodeDefParser(config['nodeID'])
         deferred.addCallback(self._containers[containerTag].addNode, config)
     
     def addInterface(self, containerTag, name, interfaceType, className):
@@ -106,8 +108,27 @@ class Robot(object):
     def sendROSMsgToContainer(self, containerTag, interfaceName, msg):
         self._containers[containerTag].send(msg, interfaceName, self._robotID)
     
+    def recursiveBinaryDataSearch(self, multiddict):
+        URIBinary = []
+        for k,v in multiddict.items():
+            if isinstance(v, dict):
+                iURIBinary,iMultiDDict = self.recursiveBinaryDataSearch(v)
+                URIBinary += iURIBinary
+                multiddict[k] = iMultiDDict 
+            elif k[-1:]=='*':
+                tmpURI = uuid.uuid4().hex
+                URIBinary.append({'URI':tmpURI,'binaryData':v})
+                multiddict[k] = tmpURI
+        return URIBinary, multiddict
+    
     def sendROSMsgToRobot(self, msg):
-        # TODO: Add header and separate binary files if necessary
+        URIBinary,msgURI = recursiveBinaryDataSearch(msg)
+        
+        self._connection.sendMessage(msgURI)
+        if URIBinary:
+            for binData in URIBinary:
+                self._connection.sendMessage(binData['URI']+(binData['binaryData'].getvalue()),binary=true)
+        
         self._connection.sendMsg("Add Message here!")
     
     def removeParameter(self, containerTag, name):
