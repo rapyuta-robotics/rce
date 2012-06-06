@@ -11,5 +11,6 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>/opt/ros/fuerte/lib/python2.7/dist-packages</path>
+<path>/usr/local/lib/python2.7/dist-packages/autobahn-0.5.1-py2.7.egg</path>
 </pydev_pathproperty>
 </pydev_project>

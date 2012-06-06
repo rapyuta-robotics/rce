@@ -22,19 +22,16 @@
 #       
 #       
 
-# ROS specific imports
-import roslaunch.core
-
 # Custom imports
-from Exceptions import InvalidRequest, InternalError
+from Exceptions import InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
 from Type import ROSAddMessage, ROSRemoveMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
 from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSMessageContainerProcessor #, ROSGetProcessor
-from MiscUtility import generateID
 
 from ROSComponents.Node import NodeForwarder
 from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
+from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 
 class ROSManager(object):
     """ Manager which handles ROS specific tasks.
@@ -42,76 +39,80 @@ class ROSManager(object):
     def __init__(self, launcher, commMngr):
         """ Initialize the ROSManager.
             
-            @param launcher:    Launcher for the ROS nodes
-            @type  launcher:    roslaunch.scriptapi.Launcher
-            
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
         """
         # References used by the manager
-        self._launcher = launcher
         self._commMngr = commMngr
         
-        # Storage for references required to process messages
-        self._runningNodes = {}
+        # Storage for references
         self._interfaces = {}
+        self._parameters = {}
         
-        # Flag to indicate shutdown
-        self.isShutdown = False
-        
+        # Register Content Serializers
         rosAdd = ROSAddMessage()
         rosAdd.registerComponents([ NodeForwarder,
                                     ServiceInterface,
                                     PublisherInterface,
-                                    SubscriberInterface ])
-        
-        # Register Content Serializers
+                                    SubscriberInterface,
+                                    IntParam,
+                                    StrParam,
+                                    FloatParam,
+                                    BoolParam,
+                                    FileParam ])
         self._commMngr.registerContentSerializers([ rosAdd,
                                                     ROSRemoveMessage(),
-                                                    ROSMsgMessage(),
-                                                    # ROSResponseMessage(),
-                                                    # ROSGetMessage()
-                                                   ])
+                                                    ROSMsgMessage() ])
+        # ROSResponseMessage(), ROSGetMessage()
         
         # Register Message Processors
         self._commMngr.registerMessageProcessors([ ROSAddProcessor(self, commMngr),
                                                    ROSRemoveProcessor(self, commMngr),
-                                                   ROSMessageContainerProcessor(self, commMngr),
-                                                   # ROSGetProcessor(self, commMngr)
-                                                  ])
+                                                   ROSMessageContainerProcessor(self, commMngr) ])
+        # ROSGetProcessor(self, commMngr)
     
     def addInterface(self, interface):
-        """ Callback for Interface instance to register the interface.
+        """ Callback for InterfaceMonitor instance to register the interface.
 
-            @param interface:   Interface which should be registered.
-            @type  interface:   InterfaceBase
+            @param interface:   InterfaceMonitor which should be registered.
+            @type  interface:   InterfaceMonitor
 
             @raise:     InternalError if there is already an interface
-                        with the same name registered.
+                        with the same tag registered.
         """
-        name = interface.interfaceName
+        tag = interface.tag
 
-        if name in self._interfaces:
-            raise InternalError('There is already an interface with the same ID.')
+        if tag in self._interfaces:
+            raise InternalError('There is already an interface with the same tag.')
 
-        self._interfaces[name] = interface
+        self._interfaces[tag] = interface
     
-    def getInterface(self, name):
-        """ Get the interface matching the given name.
+    def removeInterface(self, tag):
+        """ Callback for MessageProcessor to remove an interface.
+        """
+        self._interfaces.pop(tag, None)
+    
+    def getInterface(self, tag):
+        """ Get the interface matching the given tag.
             
-            @raise:     InternalError if there is no interface matching the given name.
+            @raise:     InternalError if there is no interface matching the given tag.
         """
-        if name not in self._interfaces:
-            raise InternalError('There is no interface with the name "{0}".'.format(name))
+        if tag not in self._interfaces:
+            raise InternalError('There is no interface with the tag "{0}".'.format(tag))
         
-        return self._interfaces[name]
+        return self._interfaces[tag]
     
-    def removeInterface(self, interface):
-        """ Callback for Interface instance to unregister the interface.
+    def addParameter(self, parameter):
+        """ Callback for Parameter instance to register the parameter.
         """
-        self._interfaces.pop(interface.interfaceName, None)
+        self._parameters[parameter.name] = parameter
     
-    def sendROSMessage(self, rosMsg, dest, name, uid):
+    def removeParameter(self, name):
+        """ Callback for MessageProcessor to remove a parameter.
+        """
+        self._parameters.pop(name, None)
+    
+    def sendROSMessage(self, rosMsg, dest, tag, user, uid):
         """ Send a ROS message to the specified destination.
                             
             @param rosMsg:  ROS Message which should be sent in serialized form.
@@ -120,8 +121,11 @@ class ROSManager(object):
             @param dest:    Communication ID of destination.
             @type  dest:    str
             
-            @param name:    Interface name which should be used to send the message
-            @type  name:    str
+            @param tag:     Interface tag which should be used to send the message
+            @type  tag:     str
+            
+            @param user:    Identifier for the user responsible for sending the message
+            @type  user:    str
             
             @param uid:     Unique ID to identify the message
             @type  uid:     str
@@ -129,104 +133,29 @@ class ROSManager(object):
         msg = Message()
         msg.msgType = MsgTypes.ROS_MSG
         msg.dest = dest
-        msg.content = { 'msg' : rosMsg, 'name' : name, 'uid' : uid, 'push' : False }
+        msg.content = { 'msg'  : rosMsg,
+                        'tag'  : tag,
+                        'user' : user,
+                        'push' : False,
+                        'uid'  : uid }
         self._commMngr.sendMessage(msg)
-    
-    def addNode(self, node):
-        """ Add a new node to the list of managed nodes. This method takes
-            care of initializing and starting the node and its necessary
-            data.
-
-            @param node:    Node which should be added.
-            @type  node:    Node instance
-
-            @return:    ID with which the added Node can be identified.
-            @rtype:     str
-
-            @raise:     InternalError if Node can not be added.
-        """
-        if self.isShutdown:
-            return
-
-        while 1:
-            uid = generateID()
-
-            if uid not in self._runningNodes.keys():
-                self._runningNodes[uid] = node
-                break
-
-        try:
-            node.start(self, uid)
-        except InternalError:
-            del self._runningNodes[uid]
-            raise
-
-        return uid
-
-    def removeNode(self, uid):
-        """ Remove and terminate a node matching the given ID and clean up
-            after it. All messages from and to this node will be removed as
-            well.
-
-            @param uid:     Key which is used to identify the node which
-                            should be removed.
-            @type  uid:     str
-
-            @raise:     InvalidRequest if the ID does not match any node.
-        """
-        if self.isShutdown:
-            return
-
-        if uid not in self._runningNodes:
-            raise InvalidRequest('Node ID is invalid.')
-
-        self._runningNodes[uid].stop()
-        del self._runningNodes[uid]
-
-    def startNodeProcess(self, node):
-        """ Start the given node.
-             - Callback method from Node
-             - Has to be executed in main thread
-
-            @param node:    Node which should be added to the list.
-            @type  node:    roslaunch.core.Node
-
-            @return:        Process instance
-            @rtype:         roslaunch.Process instance
-
-            @raise: InternalError if the node could not be launched.
-        """
-        try:
-            return self._launcher.launch(node)
-        except roslaunch.core.RLException as e:
-            raise InternalError(str(e))
 
     def runTaskInSeparateThread(self, func, *args, **kw):
         """ Convenience method to run any function in a separate thread.
 
             This method should not be overwritten.
 
-            @param func:    Callable which should be executed in separate
-                            thread.
+            @param func:    Callable which should be executed in separate thread.
             @type  func:    callable
 
-            @param *args:   Any positional arguments which will be passed
-                            to 'func'.
+            @param *args:   Any positional arguments which will be passed to 'func'.
 
-            @param *kw:     Any keyworded arguments which will be passed
-                            to 'func'.
+            @param *kw:     Any keyworded arguments which will be passed to 'func'.
         """
         self._commMngr.reactor.callInThread(func, args, kw)
 
     def shutdown(self):
         """ Method is called when the manager is stopped.
         """
-        if self.isShutdown:
-            return
-        
-        self.isShutdown = True
-        
-        for node in self._runningNodes:
-            node.stop()
-        
-        self._commMngr.shutdown()
+        self._interfaces = {}
+        self._parameters = {}

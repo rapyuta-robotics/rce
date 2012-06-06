@@ -22,22 +22,13 @@
 #       
 #       
 
-# twisted specific imports
-from twisted.python import log
-from twisted.internet.defer import Deferred, DeferredList
-
-# Python specific imports
-import os
-from threading import Event
-
 # Custom imports
-import settings
 from Exceptions import InvalidRequest
-from Comm.Message import MsgDef
-from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage
-from Processor import StartContainerProcessor, StopContainerProcessor
+from ROSUtil.Type import ROSAddMessage, ROSRemoveMessage
+from Processor import ROSAddProcessor, ROSRemoveProcessor
 
-from NodeMonitor import NodeMonitor
+from ROSComponents.Node import Node
+from ROSComponents.NodeMonitor import NodeMonitor
 
 class LauncherManager(object):
     """ Manager which handles launching the ROS nodes.
@@ -55,32 +46,33 @@ class LauncherManager(object):
         self._nodes = []
         
         # Register Content Serializers
-        self._commMngr.registerContentSerializers([ StartContainerMessage(),
-                                                    StopContainerMessage(),
-                                                    ContainerStatusMessage() ])
+        rosAdd = ROSAddMessage()
+        rosAdd.registerComponents([ Node ])
+        self._commMngr.registerContentSerializers([ rosAdd,
+                                                    ROSRemoveMessage() ])
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessors([ StartContainerProcessor(self),
-                                                   StopContainerProcessor(self) ])
+        self._commMngr.registerMessageProcessors([ ROSAddProcessor(self),
+                                                   ROSRemoveProcessor(self) ])
     
     def addNode(self, node):
         """
         """
-        uid = node.namespace + node.exe     # TODO: Important: UID == namespace + exe atm!!!
+        tag = node.tag
         
-        if uid in self._nodes:
+        if tag in self._nodes:
             raise InvalidRequest('Node already exists.')
         
         nodeMonitor = NodeMonitor(self._commMngr.reactor, node)
         nodeMonitor.start()
-        self._nodes[uid] = nodeMonitor
+        self._nodes[tag] = nodeMonitor
     
-    def removeNode(self, uid):
+    def removeNode(self, tag):
         """
         """
         try:
-            del self._nodes[uid]
-            # self._nodes[uid].pop(uid).stop() <- implicitly called by destructor of NodeMonitor
+            del self._nodes[tag]
+            # self._nodes[tag].pop(tag).stop() <- implicitly called by destructor of NodeMonitor
         except KeyError:
             raise InvalidRequest('Node does not exist.')
     

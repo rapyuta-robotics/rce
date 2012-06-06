@@ -31,6 +31,7 @@ import os
 import uuid
 
 # Custom imports
+from Exceptions import InvalidRequest
 from Comm.CommUtil import validateAddress
 from Container import Container
 
@@ -38,17 +39,20 @@ class Robot(object):
     """ Class which represents a robot. It is associated with a websocket connection.
         A robot can have multiple containers.
     """
-    def __init__(self, robotID, connection, manager):
+    def __init__(self, commMngr, satelliteMngr, connection, robotID):
         """ Initialize the Robot.
             
             # TODO: Add description
         """
-        self._robotID = robotID
+        self._commManager = commMngr
+        self._satelliteManager = satelliteMngr
         self._connection = connection
-        self._manager = manager
+        self._robotID = robotID
         
-        self._manager.registerRobot(self)
         self._containers = {}
+        
+        # Register robot with Satellite Manager
+        self._satelliteManager.registerRobot(self)
     
     @property
     def robotID(self):
@@ -76,37 +80,181 @@ class Robot(object):
                 log.msg('The home folder is not a valid directory.')
                 return
             
-            container = Container(commID, homeFolder)
+            container = Container(self._commManager, self, commID, homeFolder)
             
-            container.start(self._commMngr)
+            # Send request to start the container
+            container.start()
             
             # Register container in this robot instance
-            self._containers[commID] = container
+            self._containers[containerTag] = container
             
             # Register container in the manager
+            self._satelliteManager.registerContainer(container)
         
-        deferredRobot = self._manager.getRobotSpecs(self._robotID)
-        deferredCommID = self._manager.getNewCommID()
+        deferredRobot = self._satelliteManager.getRobotSpecs(self._robotID)
+        deferredCommID = self._satelliteManager.getNewCommID()
         deferredList = DeferredList([deferredRobot, deferredCommID])
         deferredList.addCallback(processRobotSpecs)
     
     def destroyContainer(self, containerTag):
-        self._containers[containerTag].stop(self._commMngr)
-        del self._containers[containerTag]
+        self._containers[containerTag].stop()
+        container = self._containers.pop(containerTag)
+        self._satelliteManager.unregisterContainer(container)
     
     # Note to Dominique: Interface changed. Please check with commands.py
-    def addNode(self, containerTag, config):
-        deferred = self._manager.getNodeDefParser(config['nodeID'])
-        deferred.addCallback(self._containers[containerTag].addNode, config)
+    def addNode(self, containerTag, nodeTag, package, executable, nodeName):
+        """ Add a node to the ROS environment in the container matching the
+            given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the node should be added.
+            @type  containerTag:    str
+            
+            @param nodeTag:     Tag which is used to identify the ROS node which
+                                should added.
+            @type  nodeTag:     str
+
+            @param package:     Package name where the node can be found.
+            @type  package:     str
+
+            @param executable:  Name of executable which should be launched.
+            @type  executable:  str
+            
+            @param nodeName:    Name which the node should use as a ROS address
+                                in the environment.
+            @type  nodeName:    str
+            
+            @raise:     InvalidRequest if the nodeName is not a valid ROS name.
+                        InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].addNode(nodeTag, package, executable, nodeName)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
     
-    def addInterface(self, containerTag, name, interfaceType, className):
-        self._containers[containerTag].addInterface(name, className, interfaceType)
+    def removeNode(self, containerTag, nodeTag):
+        """ Remove a node from the ROS environment in the container matching the
+            given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container from which the node should be removed.
+            @type  containerTag:    str
+            
+            @param nodeTag:     Tag which is used to identify the ROS node which
+                                should removed.
+            @type  nodeTag:     str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].removeNode(nodeTag)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
     
-    def addParameter(self, containerTag, name, value):
-        pass
+    def addInterface(self, containerTag, interfaceTag, name, interfaceType, className):
+        """ Add an interface to the container matching the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the interface should be added.
+            @type  containerTag:    str
+            
+            @param interfaceTag:    Tag which is used to identify the interface to add.
+            @type  interfaceTag:    str
+            
+            @param name:    ROS name/address which the interface should use.
+            @type  name:    str
+            
+            @param interfaceType:   Type of the interface. Valid types are 'service', 'publisher',
+                                    and 'subscriber'.
+            @type  interfaceType:   str
+            
+            @param className:   Message type/Service type consisting of the package and the name
+                                of the message/service, i.e. 'std_msgs/Int32'.
+            @type  className:   str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].addInterface(interfaceTag, name, className, interfaceType)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
     
-    def sendROSMsgToContainer(self, containerTag, interfaceName, msg):
-        self._containers[containerTag].send(msg, interfaceName, self._robotID)
+    def removeInterface(self, containerTag, interfaceTag):
+        """ Remove an interface to the container matching the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container from which the interface should be removed.
+            @type  containerTag:    str
+            
+            @param interfaceTag:    Tag which is used to identify the interface to remove.
+            @type  interfaceTag:    str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].removeInterface(interfaceTag)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def addParameter(self, containerTag, name, value, paramType):
+        """ Add a parameter to the parameter server in the container matching the
+            given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the parameter should be added.
+            @type  containerTag:    str
+            
+            @param name:    Name of the parameter which should be added.
+            @type  name:    str
+            
+            @param value:   Value of the parameter which should be added.
+            @type  value:   Depends on @param paramType
+            
+            @param paramType:   Type of the parameter to add. Valid options are:
+                                    int, str, float, bool, file
+            @type  paramType:   str
+            
+            @raise:     InvalidRequest if the name is not a valid ROS name.
+                        InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].addParameter(name, value, paramType)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def removeParameter(self, containerTag, name):
+        """ Remove a parameter from the parameter server in the container matching
+            the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container from which the parameter should be
+                                    removed.
+            @type  containerTag:    str
+            
+            @param name:    Name of the parameter which should be removed.
+            @type  name:    str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].removeParameter(name)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def sendROSMsgToContainer(self, containerTag, msg):
+        """ Method is called when a complete message has been received by the robot
+            and should now be processed and forwarded.
+            
+            @param containerTag:    Container tag which is used to identify a previously
+                                    started container which should be used as message
+                                    destination.
+            @type  containerTag:    str
+            
+            @param msg:     Corresponds to the dictionary of the field 'data' of the received
+                            message. (Necessary keys: type, msgID, interfaceTag, msg)
+            @type  msg:     { str : ... }
+        """
+        self._containers[containerTag].send(msg)
     
     def recursiveBinaryDataSearch(self, multiddict):
         URIBinary = []
@@ -121,7 +269,17 @@ class Robot(object):
                 multiddict[k] = tmpURI
         return URIBinary, multiddict
     
-    def sendROSMsgToRobot(self, msg):
+    def sendROSMsgToRobot(self, containerTag, msg):
+        """ Method is called when a message should be sent to the robot.
+            
+            @param containerTag:    Container tag which is used to identify the container
+                                    from which the message originated.
+            @type  containerTag:    str
+            
+            @param msg:     Corresponds to the dictionary of the field 'data' of the received
+                            message. (Necessary keys: type, msgID, interfaceTag, msg)
+            @type  msg:     { str : ... }
+        """
         URIBinary,msgURI = recursiveBinaryDataSearch(msg)
         
         self._connection.sendMessage(msgURI)
@@ -130,12 +288,3 @@ class Robot(object):
                 self._connection.sendMessage(binData['URI']+(binData['binaryData'].getvalue()),binary=true)
         
         self._connection.sendMsg("Add Message here!")
-    
-    def removeParameter(self, containerTag, name):
-        pass
-    
-    def removeInterface(self, containerTag, name):
-        self._containers[containerTag].removeInterface(name)
-    
-    def removeNode(self, containerTag, nodeID):
-        self._containers[containerTag].removeNode(nodeID)

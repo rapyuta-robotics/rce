@@ -34,6 +34,11 @@ from zope.interface.exceptions import Invalid
 import time
 import datetime
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 # Custom imports
 import settings
 from Exceptions import InternalError
@@ -119,6 +124,8 @@ class Converter(object):
     _SPECIAL_TYPES = {  'time' : _TimeConverter,
                         'duration' : _DurationConverter }
     
+    _CUSTOM_TYPES = {} 
+    
     def _stringify(self, obj):
         """ Internally used method to make sure that strings are of type str and not unicode.
         """
@@ -152,17 +159,21 @@ class Converter(object):
             else:
                 listBool = False
             
+            field = getattr(rosMsg, slotName)
+            
             if slotType in Converter._BASE_TYPES:
                 convFunc = Converter._BASE_TYPES[slotType]
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().encode
+            elif slotType in Converter._CUSTOM_TYPES and isinstance(field, StringIO):
+                convFunc = Converter._CUSTOM_TYPES[slotType]().encode
             else:
                 convFunc = self.encode
 
             if listBool:
-                data[slotName] = map(convFunc, getattr(rosMsg, slotName))
+                data[slotName] = map(convFunc, field)
             else:
-                data[slotName] = convFunc(getattr(rosMsg, slotName))
+                data[slotName] = convFunc(field)
 
         return data
 
@@ -205,6 +216,8 @@ class Converter(object):
                 convFunc = self._stringify
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().decode
+            elif slotType in Converter._CUSTOM_TYPES:
+                convFunc = Converter._CUSTOM_TYPES[slotType]().decode
             else:
                 convFunc = self.decode
 
@@ -238,14 +251,14 @@ def _initialize_Converter():
                 )
             )
         
-        if convClass.MESSAGE_TYPE in Converter._SPECIAL_TYPES:
+        if convClass.MESSAGE_TYPE in Converter._CUSTOM_TYPES:
             raise InternalError(
                 'There are multiple Converters given for message type "{0}".'.format(
                     convClass.MESSAGE_TYPE
                 )
             )
         
-        Converter._SPECIAL_TYPES[convClass.MESSAGE_TYPE] = convClass
+        Converter._CUSTOM_TYPES[convClass.MESSAGE_TYPE] = convClass
 
 _initialize_Converter()
 

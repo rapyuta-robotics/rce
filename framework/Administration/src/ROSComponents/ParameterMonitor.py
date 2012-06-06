@@ -39,8 +39,14 @@ import ComponentDefinition
 class _ParamMonitor(object):
     """ Base class which provides the basic functionalities to handle incoming parameters.
     """
-    def __init__(self, name, value):
+    def __init__(self, parameter, manager):
         """ Add a parameter to the parameter server.
+        """
+        self._init(parameter.name, parameter.value)
+        manager.registerParameter()
+    
+    def _init(self, name, value):
+        """ Internally used method by the constructor. Necessary for FileParam.
         """
         self._name = name
         
@@ -92,13 +98,13 @@ class FileMonitor(_ParamMonitor):
     """
     IDENTIFIER = ComponentDefinition.PARAM_FILE
     
-    def __init__(self, name, value):
+    def __init__(self, parameter):
         """ Add a parameter to the parameter server.
         """
         self._fileCreated = False
         
         (f, fileName) = _mktempfile()
-        f.write(value)
+        f.write(parameter.value)
         f.close()
 
         if not os.path.isfile(fileName):
@@ -106,7 +112,7 @@ class FileMonitor(_ParamMonitor):
 
         self._fileCreated = True
         
-        super(FileMonitor, self).__init__(name, fileName)
+        self._init(parameter.name, fileName)
     
     def __del__(self):
         """ Remove a parameter from the parameter server.

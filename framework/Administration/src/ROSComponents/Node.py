@@ -28,7 +28,6 @@ from zope.interface import implements
 # Custom imports
 import ComponentDefinition
 from Interfaces import ISerializable
-from Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 
 class Node(object):
     """ Class which represents a node.
@@ -37,31 +36,31 @@ class Node(object):
     
     IDENTIFIER = ComponentDefinition.NODE
     
-    _PARAMS = { IntParam.IDENTIFIER   : IntParam,
-                StrParam.IDENTIFIER   : StrParam,
-                FloatParam.IDENTIFIER : FloatParam,
-                BoolParam.IDENTIFIER  : BoolParam,
-                FileParam.IDENTIFIER  : FileParam }
-    
-    def __init__(self, pkg, exe, namespace='', params=[]):
+    def __init__(self, tag, pkg, exe, name):
         """ Initialize the Node instance.
+            
+            @param tag:     Tag which is to identify the node.
+            @type  tag:     str
 
             @param pkg:     Name of the package where this node can be found.
             @type  pkg:     str
 
             @param exe:     Name of the executable which is used.
             @type  exe:     str
-
-            @param namespace:   Namespace in which this node should be launched.
-            @type  namespace:   str
-
-            @param params:  Parameters which have to be set for this node.
-            @type  params:  [ Parameter ]
+            
+            @param name:    Name which the node should use as a ROS address
+                            in the environment.
+            @type  name:    str
         """
+        self._tag = tag
         self._pkg = pkg
         self._exe = exe
-        self._namespace = namespace
-        self._params = params
+        self._name = name
+    
+    @property
+    def tag(self):
+        """ Tag which is used to identify the node. """
+        return self._tag
     
     @property
     def pkg(self):
@@ -74,14 +73,9 @@ class Node(object):
         return self._exe
     
     @property
-    def namespace(self):
-        """ Namespace in which the node should be launched. """
-        return self._namespace
-    
-    @property
-    def params(self):
-        """ Parameters which are necessary to launch the node. """
-        return tuple(self._params)
+    def name(self):
+        """ Name of the node in the ROS environment. """
+        return self._name
     
     def serialize(self, s):
         """ Serialize the Node object.
@@ -91,14 +85,10 @@ class Node(object):
             
             @raise:     SerializationError
         """
+        s.addElement(self._tag)
         s.addElement(self._pkg)
         s.addElement(self._exe)
-        s.addElement(self._namespace)
-        s.addInt(len(self._params))
-        
-        for param in self._params:
-            s.addIdentifier(param.IDENTIFIER, 1)
-            param.serialize(s)
+        s.addElement(self._name)
     
     @classmethod
     def deserialize(cls, s):
@@ -112,7 +102,7 @@ class Node(object):
         return cls( s.getElement(),
                     s.getElement(),
                     s.getElement(),
-                    [ cls._PARAMS[s.getIdentifier(1)].deserialize(s) for _ in xrange(s.getInt()) ] )
+                    s.getElement() )
 
 class NodeForwarder(object):
     """ Dummy class which represents a node. It is used to forward the data without deserializing
