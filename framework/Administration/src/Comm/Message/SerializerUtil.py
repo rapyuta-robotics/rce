@@ -121,7 +121,7 @@ class Serializer(object):
             @raise:     TypeError if the element is not of type str or of type None.
         """
         if element is None:
-            self._buf.push(_NONE_LEN)
+            self.addInt(_NONE_LEN)
             self._buf.push(_NONE)
         elif isinstance(element, str):
             self.addInt(len(element))
