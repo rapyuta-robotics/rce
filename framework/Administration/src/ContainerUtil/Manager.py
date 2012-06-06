@@ -291,6 +291,8 @@ class ContainerManager(object):
             log.msg(msg)
             deferred.errback(msg)
             return
+        else:
+            self._reactor.callFromThread(self._commIDs.append, commID)
     
     def startContainer(self, commID, homeDir):
         """ Callback for message processor to stop a container.
@@ -303,7 +305,6 @@ class ContainerManager(object):
             deferred.errback('There is already a container registered under the same CommID.')
             return
         
-        self._commIDs.append(commID)
         self._reactor.callInThread(self._startContainer, deferred, commID, homeDir)
     
     def _stopContainer(self, deferred, commID):

@@ -81,7 +81,7 @@ class LoggerProtocol(ProcessProtocol):
             self.transport.signalProcess(escalation[0])
             
             if escalation[1]:
-                self._escalationLvl += 1
+                self._escalation += 1
                 reactor.callLater(self.terminate, escalation[1], reactor)
 
 def main(reactor):
