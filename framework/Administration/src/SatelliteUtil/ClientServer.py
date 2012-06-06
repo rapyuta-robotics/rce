@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # twisted specific imports
+from twisted.python import log
 from twisted.internet.task import LoopingCall
 from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol
 
@@ -50,7 +51,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def _strMsgHandle(self, msg):
         """ Internally used method to handle incoming string messages.
         """
-        data = msg['data']
+	data = msg['data']
         
         if msg['type']=='CS':
             if not self._robot:
@@ -102,7 +103,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def _binaryMsgHandle(self, msg):
         """ Internally used method to handle incoming binary messages.
         """
-        uri = msg[:32]
+	uri = msg[:32]
         binaryData = StringIO().write(msg[33:])
         
         # Find and replace URI with data
@@ -128,8 +129,10 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def onMessage(self, msg, binary):    
         """ Method is called by the Autobahn engine when a message has been received
             from the client.
-        """      
-        if binary:
+        """
+	log.msg('WebSocket: Received new message from robot.')
+        
+	if binary:
             self._binaryMsgHandle(msg)
         else:
             try:
@@ -187,7 +190,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         
         for rm in [incompleteMsg for incompleteMsg in self._incompleteMsgs if incompleteMsg[2] < limit]:
             self._incompleteMsgs.remove(rm)
-
+    
 class WebSocketCloudEngineFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the reCloudEngine.
     """
