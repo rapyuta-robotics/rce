@@ -97,6 +97,20 @@ class _InterfaceMonitor(object):
         
         self.pushReceivers[commID] = name
     
+    def removePushReceiver(self, commID, name):
+        """ Remove a receiver which will be no longer automatically supplied with the messages.
+            
+            @param dest:    Communication ID of destination.
+            @type  dest:    str
+            
+            @param name:    Name of the interface where the message should be published.
+            @type  name:    str
+        """
+        if commID not in self.pushReceivers:
+            raise InternalError('"{0}" is not registered as a receiver for this interface.'.format(commID))
+        
+        del self.pushReceivers[commID]
+    
     def _send(self, msg, pushResult):
         """ This method should be overwritten to implement the send functionality.
         """

@@ -26,8 +26,8 @@
 from Exceptions import InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
-from Type import ROSAddMessage, ROSRemoveMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
-from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSMessageContainerProcessor #, ROSGetProcessor
+from Type import ROSAddMessage, ROSRemoveMessage, ROSAddUserMessage, ROSRemoveUserMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
+from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSAddUserProcessor, ROSRemoveUserProcessor, ROSMessageContainerProcessor #, ROSGetProcessor
 
 from ROSComponents.Node import NodeForwarder
 from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
@@ -36,7 +36,7 @@ from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, F
 class ROSManager(object):
     """ Manager which handles ROS specific tasks.
     """
-    def __init__(self, launcher, commMngr):
+    def __init__(self, commMngr):
         """ Initialize the ROSManager.
             
             @param commMngr:    CommManager which should be used to communicate.
@@ -62,12 +62,16 @@ class ROSManager(object):
                                     FileParam ])
         self._commMngr.registerContentSerializers([ rosAdd,
                                                     ROSRemoveMessage(),
+                                                    ROSAddUserMessage(),
+                                                    ROSRemoveUserMessage(),
                                                     ROSMsgMessage() ])
         # ROSResponseMessage(), ROSGetMessage()
         
         # Register Message Processors
         self._commMngr.registerMessageProcessors([ ROSAddProcessor(self, commMngr),
                                                    ROSRemoveProcessor(self, commMngr),
+                                                   ROSAddUserProcessor(self, commMngr),
+                                                   ROSRemoveUserProcessor(self, commMngr),
                                                    ROSMessageContainerProcessor(self, commMngr) ])
         # ROSGetProcessor(self, commMngr)
     
@@ -101,6 +105,16 @@ class ROSManager(object):
             raise InternalError('There is no interface with the tag "{0}".'.format(tag))
         
         return self._interfaces[tag]
+    
+    def addInterfaceUser(self, tag, user, commID):
+        """ # TODO: Add description.
+        """
+        self.getInterface(tag).addPushReceiver(commID, user)
+    
+    def removeInterfaceUser(self, tag, user, commID):
+        """ # TODO: Add description.
+        """
+        self.getInterface(tag).removePushReceiver(commID, user) # TODO: Not so good...
     
     def addParameter(self, parameter):
         """ Callback for Parameter instance to register the parameter.
