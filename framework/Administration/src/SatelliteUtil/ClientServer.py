@@ -10,7 +10,7 @@ import uuid
 
 from Robot import Robot
 
-class frontEndMsgHandler(object):
+class FrontEndMsgHandler(object):
     incompleteMsgs = [] # List of dictionaries
                         # keys: incompleteMsg, incompleteURIList, arrivalTime
     
@@ -31,7 +31,7 @@ class frontEndMsgHandler(object):
     
     def strMsgHandle(self, msg):
         if msg['type']=='CS':
-            if not self.protocol._robot.initialized:
+            if not  self.protocol._robot:
                 self.protocol._robot = Robot(msg['origin'], self.protocol, self.protocol._manager)
             self.protocol._robot.createContainer(msg['data']['containerTag'])
         
@@ -106,7 +106,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def __init__(self, manager):
         self._manager = manager
         self._robot = None
-        self._frontEndMsgHandler = frontEndMsgHandler(self)
+        self._frontEndMsgHandler = FrontEndMsgHandler(self)
     
     def onConnect(self, _):
         pass
