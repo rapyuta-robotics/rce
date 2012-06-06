@@ -144,7 +144,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         except Exception:   # TODO: Refine Error handling
             import sys, traceback
             etype, value, _ = sys.exc_info()
-            WebSocketServerProtocol.sendMessage(self, traceback.format_exception_only(etype, value))
+            WebSocketServerProtocol.sendMessage(self, '\n'.join(traceback.format_exception_only(etype, value)))
     
     def _recursiveBinarySearch(self, multidict):
         """ Internally used method to find binary data in outgoing messages.
