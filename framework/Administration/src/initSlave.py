@@ -76,13 +76,16 @@ class LoggerProtocol(ProcessProtocol):
     def terminate(self, reactor):
         """ Method which is used to terminate the underlying process.
         """
-        if self._escalation != -1:
-            escalation = self._STOP_ESCALATION[self._escalation]
-            self.transport.signalProcess(escalation[0])
-            
-            if escalation[1]:
-                self._escalation += 1
-                reactor.callLater(escalation[1], self.terminate, reactor)
+        try:
+            if self._escalation != -1:
+                escalation = self._STOP_ESCALATION[self._escalation]
+                self.transport.signalProcess(escalation[0])
+                
+                if escalation[1]:
+                    self._escalation += 1
+                    reactor.callLater(escalation[1], self.terminate, reactor)
+        except AttributeError:
+            pass
 
 def main(reactor):
     log.startLogging(sys.stdout)
