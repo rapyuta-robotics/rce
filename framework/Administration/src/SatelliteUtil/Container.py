@@ -191,7 +191,7 @@ class Container(object):
         """
         msg = Message()
         msg.msgType = MsgTypes.ROS_REMOVE
-        msg.content = { 'type' : ComponentDefinition.RM_PARAMETER,
+        msg.content = { 'type' : ComponentDefinition.RM_NODE,
                         'tag'  : tag }
         self.send(msg)
     
