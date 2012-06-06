@@ -82,7 +82,7 @@ class LoggerProtocol(ProcessProtocol):
             
             if escalation[1]:
                 self._escalation += 1
-                reactor.callLater(self.terminate, escalation[1], reactor)
+                reactor.callLater(escalation[1], self.terminate, reactor)
 
 def main(reactor):
     log.startLogging(sys.stdout)
