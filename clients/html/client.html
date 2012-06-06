@@ -163,7 +163,8 @@ function loadCS(){
 }
 
 function loadCH(){
-	if(robotStatus == "Container Assigned"){
+	//if(robotStatus == "Container Assigned"){
+	if(true){
 		containerDetails = new Object();
 		containerDetails.containerID = containerID;
 		cmd_CH.data = containerDetails;
@@ -200,7 +201,8 @@ function loadCM(){
 }
 
 function loadCC(){
-	if(robotStatus == "Container Assigned"){
+	//if(robotStatus == "Container Assigned"){
+	if(true){
 		var params = new Object();
 		params.key1 = 'value1';
 		params.key2 = 'value2';
