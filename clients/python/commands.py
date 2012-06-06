@@ -18,7 +18,7 @@ cmd_CSR = {
             "type":"CSR",
             "dest":"robotUniqueID",
             "orig":"$$$$$$",
-            "data":{"containerTag":"cTag"} # Is this necessary ? 
+            "data":{"containerTag":"cTag"} 
             }
 
 cmd_CSR_js = json.dumps(cmd_CSR)

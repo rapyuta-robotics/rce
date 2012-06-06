@@ -24,19 +24,15 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.defer import Deferred, DeferredList
-
-# Python specific imports
-import os
+from twisted.internet.defer import Deferred
 
 # Custom imports
 import settings
-from Exceptions import InvalidRequest, InternalError
+from Exceptions import InvalidRequest
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 from Comm.Factory import ReappengineClientFactory
-from Comm.CommUtil import validateAddress
 
 from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
 from ROSUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
@@ -46,9 +42,6 @@ from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProce
 from Triggers import SatelliteRoutingTrigger
 
 from DBUtil.DBInterface import DBInterface
-
-from ROSComponents.NodeParser import NodeParser
-from ROSComponents.ParameterParser import IntParamParser, StrParamParser, FloatParamParser, BoolParamParser, FileParamParser
 
 from Converter.Core import Converter
 
@@ -68,7 +61,7 @@ class SatelliteManager(object):
         """
         # References used by the manager
         self._commMngr = commMngr
-        self._dbInterface = DBInterface(commMngr)
+        self._dbInterface = DBInterface(commMngr)   # TODO: Atm not used!
         self._converter = Converter()
         
         # SSL Context which is used to connect to other satellites
@@ -100,38 +93,6 @@ class SatelliteManager(object):
                                                    #ContainerStatusProcessor(self),
                                                    ROSMsgProcessor(self) ])
         # TODO: Add all valid messages
-    
-    ##################################################
-    ### DB Interactions
-    
-    def getRobotSpecs(self, robotID):
-        """ Get the specifications for the robot.
-            
-            @param robotID:     Unique Identifier of the robot.
-            @type  robotID:     str
-            
-            @return:    Deferred which will fire as soon as a response was received with the
-                        following argument:
-                            Home folder which belongs to the robot.
-                            str
-            @rtype:     Deferred
-        """
-        return self._dbInterface.getRobotSpecs(robotID)
-    
-    def getNodeDefParser(self, nodeID):
-        """ Get the node definition.
-            
-            @param nodeID:  Unique Identifier of the node.
-            @type  nodeID:  str
-            
-            @return:    Deferred which will fire as soon as a response was received with the
-                        following argument:
-                            NodeParser which can be used to parse the received message data.
-                            NodeParser
-            @rtype:     Deferred
-        """
-        pkgName, nodeName, params = self._dbInterface.getNodeSpecs(nodeID)
-        return NodeParser(pkgName, nodeName, [_createParameterParser(*param) for param in params])
     
     ##################################################
     ### Robot

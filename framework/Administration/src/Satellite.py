@@ -27,6 +27,7 @@
 from twisted.python import log
 from twisted.internet.ssl import DefaultOpenSSLContextFactory
 from twisted.internet.task import LoopingCall
+from autobahn.websocket import listenWS
 
 # Python specific imports
 import sys
@@ -40,6 +41,7 @@ from Comm.CommManager import CommManager
 from Comm.CommUtil import validateSuffix
 from SatelliteUtil.Manager import SatelliteManager
 from SatelliteUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger
+from SatelliteUtil.ClientServer import WebSocketCloudEngineFactory
 
 class EnvironmentServerFactory(ReappengineServerFactory):
     """ ReappengineServerFactory which is used in the satellite node for the connections
@@ -115,8 +117,7 @@ def main(reactor, ip, uid):
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
     # Server for connections from robots, i.e. the web, brokered by the master node
-##    factory = WebSocketServerFactory(satelliteManager, "ws://localhost:9000")
-##    listenWS(factory)
+    listenWS(WebSocketCloudEngineFactory(satelliteManager, "ws://localhost:9000"))
     
     # Setup periodic calling of Load Balancer Updater
     log.msg('Add periodic call for Load Balancer Update.')

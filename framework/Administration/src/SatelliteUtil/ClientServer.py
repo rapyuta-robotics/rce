@@ -29,8 +29,8 @@ class FrontEndMsgHandler(object):
     
     def strMsgHandle(self, msg):
         if msg['type']=='CS':
-            if not  self.protocol._robot:
-                self.protocol._robot = Robot(msg['origin'], self.protocol, self.protocol._manager)
+            if not self.protocol._robot:
+                self.protocol._robot = Robot(self.protocol._manager._commMngr, self.protocol._manager, self.protocol, msg['orig'])
             self.protocol._robot.createContainer(msg['data']['containerTag'])
         
         elif msg['type'] == 'CH':
@@ -109,17 +109,16 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def onConnect(self, _):
         pass
     
-    def connectionMade(self):
-        self.connectionManager = connectionManager(self)
-    
     def onMessage(self, msg, binary):          
         if binary:
             self._frontEndMsgHandler.binaryMsgHandle(msg)
         else:
-            msgPy = json.dumps(msg)
+            msgPy = json.loads(msg)
             # TODO: Handle Errors caused by invalid JSON strings
-            self._frontEndMsgHandler.strMsgHandle(msgPy)
-            
+            try:
+                self._frontEndMsgHandler.strMsgHandle(msgPy)
+            except Exception as e:
+                self.sendMessage('Error: '+str(e))
             
     def connectionLost(self, reason):
         self._robot = None

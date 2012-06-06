@@ -133,23 +133,6 @@ def main(reactor):
     #reactor.addSystemEventTrigger('before', 'shutdown', masterManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
-    ### TODO: Debugging only
-    def test1():
-        log.msg('Start test 1...')
-        uid = masterManager.getSatellites()[0]['commID']
-        log.msg('test 1: Start container commID: "{0}", satelliteID: "{1}".'.format('TESTID', uid))
-        masterManager.addContainer('TESTID', '/reappengine/home', uid)
-    
-    def test2():
-        log.msg('Start test 2...')
-        uid = masterManager.getSatellites()[0]['commID']
-        log.msg('test 2: Stop container commID: "{0}", satelliteID: "{1}".'.format('TESTID', uid))
-        masterManager.removeContainer('TESTID', uid)
-    
-    reactor.callLater(10, test1)
-    #reactor.callLater(20, test2)
-    #reactor.callLater(30, test1)
-    
     # Start twisted (without signal handles as ROS also registers signal handlers)
     log.msg('Initialization completed')
     log.msg('Enter mainloop')

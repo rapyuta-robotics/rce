@@ -68,15 +68,21 @@ var cmd_CS = new Object();
 cmd_CS.type="CS";
 cmd_CS.dest="$$$$$$";
 cmd_CS.orig=robotUniqueID;
+var CS_data = new Object();
+CS_data.containerTag = "cTag01";
+cmd_CS.data=CS_data;
+
 
 var cmd_CH = new Object();
 cmd_CH.type="CH";
 cmd_CH.dest="$$$$$$";
 cmd_CH.orig=robotUniqueID;
-cmd_CH.data="TBD";
+var CH_data = new Object();
+CH_data.containerTag = "cTag01"
+cmd_CH.data=CH_data;
 
 window.onload = function() {
-  var wsuri = "ws://localhost:9000";
+  var wsuri = "ws://198.101.199.174:9000/";
 	if ("WebSocket" in window) {
 		webSocket = new WebSocket(wsuri);
 		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");

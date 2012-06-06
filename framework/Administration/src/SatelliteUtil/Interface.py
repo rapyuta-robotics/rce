@@ -96,7 +96,7 @@ class Interface(object):
         """
         msg = Message()
         msg.msgType = MsgTypes.ROS_REMOVE
-        msg.content = { 'type' : ComponentDefinition.RM_NODE,
+        msg.content = { 'type' : ComponentDefinition.RM_INTERFACE,
                         'tag'  : self._tag }
         self._container.send(msg)
     
