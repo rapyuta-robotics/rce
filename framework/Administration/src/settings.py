@@ -88,6 +88,9 @@ RESULT_TIMEOUT = 600
 # IP address of Master
 IP_MASTER = 'localhost'
 
+# IP address of satellite for containers
+IP_SATELLITE = '10.0.3.1'
+
 # Port of Master
 PORT_MASTER = 10011
 

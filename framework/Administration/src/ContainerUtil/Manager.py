@@ -129,7 +129,7 @@ class ContainerManager(object):
         """ Create a fstab file based on the given parameters.
         """
         if not os.path.isabs(homeDir):
-            raise ValueError('Home directory is not an absoulte path.')
+            raise ValueError('Home directory is not an absolute path.')
         
         content = '\n'.join([ 'proc     {proc}      proc     nodev,noexec,nosuid 0 0'.format(
                                   proc=os.path.join(self._rootfs, 'proc')
@@ -140,22 +140,22 @@ class ContainerManager(object):
                               'sysfs    {sysfs}       sysfs    defaults            0 0'.format(
                                   sysfs=os.path.join(self._rootfs, 'sys')
                               ),
-                              '/opt/ros   {rootfsROS}   none   bind,ro 0 0'.format(
+                              '/opt/ros    {rootfsROS}    none    bind,ro 0 0'.format(
                                   rootfsROS=os.path.join(self._rootfs, 'opt/ros')
                               ),
-                              '{pyPath}    {rootfs}{pyPath}   none   bind 0 0'.format(
+                              '{pyPath}    {rootfs}{pyPath}    none    bind 0 0'.format(
                                   pyPath='/usr/lib/pymodules/python2.7/rospkg',
                                   rootfs=self._rootfs
                               ),
-                              '{homeDir}   {rootfsHome}   none   bind 0 0'.format(
+                              '{homeDir}    {rootfsHome}    none    bind 0 0'.format(
                                   homeDir=homeDir,
                                   rootfsHome=os.path.join(self._rootfs, 'home/ros')
                               ),
-                              '{srcDir}   {rootfsLib}   none   bind,ro 0 0'.format(
+                              '{srcDir}    {rootfsLib}    none    bind,ro 0 0'.format(
                                   srcDir=self._srcRoot,
                                   rootfsLib=os.path.join(self._rootfs, 'opt/rce')
                               ),
-                              '{upstart}   {initDir}   none   bind,ro 0 0'.format(
+                              '{upstart}    {initDir}    none    bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstartComm'),
                                   initDir=os.path.join(self._rootfs, 'etc/init/rceComm.conf')
                               ),
@@ -173,7 +173,7 @@ class ContainerManager(object):
         """
         content = '\n'.join([ '# description',
                               'author "Dominique Hunziker"',
-                              'description "CommNode - Framework for managing and using ROS nodes"',
+                              'description "CommNode of reCloudEngine - Framework for managing and using ROS nodes"',
                               '',
                               '# start/stop conditions',
                               'start on runlevel [2345]',
@@ -190,23 +190,14 @@ class ContainerManager(object):
                               '\t'+' '.join([ 'start-stop-daemon',
                                               '--start',
                                               '-c', 'rce:rce',
-                                              '-d', '/home/ros',
+                                              #'-d', '/opt/rce/framework/Administration/src',
                                               '--retry', '5',
                                               '--exec', '/usr/bin/python',
                                               '--',
                                               '/opt/rce/framework/Administration/src/Environment.py',
+                                              commID,
                                               '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
                                                                self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
-                              ### TODO: For debugging purposes use a simple node.
-#                              '\t'+' '.join([ 'start-stop-daemon',
-#                                              '--start',
-#                                              '-c', 'rce:rce',
-#                                              '-d', '/home/ros',
-#                                              '--retry', '5',
-#                                              '--exec', '/usr/bin/python',
-#                                              '--',
-#                                              '/opt/rce/framework/Administration/src/Dummy.py',
-#                                              str(8090) ]),
                               'end script',
                               '' ])
        
@@ -222,7 +213,7 @@ class ContainerManager(object):
                               'stop on runlevel [016]',
                               '',
                               '# timeout before the process is killed; generous as a lot of processes have',
-                              '# to be terminated by the launcher',
+                              '# to be terminated by the launcher.',
                               'kill timeout 30',
                               '',
                               'script',
@@ -233,7 +224,7 @@ class ContainerManager(object):
                               '\t# start launcher',
                               '\t'+' '.join([ 'start-stop-daemon',
                                               '--start',
-                                              '-c', 'rce:rce',
+                                              '-c', 'ros:ros',
                                               '-d', '/home/ros',
                                               '--retry', '5',
                                               '--exec', '/usr/bin/python',
@@ -272,7 +263,7 @@ class ContainerManager(object):
         except:
             import sys, traceback
             etype, value, _ = sys.exc_info()
-            msg = traceback.format_exception_only(etype, value)
+            msg = '\n'.join(traceback.format_exception_only(etype, value))
             log.msg(msg)
             deferred.errback(msg)
             return
@@ -297,9 +288,9 @@ class ContainerManager(object):
                     '-d' ]
             self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
         except:
-            import sys, traceback
+            import sys, traceback #@Reimport
             etype, value, _ = sys.exc_info()
-            msg = traceback.format_exception_only(etype, value)
+            msg = '\n'.join(traceback.format_exception_only(etype, value))
             log.msg(msg)
             deferred.errback(msg)
             return
@@ -316,8 +307,7 @@ class ContainerManager(object):
             return
         
         self._commIDs.append(commID)
-        #self._reactor.callInThread(self._startContainer, commID, homeDir)
-        self._startContainer(deferred, commID, homeDir)   # TODO: Temporary; switch to callInThread
+        self._reactor.callInThread(self._startContainer, deferred, commID, homeDir)
     
     def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.
@@ -341,7 +331,7 @@ class ContainerManager(object):
             except:
                 import sys, traceback
                 etype, value, _ = sys.exc_info()
-                error = traceback.format_exception_only(etype, value)
+                error = '\n'.join(traceback.format_exception_only(etype, value))
             
             if error:
                 deferred.errback(error)
@@ -356,7 +346,7 @@ class ContainerManager(object):
         except:
             import sys, traceback
             etype, value, _ = sys.exc_info()
-            msg = traceback.format_exception_only(etype, value)
+            msg = '\n'.join(traceback.format_exception_only(etype, value))
             log.msg(msg)
             deferred.errback(msg)
             return
@@ -372,7 +362,7 @@ class ContainerManager(object):
             deferred.errback('There is no container registered under this CommID.')
             return
         
-        self._reactor.callInThread(self._stopContainer, commID)
+        self._reactor.callInThread(self._stopContainer, deferred, commID)
     
     def shutdown(self):
         """ Method is called when the manager is stopped.
