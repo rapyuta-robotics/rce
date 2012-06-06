@@ -169,7 +169,7 @@ class ContainerManager(object):
                               '',
                               '# start/stop conditions',
                               'start on runlevel [2345]',
-                              'stop on runlevel [016])',
+                              'stop on runlevel [016]',
                               '',
                               '# timeout before the process is killed; generous as a lot of processes have',
                               '# to be terminated by the reappengine',
@@ -182,27 +182,29 @@ class ContainerManager(object):
                               '\t',
                               '\t# start environment node',
 #                              '\t'+' '.join([ 'start-stop-daemon',
+#                                              '--start',
 #                                              '-c', 'rce:rce',
 #                                              '-d', '/home/ros',
 #                                              '--retry', '5',
-#                                              '--exec', 'python',
+#                                              '--exec', '/usr/bin/python',
 #                                              '--',
-#                                              '/home/ros/lib/framework/Administration/src/Environment.py',
+#                                              '/opt/rce/framework/Administration/src/Environment.py',
 #                                              '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
 #                                                               self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
 #                              '' ])
                               ### TODO: For debugging purposes use a simple node.
                               '\t'+' '.join([ 'start-stop-daemon',
+                                              '--start',
                                               '-c', 'rce:rce',
                                               '-d', '/home/ros',
                                               '--retry', '5',
-                                              '--exec', 'python',
+                                              '--exec', '/usr/bin/python',
                                               '--',
-                                              '/home/ros/lib/framework/Administration/src/Dummy.py',
+                                              '/opt/rce/framework/Administration/src/Dummy.py',
                                               str(8090) ]),
                               'end script',
                               '' ])
-        
+       
         with open(os.path.join(self._confDir, commID, 'upstart'), 'w') as f:
             f.write(content)
     
@@ -243,7 +245,7 @@ class ContainerManager(object):
                 '-n', commID,
                 '-f', os.path.join(self._confDir, commID, 'config'),
                 '-d' ]
-        #self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
+        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
     
     def startContainer(self, commID, homeDir):
         """ Callback for message processor to stop a container.
