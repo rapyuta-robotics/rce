@@ -101,7 +101,7 @@ class ContainerManager(object):
                               'lxc.network.type = veth',
                               'lxc.network.flags = up',
                               'lxc.network.name = eth0',
-                              'lxc.network.link = br0',
+                              'lxc.network.link = lxcbr0',
                               'lxc.network.ipv4 = 0.0.0.0',
                               '',
                               'lxc.cgroup.devices.deny = a',
@@ -140,17 +140,20 @@ class ContainerManager(object):
                               'sysfs    {sysfs}       sysfs    defaults            0 0'.format(
                                   sysfs=os.path.join(self._rootfs, 'sys')
                               ),
+                              '/opt/ros   {rootfsROS}   none   bind,ro 0 0'.format(
+                                  rootfsROS=os.path.join(self._rootfs, 'opt/ros')
+                              ),
                               '{homeDir}   {rootfsHome}   none   bind 0 0'.format(
                                   homeDir=homeDir,
                                   rootfsHome=os.path.join(self._rootfs, 'home/ros')
                               ),
                               '{srcDir}   {rootfsLib}   none   bind,ro 0 0'.format(
                                   srcDir=self._srcRoot,
-                                  rootfsLib=os.path.join(self._rootfs, 'opt/reappengine')
+                                  rootfsLib=os.path.join(self._rootfs, 'opt/rce')
                               ),
                               '{upstart}   {initDir}   none   bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstart'),
-                                  initDir=os.path.join(self._rootfs, 'etc/init/reappengine.conf')
+                                  initDir=os.path.join(self._rootfs, 'etc/init/rce.conf')
                               ),
                               '' ])
         
@@ -175,11 +178,11 @@ class ContainerManager(object):
                               'script',
                               '\t# setup environment',
                               '\t. /etc/environment',
-                              #'\t. /opt/ros/fuerte/setup.sh',
+                              '\t. /opt/ros/fuerte/setup.sh',
                               '\t',
                               '\t# start environment node',
 #                              '\t'+' '.join([ 'start-stop-daemon',
-#                                              '-c', 'ros:ros',
+#                                              '-c', 'rce:rce',
 #                                              '-d', '/home/ros',
 #                                              '--retry', '5',
 #                                              '--exec', 'python',
@@ -190,7 +193,7 @@ class ContainerManager(object):
 #                              '' ])
                               ### TODO: For debugging purposes use a simple node.
                               '\t'+' '.join([ 'start-stop-daemon',
-                                              '-c', 'ros:ros',
+                                              '-c', 'rce:rce',
                                               '-d', '/home/ros',
                                               '--retry', '5',
                                               '--exec', 'python',
