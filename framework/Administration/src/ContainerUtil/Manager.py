@@ -300,4 +300,4 @@ class ContainerManager(object):
         deferredList = DeferredList(deferreds)
         deferredList.addCallback(event.set)
         
-        event.wait()
+        #event.wait()
