@@ -11,7 +11,7 @@ import uuid
 
 from Robot import Robot
 
-class frontEndMsgHandler(object):
+class FrontEndMsgHandler(object):
     incompleteMsgs = [] # List of dictionaries
                         # keys: incompleteMsg, incompleteURIList, arrivalTime
     
@@ -104,7 +104,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def __init__(self, manager):
         self._manager = manager
         self._robot = None
-        self._frontEndMsgHandler = frontEndMsgHandler(self)
+        self._frontEndMsgHandler = FrontEndMsgHandler(self)
     
     def onConnect(self, _):
         pass
@@ -115,8 +115,10 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         else:
             msgPy = json.loads(msg)
             # TODO: Handle Errors caused by invalid JSON strings
-            self._frontEndMsgHandler.strMsgHandle(msgPy)
-            
+            try:
+                self._frontEndMsgHandler.strMsgHandle(msgPy)
+            except Exception as e:
+                self.sendMessage('Error: '+str(e))
             
     def connectionLost(self, reason):
         self._robot = None
