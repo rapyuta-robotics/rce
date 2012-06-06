@@ -103,7 +103,6 @@ class Robot(object):
         container = self._containers.pop(containerTag)
         self._satelliteManager.unregisterContainer(container)
     
-    # Note to Dominique: Interface changed. Please check with commands.py
     def addNode(self, containerTag, nodeTag, package, executable, nodeName):
         """ Add a node to the ROS environment in the container matching the
             given container tag.
@@ -258,19 +257,6 @@ class Robot(object):
         """
         self._containers[containerTag].send(msg)
     
-    def recursiveBinaryDataSearch(self, multiddict):
-        URIBinary = []
-        for k,v in multiddict.items():
-            if isinstance(v, dict):
-                iURIBinary,iMultiDDict = self.recursiveBinaryDataSearch(v)
-                URIBinary += iURIBinary
-                multiddict[k] = iMultiDDict 
-            elif k[-1:]=='*':
-                tmpURI = uuid.uuid4().hex
-                URIBinary.append({'URI':tmpURI,'binaryData':v})
-                multiddict[k] = tmpURI
-        return URIBinary, multiddict
-    
     def sendROSMsgToRobot(self, containerTag, msg):
         """ Method is called when a message should be sent to the robot.
             
@@ -282,11 +268,4 @@ class Robot(object):
                             message. (Necessary keys: type, msgID, interfaceTag, msg)
             @type  msg:     { str : ... }
         """
-        URIBinary,msgURI = recursiveBinaryDataSearch(msg)
-        
-        self._connection.sendMessage(msgURI)
-        if URIBinary:
-            for binData in URIBinary:
-                self._connection.sendMessage(binData['URI']+(binData['binaryData'].getvalue()),binary=true)
-        
-        self._connection.sendMsg("Add Message here!")
+        self._connection.sendMessage(msg)
