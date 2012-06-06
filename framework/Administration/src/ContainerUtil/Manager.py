@@ -192,9 +192,8 @@ class ContainerManager(object):
                                               '-c', 'rce:rce',
                                               #'-d', '/opt/rce/framework/Administration/src',
                                               '--retry', '5',
-                                              '--exec', '/usr/bin/python',
+                                              '--exec', '/opt/rce/framework/Administration/src/Environment.py',
                                               '--',
-                                              '/opt/rce/framework/Administration/src/Environment.py',
                                               commID,
                                               '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
                                                                self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
@@ -227,9 +226,7 @@ class ContainerManager(object):
                                               '-c', 'ros:ros',
                                               '-d', '/home/ros',
                                               '--retry', '5',
-                                              '--exec', '/usr/bin/python',
-                                              '--',
-                                              '/opt/rce/framework/Administration/src/Launcher.py' ]),
+                                              '--exec', '/opt/rce/framework/Administration/src/Launcher.py' ]),
                               'end script',
                               '' ])
        
