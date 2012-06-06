@@ -24,12 +24,10 @@
 
 # ROS specific imports
 import rospy
-import roslaunch.scriptapi
 
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.ssl import ClientContextFactory
-from twisted.internet.task import LoopingCall
 
 # Python specific imports
 import sys
@@ -53,13 +51,9 @@ def main(reactor, ip, commID, satelliteID, key):
     log.msg('Initialize ROS node')
     rospy.init_node('Administration')
 
-    # Init ROS Launcher
-    log.msg('Initialize ROS launcher')
-    launcher = roslaunch.scriptapi.ROSLaunch()
-
     # Create Manager
     commManager = CommManager(reactor, commID)
-    rosManager = ROSManager(launcher, commManager)
+    rosManager = ROSManager(commManager)
 
     # Initialize twisted
     log.msg('Initialize twisted')
@@ -70,6 +64,8 @@ def main(reactor, ip, commID, satelliteID, key):
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE,
+                                      MsgTypes.ROS_ADD_USER,
+                                      MsgTypes.ROS_REMOVE_USER,
                                       # MsgTypes.ROS_GET,    # Only push valid; no pull
                                       MsgTypes.ROS_MSG ])
     #reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())
@@ -91,21 +87,10 @@ def main(reactor, ip, commID, satelliteID, key):
 
     rospy.on_shutdown(terminate)
 
-    # Start ROS Launcher
-    log.msg('Start ROS launcher')
-    launcher.start()
-
-    # Setup periodic calling of ROS spin_once in main thread
-    log.msg('Add periodic call for ROS spin_once')
-    LoopingCall(launcher.spin_once).start(0.1)
-
     # Start twisted (without signal handles as ROS also registers signal handlers)
     log.msg('Initialization completed')
     log.msg('Enter mainloop')
     reactor.run(installSignalHandlers=False)
-
-    # Stop ROS Launcher (should normally already be done as ROS handles the signals)
-    launcher.stop()
     log.msg('Leaving Administrator')
 
 def _get_argparse():

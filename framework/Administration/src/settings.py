@@ -59,13 +59,13 @@ UID_TIMEOUT = 10
 #######################################
 
 # Absolute path to root file system for container
-ROOTFS = '/reappengine/container-fs/rootfs'
+ROOTFS = '/opt/rce/container/rootfs'
 
 # Absolute path to directory where config/stab files for containers should be stored
-CONF_DIR = '/reappengine/config'
+CONF_DIR = '/opt/rce/container/config'
 
 # Absolute path to source root directory
-ROOT_DIR = '/home/dominique/reappengine'
+ROOT_DIR = '/opt/rce/reappengine'
 
 # Time interval in which the newest load information are sent to the master node/load balancer
 LOAD_INFO_UPDATE = 5

@@ -117,8 +117,9 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             # TODO: Handle Errors caused by invalid JSON strings
             try:
                 self._frontEndMsgHandler.strMsgHandle(msgPy)
-            except Exception as e:
-                self.sendMessage('Error: '+str(e))
+            except Exception:
+		import traceback
+                self.sendMessage('Error: {0}'.format(traceback.format_exc()))
             
     def connectionLost(self, reason):
         self._robot = None

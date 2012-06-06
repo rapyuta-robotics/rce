@@ -143,6 +143,10 @@ class ContainerManager(object):
                               '/opt/ros   {rootfsROS}   none   bind,ro 0 0'.format(
                                   rootfsROS=os.path.join(self._rootfs, 'opt/ros')
                               ),
+                              '{pyPath}    {rootfs}{pyPath}   none   bind 0 0'.format(
+                                  pyPath='/usr/lib/pymodules/python2.7/rospkg',
+                                  rootfs=self._rootfs
+                              ),
                               '{homeDir}   {rootfsHome}   none   bind 0 0'.format(
                                   homeDir=homeDir,
                                   rootfsHome=os.path.join(self._rootfs, 'home/ros')
@@ -152,28 +156,30 @@ class ContainerManager(object):
                                   rootfsLib=os.path.join(self._rootfs, 'opt/rce')
                               ),
                               '{upstart}   {initDir}   none   bind,ro 0 0'.format(
-                                  upstart=os.path.join(self._confDir, commID, 'upstart'),
-                                  initDir=os.path.join(self._rootfs, 'etc/init/rce.conf')
+                                  upstart=os.path.join(self._confDir, commID, 'upstartComm'),
+                                  initDir=os.path.join(self._rootfs, 'etc/init/rceComm.conf')
+                              ),
+                              '{upstart}   {initDir}   none   bind,ro 0 0'.format(
+                                  upstart=os.path.join(self._confDir, commID, 'upstartLauncher'),
+                                  initDir=os.path.join(self._rootfs, 'etc/init/rceLauncher.conf')
                               ),
                               '' ])
         
         with open(os.path.join(self._confDir, commID, 'fstab'), 'w') as f:
             f.write(content)
     
-    def _createUpstartScript(self, commID):
+    def _createUpstartScripts(self, commID):
         """ Create an upstart script based on the given parameters.
         """
         content = '\n'.join([ '# description',
                               'author "Dominique Hunziker"',
-                              'description "reappengine - ROS framework for managing and using ROS nodes"',
+                              'description "CommNode - Framework for managing and using ROS nodes"',
                               '',
                               '# start/stop conditions',
                               'start on runlevel [2345]',
-                              'stop on runlevel [016])',
+                              'stop on runlevel [016]',
                               '',
-                              '# timeout before the process is killed; generous as a lot of processes have',
-                              '# to be terminated by the reappengine',
-                              'kill timeout 30',
+                              'kill timeout 5',
                               '',
                               'script',
                               '\t# setup environment',
@@ -181,29 +187,62 @@ class ContainerManager(object):
                               '\t. /opt/ros/fuerte/setup.sh',
                               '\t',
                               '\t# start environment node',
-#                              '\t'+' '.join([ 'start-stop-daemon',
-#                                              '-c', 'rce:rce',
-#                                              '-d', '/home/ros',
-#                                              '--retry', '5',
-#                                              '--exec', 'python',
-#                                              '--',
-#                                              '/home/ros/lib/framework/Administration/src/Environment.py',
-#                                              '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
-#                                                               self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
-#                              '' ])
-                              ### TODO: For debugging purposes use a simple node.
                               '\t'+' '.join([ 'start-stop-daemon',
+                                              '--start',
                                               '-c', 'rce:rce',
                                               '-d', '/home/ros',
                                               '--retry', '5',
-                                              '--exec', 'python',
+                                              '--exec', '/usr/bin/python',
                                               '--',
-                                              '/home/ros/lib/framework/Administration/src/Dummy.py',
-                                              str(8090) ]),
+                                              '/opt/rce/framework/Administration/src/Environment.py',
+                                              '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
+                                                               self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
+                              ### TODO: For debugging purposes use a simple node.
+#                              '\t'+' '.join([ 'start-stop-daemon',
+#                                              '--start',
+#                                              '-c', 'rce:rce',
+#                                              '-d', '/home/ros',
+#                                              '--retry', '5',
+#                                              '--exec', '/usr/bin/python',
+#                                              '--',
+#                                              '/opt/rce/framework/Administration/src/Dummy.py',
+#                                              str(8090) ]),
                               'end script',
                               '' ])
+       
+        with open(os.path.join(self._confDir, commID, 'upstartComm'), 'w') as f:
+            f.write(content)
         
-        with open(os.path.join(self._confDir, commID, 'upstart'), 'w') as f:
+        content = '\n'.join([ '# description',
+                              'author "Dominique Hunziker"',
+                              'description "Launcher of reCloudEngine - Framework for managing and using ROS nodes"',
+                              '',
+                              '# start/stop conditions',
+                              'start on runlevel [2345]',
+                              'stop on runlevel [016]',
+                              '',
+                              '# timeout before the process is killed; generous as a lot of processes have',
+                              '# to be terminated by the launcher',
+                              'kill timeout 30',
+                              '',
+                              'script',
+                              '\t# setup environment',
+                              '\t. /etc/environment',
+                              '\t. /opt/ros/fuerte/setup.sh',
+                              '\t',
+                              '\t# start launcher',
+                              '\t'+' '.join([ 'start-stop-daemon',
+                                              '--start',
+                                              '-c', 'rce:rce',
+                                              '-d', '/home/ros',
+                                              '--retry', '5',
+                                              '--exec', '/usr/bin/python',
+                                              '--',
+                                              '/opt/rce/framework/Administration/src/Launcher.py' ]),
+                              'end script',
+                              '' ])
+       
+        with open(os.path.join(self._confDir, commID, 'upstartLauncher'), 'w') as f:
             f.write(content)
     
     def _startContainer(self, commID, homeDir):
@@ -226,8 +265,8 @@ class ContainerManager(object):
         # Construct fstab file
         self._createFstabFile(commID, homeDir)
         
-        # Construct startup script
-        self._createUpstartScript(commID)
+        # Construct startup scripts
+        self._createUpstartScripts(commID)
         
         # Start container
         deferred = Deferred()
@@ -243,7 +282,7 @@ class ContainerManager(object):
                 '-n', commID,
                 '-f', os.path.join(self._confDir, commID, 'config'),
                 '-d' ]
-        #self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
+        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
     
     def startContainer(self, commID, homeDir):
         """ Callback for message processor to stop a container.
