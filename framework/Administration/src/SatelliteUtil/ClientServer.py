@@ -29,7 +29,7 @@ class frontEndMsgHandler(object):
     
     def strMsgHandle(self, msg):
         if msg['type']=='CS':
-            if not self.protocol._robot.initialized:
+            if not self.protocol._robot:
                 self.protocol._robot = Robot(msg['origin'], self.protocol, self.protocol._manager)
             self.protocol._robot.createContainer(msg['data']['containerTag'])
         
@@ -108,9 +108,6 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     
     def onConnect(self, _):
         pass
-    
-    def connectionMade(self):
-        self.connectionManager = connectionManager(self)
     
     def onMessage(self, msg, binary):          
         if binary:
