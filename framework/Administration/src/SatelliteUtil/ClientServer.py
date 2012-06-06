@@ -144,9 +144,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         except Exception:   # TODO: Refine Error handling
             import sys, traceback
             etype, value, _ = sys.exc_info()
-            super(WebSocketCloudEngineProtocol, self).sendMessage(
-                traceback.format_exception_only(etype, value)
-            )
+            WebSocketServerProtocol.sendMessage(self, traceback.format_exception_only(etype, value))
     
     def _recursiveBinarySearch(self, multidict):
         """ Internally used method to find binary data in outgoing messages.
@@ -177,11 +175,10 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         URIBinary, msgURI = self._out_recursiveBinaryDataSearch(msg)
         
-        super(WebSocketCloudEngineProtocol, self).sendMessage(json.dumps(msgURI))
+        WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
         
         for binData in URIBinary:
-            super(WebSocketCloudEngineProtocol, self).sendMessage( binData[0] + binData[1].getvalue(),
-                                                                   binary=True )
+            WebSocketServerProtocol.sendMessage(self, binData[0] + binData[1].getvalue(), binary=True)
             
     def connectionLost(self, reason):
         """ Method is called by the twisted engine when the connection has been lost.
