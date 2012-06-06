@@ -245,84 +245,131 @@ class ContainerManager(object):
         with open(os.path.join(self._confDir, commID, 'upstartLauncher'), 'w') as f:
             f.write(content)
     
-    def _startContainer(self, commID, homeDir):
+    def _startContainer(self, deferred, commID, homeDir):
         """ Internally used method to start a container.
         """
         # Create folder for config and fstab file
         confDir = os.path.join(self._confDir, commID)
         
         if os.path.isdir(confDir):
-            log.msg('There exists already a directory with the name "{0}".'.format(commID))
+            msg = 'There exists already a directory with the name "{0}".'.format(commID)
+            log.msg(msg)
+            deferred.errback(msg)
             return
         
-        os.mkdir(confDir)
-        
-        log.msg('Create files...')
-        
-        # Construct config file
-        self._createConfigFile(commID)
-        
-        # Construct fstab file
-        self._createFstabFile(commID, homeDir)
-        
-        # Construct startup scripts
-        self._createUpstartScripts(commID)
+        try:
+            log.msg('Create files...')
+            os.mkdir(confDir)
+            
+            # Construct config file
+            self._createConfigFile(commID)
+            
+            # Construct fstab file
+            self._createFstabFile(commID, homeDir)
+            
+            # Construct startup scripts
+            self._createUpstartScripts(commID)
+        except:
+            import sys, traceback
+            etype, value, _ = sys.exc_info()
+            msg = traceback.format_exception_only(etype, value)
+            log.msg(msg)
+            deferred.errback(msg)
+            return
         
         # Start container
-        deferred = Deferred()
+        _deferred = Deferred()
         
         def callback(reason):
             if reason.value.exitCode != 0:
                 log.msg(reason)
+                deferred.callback(None)
+            else:
+                deferred.errback(reason.getErrorMessage())
         
-        deferred.addCallback(callback)
+        _deferred.addCallback(callback)
         
-        log.msg('Start container...')
-        cmd = [ '/usr/bin/lxc-start',
-                '-n', commID,
-                '-f', os.path.join(self._confDir, commID, 'config'),
-                '-d' ]
-        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
+        try:
+            log.msg('Start container...')
+            cmd = [ '/usr/bin/lxc-start',
+                    '-n', commID,
+                    '-f', os.path.join(self._confDir, commID, 'config'),
+                    '-d' ]
+            self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
+        except:
+            import sys, traceback
+            etype, value, _ = sys.exc_info()
+            msg = traceback.format_exception_only(etype, value)
+            log.msg(msg)
+            deferred.errback(msg)
+            return
     
     def startContainer(self, commID, homeDir):
         """ Callback for message processor to stop a container.
         """
+        deferred = Deferred()
+        # TODO: Add callback to deferred to get information about the creation of the container
+        
         if commID in self._commIDs:
             log.msg('There is already a container registered under the same CommID.')
+            deferred.errback('There is already a container registered under the same CommID.')
             return
         
         self._commIDs.append(commID)
         #self._reactor.callInThread(self._startContainer, commID, homeDir)
-        self._startContainer(commID, homeDir)   # TODO: Temporary; switch to callInThread
+        self._startContainer(deferred, commID, homeDir)   # TODO: Temporary; switch to callInThread
     
-    def _stopContainer(self, commID):
+    def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.
         """
         # Stop container
-        deferred = Deferred()
+        _deferred = Deferred()
         
         def callback(reason):
+            error = None
+            
             if reason.value.exitCode != 0:
                 log.msg(reason)
+                error = reason.getErrorMessage()
             
-            # Delete config folder
-            shutil.rmtree(os.path.join(self._confDir, commID))
+            try:
+                # Delete config folder
+                shutil.rmtree(os.path.join(self._confDir, commID))
+                
+                # Remove commID from internal list
+                self._reactor.callFromThread(self._commIDs.remove, commID)
+            except:
+                import sys, traceback
+                etype, value, _ = sys.exc_info()
+                error = traceback.format_exception_only(etype, value)
             
-            # Remove commID from internal list
-            self._reactor.callFromThread(self._commIDs.remove, commID)
+            if error:
+                deferred.errback(error)
+            else:
+                deferred.callback(None)
         
-        deferred.addCallback(callback)
+        _deferred.addCallback(callback)
         
-        cmd = ['/usr/bin/lxc-stop', '-n', commID]
-        self._reactor.spawnProcess(LXCProtocol(deferred), cmd[0], cmd, env=os.environ)
-        
-        return deferred
+        try:
+            cmd = ['/usr/bin/lxc-stop', '-n', commID]
+            self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
+        except:
+            import sys, traceback
+            etype, value, _ = sys.exc_info()
+            msg = traceback.format_exception_only(etype, value)
+            log.msg(msg)
+            deferred.errback(msg)
+            return
     
     def stopContainer(self, commID):
         """ Callback for message processor to stop a container.
         """
+        deferred = Deferred()
+        # TODO: Add callback to deferred to get information about the destuction of the container
+        
         if commID not in self._commIDs:
             log.msg('There is no container registered under this CommID.')
+            deferred.errback('There is no container registered under this CommID.')
             return
         
         self._reactor.callInThread(self._stopContainer, commID)
@@ -334,9 +381,13 @@ class ContainerManager(object):
         deferreds = []
         
         for commID in self._commIDs:
-            deferreds.append(self._stopContainer(commID))
+            deferred = Deferred()
+            deferreds.append(deferred)
+            self._stopContainer(deferred, commID)
         
         deferredList = DeferredList(deferreds)
         deferredList.addCallback(event.set)
         
-        #event.wait()
+        log.msg('Wait for termination of all containers...')
+        event.wait()
+        log.msg('All containers terminated.')

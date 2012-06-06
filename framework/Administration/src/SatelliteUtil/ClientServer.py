@@ -142,9 +142,10 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             else:
                 self._strMsgHandle(json.loads(msg))
         except Exception:   # TODO: Refine Error handling
-            import traceback
+            import sys, traceback
+            etype, value, _ = sys.exc_info()
             super(WebSocketCloudEngineProtocol, self).sendMessage(
-                'Error: {0}'.format(traceback.format_exc())
+                traceback.format_exception_only(etype, value)
             )
     
     def _recursiveBinarySearch(self, multidict):
@@ -192,7 +193,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         limit = datetime.now() - timedelta(seconds=settings.MSG_QUQUE_TIMEOUT)
         
-        for i in xrange(len(self.self._incompleteMsgs)):
+        for i in xrange(len(self._incompleteMsgs)):
             if self._incompleteMsgs[i][2] > limit:
                 if i:
                     self._incompleteMsgs = self._incompleteMsgs[i:]
