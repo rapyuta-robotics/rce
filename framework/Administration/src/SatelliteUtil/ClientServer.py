@@ -23,6 +23,11 @@ from Robot import Robot
 class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the reCloudEngine.
     """
+    _CREATE_CONTAINER = 'CS'
+    _DESTROY_CONTAINER = 'CH'
+    _CHANGE_COMPONENT = 'CC'
+    _MESSAGE = 'CM'
+    
     def __init__(self, commManager, satelliteManager):
         """ Initialize the Protocol.
         """
@@ -52,15 +57,15 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         data = msg['data']
         
-        if msg['type']=='CS':
+        if msg['type']==self._CREATE_CONTAINER:
             if not self._robot:
                 self._robot = Robot(self._commManager, self._satelliteManager, self, msg['orig'])
             self._robot.createContainer(data['containerTag'])
         
-        elif msg['type'] == 'CH':
+        elif msg['type'] == self._DESTROY_CONTAINER:
             self._robot.destroyContainer(data['containerTag'])
         
-        elif msg['type'] == 'CC':
+        elif msg['type'] == self._CHANGE_COMPONENT:
             if 'addNodes' in data:
                 for nodeConfig in data['addNodes']:
                     self._robot.addNode(msg['dest'], nodeConfig)
@@ -88,7 +93,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 for paramName in data['deleteParam']:
                     self._robot.deleteParam(msg['dest'],paramName)
             
-        elif msg['type'] == 'CM':
+        elif msg['type'] == self._MESSAGE:
             uriList = self._recursiveURISearch(data['msg'])
             if uriList:
                 self._incompleteMsgs.append((msg, uriList, datetime.now()))
@@ -128,7 +133,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     def onMessage(self, msg, binary):    
         """ Method is called by the Autobahn engine when a message has been received
             from the client.
-        """      
+        """
         if binary:
             self._binaryMsgHandle(msg)
         else:
@@ -202,6 +207,6 @@ class WebSocketCloudEngineFactory(WebSocketServerFactory):
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection attempt is made.
         """
-        protocol = WebSocketCloudEngineProtocol(self._commManager, self._satelliteManager)
-        protocol.factory = self
-        return protocol
+        p = WebSocketCloudEngineProtocol(self._commManager, self._satelliteManager)
+        p.factory = self
+        return p

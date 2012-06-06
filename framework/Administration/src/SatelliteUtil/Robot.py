@@ -22,17 +22,8 @@
 #       
 #       
 
-# twisted specific imports
-from twisted.python import log
-from twisted.internet.defer import DeferredList
-
-# Python specific imports
-import os
-import uuid
-
 # Custom imports
 from Exceptions import InvalidRequest
-from Comm.CommUtil import validateAddress
 from Container import Container
 
 class Robot(object):
