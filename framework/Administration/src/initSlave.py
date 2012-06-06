@@ -71,7 +71,7 @@ class LoggerProtocol(ProcessProtocol):
         if self._stopCall:
             self._stopCall.cancel()
         
-        self._termDeferred.callback()
+        self._termDeferred.callback(None)
     
     def terminate(self, reactor):
         """ Method which is used to terminate the underlying process.
