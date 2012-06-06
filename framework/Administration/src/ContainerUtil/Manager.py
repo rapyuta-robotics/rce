@@ -367,17 +367,13 @@ class ContainerManager(object):
     def shutdown(self):
         """ Method is called when the manager is stopped.
         """
-        event = Event()
-        deferreds = []
-        
-        for commID in self._commIDs:
-            deferred = Deferred()
-            deferreds.append(deferred)
-            self._stopContainer(deferred, commID)
-        
-        deferredList = DeferredList(deferreds)
-        deferredList.addCallback(event.set)
-        
-        log.msg('Wait for termination of all containers...')
-        event.wait()
-        log.msg('All containers terminated.')
+        if self._commIDs:
+            deferreds = []
+            
+            for commID in self._commIDs:
+                deferred = Deferred()
+                deferreds.append(deferred)
+                self._stopContainer(deferred, commID)
+            
+            deferredList = DeferredList(deferreds)
+            return deferredList
