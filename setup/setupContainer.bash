@@ -71,13 +71,13 @@ EOF
 
 download_ubuntu()
 {
-    packages=apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,ssh,lsb-release,lxcguest,python-twisted-core
+    packages=apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,dhcp3-client,ssh,lsb-release
 	
 	### Local
-	mirror=
+	#mirror=
 	
 	### Rackspace
-	#mirror=http://mirror.rackspace.com/ubuntu/
+	mirror=http://mirror.rackspace.com/ubuntu/
 	
 	### Amacon EC2
 	#mirror=http://us-east-1.ec2.archive.ubuntu.com/ubuntu/
@@ -124,7 +124,7 @@ copy_ubuntu()
 
 install_ubuntu()
 {
-    cache="/var/cache/lxc/oneiric"
+    cache="/var/cache/lxc/precise"
     rootfs=$1
     mkdir -p /var/lock/subsys/
     (
@@ -168,7 +168,7 @@ install_ubuntu()
 
 clean()
 {
-    cache="/var/cache/lxc/oneiric"
+    cache="/var/cache/lxc/precise"
 
     if [ ! -e $cache ]; then
 	exit 0
