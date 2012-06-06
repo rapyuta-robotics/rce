@@ -113,7 +113,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         if binary:
             self._frontEndMsgHandler.binaryMsgHandle(msg)
         else:
-            msgPy = json.dumps(msg)
+            msgPy = json.loads(msg)
             # TODO: Handle Errors caused by invalid JSON strings
             self._frontEndMsgHandler.strMsgHandle(msgPy)
             
