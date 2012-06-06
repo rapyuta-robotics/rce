@@ -31,19 +31,20 @@ import sys
 
 # Custom imports
 import settings
+from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
 from LauncherUtil.Manager import LauncherManager
 
-def main(reactor, ip, commID, satelliteID, key):
+def main(reactor):
     # Start logger
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
 
     # Create Manager
-    commManager = CommManager(reactor, commID)
+    commManager = CommManager(reactor, MsgDef.LAUNCHER_ADDR)
     LauncherManager(commManager)
 
     # Initialize twisted

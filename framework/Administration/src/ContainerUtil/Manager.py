@@ -143,6 +143,10 @@ class ContainerManager(object):
                               '/opt/ros   {rootfsROS}   none   bind,ro 0 0'.format(
                                   rootfsROS=os.path.join(self._rootfs, 'opt/ros')
                               ),
+                              '{pyPath}    {rootfs}{pyPath}   none   bind 0 0'.format(
+                                  pyPath='/usr/lib/pymodules/python2.7/rospkg',
+                                  rootfs=self._rootfs
+                              ),
                               '{homeDir}   {rootfsHome}   none   bind 0 0'.format(
                                   homeDir=homeDir,
                                   rootfsHome=os.path.join(self._rootfs, 'home/ros')
