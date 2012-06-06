@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # twisted specific imports
+from twisted.python import log
 from twisted.internet.task import LoopingCall
 from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol
 
@@ -66,41 +67,42 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             self._robot.destroyContainer(data['containerTag'])
         
         elif msg['type'] == self._CHANGE_COMPONENT:
+            # TODO: Need new info for starting a node!
             if 'addNodes' in data:
                 for nodeConfig in data['addNodes']:
                     self._robot.addNode(msg['dest'], nodeConfig)
                 
             if 'removeNodes' in data:
-                for nodeID in data['removeNodes']:
-                    self._robot.removeNode(msg['dest'], nodeID)
+                for nodeTag in data['removeNodes']:
+                    self._robot.removeNode(msg['dest'], nodeTag)
                 
             if 'addInterfaces' in data:
                 for interfaceConfig in data['addInterfaces']:
                     self._robot.addInterface( msg['dest'],
+                                              interfaceConfig['name'],  # <- Interface Tag for simplicity equal to inteface name!
                                               interfaceConfig['name'],
                                               interfaceConfig['interfaceType'],
                                               interfaceConfig['className'] )
 
             if 'removeInterfaces' in data:
-                for interfaceID in data['removeInterfaces']:
-                    self._robot.removeInterface(msg['dest'], interfaceID)
+                for interfaceTag in data['removeInterfaces']:
+                    self._robot.removeInterface(msg['dest'], interfaceTag)
 
+            # TODO: Need also the parameter type as info for adding a parameter!
             if 'setParam' in data:
                 for k,v in  data['setParam'].items():
                     self._robot.setParam(msg['dest'], k, v)
                     
             if 'deleteParam' in data:
                 for paramName in data['deleteParam']:
-                    self._robot.deleteParam(msg['dest'],paramName)
+                    self._robot.deleteParam(msg['dest'], paramName)
             
         elif msg['type'] == self._MESSAGE:
             uriList = self._recursiveURISearch(data['msg'])
             if uriList:
                 self._incompleteMsgs.append((msg, uriList, datetime.now()))
             else:
-                self._robot.sendROSMsgToContainer( msg['dest'],
-                                                   data['interfaceName'],
-                                                   data['msg'] )
+                self._robot.sendROSMsgToContainer(msg['dest'], data)
         else:
             raise InvalidRequest('This type is not supported')
     
@@ -123,9 +125,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                     incompleteURIList.remove(incompleteUri)
                     
                     if not incompleteURIList:
-                        self._robot.sendROSMsgToContainer( msg['dest'],
-                                                           msg['data']['interfaceName'],
-                                                           msg['data']['msg'] )
+                        self._robot.sendROSMsgToContainer(msg['dest'], msg['data'])
                         self._incompleteMsgs.remove(incompleteMsg)
                     
                     return
@@ -134,16 +134,18 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """ Method is called by the Autobahn engine when a message has been received
             from the client.
         """
-        if binary:
-            self._binaryMsgHandle(msg)
-        else:
-            try:
+        log.msg('WebSocket: Received new message from robot.')
+        
+        try:
+            if binary:
+                self._binaryMsgHandle(msg)
+            else:
                 self._strMsgHandle(json.loads(msg))
-            except Exception:   # TODO: Refine Error handling
-                import traceback
-                super(WebSocketCloudEngineProtocol, self).sendMessage(
-                    'Error: {0}'.format(traceback.format_exc())
-                )
+        except Exception:   # TODO: Refine Error handling
+            import traceback
+            super(WebSocketCloudEngineProtocol, self).sendMessage(
+                'Error: {0}'.format(traceback.format_exc())
+            )
     
     def _recursiveBinarySearch(self, multidict):
         """ Internally used method to find binary data in outgoing messages.
@@ -190,9 +192,14 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         limit = datetime.now() - timedelta(seconds=settings.MSG_QUQUE_TIMEOUT)
         
-        for rm in [incompleteMsg for incompleteMsg in self._incompleteMsgs if incompleteMsg[2] < limit]:
-            self._incompleteMsgs.remove(rm)
-
+        for i in xrange(len(self.self._incompleteMsgs)):
+            if self._incompleteMsgs[i][2] > limit:
+                if i:
+                    self._incompleteMsgs = self._incompleteMsgs[i:]
+                    log.msg('{0} Incomplete message(s) have been dropped from cache.'.format(i))
+                
+                break
+    
 class WebSocketCloudEngineFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the reCloudEngine.
     """

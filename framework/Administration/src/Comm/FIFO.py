@@ -93,12 +93,10 @@ class ProducerFIFO(object):
         """
         limit = datetime.now() - timedelta(seconds=settings.MSG_QUQUE_TIMEOUT)
         
-        i = 0
-        
         for i in xrange(len(self._fifo)):
             if self._fifo[i][1] > limit:
+                if i:
+                    self._fifo = self._fifo[i:]
+                    log.msg('{0} Producer(s) has been dropped from queue for destination "{1}".'.format(i, self._dest))
+                
                 break
-        
-        if i:
-            self._fifo = self._fifo[i:]
-            log.msg('{0} Producer(s) has been dropped from queue for destination "{1}".'.format(i, self._dest))
