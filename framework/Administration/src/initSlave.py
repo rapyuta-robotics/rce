@@ -25,7 +25,7 @@
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.protocol import ProcessProtocol
-from twisted.internet.defer import Deferred
+from twisted.internet.defer import Deferred, DeferredList
 
 # Python specific imports
 import os, sys
@@ -38,10 +38,17 @@ class LoggerProtocol(ProcessProtocol):
     """ Simple ProcessProtocol which forwards the stdout of the subprocesses to the
         stdout of this process in a orderly fashion.
     """
-    def __init__(self):
+    _STOP_ESCALATION = [ ( 'INT',    5),
+                         ('TERM',    1),
+                         ('KILL', None) ]
+    
+    def __init__(self, termDeferred):
         """ Initialize the LoggerProtocol.
         """
         self._buff = ''
+        self._termDeferred = termDeferred
+        self._escalation = 0
+        self._stopCall = None
  
     def outReceived(self, data):
         """ Callback which is called by twisted when new data has arrived from subprocess.
@@ -58,23 +65,45 @@ class LoggerProtocol(ProcessProtocol):
         """
         if reason.value.exitCode != 0:
             log.msg(reason)
+            
+        self._escalation = -1
+        
+        if self._stopCall:
+            self._stopCall.cancel()
+        
+        self._termDeferred.callback()
+    
+    def terminate(self, reactor):
+        """ Method which is used to terminate the underlying process.
+        """
+        if self._escalation != -1:
+            escalation = self._STOP_ESCALATION[self._escalation]
+            self.transport.signalProcess(escalation[0])
+            
+            if escalation[1]:
+                self._escalationLvl += 1
+                reactor.callLater(self.terminate, escalation[1], reactor)
 
 def main(reactor):
     log.startLogging(sys.stdout)
     
     deferred = Deferred()
     
+    containerDeferred = Deferred()
+    containerProtocol = LoggerProtocol(containerDeferred)
+    satelliteDeferred = Deferred()
+    satelliteProtocol = LoggerProtocol(satelliteDeferred)
+    termDeferreds = DeferredList([containerDeferred, satelliteDeferred])
+    
     def callback(suffix):
-        cmd = [ '/usr/bin/python',
-                os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Container.py'),
+        cmd = [ os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Container.py'),
                 suffix ]
-        reactor.spawnProcess(LoggerProtocol(), cmd[0], cmd, env=os.environ) # uid=0, gid=0
+        reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
         
-        cmd = [ '/usr/bin/python',
-                os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Satellite.py'),
+        cmd = [ os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Satellite.py'),
                 suffix,
                 settings.IP_MASTER ]
-        reactor.spawnProcess(LoggerProtocol(), cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
+        reactor.spawnProcess(satelliteProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
     
     def errback(errMsg):
         log.msg(errMsg)
@@ -84,6 +113,14 @@ def main(reactor):
     deferred.addCallbacks(callback, errback)
     
     reactor.connectTCP(settings.IP_MASTER, settings.PORT_UID, UIDClientFactory(deferred))
+    
+    def shutdown():
+        containerProtocol.terminate(reactor)
+        satelliteProtocol.terminate(reactor)
+        return termDeferreds
+    
+    reactor.addSystemEventTrigger('before', 'shutdown', shutdown)
+    
     reactor.run()
 
 if __name__ == '__main__':
