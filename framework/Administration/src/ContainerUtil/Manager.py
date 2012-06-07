@@ -260,6 +260,7 @@ class ContainerManager(object):
             # Construct startup scripts
             self._createUpstartScripts(commID)
         except:
+            log.msg('Caught and exception when trying to create the config files for the container.')
             import sys, traceback
             etype, value, _ = sys.exc_info()
             msg = '\n'.join(traceback.format_exception_only(etype, value))
@@ -272,6 +273,7 @@ class ContainerManager(object):
         
         def callback(reason):
             if reason.value.exitCode != 0:
+                log.msg('Received reason with exit code != 0 after start of container.')
                 log.msg(reason)
                 deferred.errback(reason.getErrorMessage())
             else:
@@ -287,6 +289,7 @@ class ContainerManager(object):
                     '-d' ]
             self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
         except:
+            log.msg('Caught an exception when trying to start the container.')
             import sys, traceback #@Reimport
             etype, value, _ = sys.exc_info()
             msg = '\n'.join(traceback.format_exception_only(etype, value))
@@ -326,6 +329,7 @@ class ContainerManager(object):
             error = None
             
             if reason.value.exitCode != 0:
+                log.msg('Received reason with exit code != 0 after stopping container.')
                 log.msg(reason)
                 error = reason.getErrorMessage()
             
