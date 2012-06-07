@@ -275,7 +275,7 @@ class ContainerManager(object):
                 log.msg(reason)
                 deferred.errback(reason.getErrorMessage())
             else:
-                deferred.callback()
+                deferred.callback(None)
         
         _deferred.addCallbacks(callback, callback)
         
@@ -308,7 +308,7 @@ class ContainerManager(object):
         
         self._reactor.callInThread(self._startContainer, deferred, commID, homeDir)
         
-        def reportSuccess():
+        def reportSuccess(_):
             log.msg('Container successfully started.')
         
         def reportFailure(msg):
@@ -370,7 +370,7 @@ class ContainerManager(object):
         
         self._reactor.callInThread(self._stopContainer, deferred, commID)
         
-        def reportSuccess():
+        def reportSuccess(_):
             log.msg('Container successfully stopped.')
         
         def reportFailure(msg):
