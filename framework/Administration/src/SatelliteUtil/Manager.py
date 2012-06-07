@@ -45,6 +45,10 @@ from DBUtil.DBInterface import DBInterface
 
 from Converter.Core import Converter
 
+from ROSComponents.Node import Node
+from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
+from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
+
 class SatelliteManager(object):
     """ Manager which is used for the satellites nodes, which represent the communication
         relay for the container nodes on a single machine.
@@ -75,6 +79,16 @@ class SatelliteManager(object):
         self._pendingCommIDReq = []
         
         # Register Content Serializers
+        rosAdd = ROSAddMessage()
+        rosAdd.registerComponents([ Node,
+                                    ServiceInterface,
+                                    PublisherInterface,
+                                    SubscriberInterface,
+                                    IntParam,
+                                    StrParam,
+                                    FloatParam,
+                                    BoolParam,
+                                    FileParam ])
         self._commMngr.registerContentSerializers([ ConnectDirectiveMessage(),
                                                     GetCommIDRequestMessage(),
                                                     GetCommIDResponseMessage(),
@@ -82,7 +96,7 @@ class SatelliteManager(object):
                                                     StartContainerMessage(),
                                                     StopContainerMessage(),
                                                     #ContainerStatusMessage(),    # <- necessary?
-                                                    ROSAddMessage(),
+                                                    rosAdd,
                                                     ROSRemoveMessage(),
                                                     ROSMsgMessage() ])
         # TODO: Check if all these Serializers are necessary

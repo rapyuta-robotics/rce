@@ -275,7 +275,7 @@ class ContainerManager(object):
                 log.msg(reason)
                 deferred.errback(reason.getErrorMessage())
             else:
-                deferred.callback()
+                deferred.callback(None)
         
         _deferred.addCallbacks(callback, callback)
         
@@ -308,13 +308,13 @@ class ContainerManager(object):
         
         self._reactor.callInThread(self._startContainer, deferred, commID, homeDir)
         
-        def reportSuccess():
+        def reportSuccess(_):
             log.msg('Container successfully started.')
         
         def reportFailure(msg):
             pass
         
-        deferred.addCallback(reportSuccess, reportFailure)
+        deferred.addCallbacks(reportSuccess, reportFailure)
     
     def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.
@@ -370,13 +370,13 @@ class ContainerManager(object):
         
         self._reactor.callInThread(self._stopContainer, deferred, commID)
         
-        def reportSuccess():
+        def reportSuccess(_):
             log.msg('Container successfully stopped.')
         
         def reportFailure(msg):
             pass
         
-        deferred.addCallback(reportSuccess, reportFailure)
+        deferred.addCallbacks(reportSuccess, reportFailure)
     
     def shutdown(self):
         """ Method is called when the manager is stopped.
