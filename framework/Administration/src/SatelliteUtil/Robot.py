@@ -94,7 +94,7 @@ class Robot(object):
         container = self._containers.pop(containerTag)
         self._satelliteManager.unregisterContainer(container)
     
-    def addNode(self, containerTag, nodeTag, package, executable, nodeName):
+    def addNode(self, containerTag, nodeTag, package, executable, namespace):
         """ Add a node to the ROS environment in the container matching the
             given container tag.
             
@@ -112,15 +112,15 @@ class Robot(object):
             @param executable:  Name of executable which should be launched.
             @type  executable:  str
             
-            @param nodeName:    Name which the node should use as a ROS address
+            @param namespace:   Namesapce in which the node should use started
                                 in the environment.
-            @type  nodeName:    str
+            @type  namespace:   str
             
             @raise:     InvalidRequest if the nodeName is not a valid ROS name.
                         InvalidRequest if the container tag is not valid.
         """
         try:
-            self._containers[containerTag].addNode(nodeTag, package, executable, nodeName)
+            self._containers[containerTag].addNode(nodeTag, package, executable, namespace)
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     
@@ -143,7 +143,7 @@ class Robot(object):
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     
-    def addInterface(self, containerTag, interfaceTag, name, interfaceType, className):
+    def addInterface(self, containerTag, interfaceTag, address, interfaceType, className):
         """ Add an interface to the container matching the given container tag.
             
             @param containerTag:    Container tag which is used to identify the
@@ -153,8 +153,8 @@ class Robot(object):
             @param interfaceTag:    Tag which is used to identify the interface to add.
             @type  interfaceTag:    str
             
-            @param name:    ROS name/address which the interface should use.
-            @type  name:    str
+            @param address:     ROS name/address which the interface should use.
+            @type  address:     str
             
             @param interfaceType:   Type of the interface. Valid types are 'service', 'publisher',
                                     and 'subscriber'.
@@ -167,7 +167,7 @@ class Robot(object):
             @raise:     InvalidRequest if the container tag is not valid.
         """
         try:
-            self._containers[containerTag].addInterface(interfaceTag, name, className, interfaceType)
+            self._containers[containerTag].addInterface(interfaceTag, address, className, interfaceType)
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     
@@ -185,6 +185,40 @@ class Robot(object):
         """
         try:
             self._containers[containerTag].removeInterface(interfaceTag)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def activateInterface(self, interfaceTag)
+        """ Activate an interface to the container matching the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the interface should activated.
+            @type  containerTag:    str
+            
+            @param interfaceTag:    Tag which is used to identify the interface to activate.
+            @type  interfaceTag:    str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].activateInterface(interfaceTag, self._robotID, self._commManager.commID)
+        except KeyError:
+            raise InvalidRequest('Container tag is invalid.')
+    
+    def deactivateInterface(self, interfaceTag)
+        """ Deactivate an interface to the container matching the given container tag.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container in which the interface should deactivated.
+            @type  containerTag:    str
+            
+            @param interfaceTag:    Tag which is used to identify the interface to deactivate.
+            @type  interfaceTag:    str
+            
+            @raise:     InvalidRequest if the container tag is not valid.
+        """
+        try:
+            self._containers[containerTag].deactivateInterface(interfaceTag, self._robotID, self._commManager.commID)
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     

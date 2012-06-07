@@ -100,7 +100,7 @@ class Interface(object):
                         'tag'  : self._tag }
         self._container.send(msg)
     
-    def registerUser(self, uid):
+    def registerUser(self, target, commID):
         """ # TODO: Add description
         """
         if not self._ref:
@@ -109,15 +109,17 @@ class Interface(object):
         
         msg = Message()
         msg.msgType = MsgTypes.ROS_ADD_USER
-        msg.content = {} # TODO: Add correct content
+        msg.content = { 'tag'    : self._tag,
+                        'target' : target,
+                        'commID' : commID }
         self._container.send(msg)
         
-        self._ref.append(uid)
+        self._ref.append((target, commID))
     
-    def unregisterUser(self, uid):
+    def unregisterUser(self, target, commID):
         """ # TODO: Add description
         """
-        self._reg.remove(uid)
+        self._reg.remove((target, commID))
         
         if not self._ref:
             # There are no more references to this interface; therefore, remove it
@@ -125,7 +127,9 @@ class Interface(object):
         else:
             msg = Message()
             msg.msgType = MsgTypes.ROS_REMOVE_USER
-            msg.content = {} # TODO: Add correct content
+            msg.content = { 'tag'    : self._tag,
+                            'target' : target,
+                            'commID' : commID }
             self._container.send(msg)
     
     def send(self, msg, sender):

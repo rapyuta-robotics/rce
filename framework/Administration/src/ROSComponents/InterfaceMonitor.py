@@ -51,8 +51,8 @@ class _InterfaceMonitor(object):
         self._manager = manager
         self.ready = False
         
-        # Dictionary of all push receivers
-        self.pushReceivers = {}
+        # List of all push receivers
+        self.pushReceivers = []
     
     @property
     def tag(self):
@@ -83,33 +83,39 @@ class _InterfaceMonitor(object):
         self._manager.registerInterface(self)
         self.ready = True
     
-    def addPushReceiver(self, commID, name):
+    def addPushReceiver(self, commID, tag):
         """ Add a receiver which should be automatically supplied with the messages.
             
             @param dest:    Communication ID of destination.
             @type  dest:    str
             
-            @param name:    Name of the interface where the message should be published.
-            @type  name:    str
+            @param tag:     Name of the interface where the message should be published or
+                            name of the receiving user.
+            @type  tag:     str
         """
-        if commID in self.pushReceivers:
-            raise InternalError('"{0}" is already registered as a receiver for this interface.'.format(commID))
+        receiver = (commID, tag)
         
-        self.pushReceivers[commID] = name
+        if receiver in self.pushReceivers:
+            raise InternalError('The same receiver is already registered in this interface.')
+        
+        self.pushReceivers.append(receiver)
     
-    def removePushReceiver(self, commID, name):
+    def removePushReceiver(self, commID, tag):
         """ Remove a receiver which will be no longer automatically supplied with the messages.
             
             @param dest:    Communication ID of destination.
             @type  dest:    str
             
-            @param name:    Name of the interface where the message should be published.
-            @type  name:    str
+            @param tag:     Name of the interface where the message should be published or
+                            name of the receiving user.
+            @type  tag:     str
         """
-        if commID not in self.pushReceivers:
-            raise InternalError('"{0}" is not registered as a receiver for this interface.'.format(commID))
+        receiver = (commID, tag)
         
-        del self.pushReceivers[commID]
+        if receiver not in self.pushReceivers:
+            raise InternalError('The receiver is not registered in this interface.')
+        
+        self.pushReceivers.remove(receiver)
     
     def _send(self, msg, pushResult):
         """ This method should be overwritten to implement the send functionality.

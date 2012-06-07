@@ -39,9 +39,10 @@ print(cmd_CH_js)
 
 # Configuration Message - Change Components - For a specific container 
 nodeConfigs = [{
-    "nodeID":"nid",
-    "nodeName":"nn",
-    "namespaceID":"ns",
+    "pkg":"name of package",
+    "exe":"name of executable"
+    "nodeTag":"nn",
+    "namespace":"ns",
     }]
 cmd_CC = {
             "type":"CC",
@@ -49,13 +50,13 @@ cmd_CC = {
             "orig":"robotUniqueID",
             "data":{
                     "addNodes":nodeConfigs,
-                    "removeNodes":["nameSpaceID/nodeID"],
+                    "removeNodes":["namespace/exe"],
                     "addInterfaces":[{"name":"inm",
                                     "interfaceType":"type", # Options: Publisher/Subscriber/Service 
                                     "className":"className"} # msgType for Publisher/Subscriber | srvType for Service
                                     ],
-                    "removeInterfces":["inm"],
-                    "setParam":{"paramName":"paramValue"},
+                    "removeInterfaces":["inm"],
+                    "setParam":{"paramName":["paramValue", "paramType"]},
                     "deleteParam" : ["paramName"]
                     }
             }
@@ -64,6 +65,17 @@ cmd_CC = {
 
 cmd_CC_js = json.dumps(cmd_CC)
 print(cmd_CC_js)
+
+cmd_CI = {
+			"type":"CL",
+            "dest":"containerTag",
+            "orig":"robotUniqueID",
+            "data":{
+                    "itag":"bool: True <-> Actiavte Imterface; False <-> Deactiavate Interface",
+                    }
+}
+
+cmd_CI_jsg = json.dumps(cmd_CI)
 
 # Data Messages
 msg = {"linear":{"x":0,"y":0,"z":0},"angular":{"x":0,"y":0,"z":0}};

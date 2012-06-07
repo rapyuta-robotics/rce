@@ -27,6 +27,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     _CREATE_CONTAINER = 'CS'
     _DESTROY_CONTAINER = 'CH'
     _CHANGE_COMPONENT = 'CC'
+    _INTERFACE_STATE = 'CI'
     _MESSAGE = 'CM'
     
     def __init__(self, commManager, satelliteManager):
@@ -67,10 +68,9 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             self._robot.destroyContainer(data['containerTag'])
         
         elif msg['type'] == self._CHANGE_COMPONENT:
-            # TODO: Need new info for starting a node!
             if 'addNodes' in data:
                 for nodeConfig in data['addNodes']:
-                    self._robot.addNode(msg['dest'], nodeConfig)
+                    self._robot.addNode(msg['dest'], data['nodeTag'], data['pkg'], data['exe'], data['namespace'])
                 
             if 'removeNodes' in data:
                 for nodeTag in data['removeNodes']:
@@ -88,15 +88,21 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 for interfaceTag in data['removeInterfaces']:
                     self._robot.removeInterface(msg['dest'], interfaceTag)
 
-            # TODO: Need also the parameter type as info for adding a parameter!
             if 'setParam' in data:
                 for k,v in  data['setParam'].items():
-                    self._robot.setParam(msg['dest'], k, v)
+                    self._robot.setParam(msg['dest'], k, v[0], v[1])
                     
             if 'deleteParam' in data:
                 for paramName in data['deleteParam']:
                     self._robot.deleteParam(msg['dest'], paramName)
-            
+        
+        elif msg['type'] == self._INTERFACE_STATE:
+			for interfaceTag, activate in data.iteritems():
+				if activate:
+					self._robot.activateInterface(msg['dest'], interfaceTag)
+				else:
+					self._robot.deactivateInterface(msg['dest'], interfaceTag)
+			
         elif msg['type'] == self._MESSAGE:
             uriList = self._recursiveURISearch(data['msg'])
             if uriList:

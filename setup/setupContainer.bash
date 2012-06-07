@@ -71,7 +71,7 @@ EOF
 
 download_ubuntu()
 {
-    packages=apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,dhcp3-client,ssh,lsb-release
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,dhcp3-client,ssh,lsb-release,language-pack-en
 	
 	### Local
 	#mirror=

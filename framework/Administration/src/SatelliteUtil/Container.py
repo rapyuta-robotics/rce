@@ -303,7 +303,7 @@ class Container(object):
         
         del self._interfaces[interfaceTag]
     
-    def activateInterface(self, interfaceTag, user):
+    def activateInterface(self, interfaceTag, target, commID):
         """ Activate an interface for a user.
             
             # TODO: Add description
@@ -312,18 +312,18 @@ class Container(object):
             raise InternalError('Container has to be connected before an interface can be activated.')
         
         try:
-            self._interfaces[interfaceTag].registerUser(user)
+            self._interfaces[interfaceTag].registerUser(target, commID)
         except KeyError:
             raise InternalError('Can not activate an interface which does not exist.')
     
-    def deactivateInterface(self, interfaceTag, user):
+    def deactivateInterface(self, interfaceTag, target, commID):
         """ # TODO: Add description
         """
         if not self._connected:
             raise InternalError('Container has to be connected before an interface can be deactivated.')
         
         try:
-            self._interfaces[interfaceTag].unregisterUser(user)
+            self._interfaces[interfaceTag].unregisterUser(target, commID)
         except KeyError:
             raise InternalError('Can not deactivate an interface which does not exist.')
     

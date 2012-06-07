@@ -106,15 +106,15 @@ class ROSManager(object):
         
         return self._interfaces[tag]
     
-    def addInterfaceUser(self, tag, user, commID):
+    def addInterfaceUser(self, tag, target, commID):
         """ # TODO: Add description.
         """
-        self.getInterface(tag).addPushReceiver(commID, user)
+        self.getInterface(tag).addPushReceiver(commID, target)
     
-    def removeInterfaceUser(self, tag, user, commID):
+    def removeInterfaceUser(self, tag, target, commID):
         """ # TODO: Add description.
         """
-        self.getInterface(tag).removePushReceiver(commID, user) # TODO: Not so good...
+        self.getInterface(tag).removePushReceiver(commID, target)
     
     def addParameter(self, parameter):
         """ Callback for Parameter instance to register the parameter.

@@ -116,7 +116,7 @@ class ROSAddUserProcessor(ROSProcessorBase):
     
     def processMessage(self, msg):
         msg = msg.content
-        self.manager.addInterfaceUser(msg['tag'], msg['user'])
+        self.manager.addInterfaceUser(msg['tag'], msg['target'], msg['commID'])
 
 class ROSRemoveUserProcessor(ROSProcessorBase):
     """ Message processor to remove an user from an interface.
@@ -125,7 +125,7 @@ class ROSRemoveUserProcessor(ROSProcessorBase):
     
     def processMessage(self, msg):
         msg = msg.content
-        self.manager.removeInterfaceUser(msg['tag'], msg['user'])
+        self.manager.removeInterfaceUser(msg['tag'], msg['target'], msg['commID'])
 
 class ROSMessageContainerProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message in the container node.
