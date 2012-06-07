@@ -25,6 +25,7 @@
 # Custom imports
 from Exceptions import InvalidRequest
 from Container import Container
+import ClientMsgTypes
 
 class Robot(object):
     """ Class which represents a robot. It is associated with a websocket connection.
@@ -289,8 +290,28 @@ class Robot(object):
                                     from which the message originated.
             @type  containerTag:    str
             
-            @param msg:     Corresponds to the dictionary of the field 'data' of the received
-                            message. (Necessary keys: type, msgID, interfaceTag, msg)
+            @param msg:     Corresponds to the dictionary of the field 'data' of the message.
+                            (Necessary keys: type, msgID, interfaceTag, msg)
             @type  msg:     { str : ... }
         """
-        self._connection.sendMessage(msg)
+        self._connection.sendMessage({ 'type' : ClientMsgTypes.MESSAGE,
+                                       'dest' : self._robotID,
+                                       'orig' : containerTag,
+                                       'data' : msg })
+    
+    def sendContainerUpdate(self, containerTag, status):
+        """ Method is called when a container status update should be sent to
+            the robot.
+            
+            @param containerTag:    Container tag which is used to identify the
+                                    container for which an update is given.
+            @type  containerTag:    str
+            
+            @param status:      New status of the container as a bool.
+                                    True <=> Connected; False <=> Not Connected.
+            @type  status:      bool
+        """
+        self._connection.sendMessage({ 'type' : ClientMsgTypes.STATUS_CONTAINER,
+                                       'dest' : self._robotID,
+                                       'orig' : '$$$$$$',
+                                       'data' : { containerTag : status } })

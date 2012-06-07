@@ -20,16 +20,11 @@ except ImportError:
 import settings
 from Exceptions import InvalidRequest
 from Robot import Robot
+import ClientMsgTypes
 
 class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the reCloudEngine.
     """
-    _CREATE_CONTAINER = 'CS'
-    _DESTROY_CONTAINER = 'CH'
-    _CHANGE_COMPONENT = 'CC'
-    _INTERFACE_STATE = 'CI'
-    _MESSAGE = 'CM'
-    
     def __init__(self, commManager, satelliteManager):
         """ Initialize the Protocol.
         """
@@ -59,15 +54,15 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         data = msg['data']
         
-        if msg['type']==self._CREATE_CONTAINER:
+        if msg['type'] == ClientMsgTypes.CREATE_CONTAINER:
             if not self._robot:
                 self._robot = Robot(self._commManager, self._satelliteManager, self, msg['orig'])
             self._robot.createContainer(data['containerTag'])
         
-        elif msg['type'] == self._DESTROY_CONTAINER:
+        elif msg['type'] == ClientMsgTypes.DESTROY_CONTAINER:
             self._robot.destroyContainer(data['containerTag'])
         
-        elif msg['type'] == self._CHANGE_COMPONENT:
+        elif msg['type'] == ClientMsgTypes.CHANGE_COMPONENT:
             if 'addNodes' in data:
                 for node in data['addNodes']:
                     self._robot.addNode(msg['dest'], node['nodeTag'], node['pkg'], node['exe'], node['namespace'])
@@ -96,14 +91,14 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 for paramName in data['deleteParam']:
                     self._robot.deleteParam(msg['dest'], paramName)
         
-        elif msg['type'] == self._INTERFACE_STATE:
+        elif msg['type'] == ClientMsgTypes.INTERFACE_STATE:
             for interfaceTag, activate in data.iteritems():
                 if activate:
                     self._robot.activateInterface(msg['dest'], interfaceTag)
                 else:
                     self._robot.deactivateInterface(msg['dest'], interfaceTag)
         
-        elif msg['type'] == self._MESSAGE:
+        elif msg['type'] == ClientMsgTypes.MESSAGE:
             uriList = self._recursiveURISearch(data['msg'])
             if uriList:
                 self._incompleteMsgs.append((msg, uriList, datetime.now()))

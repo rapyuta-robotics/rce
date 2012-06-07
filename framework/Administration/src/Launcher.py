@@ -39,7 +39,8 @@ from LauncherUtil.Manager import LauncherManager
 
 def main(reactor):
     # Start logger
-    log.startLogging(sys.stdout)
+    f = open('launcher.log', 'w')
+    log.startLogging(f)
     
     log.msg('Start initialization...')
 

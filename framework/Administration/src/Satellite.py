@@ -101,7 +101,7 @@ def main(reactor, ip, uid):
     # Client for connection to Container Node
     factory = ReappengineClientFactory( commManager,
                                         MsgDef.PREFIX_CONTAINER_ADDR + uid,
-                                        BaseRoutingTrigger(commManager) )
+                                        EnvironmentRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_STATUS ])
     #reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)

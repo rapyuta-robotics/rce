@@ -18,7 +18,7 @@ cmd_CSR = {
             "type":"CSR",
             "dest":"robotUniqueID",
             "orig":"$$$$$$",
-            "data":{"containerTag":"cTag"} 
+            "data":{"cTag":"bool: True <-> Connected; False <-> not Connected"} 
             }
 
 cmd_CSR_js = json.dumps(cmd_CSR)

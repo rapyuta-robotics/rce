@@ -102,8 +102,10 @@ class Container(object):
                 raise InvalidRequest('Tried to set container to connected which already is registered as connected.')
             
             self._connected = True
+            self._robot.sendContainerUpdate(self._tag, True)
         else:
             self._connected = False
+            self._robot.sendContainerUpdate(self._tag, False)
     
     def start(self):
         """ Send a Request to start the container.
