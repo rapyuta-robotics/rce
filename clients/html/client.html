@@ -230,6 +230,28 @@ function loadCC(){
 	}
 }
 
+
+function loadCI(){
+	//if(robotStatus == "Container Assigned"){
+	if(true){
+		var data = new Object();
+		data.itag = true;
+		
+		var cmd_CI = new Object();
+		cmd_CI.type = 'CI';
+		cmd_CI.dest = 'containerTag';
+		cmd_CI.orig = 'robotUniqueID';
+		cmd_CI.data = data;
+		
+		
+		jsonStr = JSON.stringify(cmd_CI);
+		SetCommand(jsonStr);
+	}else{
+		raiseError("Can not send other msgs before creating a container");
+	}
+}
+
+
 function raiseError(error){
 	document.getElementById('errorMsg').innerText = error;
 }
@@ -279,6 +301,9 @@ function updateContainerID(id){
       <button onclick='loadCC(); return false'>load sample CC msg</button><br>
       Send a configure component request to the RoboEarth Cloud Engine<br>
       ---<br>
+      <button onclick='loadCI(); return false'>load sample CI msg</button><br>
+      Register as a receiver for the Interface (type Publisher)<br>
+      ---<br>
       <button onclick='loadCM(); return false'>load sample CM msg</button><br>
       Send a data message to the RoboEarth Cloud Engine<br>
       ---<br>
@@ -289,7 +314,7 @@ function updateContainerID(id){
 		</div>
 		<div class="col2">
       <br>Cloud Engine Response (JSON)<br>
-			<textarea rows="33" cols="40" id='box2'></textarea><br>
+			<textarea rows="40" cols="40" id='box2'></textarea><br>
 		</div> 
 	</div> 
 	<div class="footer">
