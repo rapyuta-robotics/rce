@@ -140,20 +140,13 @@ class ContainerManager(object):
                               'sysfs    {sysfs}       sysfs    defaults            0 0'.format(
                                   sysfs=os.path.join(self._rootfs, 'sys')
                               ),
-                              '/opt/ros    {rootfsROS}    none    bind,ro 0 0'.format(
-                                  rootfsROS=os.path.join(self._rootfs, 'opt/ros')
-                              ),
-                              '{pyPath}    {rootfs}{pyPath}    none    bind 0 0'.format(
-                                  pyPath='/usr/lib/pymodules/python2.7/rospkg',
-                                  rootfs=self._rootfs
-                              ),
                               '{homeDir}    {rootfsHome}    none    bind 0 0'.format(
                                   homeDir=homeDir,
                                   rootfsHome=os.path.join(self._rootfs, 'home/ros')
                               ),
                               '{srcDir}    {rootfsLib}    none    bind,ro 0 0'.format(
                                   srcDir=self._srcRoot,
-                                  rootfsLib=os.path.join(self._rootfs, 'opt/rce')
+                                  rootfsLib=os.path.join(self._rootfs, 'opt/rce/src')
                               ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstartComm'),
@@ -190,9 +183,9 @@ class ContainerManager(object):
                               '\t'+' '.join([ 'start-stop-daemon',
                                               '--start',
                                               '-c', 'rce:rce',
-                                              #'-d', '/opt/rce/framework/Administration/src',
+                                              '-d', '/opt/rce/.home',
                                               '--retry', '5',
-                                              '--exec', '/opt/rce/framework/Administration/src/Environment.py',
+                                              '--exec', '/opt/rce/src/Environment.py',
                                               '--',
                                               commID,
                                               '{0}{1}'.format( MsgDef.PREFIX_SATELLITE_ADDR,
@@ -226,7 +219,7 @@ class ContainerManager(object):
                                               '-c', 'ros:ros',
                                               '-d', '/home/ros',
                                               '--retry', '5',
-                                              '--exec', '/opt/rce/framework/Administration/src/Launcher.py' ]),
+                                              '--exec', '/opt/rce/src/Launcher.py' ]),
                               'end script',
                               '' ])
        

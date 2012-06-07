@@ -65,7 +65,7 @@ ROOTFS = '/opt/rce/container/rootfs'
 CONF_DIR = '/opt/rce/container/config'
 
 # Absolute path to source root directory
-ROOT_DIR = '/opt/rce/reappengine'
+ROOT_DIR = '/opt/rce/reappengine/framework/Administration/src'
 
 # Time interval in which the newest load information are sent to the master node/load balancer
 LOAD_INFO_UPDATE = 5
