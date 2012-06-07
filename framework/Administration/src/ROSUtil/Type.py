@@ -27,6 +27,8 @@ from zope.interface import implements
 from zope.interface.verify import verifyClass
 from zope.interface.exceptions import Invalid
 
+from twisted.python import log
+
 # Custom imports
 from Exceptions import InternalError, SerializationError
 from Comm.Message.Interfaces import IContentSerializer
@@ -83,12 +85,16 @@ class ROSAddMessage(object):
         if not isinstance(data, Cls):
             raise SerializationError('The object is of invalid type.')
         
+        log.msg('Serialized an AddROSMessage with type "{0}" (1).'.format(data.IDENTIFIER, len(data.IDENTIFIER)))
+        
         s.addIdentifier(data.IDENTIFIER, 1)
         data.serialize(s)
     
     def deserialize(self, s):
         try:
-            Cls = self._componentCls[s.getIdentifier(1)]
+            uid = s.getIdentifier(1)
+            log.msg('Deserialize an AddROSMessage with type "{0}" (1).'.format(uid))
+            Cls = self._componentCls[uid]
         except KeyError:
             raise SerializationError('''The object's class is not registered.''')
         
