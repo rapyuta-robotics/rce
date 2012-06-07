@@ -278,7 +278,7 @@ class ContainerManager(object):
             else:
                 deferred.errback(reason.getErrorMessage())
         
-        _deferred.addCallback(callback)
+        _deferred.addCallbacks(callback, callback)
         
         try:
             log.msg('Start container...')
@@ -339,7 +339,7 @@ class ContainerManager(object):
             else:
                 deferred.callback(None)
         
-        _deferred.addCallback(callback)
+        _deferred.addCallbacks(callback, callback)
         
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', commID]
