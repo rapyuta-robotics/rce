@@ -99,11 +99,11 @@ def main(reactor):
     termDeferreds = DeferredList([containerDeferred, satelliteDeferred])
     
     def callback(suffix):
-        cmd = [ os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Container.py'),
+        cmd = [ os.path.join(settings.ROOT_DIR, 'Container.py'),
                 suffix ]
         reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
         
-        cmd = [ os.path.join(settings.ROOT_DIR, 'framework/Administration/src/Satellite.py'),
+        cmd = [ os.path.join(settings.ROOT_DIR, 'Satellite.py'),
                 suffix,
                 settings.IP_MASTER ]
         reactor.spawnProcess(satelliteProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
