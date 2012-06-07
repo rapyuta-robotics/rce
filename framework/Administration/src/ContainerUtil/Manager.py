@@ -159,9 +159,9 @@ class ContainerManager(object):
                                   pkgDir=self._pkgRoot,
                                   rootfsPkgs=os.path.join(self._rootfs, 'opt/rce/packages')
                               ),
-                              '{logDir}    {rootfsLog}    none    bind 0 0'.format(
-                                  logDir=os.path.join(self._confDir, commID),
-                                  rootfsLog=os.path.join(self._rootfs, 'opt/rce/data')
+                              '{dataDir}    {rootfsData}    none    bind 0 0'.format(
+                                  dataDir=os.path.join(self._dataDir, commID),
+                                  rootfsData=os.path.join(self._rootfs, 'opt/rce/data')
                               ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstartComm'),
@@ -194,6 +194,10 @@ class ContainerManager(object):
                               '\t. /etc/environment',
                               '\t. /opt/ros/fuerte/setup.sh',
                               '\tROS_PACKAGE_PATH=/opt/rce/packages:$ROS_PACKAGE_PATH',
+                              '\t',
+                              '\t# need to switch owner and access of temporary data dir',
+                              '\tchown rce:rce /opt/rce/data',
+                              #'\tchmod 700 /opt/rce/data',
                               '\t',
                               '\t# start environment node',
                               '\t'+' '.join([ 'start-stop-daemon',
@@ -256,7 +260,7 @@ class ContainerManager(object):
             return
         
         # Create folder for temporary data
-        dataDir = os.path.join(self._confDir, commID)
+        dataDir = os.path.join(self._dataDir, commID)
         
         if os.path.isdir(dataDir):
             msg = 'There exists already a configuration directory with the name "{0}".'.format(commID)
@@ -268,6 +272,7 @@ class ContainerManager(object):
             log.msg('Create files and directories...')
             os.mkdir(confDir)
             os.mkdir(dataDir)
+            os.chmod(dataDir, 0700)
             
             # Construct config file
             self._createConfigFile(commID)

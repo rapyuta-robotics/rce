@@ -42,6 +42,7 @@ class MessageFIFO(object):
         """ Built-in method to add another FIFO to this one.
         """
         self._buf += fifo._buf
+        return self
     
     def push(self, data):
         """ Add data to the FIFO.
