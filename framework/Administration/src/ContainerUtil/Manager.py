@@ -61,12 +61,16 @@ class ContainerManager(object):
         
         # Validate loaded directories from settings
         self._confDir = settings.CONF_DIR
+        self._dataDir = settings.DATA_DIR
         self._rootfs = settings.ROOTFS
         self._srcRoot = settings.ROOT_SRC_DIR
         self._pkgRoot = settings.ROOT_PKG_DIR
         
         if not os.path.isabs(self._confDir):
             raise ValueError('Configuration directory is not an absolute path.')
+        
+        if not os.path.isabs(self._dataDir):
+            raise ValueError('Data directory is not an absolute path.')
         
         if not os.path.isabs(self._rootfs):
             raise ValueError('Root file system directory is not an absolute path.')
@@ -155,6 +159,10 @@ class ContainerManager(object):
                                   pkgDir=self._pkgRoot,
                                   rootfsPkgs=os.path.join(self._rootfs, 'opt/rce/packages')
                               ),
+                              '{logDir}    {rootfsLog}    none    bind 0 0'.format(
+                                  logDir=os.path.join(self._confDir, commID),
+                                  rootfsLog=os.path.join(self._rootfs, 'opt/rce/data')
+                              ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstartComm'),
                                   initDir=os.path.join(self._rootfs, 'etc/init/rceComm.conf')
@@ -242,14 +250,24 @@ class ContainerManager(object):
         confDir = os.path.join(self._confDir, commID)
         
         if os.path.isdir(confDir):
-            msg = 'There exists already a directory with the name "{0}".'.format(commID)
+            msg = 'There exists already a configuration directory with the name "{0}".'.format(commID)
+            log.msg(msg)
+            deferred.errback(msg)
+            return
+        
+        # Create folder for temporary data
+        dataDir = os.path.join(self._confDir, commID)
+        
+        if os.path.isdir(dataDir):
+            msg = 'There exists already a configuration directory with the name "{0}".'.format(commID)
             log.msg(msg)
             deferred.errback(msg)
             return
         
         try:
-            log.msg('Create files...')
+            log.msg('Create files and directories...')
             os.mkdir(confDir)
+            os.mkdir(dataDir)
             
             # Construct config file
             self._createConfigFile(commID)
@@ -315,7 +333,7 @@ class ContainerManager(object):
             log.msg('Container successfully started.')
         
         def reportFailure(msg):
-            pass
+            log.msg('Container could not be started: {0}.'.format(msg))
         
         deferred.addCallbacks(reportSuccess, reportFailure)
     
@@ -336,6 +354,9 @@ class ContainerManager(object):
             try:
                 # Delete config folder
                 shutil.rmtree(os.path.join(self._confDir, commID))
+                
+                # Delete data folder
+                shutil.rmtree(os.path.join(self._dataDir, commID))
                 
                 # Remove commID from internal list
                 self._reactor.callFromThread(self._commIDs.remove, commID)
@@ -378,7 +399,7 @@ class ContainerManager(object):
             log.msg('Container successfully stopped.')
         
         def reportFailure(msg):
-            pass
+            log.msg('Container could not be stopped: {0}.'.format(msg))
         
         deferred.addCallbacks(reportSuccess, reportFailure)
     

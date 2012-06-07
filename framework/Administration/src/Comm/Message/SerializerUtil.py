@@ -182,9 +182,8 @@ class Serializer(object):
         if not isinstance(fifo, MessageFIFO):
             raise SerializationError('fifo is not of type MessageFIFO.')
         
-        buf = fifo.getMsg()
-        self.addInt(len(buf))
-        self._buf += buf
+        self.addInt(len(fifo))
+        self._buf += fifo
     
     def getMsg(self):
         """ Get the message which has been assembled until now.
