@@ -82,15 +82,15 @@ CH_data.containerTag = "cTag01"
 cmd_CH.data=CH_data;
 
 window.onload = function() {
-  var wsuri = "ws://198.101.199.174:9000/";
+	var wsuri = "ws://198.101.199.174:9000/";
 	if ("WebSocket" in window) {
-		webSocket = new WebSocket(wsuri);
-		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+		var webSocket = new WebSocket(wsuri);
+		updateRobotStatus("Trying to connect ...");
 		//TODO: Is it really establised ? 
 	}else {
 		//Firefox currently prefixes the WebSocket object
-		webSocket = new MozWebSocket(wsuri);
-		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+		var webSocket = new MozWebSocket(wsuri);
+		updateRobotStatus("Trying to connect ...");
 	}
 	
 	webSocket.onmessage = function(e) {
@@ -105,6 +105,10 @@ window.onload = function() {
 			 updateContainerID(msg.data.containerID);
 		}
 	}
+	
+	webSocket.onopen = function() {
+		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+	};
 }
 
 function sendCommand() {
@@ -199,36 +203,70 @@ function loadCM(){
 		raiseError("Can not send other msgs before creating a container");
 	}
 }
+  
 
 function loadCC(){
 	//if(robotStatus == "Container Assigned"){
 	if(true){
-		var params = new Object();
-		params.key1 = 'value1';
-		params.key2 = 'value2';
+		var param = new Object();
+		param.paramName = 'pNm';
+		param.paramValue = 'value2';
+		param.paramType = 'pType';
 	
 		var nodeConfig1 = new Object()
-		nodeConfig1.nodeID = 'nid1';
-		nodeConfig1.nodeName = 'nn1';
-		nodeConfig1.namespaceID = 'ns1';
-		nodeConfig1.parameters = params;
+		nodeConfig1.pkg = 'pkgnm';
+		nodeConfig1.exe = 'exenm';
+		nodeConfig1.nodeTag = 'nTag';
+		nodeConfig1.namespace = 'ns1';
 	
-		var nodeConfig = new Array(nodeConfig1);
+		var nodeConfigs = new Array(nodeConfig1);
+		
+		var interfaceConfig = new Object();
+		interfaceConfig.interfaceName = 'iNm';
+		interfaceConfig.interfaceType = 'iType';
+		interfaceConfig.className = 'clsNm'
 	
 		var cmd_CC = new Object();
 		cmd_CC.type="CC";
-		cmd_CC.dest="$$$$$$";
-		cmd_CC.orig=robotUniqueID;
+		cmd_CC.dest="containerTag";
+		cmd_CC.orig="robotUniqueID";
+		
 		cmd_CC.data = new Object();
-		cmd_CC.data.add = nodeConfig;
-		cmd_CC.data.remove = new Array("ns2/nid1");
-
+		cmd_CC.data.addNodes = new Array(nodeConfig1);
+		cmd_CC.data.removeNodes = new Array("ns2/nid1");
+		cmd_CC.data.addInterfaces = new Array(interfaceConfig)
+		cmd_CC.data.removeInterface = new Array("iNm");
+		cmd_CC.data.setParam = new Array(param);
+		cmd_CC.data.deleteParam = new Array("pNm");
+		
 		jsonStr = JSON.stringify(cmd_CC);
 		SetCommand(jsonStr);
 	}else{
 		raiseError("Can not send other msgs before creating a container");
 	}
 }
+
+
+function loadCI(){
+	//if(robotStatus == "Container Assigned"){
+	if(true){
+		var data = new Object();
+		data.itag = true;
+		
+		var cmd_CI = new Object();
+		cmd_CI.type = 'CI';
+		cmd_CI.dest = 'containerTag';
+		cmd_CI.orig = 'robotUniqueID';
+		cmd_CI.data = data;
+		
+		
+		jsonStr = JSON.stringify(cmd_CI);
+		SetCommand(jsonStr);
+	}else{
+		raiseError("Can not send other msgs before creating a container");
+	}
+}
+
 
 function raiseError(error){
 	document.getElementById('errorMsg').innerText = error;
@@ -279,6 +317,9 @@ function updateContainerID(id){
       <button onclick='loadCC(); return false'>load sample CC msg</button><br>
       Send a configure component request to the RoboEarth Cloud Engine<br>
       ---<br>
+      <button onclick='loadCI(); return false'>load sample CI msg</button><br>
+      Register as a receiver for the Interface (type Publisher)<br>
+      ---<br>
       <button onclick='loadCM(); return false'>load sample CM msg</button><br>
       Send a data message to the RoboEarth Cloud Engine<br>
       ---<br>
@@ -289,7 +330,7 @@ function updateContainerID(id){
 		</div>
 		<div class="col2">
       <br>Cloud Engine Response (JSON)<br>
-			<textarea rows="33" cols="40" id='box2'></textarea><br>
+			<textarea rows="40" cols="40" id='box2'></textarea><br>
 		</div> 
 	</div> 
 	<div class="footer">
