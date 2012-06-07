@@ -153,7 +153,7 @@ class ContainerManager(object):
                                   rootfsLib=os.path.join(self._rootfs, 'opt/rce/src')
                               ),
                               '{pkgDir}    {rootfsPkgs}    none    bind,ro 0 0'.format(
-                                  srcDir=self._pkgRoot,
+                                  pkgDir=self._pkgRoot,
                                   rootfsPkgs=os.path.join(self._rootfs, 'opt/rce/packages')
                               ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
