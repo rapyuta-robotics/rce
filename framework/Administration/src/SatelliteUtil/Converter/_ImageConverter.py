@@ -30,9 +30,15 @@ from zope.interface import implements
 
 # Python specific imports
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO, InputType, OutputType
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, (InputType, OutputType))
 except ImportError:
     from StringIO import StringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, StringIO)
 
 import Image
 
@@ -52,10 +58,10 @@ class ImageConverter(object):
 
     def decode(self, rosMsgType, imgObj):
         """ Convert a image stored (PIL library readable image file format)
-            in a cStringIO.StrinO object to a ROS compatible message
+            in a cStringIO.StringO object to a ROS compatible message
             (sensor_msgs.Image).
         """
-        if not isinstance(imgObj, StringIO):
+        if not _checkIsStringIO(imgObj):
             raise TypeError('Given object is not a StringIO instance.')
 
         # Checking of image according to django.forms.fields.ImageField
@@ -80,7 +86,7 @@ class ImageConverter(object):
 
     def encode(self, rosMsg):
         """ Convert a ROS compatible message (sensor_msgs.Image) to a
-            JPEG encoded image stored in a cStringIO.StrinO object.
+            JPEG encoded image stored in a cStringIO.StringO object.
         """
         if not isinstance(rosMsg, sensor_msgs.msg.Image):
             raise TypeError('Given object is not a sensor_msgs.msg.Image instance.')

@@ -35,9 +35,15 @@ import time
 import datetime
 
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO, InputType, OutputType
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, (InputType, OutputType))
 except ImportError:
     from StringIO import StringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, StringIO)
 
 # Custom imports
 import settings
@@ -165,7 +171,7 @@ class Converter(object):
                 convFunc = Converter._BASE_TYPES[slotType]
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().encode
-            elif slotType in Converter._CUSTOM_TYPES and isinstance(field, StringIO):
+            elif slotType in Converter._CUSTOM_TYPES and _checkIsStringIO(field):
                 convFunc = Converter._CUSTOM_TYPES[slotType]().encode
             else:
                 convFunc = self.encode

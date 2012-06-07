@@ -12,9 +12,15 @@ import json
 import uuid
 
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO, InputType, OutputType
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, (InputType, OutputType))
 except ImportError:
     from StringIO import StringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, StringIO)
 
 # Custom imports
 import settings
@@ -158,7 +164,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 uriBinaryPart, multidictPart = self._out_recursiveBinarySearch(v)
                 uriBinary += uriBinaryPart
                 multidict[k] = multidictPart 
-            elif isinstance(v, StringIO):
+            elif _checkIsStringIO(v):
                 keys.append(k)
         
         for k in keys:
