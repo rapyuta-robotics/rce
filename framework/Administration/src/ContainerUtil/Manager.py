@@ -30,7 +30,6 @@ from twisted.internet.protocol import ProcessProtocol
 # Python specific imports
 import os
 import shutil
-from threading import Event
 
 # Custom imports
 import settings
@@ -274,9 +273,9 @@ class ContainerManager(object):
         def callback(reason):
             if reason.value.exitCode != 0:
                 log.msg(reason)
-                deferred.callback(None)
-            else:
                 deferred.errback(reason.getErrorMessage())
+            else:
+                deferred.callback(None)
         
         _deferred.addCallbacks(callback, callback)
         
