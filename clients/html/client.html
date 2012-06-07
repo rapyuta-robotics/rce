@@ -55,6 +55,7 @@ body {
 
 <script type="text/javascript" src="jquery-1.7.2.js"></script>
 <script type="text/javascript">
+var webSocket = null;
 
 var receivedMsgNum = 0;
 
@@ -81,15 +82,17 @@ var CH_data = new Object();
 CH_data.containerTag = "cTag01"
 cmd_CH.data=CH_data;
 
+
+
 window.onload = function() {
 	var wsuri = "ws://198.101.199.174:9000/";
 	if ("WebSocket" in window) {
-		var webSocket = new WebSocket(wsuri);
+		webSocket = new WebSocket(wsuri);
 		updateRobotStatus("Trying to connect ...");
 		//TODO: Is it really establised ? 
 	}else {
 		//Firefox currently prefixes the WebSocket object
-		var webSocket = new MozWebSocket(wsuri);
+		webSocket = new MozWebSocket(wsuri);
 		updateRobotStatus("Trying to connect ...");
 	}
 	
@@ -108,6 +111,7 @@ window.onload = function() {
 	
 	webSocket.onopen = function() {
 		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+		console.log('connection open.')
 	};
 }
 
@@ -151,6 +155,7 @@ function sendCommand() {
 	}
 	if(okToSend){
 		webSocket.send(msg_json);
+		console.log('message sent.')
 	}
 }
 
