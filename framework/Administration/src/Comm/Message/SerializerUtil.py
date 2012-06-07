@@ -126,6 +126,14 @@ class Serializer(object):
         elif isinstance(element, str):
             self.addInt(len(element))
             self._buf.push(element)
+        elif isinstance(element, unicode):
+            try:
+                element = str(element)
+            except UnicodeEncodeError:
+                raise SerializationError('The string "{0}" can only contain ascii characters.'.format(element))
+            
+            self.addInt(len(element))
+            self._buf.push(element)
         else:
             raise TypeError('Element is neither of type str nor of type None.')
     

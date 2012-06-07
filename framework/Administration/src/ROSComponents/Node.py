@@ -25,8 +25,6 @@
 # zope specific imports
 from zope.interface import implements
 
-from twisted.python import log
-
 # Custom imports
 import ComponentDefinition
 from Interfaces import ISerializable
@@ -54,12 +52,6 @@ class Node(object):
                             in the environment.
             @type  name:    str
         """
-        log.msg('Received Node parameters:')
-        log.msg('tag: <{0}> {1}'.format(type(tag), tag))
-        log.msg('pkg: <{0}> {1}'.format(type(pkg), pkg))
-        log.msg('exe: <{0}> {1}'.format(type(exe), exe))
-        log.msg('name: <{0}> {1}'.format(type(name), name))
-        
         self._tag = tag
         self._pkg = pkg
         self._exe = exe
