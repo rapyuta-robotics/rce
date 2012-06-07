@@ -210,11 +210,11 @@ class Deserializer(object):
             
             This method should not be used directly by the content serializers!
         """
-        length = _I_STRUCT.unpack(self._buf.pop(_I_LEN)[0])[0]
-        dest = self._buf.pop(MsgDef.ADDRESS_LENGTH)[0]
-        origin = self._buf.pop(MsgDef.ADDRESS_LENGTH)[0]
-        msgType = self._buf.pop(MsgDef.MSG_TYPE_LENGTH)[0]
-        msgNr = _I_STRUCT.unpack(self._buf.pop(_I_LEN)[0])[0]
+        length = self.getInt()
+        dest = self._getStr(MsgDef.ADDRESS_LENGTH)
+        origin = self._getStr(MsgDef.ADDRESS_LENGTH)
+        msgType = self._getStr(MsgDef.MSG_TYPE_LENGTH)
+        msgNr = self.getInt()
         return (length, dest, origin, msgType, msgNr)
     
     def getIdentifier(self, length):
@@ -228,7 +228,7 @@ class Deserializer(object):
             @param identifier:  Deserialized identifier.
             @type  identifier:  str
         """
-        return self._buf.pop(length)
+        return self._getStr(length)
     
     def getBool(self):
         """ Deserialize a single boolean.
@@ -278,17 +278,25 @@ class Deserializer(object):
         except StructError as e:
             raise SerializationError('Data is not a valid float: {0}'.format(e))
     
+    def _getStr(self, length):
+        """ Internally used method to get a part of the message as string.
+        """
+        element, n = self._buf.pop(length)
+        
+        if n != length:
+            raise SerializationError('There is not enough data left.')
+        
+        return element
+        
+    
     def getElement(self):
         """ Deserialize a single element.
             
             @return:    Deserialized element.
             @rtype:     str / None
         """
-        length = self.getInt()    
-        element, n = self._buf.pop(length)
-        
-        if n != length:
-            raise SerializationError('There is not enough data left.')
+        length = self.getInt()
+        element = self._getStr(length)
         
         if length == _NONE_LEN and element == _NONE:
             element = None
