@@ -161,7 +161,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         
         for k,v in multidict.iteritems():
             if isinstance(v, dict):
-                uriBinaryPart, multidictPart = self._out_recursiveBinarySearch(v)
+                uriBinaryPart, multidictPart = self._recursiveBinarySearch(v)
                 uriBinary += uriBinaryPart
                 multidict[k] = multidictPart 
             elif _checkIsStringIO(v):
