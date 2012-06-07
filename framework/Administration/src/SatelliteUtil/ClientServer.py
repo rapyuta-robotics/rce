@@ -174,7 +174,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             
             @param msg:     Message which should be sent
         """
-        URIBinary, msgURI = self._out_recursiveBinaryDataSearch(msg)
+        URIBinary, msgURI = self._recursiveBinarySearch(msg)
         
         WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
         
