@@ -69,8 +69,8 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         
         elif msg['type'] == self._CHANGE_COMPONENT:
             if 'addNodes' in data:
-                for nodeConfig in data['addNodes']:
-                    self._robot.addNode(msg['dest'], data['nodeTag'], data['pkg'], data['exe'], data['namespace'])
+                for node in data['addNodes']:
+                    self._robot.addNode(msg['dest'], node['nodeTag'], node['pkg'], node['exe'], node['namespace'])
                 
             if 'removeNodes' in data:
                 for nodeTag in data['removeNodes']:
@@ -97,12 +97,12 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                     self._robot.deleteParam(msg['dest'], paramName)
         
         elif msg['type'] == self._INTERFACE_STATE:
-			for interfaceTag, activate in data.iteritems():
-				if activate:
-					self._robot.activateInterface(msg['dest'], interfaceTag)
-				else:
-					self._robot.deactivateInterface(msg['dest'], interfaceTag)
-			
+            for interfaceTag, activate in data.iteritems():
+                if activate:
+                    self._robot.activateInterface(msg['dest'], interfaceTag)
+                else:
+                    self._robot.deactivateInterface(msg['dest'], interfaceTag)
+        
         elif msg['type'] == self._MESSAGE:
             uriList = self._recursiveURISearch(data['msg'])
             if uriList:

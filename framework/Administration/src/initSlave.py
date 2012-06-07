@@ -76,16 +76,13 @@ class LoggerProtocol(ProcessProtocol):
     def terminate(self, reactor):
         """ Method which is used to terminate the underlying process.
         """
-        try:
-            if self._escalation != -1:
-                escalation = self._STOP_ESCALATION[self._escalation]
-                self.transport.signalProcess(escalation[0])
-                
-                if escalation[1]:
-                    self._escalation += 1
-                    reactor.callLater(escalation[1], self.terminate, reactor)
-        except AttributeError:
-            pass
+        if self._escalation != -1 and self.transport:
+            escalation = self._STOP_ESCALATION[self._escalation]
+            self.transport.signalProcess(escalation[0])
+            
+            if escalation[1]:
+                self._escalation += 1
+                self._stopCall = reactor.callLater(escalation[1], self.terminate, reactor)
 
 def main(reactor):
     log.startLogging(sys.stdout)
@@ -99,11 +96,11 @@ def main(reactor):
     termDeferreds = DeferredList([containerDeferred, satelliteDeferred])
     
     def callback(suffix):
-        cmd = [ os.path.join(settings.ROOT_DIR, 'Container.py'),
+        cmd = [ os.path.join(settings.ROOT_SRC_DIR, 'Container.py'),
                 suffix ]
         reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
         
-        cmd = [ os.path.join(settings.ROOT_DIR, 'Satellite.py'),
+        cmd = [ os.path.join(settings.ROOT_SRC_DIR, 'Satellite.py'),
                 suffix,
                 settings.IP_MASTER ]
         reactor.spawnProcess(satelliteProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)

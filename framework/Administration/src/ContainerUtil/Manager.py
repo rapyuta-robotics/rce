@@ -63,7 +63,8 @@ class ContainerManager(object):
         # Validate loaded directories from settings
         self._confDir = settings.CONF_DIR
         self._rootfs = settings.ROOTFS
-        self._srcRoot = settings.ROOT_DIR
+        self._srcRoot = settings.ROOT_SRC_DIR
+        self._pkgRoot = settings.ROOT_PKG_DIR
         
         if not os.path.isabs(self._confDir):
             raise ValueError('Configuration directory is not an absolute path.')
@@ -73,6 +74,9 @@ class ContainerManager(object):
         
         if not os.path.isabs(self._srcRoot):
             raise ValueError('Root source directory is not an absolute path.')
+        
+        if not os.path.isabs(self._pkgRoot):
+            raise ValueError('Root package directory is not an absolute path.')
         
         # Storage of all CommIDs
         self._commIDs = []
@@ -148,6 +152,10 @@ class ContainerManager(object):
                                   srcDir=self._srcRoot,
                                   rootfsLib=os.path.join(self._rootfs, 'opt/rce/src')
                               ),
+                              '{pkgDir}    {rootfsPkgs}    none    bind,ro 0 0'.format(
+                                  pkgDir=self._pkgRoot,
+                                  rootfsPkgs=os.path.join(self._rootfs, 'opt/rce/packages')
+                              ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstartComm'),
                                   initDir=os.path.join(self._rootfs, 'etc/init/rceComm.conf')
@@ -178,6 +186,7 @@ class ContainerManager(object):
                               '\t# setup environment',
                               '\t. /etc/environment',
                               '\t. /opt/ros/fuerte/setup.sh',
+                              '\tROS_PACKAGE_PATH=/opt/rce/packages:$ROS_PACKAGE_PATH',
                               '\t',
                               '\t# start environment node',
                               '\t'+' '.join([ 'start-stop-daemon',
@@ -212,6 +221,7 @@ class ContainerManager(object):
                               '\t# setup environment',
                               '\t. /etc/environment',
                               '\t. /opt/ros/fuerte/setup.sh',
+                              '\tROS_PACKAGE_PATH=/opt/rce/packages:$ROS_PACKAGE_PATH',
                               '\t',
                               '\t# start launcher',
                               '\t'+' '.join([ 'start-stop-daemon',
@@ -268,7 +278,7 @@ class ContainerManager(object):
             else:
                 deferred.errback(reason.getErrorMessage())
         
-        _deferred.addCallback(callback)
+        _deferred.addCallbacks(callback, callback)
         
         try:
             log.msg('Start container...')
@@ -329,7 +339,7 @@ class ContainerManager(object):
             else:
                 deferred.callback(None)
         
-        _deferred.addCallback(callback)
+        _deferred.addCallbacks(callback, callback)
         
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', commID]
