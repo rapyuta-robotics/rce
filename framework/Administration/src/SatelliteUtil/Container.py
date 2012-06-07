@@ -260,7 +260,7 @@ class Container(object):
         """ Callback method for Interface to free the ROS address.
             
             @param addr:    ROS address which should be freed.
-            @type  adrr:    str
+            @type  addr:    str
         """
         if addr not in self._rosAddrs:
             log.msg('Tried to free an address which was not reserved.')
