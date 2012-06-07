@@ -89,8 +89,8 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                     self._robot.removeInterface(msg['dest'], interfaceTag)
 
             if 'setParam' in data:
-                for k,v in  data['setParam'].items():
-                    self._robot.setParam(msg['dest'], k, v[0], v[1])
+                for param in  data['setParam']:
+                    self._robot.setParam(msg['dest'], param['paramName'] , param['paramValue'],  param['paramType'])
                     
             if 'deleteParam' in data:
                 for paramName in data['deleteParam']:

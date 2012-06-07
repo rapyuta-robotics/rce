@@ -56,7 +56,10 @@ cmd_CC = {
                                     "className":"className"} # msgType for Publisher/Subscriber | srvType for Service
                                     ],
                     "removeInterfaces":["inm"],
-                    "setParam":{"paramName":["paramValue", "paramType"]},
+                    "setParam":[{"paramName":"pname",
+                    			"paramValue":"pvalue", 
+                    			"paramType":"pType"
+                    			}],
                     "deleteParam" : ["paramName"]
                     }
             }
