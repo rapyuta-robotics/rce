@@ -39,7 +39,7 @@ from LauncherUtil.Manager import LauncherManager
 
 def main(reactor):
     # Start logger
-    f = open('launcher.log', 'w')
+    f = open('/home/ros/launcher.log', 'w')
     log.startLogging(f)
     
     log.msg('Start initialization...')

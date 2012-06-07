@@ -191,7 +191,7 @@ class ContainerManager(object):
                               '\t'+' '.join([ 'start-stop-daemon',
                                               '--start',
                                               '-c', 'rce:rce',
-                                              '-d', '/opt/rce/.home',
+                                              '-d', '/opt/rce/data',
                                               '--retry', '5',
                                               '--exec', '/opt/rce/src/Environment.py',
                                               '--',

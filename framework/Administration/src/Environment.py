@@ -43,7 +43,7 @@ from ROSUtil.Manager import ROSManager
 
 def main(reactor, commID, satelliteID):
     # Start logger
-    f = open('env.log', 'w')
+    f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
     
     log.msg('Start initialization...')
