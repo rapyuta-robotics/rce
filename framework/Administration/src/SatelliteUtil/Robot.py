@@ -188,7 +188,7 @@ class Robot(object):
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     
-    def activateInterface(self, interfaceTag)
+    def activateInterface(self, containerTag, interfaceTag):
         """ Activate an interface to the container matching the given container tag.
             
             @param containerTag:    Container tag which is used to identify the
@@ -205,7 +205,7 @@ class Robot(object):
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     
-    def deactivateInterface(self, interfaceTag)
+    def deactivateInterface(self, containerTag, interfaceTag):
         """ Deactivate an interface to the container matching the given container tag.
             
             @param containerTag:    Container tag which is used to identify the
