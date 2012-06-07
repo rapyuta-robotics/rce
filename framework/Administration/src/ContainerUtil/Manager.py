@@ -314,7 +314,7 @@ class ContainerManager(object):
         def reportFailure(msg):
             pass
         
-        deferred.addCallback(reportSuccess, reportFailure)
+        deferred.addCallbacks(reportSuccess, reportFailure)
     
     def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.
@@ -376,7 +376,7 @@ class ContainerManager(object):
         def reportFailure(msg):
             pass
         
-        deferred.addCallback(reportSuccess, reportFailure)
+        deferred.addCallbacks(reportSuccess, reportFailure)
     
     def shutdown(self):
         """ Method is called when the manager is stopped.
