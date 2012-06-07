@@ -30,7 +30,6 @@ from twisted.internet.protocol import ProcessProtocol
 # Python specific imports
 import os
 import shutil
-from threading import Event
 
 # Custom imports
 import settings
@@ -274,9 +273,9 @@ class ContainerManager(object):
         def callback(reason):
             if reason.value.exitCode != 0:
                 log.msg(reason)
-                deferred.callback(None)
-            else:
                 deferred.errback(reason.getErrorMessage())
+            else:
+                deferred.callback()
         
         _deferred.addCallbacks(callback, callback)
         
@@ -301,7 +300,6 @@ class ContainerManager(object):
         """ Callback for message processor to stop a container.
         """
         deferred = Deferred()
-        # TODO: Add callback to deferred to get information about the creation of the container
         
         if commID in self._commIDs:
             log.msg('There is already a container registered under the same CommID.')
@@ -309,6 +307,14 @@ class ContainerManager(object):
             return
         
         self._reactor.callInThread(self._startContainer, deferred, commID, homeDir)
+        
+        def reportSuccess():
+            log.msg('Container successfully started.')
+        
+        def reportFailure(msg):
+            pass
+        
+        deferred.addCallback(reportSuccess, reportFailure)
     
     def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.
@@ -356,7 +362,6 @@ class ContainerManager(object):
         """ Callback for message processor to stop a container.
         """
         deferred = Deferred()
-        # TODO: Add callback to deferred to get information about the destuction of the container
         
         if commID not in self._commIDs:
             log.msg('There is no container registered under this CommID.')
@@ -364,6 +369,14 @@ class ContainerManager(object):
             return
         
         self._reactor.callInThread(self._stopContainer, deferred, commID)
+        
+        def reportSuccess():
+            log.msg('Container successfully stopped.')
+        
+        def reportFailure(msg):
+            pass
+        
+        deferred.addCallback(reportSuccess, reportFailure)
     
     def shutdown(self):
         """ Method is called when the manager is stopped.
