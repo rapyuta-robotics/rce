@@ -38,6 +38,12 @@ class MessageFIFO(object):
         """
         return len(self._buf)
     
+    def __iadd__(self, fifo):
+        """ Built-in method to add another FIFO to this one.
+        """
+        self._buf += fifo._buf
+        return self
+    
     def push(self, data):
         """ Add data to the FIFO.
         """

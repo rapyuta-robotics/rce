@@ -64,6 +64,9 @@ ROOTFS = '/opt/rce/container/rootfs'
 # Absolute path to directory where config/stab files for containers should be stored
 CONF_DIR = '/opt/rce/container/config'
 
+# Absolute path to directory where temporary folders for container data should be stored
+DATA_DIR = '/opt/rce/container/data'
+
 # Absolute path to source root directory
 ROOT_SRC_DIR = '/opt/rce/framework/Administration/src'
 

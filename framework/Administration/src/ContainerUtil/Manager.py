@@ -61,12 +61,16 @@ class ContainerManager(object):
         
         # Validate loaded directories from settings
         self._confDir = settings.CONF_DIR
+        self._dataDir = settings.DATA_DIR
         self._rootfs = settings.ROOTFS
         self._srcRoot = settings.ROOT_SRC_DIR
         self._pkgRoot = settings.ROOT_PKG_DIR
         
         if not os.path.isabs(self._confDir):
             raise ValueError('Configuration directory is not an absolute path.')
+        
+        if not os.path.isabs(self._dataDir):
+            raise ValueError('Data directory is not an absolute path.')
         
         if not os.path.isabs(self._rootfs):
             raise ValueError('Root file system directory is not an absolute path.')
@@ -155,6 +159,10 @@ class ContainerManager(object):
                                   pkgDir=self._pkgRoot,
                                   rootfsPkgs=os.path.join(self._rootfs, 'opt/rce/packages')
                               ),
+                              '{dataDir}    {rootfsData}    none    bind 0 0'.format(
+                                  dataDir=os.path.join(self._dataDir, commID),
+                                  rootfsData=os.path.join(self._rootfs, 'opt/rce/data')
+                              ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
                                   upstart=os.path.join(self._confDir, commID, 'upstartComm'),
                                   initDir=os.path.join(self._rootfs, 'etc/init/rceComm.conf')
@@ -186,6 +194,10 @@ class ContainerManager(object):
                               '\t. /etc/environment',
                               '\t. /opt/ros/fuerte/setup.sh',
                               '\tROS_PACKAGE_PATH=/opt/rce/packages:$ROS_PACKAGE_PATH',
+                              '\t',
+                              '\t# need to switch owner and access of temporary data dir',
+                              '\tchown rce:rce /opt/rce/data',
+                              #'\tchmod 700 /opt/rce/data',
                               '\t',
                               '\t# start environment node',
                               '\t'+' '.join([ 'start-stop-daemon',
@@ -242,14 +254,25 @@ class ContainerManager(object):
         confDir = os.path.join(self._confDir, commID)
         
         if os.path.isdir(confDir):
-            msg = 'There exists already a directory with the name "{0}".'.format(commID)
+            msg = 'There exists already a configuration directory with the name "{0}".'.format(commID)
+            log.msg(msg)
+            deferred.errback(msg)
+            return
+        
+        # Create folder for temporary data
+        dataDir = os.path.join(self._dataDir, commID)
+        
+        if os.path.isdir(dataDir):
+            msg = 'There exists already a configuration directory with the name "{0}".'.format(commID)
             log.msg(msg)
             deferred.errback(msg)
             return
         
         try:
-            log.msg('Create files...')
+            log.msg('Create files and directories...')
             os.mkdir(confDir)
+            os.mkdir(dataDir)
+            os.chmod(dataDir, 0700)
             
             # Construct config file
             self._createConfigFile(commID)
@@ -260,6 +283,7 @@ class ContainerManager(object):
             # Construct startup scripts
             self._createUpstartScripts(commID)
         except:
+            log.msg('Caught and exception when trying to create the config files for the container.')
             import sys, traceback
             etype, value, _ = sys.exc_info()
             msg = '\n'.join(traceback.format_exception_only(etype, value))
@@ -272,6 +296,7 @@ class ContainerManager(object):
         
         def callback(reason):
             if reason.value.exitCode != 0:
+                log.msg('Received reason with exit code != 0 after start of container.')
                 log.msg(reason)
                 deferred.errback(reason.getErrorMessage())
             else:
@@ -287,6 +312,7 @@ class ContainerManager(object):
                     '-d' ]
             self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
         except:
+            log.msg('Caught an exception when trying to start the container.')
             import sys, traceback #@Reimport
             etype, value, _ = sys.exc_info()
             msg = '\n'.join(traceback.format_exception_only(etype, value))
@@ -312,7 +338,7 @@ class ContainerManager(object):
             log.msg('Container successfully started.')
         
         def reportFailure(msg):
-            pass
+            log.msg('Container could not be started: {0}.'.format(msg))
         
         deferred.addCallbacks(reportSuccess, reportFailure)
     
@@ -326,12 +352,16 @@ class ContainerManager(object):
             error = None
             
             if reason.value.exitCode != 0:
+                log.msg('Received reason with exit code != 0 after stopping container.')
                 log.msg(reason)
                 error = reason.getErrorMessage()
             
             try:
                 # Delete config folder
                 shutil.rmtree(os.path.join(self._confDir, commID))
+                
+                # Delete data folder
+                shutil.rmtree(os.path.join(self._dataDir, commID))
                 
                 # Remove commID from internal list
                 self._reactor.callFromThread(self._commIDs.remove, commID)
@@ -374,7 +404,7 @@ class ContainerManager(object):
             log.msg('Container successfully stopped.')
         
         def reportFailure(msg):
-            pass
+            log.msg('Container could not be stopped: {0}.'.format(msg))
         
         deferred.addCallbacks(reportSuccess, reportFailure)
     
