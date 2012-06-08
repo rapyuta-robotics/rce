@@ -14,7 +14,7 @@ class rceClientProtocol(WebSocketClientProtocol):
         reactor.callLater(1, self.sendHello)
 
 if __name__ == '__main__':
-    factory = WebSocketClientFactory("ws://localhost:9000")
+    factory = WebSocketClientFactory("ws://192.168.237.131:9000")
     factory.protocol = rceClientProtocol
     connectWS(factory)
     reactor.run()
