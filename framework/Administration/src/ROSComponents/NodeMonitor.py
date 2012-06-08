@@ -82,9 +82,13 @@ class NodeMonitor(object):
         if self.started:
             raise InternalError('Can not launch an already running node.')
         
+        nodes = roslib.packages.find_node(self._node.pkg, self._node.exe)
+        
+        if len(nodes) != 1:
+            raise InvalidRequest('Could not identify which node to launch.')
+        
         self.started = True
-        cmd = [ roslib.packages.find_node(self._node.pkg, self._node.exe),
-                '__name:={0}'.format(self._node.name) ]
+        cmd = [ nodes[0], '__ns:={0}'.format(self._node.namepace ]
         self._reactor.spawnProcess(ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
 
     def isAlive(self):

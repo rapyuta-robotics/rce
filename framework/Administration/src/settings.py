@@ -68,10 +68,10 @@ CONF_DIR = '/opt/rce/container/config'
 DATA_DIR = '/opt/rce/container/data'
 
 # Absolute path to source root directory
-ROOT_SRC_DIR = '/opt/rce/framework/Administration/src'
+ROOT_SRC_DIR = '/opt/rce/reappengine/framework/Administration/src'
 
 # Absolute path to source package directory
-ROOT_PKG_DIR = '/opt/rce/nodes'
+ROOT_PKG_DIR = '/opt/rce/reappengine/nodes'
 
 # Time interval in which the newest load information are sent to the master node/load balancer
 LOAD_INFO_UPDATE = 5

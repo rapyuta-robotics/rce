@@ -317,10 +317,10 @@ def receive(factory, msgType, msgLen, origin, dest, init):
     
     # Message is not for this node; therefore, forward it, but first
     # check if the forwarding is allowed.
-    if dest[:MsgDef.PREFIX_LENGTH_ADDR] == MsgDef.PREFIX_CONTAINER_ADDR:
+    if dest[:MsgDef.PREFIX_LENGTH_ADDR] == MsgDef.PREFIX_PRIV_ADDR:
         # Tried to send a message to Container Manager via this node
         # which is not allowed for security reasons.
-        log.msg('Received a message to a container manager via this node. Message is dropped.')
+        log.msg('Received a private message via this node. Message is dropped.')
         return _Sink()
     
     handler = _Forwarder(msgLen, origin, dest)

@@ -85,16 +85,12 @@ class ROSAddMessage(object):
         if not isinstance(data, Cls):
             raise SerializationError('The object is of invalid type.')
         
-        log.msg('Serialized an AddROSMessage with type "{0}" (1).'.format(data.IDENTIFIER, len(data.IDENTIFIER)))
-        
         s.addIdentifier(data.IDENTIFIER, 1)
         data.serialize(s)
     
     def deserialize(self, s):
         try:
-            uid = s.getIdentifier(1)
-            log.msg('Deserialize an AddROSMessage with type "{0}" (1).'.format(uid))
-            Cls = self._componentCls[uid]
+            Cls = self._componentCls[s.getIdentifier(1)]
         except KeyError:
             raise SerializationError('''The object's class is not registered.''')
         
@@ -177,6 +173,7 @@ class ROSMsgMessage(object):
             raise SerializationError('Content of the message ROSMessage has to be a dictionary.')
         
         try:
+            s.addInt(len(data['msg']))
             s.addFIFO(data['msg'])
             s.addElement(data['tag'])
             s.addElement(data['user'])
