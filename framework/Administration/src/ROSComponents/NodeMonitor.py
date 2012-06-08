@@ -26,6 +26,7 @@
 import roslib.packages      # TODO: Find replacement for roslib.packages function
 
 # twisted specific imports
+from twisted.python import log
 from twisted.internet.protocol import ProcessProtocol
 
 # Python specific imports
@@ -41,13 +42,10 @@ class ROSNodeProtocol(ProcessProtocol):
         self._nodeMonitor = nodeMonitor
     
     def connectionMade(self):
-        self._nodeMonitor.running = True
-        self._nodeMonitor.process = self
+        self._nodeMonitor.started(self)
     
     def processEnded(self, reason):
-        self._nodeMonitor.process = None
-        self._nodeMonitor.running = False
-        self._deferred.callback(reason)
+        self._nodeMonitor.stopped()
 
 class NodeMonitor(object):
     """ Class which is used to launch and monitor a node.
@@ -66,48 +64,73 @@ class NodeMonitor(object):
         """
         self._reactor = reactor
         self._node = node
-        self.process = None
         
-        self.started = False
-        self.running = False
+        self._process = None
+        self._started = False
+        self._running = False
         
         self._escalationLvl = 0
     
     def start(self):
-        """ Add the necessary parameters to the parameter server, launch the
-            node and start the necessary handlers for the interfaces.
+        """ Launch the node.
 
-            @raise:     InternalError if Node can not be launched.
+            @raise:     InternalError if Node is already launched.
         """
-        if self.started:
+        if self._started:
             raise InternalError('Can not launch an already running node.')
         
-        nodes = roslib.packages.find_node(self._node.pkg, self._node.exe)
+        # Find and validate executable
+        cmd = roslib.packages.find_node(self._node.pkg, self._node.exe)
         
-        if len(nodes) != 1:
+        if len(cmd) != 1:
             raise InvalidRequest('Could not identify which node to launch.')
         
-        self.started = True
-        cmd = [ nodes[0], '__ns:={0}'.format(self._node.namepace) ]
+        # Process namespace argument
+        namespace = self._node.namespace
+        
+        if namespace:
+            cmd.append('__ns:={0}'.format(namespace))
+        
+        # Start node
+        self._started = True
+        log.msg('Start Node {0}/{2} [pkg: {1}].'.format( self._node.namespace,
+                                                         self._node.pkg,
+                                                         self._node.exe ))
         self._reactor.spawnProcess(ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
-
+    
+    def started(self, process):
+        """ Callback for ROSProcessProtocol to signal that the process
+            has been launched.
+        """
+        self._process = process
+        self._running = False
+    
     def isAlive(self):
         """ Check whether the node/process is alive.
         """
-        if not self.started:
+        if not self._started:
             return True
         
-        return self.running
-
-    def stop(self):
-        """ Stop the node and remove the parameters from the parameter server.
+        return self._running
+    
+    def stopped(self):
+        """ Callback for ROSProcessProtocol to signal that the process has died.
         """
-        if not self.running:
+        self._process = None
+        self._running = False
+    
+    def stop(self):
+        """ Stop the node.
+        """
+        if not self._running:
             return
         
+        if self._escalationLvl == 0:
+            log.msg('Stop Node {0}/{1}.'.format( self._node.namespace,
+                                                 self._node.exe ))
         escalation = self._STOP_ESCALATION[self._escalationLvl]
         
-        self.process.transport.signalProcess(escalation[0])
+        self._process.transport.signalProcess(escalation[0])
         
         if escalation[1]:
             self._escalationLvl += 1
@@ -116,5 +139,5 @@ class NodeMonitor(object):
     def __del__(self):
         """ Destructor.
         """
-        if self.running:
+        if self._running:
             self.stop()

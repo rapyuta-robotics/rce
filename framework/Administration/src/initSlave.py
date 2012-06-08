@@ -87,6 +87,29 @@ class LoggerProtocol(ProcessProtocol):
 def main(reactor):
     log.startLogging(sys.stdout)
     
+    if not os.path.isdir(settings.ROOT_SRC_DIR):
+        print('Root source directory is not a valid directory.')
+        exit(1)
+    
+    containerExe = os.path.join(settings.ROOT_SRC_DIR, 'Container.py')
+    satelliteExe = os.path.join(settings.ROOT_SRC_DIR, 'Satellite.py')
+    
+    if not os.path.isfile(containerExe):
+        print('Root source directory does not contain the file "Container.py".')
+        exit(1)
+        
+    if not os.access(containerExe, os.X_OK):
+        print('File "Container.py" in root source directory is not executable.')
+        exit(1)
+    
+    if not os.path.isfile(satelliteExe):
+        print('Root source directory does not contain the file "Satellite.py".')
+        exit(1)
+    
+    if not os.access(satelliteExe, os.X_OK):
+        print('File "Satellite.py" in root source directory is not executable.')
+        exit(1)
+    
     deferred = Deferred()
     
     containerDeferred = Deferred()
@@ -96,13 +119,10 @@ def main(reactor):
     termDeferreds = DeferredList([containerDeferred, satelliteDeferred])
     
     def callback(suffix):
-        cmd = [ os.path.join(settings.ROOT_SRC_DIR, 'Container.py'),
-                suffix ]
+        cmd = [containerExe, suffix]
         reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
         
-        cmd = [ os.path.join(settings.ROOT_SRC_DIR, 'Satellite.py'),
-                suffix,
-                settings.IP_MASTER ]
+        cmd = [satelliteExe, suffix, settings.IP_MASTER]
         reactor.spawnProcess(satelliteProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
     
     def errback(errMsg):
