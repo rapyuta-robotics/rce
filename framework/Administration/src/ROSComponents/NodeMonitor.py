@@ -32,7 +32,7 @@ from twisted.internet.protocol import ProcessProtocol
 import os
 
 # Custom imports
-from Exceptions import InternalError
+from Exceptions import InternalError, InvalidRequest
 
 class ROSNodeProtocol(ProcessProtocol):
     """ Protocol which is used to handle the ROS nodes.
@@ -88,7 +88,7 @@ class NodeMonitor(object):
             raise InvalidRequest('Could not identify which node to launch.')
         
         self.started = True
-        cmd = [ nodes[0], '__ns:={0}'.format(self._node.namepace ]
+        cmd = [ nodes[0], '__ns:={0}'.format(self._node.namepace) ]
         self._reactor.spawnProcess(ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
 
     def isAlive(self):
