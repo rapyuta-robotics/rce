@@ -62,18 +62,18 @@ def validateAddress(addr, allowNeighbor=False):
     if len(addr) != MsgDef.ADDRESS_LENGTH:
         return False
     
-    if addr == MsgDef.MASTER_ADDR:
-        return True
-    
     if addr == MsgDef.NEIGHBOR_ADDR:
         return allowNeighbor
     
+    if addr in MsgDef.SPECIAL_ADDRS:
+        return True
+    
     prefix = addr[:MsgDef.PREFIX_LENGTH_ADDR]
     
-    if prefix == MsgDef.PREFIX_SATELLITE_ADDR:
-        addr = addr[MsgDef.PREFIX_LENGTH_ADDR:]
-    elif prefix == MsgDef.PREFIX_CONTAINER_ADDR:
-        addr = addr[MsgDef.PREFIX_LENGTH_ADDR:] 
+    if prefix == MsgDef.PREFIX_PUB_ADDR:
+        addr = addr[:MsgDef.PREFIX_LENGTH_ADDR]
+    elif prefix == MsgDef.PREFIX_PRIV_ADDR:
+        addr[:MsgDef.PREFIX_LENGTH_ADDR]
     
     for c in addr:
         if c not in string.ascii_uppercase:

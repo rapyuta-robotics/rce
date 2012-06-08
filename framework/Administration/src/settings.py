@@ -91,6 +91,13 @@ RESULT_TIMEOUT = 600
 ###                                 ###
 #######################################
 
+# Character pool which is used to build base addresses
+import string
+ADDR_BASE = string.ascii_uppercase
+
+# Length of addresses
+ADDRESS_LENGTH = 6
+
 # IP address of Master
 IP_MASTER = 'localhost'
 
@@ -129,3 +136,6 @@ MAX_LENGTH_MESSAGE = 99999
 
 # Time in seconds after which queue messages are removed from the queue
 MSG_QUQUE_TIMEOUT = 30
+
+# Chunk size into which the message is split
+CHUNK_SIZE = 8192
