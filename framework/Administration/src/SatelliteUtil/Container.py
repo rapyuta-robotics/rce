@@ -115,7 +115,7 @@ class Container(object):
         
         msg = Message()
         msg.msgType = MsgTypes.CONTAINER_START
-        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
+        msg.dest = MsgDef.PREFIX_PRIV_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
         msg.content = { 'commID' : self._commID,
                         'home'   : self._homeDir }
         
@@ -131,7 +131,7 @@ class Container(object):
         
         msg = Message()
         msg.msgType = MsgTypes.CONTAINER_STOP
-        msg.dest = MsgDef.PREFIX_CONTAINER_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
+        msg.dest = MsgDef.PREFIX_PRIV_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
         msg.content = { 'commID' : self._commID }
         
         log.msg('Start container "{0}".'.format(self._commID))
