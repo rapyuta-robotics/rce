@@ -34,7 +34,7 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 class Interface(object):
     """ Class which represents an interface. It is associated with a container.
     """
-    def __init__(self, loader, container, tag, rosAddr, msgType, interfaceType):
+    def __init__(self, container, loader, tag, rosAddr, msgType, interfaceType):
         """ Initialize the Interface.
             
              # TODO: Add description
@@ -50,16 +50,21 @@ class Interface(object):
         except ValueError:
             raise InvalidRequest('Another interface with the same ROS address already exists.')
         
+        args = msgType.split('/')
+        
+        if len(args) != 2:
+            raise InvalidRequest('msg/srv type is not valid. Has to be of the from pkg/msg, i.e. std_msgs/Int8.')
+        
         if interfaceType == 'service':
-            srvCls = self._loader.loadSrv(msgType)
+            srvCls = loader.loadSrv(*args)
             self._toMsgCls = srvCls._request_class
             self._fromMsgCls = srvCls._response_class
         elif interfaceType == 'publisher':
-            self._toMsgCls = self._loader.loadMsg(msgType)
+            self._toMsgCls = loader.loadMsg(*args)
             self._fromMsgCls = None
         elif interfaceType == 'subscriber':
             self._toMsgCls = None
-            self._fromMsgCls = self._loader.loadMsg(msgType)
+            self._fromMsgCls = loader.loadMsg(*args)
         else:
             raise ValueError('"{0}" is not a valid interface type.'.format(interfaceType))
         

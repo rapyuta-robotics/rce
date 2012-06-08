@@ -117,7 +117,7 @@ class Loader(object):
         except AttributeError:
             raise ResourceNotFound('ROS package "{0}" does not have service class "{1}"'.format(pkg, cls))
     
-    def _findNode(self, pkg):
+    def _findNodes(self, pkg):
         """ Internally used method to search for all nodes in the package.
         """
         try:
@@ -140,7 +140,7 @@ class Loader(object):
             for d in dirs[:]:
                 if d[0] == '.':
                     dirs.remove(d)
-                elif d  == 'rospack_nosubdirs':
+                elif d  in ['build', 'rospack_nosubdirs']:
                     dirs.remove(d)
         
         return nodes
@@ -166,3 +166,4 @@ class Loader(object):
             return nodeDict[exe]
         except KeyError:
             raise ResourceNotFound('Can not find executable "{0}" in ROS package "{1}".'.format(exe, pkg))
+

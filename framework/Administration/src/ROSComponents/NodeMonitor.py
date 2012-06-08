@@ -84,7 +84,7 @@ class NodeMonitor(object):
         
         # Find and validate executable
         try:
-            cmd = [self._loader.findNode()]
+            cmd = [self._loader.findNode(self._node.pkg, self._node.exe)]
         except ResourceNotFound as e:
             raise InvalidRequest('Could not identify which node to launch: {0}'.format(e))
         
