@@ -91,8 +91,8 @@ class Robot(object):
 ##        deferredList.addCallback(processRobotSpecs)
     
     def destroyContainer(self, containerTag):
-        self._containers[containerTag].stop()
         container = self._containers.pop(containerTag)
+        container.stop()
         self._satelliteManager.unregisterContainer(container)
     
     def addNode(self, containerTag, nodeTag, package, executable, namespace):
@@ -113,7 +113,7 @@ class Robot(object):
             @param executable:  Name of executable which should be launched.
             @type  executable:  str
             
-            @param namespace:   Namesapce in which the node should use started
+            @param namespace:   Namesapce in which the node should be started
                                 in the environment.
             @type  namespace:   str
             

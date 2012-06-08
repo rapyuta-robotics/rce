@@ -1,4 +1,4 @@
-#Thu Jun 07 16:58:26 CEST 2012
+#Fri Jun 08 14:07:59 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/CommUtil.py=utf-8
@@ -45,10 +45,8 @@ encoding//Administration/src/ROSComponents/InterfaceMonitor.py=utf-8
 encoding//Administration/src/ROSComponents/Interfaces.py=utf-8
 encoding//Administration/src/ROSComponents/Node.py=utf-8
 encoding//Administration/src/ROSComponents/NodeMonitor.py=utf-8
-encoding//Administration/src/ROSComponents/NodeParser.py=utf-8
 encoding//Administration/src/ROSComponents/Parameter.py=utf-8
 encoding//Administration/src/ROSComponents/ParameterMonitor.py=utf-8
-encoding//Administration/src/ROSComponents/ParameterParser.py=utf-8
 encoding//Administration/src/ROSUtil/Manager.py=utf-8
 encoding//Administration/src/ROSUtil/Processor.py=utf-8
 encoding//Administration/src/ROSUtil/Type.py=utf-8
@@ -75,6 +73,8 @@ encoding//Administration/src/trash/InternalMessageUtility.py=utf-8
 encoding//Administration/src/trash/ManagerBase.py=utf-8
 encoding//Administration/src/trash/Message.py=utf-8
 encoding//Administration/src/trash/MessageUtility.py=utf-8
+encoding//Administration/src/trash/NodeParser.py=utf-8
+encoding//Administration/src/trash/ParameterParser.py=utf-8
 encoding//Administration/src/trash/SQLite.py=utf-8
 encoding//Administration/src/trash/Serializer.py=utf-8
 encoding//Administration/src/trash/ServerManager.py=utf-8

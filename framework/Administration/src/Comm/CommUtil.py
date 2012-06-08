@@ -67,10 +67,8 @@ def validateAddress(addr, allowNeighbor=False):
     
     prefix = addr[:MsgDef.PREFIX_LENGTH_ADDR]
     
-    if prefix == MsgDef.PREFIX_PUB_ADDR:
-        addr = addr[:MsgDef.PREFIX_LENGTH_ADDR]
-    elif prefix == MsgDef.PREFIX_PRIV_ADDR:
-        addr[:MsgDef.PREFIX_LENGTH_ADDR]
+    if prefix in [MsgDef.PREFIX_PUB_ADDR, MsgDef.PREFIX_PRIV_ADDR]:
+        addr = addr[MsgDef.PREFIX_LENGTH_ADDR:]
     
     for c in addr:
         if c not in MsgDef.ADDR_BASE:

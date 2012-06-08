@@ -172,7 +172,7 @@ class Serializer(object):
             self.addElement(element)
     
     def addFIFO(self, fifo):
-        """ Add the serialized data of the FIFO to the current FIFO..
+        """ Add the serialized data of the FIFO to the current FIFO.
     
             @param data:    FIFO containing serialized data which should be added.
             @type  data:    MessageFIFO
@@ -182,7 +182,6 @@ class Serializer(object):
         if not isinstance(fifo, MessageFIFO):
             raise SerializationError('fifo is not of type MessageFIFO.')
         
-        self.addInt(len(fifo))
         self._buf += fifo
     
     def getMsg(self):

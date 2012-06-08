@@ -1,0 +1,21 @@
+<package>
+  <description brief="rceBinaryMsgDebug">
+
+     rceBinaryMsgDebug
+
+  </description>
+  <author>gajan</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rceBinaryMsgDebug</url>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <rosdep name="opencv2.3"/>
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+
+</package>
+
+

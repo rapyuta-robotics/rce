@@ -43,7 +43,7 @@ class LauncherManager(object):
         self._commMngr = commMngr
         
         # Storage of all nodes
-        self._nodes = []
+        self._nodes = {}
         
         # Register Content Serializers
         rosAdd = ROSAddMessage()
@@ -56,7 +56,11 @@ class LauncherManager(object):
                                                    ROSRemoveProcessor(self) ])
     
     def addNode(self, node):
-        """
+        """ Add a Node to the ROS environment.
+            
+            @param node:    Node instance containing the necessary launch
+                            information which should be added.
+            @type  node:    Node
         """
         tag = node.tag
         
@@ -68,7 +72,11 @@ class LauncherManager(object):
         self._nodes[tag] = nodeMonitor
     
     def removeNode(self, tag):
-        """
+        """ Remove a Node from the ROS environment.
+            
+            @param tag:     Tag which is used to identify the node which should
+                            be removed.
+            @type  tag:     str
         """
         try:
             del self._nodes[tag]
@@ -79,14 +87,15 @@ class LauncherManager(object):
     def shutdown(self):
         """ Method is called when the manager is stopped.
         """
-        #event = Event()
-        #deferreds = []
-        
-        for node in self._nodes:
-            node.stop()
-            #deferreds.append(self._stopContainer(commID))
-        
-        #deferredList = DeferredList(deferreds)
-        #deferredList.addCallback(event.set)
-        
-        #event.wait()
+        ### TODO: Can't wait for termination at the moment
+        ###       Need something similar to initSlave.py
+#        if self._nodes:
+#            deferreds = []
+#            
+#            for nodes in self._nodes.itervalues():
+#                deferred = Deferred()
+#                deferreds.append(deferred)
+#                nodes.stop()
+#            
+#            deferredList = DeferredList(deferreds)
+#            return deferredList

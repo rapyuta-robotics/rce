@@ -36,7 +36,7 @@ class Node(object):
     
     IDENTIFIER = ComponentDefinition.NODE
     
-    def __init__(self, tag, pkg, exe, name):
+    def __init__(self, tag, pkg, exe, namespace):
         """ Initialize the Node instance.
             
             @param tag:     Tag which is to identify the node.
@@ -48,14 +48,13 @@ class Node(object):
             @param exe:     Name of the executable which is used.
             @type  exe:     str
             
-            @param name:    Name which the node should use as a ROS address
-                            in the environment.
-            @type  name:    str
+            @param namespace:   Namespace in which the node should be launched.
+            @type  namespace:   str
         """
         self._tag = tag
         self._pkg = pkg
         self._exe = exe
-        self._name = name
+        self._namespace = namespace
     
     @property
     def tag(self):
@@ -73,9 +72,9 @@ class Node(object):
         return self._exe
     
     @property
-    def name(self):
-        """ Name of the node in the ROS environment. """
-        return self._name
+    def namespace(self):
+        """ Namespace of the node in the ROS environment. """
+        return self._namespace
     
     def serialize(self, s):
         """ Serialize the Node object.
@@ -88,7 +87,7 @@ class Node(object):
         s.addElement(self._tag)
         s.addElement(self._pkg)
         s.addElement(self._exe)
-        s.addElement(self._name)
+        s.addElement(self._namespace)
     
     @classmethod
     def deserialize(cls, s):
