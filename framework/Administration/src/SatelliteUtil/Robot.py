@@ -91,8 +91,8 @@ class Robot(object):
 ##        deferredList.addCallback(processRobotSpecs)
     
     def destroyContainer(self, containerTag):
-        self._containers[containerTag].stop()
         container = self._containers.pop(containerTag)
+        container.stop()
         self._satelliteManager.unregisterContainer(container)
     
     def addNode(self, containerTag, nodeTag, package, executable, namespace):

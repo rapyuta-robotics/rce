@@ -134,7 +134,7 @@ class Container(object):
         msg.dest = MsgDef.PREFIX_PRIV_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
         msg.content = { 'commID' : self._commID }
         
-        log.msg('Start container "{0}".'.format(self._commID))
+        log.msg('Stop container "{0}".'.format(self._commID))
         self._commManager.sendMessage(msg)
         self._running = False
     
