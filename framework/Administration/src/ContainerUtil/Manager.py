@@ -88,13 +88,13 @@ class ContainerManager(object):
         if not os.path.isfile(environmentExe):
             raise ValueError('Root source directory does not contain the file "Environment.py".')
         
-        if not os.access(environmentExe):
+        if not os.access(environmentExe, os.X_OK):
             raise ValueError('File "Environment.py" in root source directory is not executable.')
         
         if not os.path.isfile(launcherExe):
             raise ValueError('Root source directory does not contain the file "Launcher.py".')
         
-        if not os.access(launcherExe):
+        if not os.access(launcherExe, os.X_OK):
             raise ValueError('File "Launcher.py" in root source directory is not executable.')
         
         # Storage of all CommIDs

@@ -98,7 +98,7 @@ def main(reactor):
         print('Root source directory does not contain the file "Container.py".')
         exit(1)
         
-    if not os.access(containerExe):
+    if not os.access(containerExe, os.X_OK):
         print('File "Container.py" in root source directory is not executable.')
         exit(1)
     
@@ -106,7 +106,7 @@ def main(reactor):
         print('Root source directory does not contain the file "Satellite.py".')
         exit(1)
     
-    if not os.access(satelliteExe):
+    if not os.access(satelliteExe, os.X_OK):
         print('File "Satellite.py" in root source directory is not executable.')
         exit(1)
     
