@@ -1,0 +1,25 @@
+=== Create Container ===
+
+{"type":"CS","dest":"$$$$$$","orig":"robotUniqueID","data":{"containerTag":"containerTag01"}}
+
+
+=== Start Node ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}]}}
+
+
+=== Add Interface ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{}
+
+
+=== Start Node/Add Interface together ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}],
+"addInterfaces":[{"name":"Test/test","interfaceType":"service","className":"Test/QueryTest"}]}}
+
+
+=== Activate Interface ===
+
+{"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"Test/test":true}}
+
