@@ -32,7 +32,7 @@ import time
 
 # Custom imports
 import settings
-from Exceptions import InternalError
+from Exceptions import InternalError, InvalidRequest
 import ComponentDefinition
 from MiscUtility import generateID
 
@@ -297,8 +297,13 @@ class ServiceMonitor(_InterfaceMonitor):
 
     def __init__(self, interface, manager):
         super(ServiceMonitor, self).__init__(interface, manager)
-
-        self.srvCls = manager.loader.loadSrv(interface.srvClass)
+        
+        args = interface.srvClass.split('/')
+        
+        if len(args) != 2:
+            raise InvalidRequest('msg/srv type is not valid. Has to be of the from pkg/msg, i.e. std_msgs/Int8.')
+        
+        self.srvCls = manager.loader.loadSrv(*args)
         self.srvCls._request_class = rospy.AnyMsg
         self.srvCls._response_class = rospy.AnyMsg
 

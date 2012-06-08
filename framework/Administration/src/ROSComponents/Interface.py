@@ -72,7 +72,8 @@ class _InterfaceBase(object):
             @raise:     SerializationError
         """
         s.addElement(self._interfaceName)
-
+        s.addElement(self._interfaceTag)
+    
     @classmethod
     def deserialize(cls, s):
         """ Deserialize the Interface object.
@@ -82,7 +83,7 @@ class _InterfaceBase(object):
             
             @raise:     SerializationError
         """
-        return cls(s.getElement())
+        return cls(s.getElement(), s.getElement())
 
 class ServiceInterface(_InterfaceBase):
     """ Class which represents a service interface.
@@ -101,7 +102,7 @@ class ServiceInterface(_InterfaceBase):
             @param srvClass:        Service class (only used for service interfaces).
             @type  srvClass:        str
         """
-        super(ServiceInterface, self).__init__(interfaceName)
+        super(ServiceInterface, self).__init__(interfaceName, interfaceTag)
         
         if isinstance(srvClass, unicode):
             try:
@@ -136,7 +137,7 @@ class ServiceInterface(_InterfaceBase):
             
             @raise:     SerializationError
         """
-        return cls(s.getElement(), s.getElement())
+        return cls(s.getElement(), s.getElement(), s.getElement())
 
 class PublisherInterface(_InterfaceBase):
     """ Class which represents a publisher interface.

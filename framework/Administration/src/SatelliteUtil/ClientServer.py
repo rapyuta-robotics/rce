@@ -155,7 +155,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             
             # Full debug message
             import traceback
-            WebSocketServerProtocol.sendMessage(self, '\n'.join(traceback.format_exc()))
+            WebSocketServerProtocol.sendMessage(self, traceback.format_exc())
     
     def _recursiveBinarySearch(self, multidict):
         """ Internally used method to find binary data in outgoing messages.
