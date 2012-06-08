@@ -22,9 +22,6 @@
 #       
 #       
 
-# Python specific imports
-import string
-
 # Custom imports
 from Message import MsgDef
 
@@ -41,7 +38,7 @@ def validateSuffix(suffix):
         return False
     
     for c in suffix:
-        if c not in string.ascii_uppercase:
+        if c not in MsgDef.ADDR_BASE:
             return False
     
     return True
@@ -76,7 +73,7 @@ def validateAddress(addr, allowNeighbor=False):
         addr[:MsgDef.PREFIX_LENGTH_ADDR]
     
     for c in addr:
-        if c not in string.ascii_uppercase:
+        if c not in MsgDef.ADDR_BASE:
             return False
     
     return True
