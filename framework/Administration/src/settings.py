@@ -50,7 +50,7 @@ WAIT_FOR_SERVICE_TIMEOUT = 5
 TMP_RESULT_DIR = '/var/www/tmp'
 
 # Time in seconds after which unused UIDs are freed up again.
-UID_TIMEOUT = 10
+UID_TIMEOUT = 60
 
 #######################################
 ###                                 ###
@@ -65,10 +65,10 @@ ROOTFS = '/opt/rce/container/rootfs'
 CONF_DIR = '/opt/rce/container/config'
 
 # Absolute path to source root directory
-ROOT_SRC_DIR = '/opt/rce/reappengine/framework/Administration/src'
+ROOT_SRC_DIR = '/opt/rce/framework/Administration/src'
 
 # Absolute path to source package directory
-ROOT_PKG_DIR = '/opt/rce/reappengine/nodes'
+ROOT_PKG_DIR = '/opt/rce/nodes'
 
 # Time interval in which the newest load information are sent to the master node/load balancer
 LOAD_INFO_UPDATE = 5
