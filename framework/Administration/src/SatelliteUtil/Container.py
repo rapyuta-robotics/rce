@@ -138,7 +138,7 @@ class Container(object):
         self._commManager.sendMessage(msg)
         self._running = False
     
-    def addNode(self, tag, pkg, exe, name):
+    def addNode(self, tag, pkg, exe, namespace):
         """ Add a node to the ROS environment in the container.
             
             @param tag:     Tag which is used to identify the ROS node which
@@ -151,9 +151,8 @@ class Container(object):
             @param exe:     Name of executable which should be launched.
             @type  exe:     str
             
-            @param name:    Name which the node should use as a ROS address
-                            in the environment.
-            @type  name:    str
+            @param namespace:   Namespace in which the node should use be launched.
+            @type  namespace:   str
             
             @raise:     InvalidRequest if the name is not a valid ROS name.
         """
@@ -162,26 +161,26 @@ class Container(object):
             try:
                 pkg = str(pkg)
             except UnicodeEncodeError:
-                raise InternalError('The package {0} is not valid.'.format(pkg))
+                raise InternalError('The package "{0}" is not valid.'.format(pkg))
         
         if isinstance(exe, unicode):
             try:
                 exe = str(exe)
             except UnicodeEncodeError:
-                raise InternalError('The executable {0} is not valid.'.format(exe))
+                raise InternalError('The executable "{0}" is not valid.'.format(exe))
         
-        if isinstance(name, unicode):
+        if isinstance(namespace, unicode):
             try:
-                name = str(name)
+                namespace = str(namespace)
             except UnicodeEncodeError:
-                raise InternalError('The executable {0} is not valid.'.format(name))
+                raise InternalError('The namespace "{0}" is not valid.'.format(namespace))
         
-        if not rosgraph.names.is_legal_name(name):
-            raise InvalidRequest('The name "{0}" is not valid.'.format(name))
+        if not rosgraph.names.is_legal_name(namespace):
+            raise InvalidRequest('The namespace "{0}" is not valid.'.format(namespace))
         
         msg = Message()
         msg.msgType = MsgTypes.ROS_ADD
-        msg.content = Node(tag, pkg, exe, name)
+        msg.content = Node(tag, pkg, exe, namespace)
         self.send(msg)
     
     def removeNode(self, tag):
