@@ -28,6 +28,7 @@ from struct import Struct
 # Custom imports
 from settings import ADDR_BASE
 from settings import ADDRESS_LENGTH
+from settings import CHUNK_SIZE
 from settings import MAX_LENGTH_MESSAGE as _MAX_LENGTH_MESSAGE
 
 ####################

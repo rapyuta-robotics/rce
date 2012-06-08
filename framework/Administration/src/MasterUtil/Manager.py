@@ -31,7 +31,6 @@ from twisted.python import log
 # Python specific imports
 from datetime import datetime, timedelta
 import random
-import string
 
 # Custom imports
 import settings
@@ -86,9 +85,9 @@ class MasterManager(object):
             @rtype:     str
         """
         while 1:
-            uid = ''.join(random.choice(string.ascii_uppercase) for _ in xrange(MsgDef.SUFFIX_LENGTH_ADDR))
+            uid = ''.join(random.choice(MsgDef.ADDR_BASE) for _ in xrange(MsgDef.SUFFIX_LENGTH_ADDR))
             
-            if '{0}{1}'.format(MsgDef.PREFIX_SATELLITE_ADDR, uid) not in self._satellites \
+            if '{0}{1}'.format(MsgDef.PREFIX_PUB_ADDR, uid) not in self._satellites \
                 and uid not in self._tmpUIDs:
                 break
         
