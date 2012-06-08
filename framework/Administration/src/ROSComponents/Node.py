@@ -36,7 +36,7 @@ class Node(object):
     
     IDENTIFIER = ComponentDefinition.NODE
     
-    def __init__(self, tag, pkg, exe, namespace:
+    def __init__(self, tag, pkg, exe, namespace):
         """ Initialize the Node instance.
             
             @param tag:     Tag which is to identify the node.
