@@ -30,8 +30,8 @@ class Loader(object):
         """
         self._rp = rospkg.RosPack()
         
-        # Key:    package name
-        # Value:  package module
+        # Key:    tuple (package name, clsType, cls)
+        # Value:  msg/srv module
         self._moduleCache = {}
         
         # Key:    package name
@@ -40,15 +40,13 @@ class Loader(object):
         #                Value:  absolute path to node
         self._nodeCache = {}
     
-    def _loadModule(self, pkg):
+    def _loadModule(self, pkg, clsType, cls):
         """ Internally used method to load a module.
         """
         try:
-            return __import__(pkg)
+            return __import__('.'.join([pkg, clsType]), fromlist=[cls])
         except ImportError:
             pass
-        
-        import imp
         
         try:
             pkgDir = self._rp.get_path(pkg)
@@ -56,7 +54,8 @@ class Loader(object):
             raise ResourceNotFound('Can not find ROS package "{0}".'.format(pkg))
         
         try:
-            return imp.load_module(pkg, *imp.find_module(pkg, [os.path.join(pkgDir, 'src')]))
+            import imp
+            return imp.load_source(cls, os.path.join(pkgDir, 'src', pkg, clsType, '_{0}.py'.format(cls)))
         except ImportError as e:
             raise ResourceNotFound('Can not import ROS package "{0}": {1}'.format(pkg, str(e)))
     
@@ -76,13 +75,16 @@ class Loader(object):
             
             @raise:         ResourceNotFound
         """
-        try:
-            module = self._moduleCache[pkg]
-        except KeyError:
-            module = self._loadModule(pkg)
+        key = (pkg, 'msg', cls)
         
         try:
-            return getattr(module.msg, cls)
+            module = self._moduleCache[key]
+        except KeyError:
+            module = self._loadModule(*key)
+            self._moduleCache[key] = module
+        
+        try:
+            return getattr(module, cls)
         except AttributeError:
             raise ResourceNotFound('ROS package "{0}" does not have message class "{1}"'.format(pkg, cls))
     
@@ -102,13 +104,16 @@ class Loader(object):
             
             @raise:         ResourceNotFound
         """
-        try:
-            module = self._moduleCache[pkg]
-        except KeyError:
-            module = self._loadModule(pkg)
+        key = (pkg, 'srv', cls)
         
         try:
-            return getattr(module.srv, cls)
+            module = self._moduleCache[key]
+        except KeyError:
+            module = self._loadModule(*key)
+            self._moduleCache[key] = module
+        
+        try:
+            return getattr(module, cls)
         except AttributeError:
             raise ResourceNotFound('ROS package "{0}" does not have service class "{1}"'.format(pkg, cls))
     
