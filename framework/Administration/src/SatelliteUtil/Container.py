@@ -287,7 +287,7 @@ class Container(object):
             if not self._interfaces[interfaceTag].validate(interfaceTag, rosAddr, msgType, interfaceType):
                 raise InvalidRequest('Another interface with the same tag already exists.')
         else:
-            self._interfaces[interfaceTag] = Interface( self._commManager,
+            self._interfaces[interfaceTag] = Interface( self,
                                                         interfaceTag,
                                                         rosAddr,
                                                         msgType,
