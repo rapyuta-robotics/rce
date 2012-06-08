@@ -1,4 +1,4 @@
-#Fri Jun 08 14:07:59 CEST 2012
+#Fri Jun 08 17:40:30 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/CommUtil.py=utf-8
@@ -30,6 +30,10 @@ encoding//Administration/src/DBUtil/DBBase.py=utf-8
 encoding//Administration/src/DBUtil/DBInterface.py=utf-8
 encoding//Administration/src/DBUtil/Type.py=utf-8
 encoding//Administration/src/Environment.py=utf-8
+encoding//Administration/src/EnvironmentUtil/Manager.py=utf-8
+encoding//Administration/src/EnvironmentUtil/Processor.py=utf-8
+encoding//Administration/src/EnvironmentUtil/Type.py=utf-8
+encoding//Administration/src/EnvironmentUtil/__init__.py=utf-8
 encoding//Administration/src/Exceptions.py=utf-8
 encoding//Administration/src/Launcher.py=utf-8
 encoding//Administration/src/LauncherUtil/Manager.py=utf-8
@@ -47,10 +51,6 @@ encoding//Administration/src/ROSComponents/Node.py=utf-8
 encoding//Administration/src/ROSComponents/NodeMonitor.py=utf-8
 encoding//Administration/src/ROSComponents/Parameter.py=utf-8
 encoding//Administration/src/ROSComponents/ParameterMonitor.py=utf-8
-encoding//Administration/src/ROSUtil/Manager.py=utf-8
-encoding//Administration/src/ROSUtil/Processor.py=utf-8
-encoding//Administration/src/ROSUtil/Type.py=utf-8
-encoding//Administration/src/ROSUtil/__init__.py=utf-8
 encoding//Administration/src/Satellite.py=utf-8
 encoding//Administration/src/SatelliteUtil/ClientMsgTypes.py=utf-8
 encoding//Administration/src/SatelliteUtil/ClientServer.py=utf-8

@@ -44,7 +44,7 @@ class Container(object):
     """ Class which represents a container. It is associated with a robot.
         A container can have multiple interfaces.
     """
-    def __init__(self, commMngr, robot, tag, commID, homeDir):
+    def __init__(self, commMngr, robot, loader, tag, commID, homeDir):
         """ Initialize the Container.
             
             @param commMngr:    CommManager which should be used to communicate.
@@ -52,6 +52,11 @@ class Container(object):
             
             @param robot:       Robot instance to which this container belongs.
             @type  robot:       Robot
+            
+            @param loader:      Loader which is used to import the message and service
+                                classes necessary to convert the ROS message in the
+                                interfaces.
+            @type  loader:      Loader
             
             @param tag:         Tag which is used by the robot to identify this container.
             @type  tag:         str
@@ -65,6 +70,7 @@ class Container(object):
         """
         self._commManager = commMngr
         self._robot = robot
+        self._loader = loader
         self._tag = tag
         self._commID = commID
         self._homeDir = homeDir
@@ -288,6 +294,7 @@ class Container(object):
                 raise InvalidRequest('Another interface with the same tag already exists.')
         else:
             self._interfaces[interfaceTag] = Interface( self,
+                                                        self._loader,
                                                         interfaceTag,
                                                         rosAddr,
                                                         msgType,

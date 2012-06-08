@@ -32,6 +32,7 @@ from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSAddUserProcessor, 
 from ROSComponents.Node import NodeForwarder
 from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
 from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
+from ROSUtil import Loader
 
 class ROSManager(object):
     """ Manager which handles ROS specific tasks.
@@ -44,6 +45,7 @@ class ROSManager(object):
         """
         # References used by the manager
         self._commMngr = commMngr
+        self._loader = Loader()
         
         # Storage for references
         self._interfaces = {}
@@ -74,6 +76,11 @@ class ROSManager(object):
                                                    ROSRemoveUserProcessor(self, commMngr),
                                                    ROSMessageContainerProcessor(self, commMngr) ])
         # ROSGetProcessor(self, commMngr)
+    
+    @property
+    def loader(self):
+        """ Loader for ROS resources. """
+        return self._loader
     
     def addInterface(self, interface):
         """ Callback for InterfaceMonitor instance to register the interface.

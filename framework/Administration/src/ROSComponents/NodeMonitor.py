@@ -22,9 +22,6 @@
 #       
 #       
 
-# ROS specific imports
-import roslib.packages      # TODO: Find replacement for roslib.packages function
-
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.protocol import ProcessProtocol
@@ -34,6 +31,7 @@ import os
 
 # Custom imports
 from Exceptions import InternalError, InvalidRequest
+from ROSUtil import ResourceNotFound
 
 class ROSNodeProtocol(ProcessProtocol):
     """ Protocol which is used to handle the ROS nodes.
@@ -54,15 +52,20 @@ class NodeMonitor(object):
                          ('TERM',    2),
                          ('KILL', None) ]
     
-    def __init__(self, reactor, node):
+    def __init__(self, reactor, loader, node):
         """ Initialize the NodeMonitor instance.
             
             @param reactor:     twisted reactor instance
+            
+            @param loader:      Loader which is used to locate the executables
+                                for starting a node.
+            @type  loader:      Loader
             
             @param node:    Node instance which should be monitored.
             @type  node:    Node
         """
         self._reactor = reactor
+        self._loader = loader
         self._node = node
         
         self._process = None
@@ -80,10 +83,10 @@ class NodeMonitor(object):
             raise InternalError('Can not launch an already running node.')
         
         # Find and validate executable
-        cmd = roslib.packages.find_node(self._node.pkg, self._node.exe)
-        
-        if len(cmd) != 1:
-            raise InvalidRequest('Could not identify which node to launch.')
+        try:
+            cmd = [self._loader.findNode()]
+        except ResourceNotFound as e:
+            raise InvalidRequest('Could not identify which node to launch: {0}'.format(e))
         
         # Process namespace argument
         namespace = self._node.namespace

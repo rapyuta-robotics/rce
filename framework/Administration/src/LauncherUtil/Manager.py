@@ -24,11 +24,12 @@
 
 # Custom imports
 from Exceptions import InvalidRequest
-from ROSUtil.Type import ROSAddMessage, ROSRemoveMessage
+from EnvironmentUtil.Type import ROSAddMessage, ROSRemoveMessage
 from Processor import ROSAddProcessor, ROSRemoveProcessor
 
 from ROSComponents.Node import Node
 from ROSComponents.NodeMonitor import NodeMonitor
+from ROSUtil import Loader
 
 class LauncherManager(object):
     """ Manager which handles launching the ROS nodes.
@@ -41,6 +42,7 @@ class LauncherManager(object):
         """
         # References used by the manager
         self._commMngr = commMngr
+        self._loader = Loader()
         
         # Storage of all nodes
         self._nodes = {}
@@ -67,7 +69,7 @@ class LauncherManager(object):
         if tag in self._nodes:
             raise InvalidRequest('Node already exists.')
         
-        nodeMonitor = NodeMonitor(self._commMngr.reactor, node)
+        nodeMonitor = NodeMonitor(self._commMngr.reactor, self._loader, node)
         nodeMonitor.start()
         self._nodes[tag] = nodeMonitor
     

@@ -22,9 +22,6 @@
 #       
 #       
 
-# ROS specific imports
-import genpy
-
 # Custom imports
 from Exceptions import InvalidRequest
 from Comm.Message import MsgTypes
@@ -37,7 +34,7 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 class Interface(object):
     """ Class which represents an interface. It is associated with a container.
     """
-    def __init__(self, container, tag, rosAddr, msgType, interfaceType):
+    def __init__(self, loader, container, tag, rosAddr, msgType, interfaceType):
         """ Initialize the Interface.
             
              # TODO: Add description
@@ -54,15 +51,15 @@ class Interface(object):
             raise InvalidRequest('Another interface with the same ROS address already exists.')
         
         if interfaceType == 'service':
-            srvCls = genpy.message.get_service_class(msgType)
+            srvCls = self._loader.loadSrv(msgType)
             self._toMsgCls = srvCls._request_class
             self._fromMsgCls = srvCls._response_class
         elif interfaceType == 'publisher':
-            self._toMsgCls = genpy.message.get_message_class(msgType)
+            self._toMsgCls = self._loader.loadMsg(msgType)
             self._fromMsgCls = None
         elif interfaceType == 'subscriber':
             self._toMsgCls = None
-            self._fromMsgCls = genpy.message.get_message_class(msgType)
+            self._fromMsgCls = self._loader.loadMsg(msgType)
         else:
             raise ValueError('"{0}" is not a valid interface type.'.format(interfaceType))
         

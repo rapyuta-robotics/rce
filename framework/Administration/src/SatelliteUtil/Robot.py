@@ -74,7 +74,12 @@ class Robot(object):
         commID = 'TESTID'
         homeFolder = '/opt/rce/users/test'
 
-        container = Container(self._commManager, self, containerTag, commID, homeFolder)
+        container = Container( self._commManager,
+                               self,
+                               self._satelliteManager.loader,
+                               containerTag,
+                               commID,
+                               homeFolder )
         
         # Send request to start the container
         container.start()

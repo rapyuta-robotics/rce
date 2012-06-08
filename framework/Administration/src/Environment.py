@@ -39,7 +39,7 @@ from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Factory import ReappengineClientFactory
 from Comm.CommManager import CommManager
-from ROSUtil.Manager import ROSManager
+from EnvironmentUtil.Manager import ROSManager
 
 def main(reactor, commID, satelliteID):
     # Start logger

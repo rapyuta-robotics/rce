@@ -35,7 +35,7 @@ from Comm.Message.Base import Message
 from Comm.Factory import ReappengineClientFactory
 
 from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
-from ROSUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
+from EnvironmentUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
 from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
 from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor
@@ -48,6 +48,7 @@ from Converter.Core import Converter
 from ROSComponents.Node import Node
 from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
 from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
+from ROSUtil import Loader
 
 class SatelliteManager(object):
     """ Manager which is used for the satellites nodes, which represent the communication
@@ -66,6 +67,7 @@ class SatelliteManager(object):
         # References used by the manager
         self._commMngr = commMngr
         self._dbInterface = DBInterface(commMngr)   # TODO: Atm not used!
+        self._loader = Loader()
         self._converter = Converter()
         
         # SSL Context which is used to connect to other satellites
@@ -107,6 +109,11 @@ class SatelliteManager(object):
                                                    #ContainerStatusProcessor(self),
                                                    ROSMsgProcessor(self) ])
         # TODO: Add all valid messages
+    
+    @property
+    def loader(self):
+        """ Loader for ROS resources. """
+        return self._loader
     
     ##################################################
     ### Robot

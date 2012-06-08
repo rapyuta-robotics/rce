@@ -24,7 +24,6 @@
 
 # ROS specific imports
 import rospy
-import genpy
 
 # Python specific imports
 from threading import Event, Lock, Thread
@@ -33,7 +32,7 @@ import time
 
 # Custom imports
 import settings
-from Exceptions import InternalError, SerializationError
+from Exceptions import InternalError
 import ComponentDefinition
 from MiscUtility import generateID
 
@@ -45,6 +44,9 @@ class _InterfaceMonitor(object):
 
             @param interface:   Interface instance.
             @type  interface:   Interface
+            
+            @param manager:     Manager which provides the callbacks to (un)register
+                                the interface.
         """
         self._interfaceName = interface.name
         self._interfaceTag = interface.tag
@@ -293,14 +295,10 @@ class ServiceMonitor(_InterfaceMonitor):
             else:
                 return None
 
-    def __init__(self, interface):
-        super(ServiceMonitor, self).__init__(interface)
+    def __init__(self, interface, manager):
+        super(ServiceMonitor, self).__init__(interface, manager)
 
-        try:
-            self.srvCls = genpy.message.get_service_class(interface.srvClass)
-        except (ValueError):
-            raise SerializationError('Could not load Service class.')
-
+        self.srvCls = manager.loader.loadSrv(interface.srvClass)
         self.srvCls._request_class = rospy.AnyMsg
         self.srvCls._response_class = rospy.AnyMsg
 
