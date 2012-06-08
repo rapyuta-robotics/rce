@@ -42,7 +42,7 @@ def main(reactor, uid):
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
-    commID = MsgDef.PREFIX_CONTAINER_ADDR + uid
+    commID = MsgDef.PREFIX_PRIV_ADDR + uid
     #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
     
     # Create Manager

@@ -71,7 +71,7 @@ def main(reactor, ip, uid):
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
-    commID = MsgDef.PREFIX_SATELLITE_ADDR + uid
+    commID = MsgDef.PREFIX_PUB_ADDR + uid
     #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
     
     # Create Manager
@@ -100,7 +100,7 @@ def main(reactor, ip, uid):
     
     # Client for connection to Container Node
     factory = ReappengineClientFactory( commManager,
-                                        MsgDef.PREFIX_CONTAINER_ADDR + uid,
+                                        MsgDef.PREFIX_PRIV_ADDR + uid,
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_STATUS ])
