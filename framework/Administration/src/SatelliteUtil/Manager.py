@@ -35,7 +35,7 @@ from Comm.Message.Base import Message
 from Comm.Factory import ReappengineClientFactory
 
 from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
-from EnvironmentUtil.Type import ROSAddMessage, ROSMsgMessage, ROSRemoveMessage
+from EnvironmentUtil.Type import ROSAddMessage, ROSRemoveMessage, ROSAddUserMessage, ROSRemoveUserMessage, ROSMsgMessage
 from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
 from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor
@@ -100,6 +100,8 @@ class SatelliteManager(object):
                                                     #ContainerStatusMessage(),    # <- necessary?
                                                     rosAdd,
                                                     ROSRemoveMessage(),
+                                                    ROSAddUserMessage(),
+                                                    ROSRemoveUserMessage(),
                                                     ROSMsgMessage() ])
         # TODO: Check if all these Serializers are necessary
         

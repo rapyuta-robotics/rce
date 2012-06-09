@@ -27,8 +27,6 @@ from zope.interface import implements
 from zope.interface.verify import verifyClass
 from zope.interface.exceptions import Invalid
 
-from twisted.python import log
-
 # Custom imports
 from Exceptions import InternalError, SerializationError
 from Comm.Message.Interfaces import IContentSerializer
