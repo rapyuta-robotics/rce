@@ -86,7 +86,7 @@ class ROSManager(ManagerBase):
         """ Loader for ROS resources. """
         return self._loader
     
-    def addInterface(self, interface):
+    def registerInterface(self, interface):
         """ Callback for InterfaceMonitor instance to register the interface.
 
             @param interface:   InterfaceMonitor which should be registered.
@@ -100,13 +100,13 @@ class ROSManager(ManagerBase):
         if tag in self._interfaces:
             raise InternalError('There is already an interface with the same tag.')
         
-        log.msg('Register the new interface "{0}".'.format(tag))
+        log.msg('Register new interface "{0}".'.format(tag))
         self._interfaces[tag] = interface
     
     def removeInterface(self, tag):
         """ Callback for MessageProcessor to remove an interface.
         """
-        log.msg('Register the interface "{0}".'.format(tag))
+        log.msg('Remove interface "{0}".'.format(tag))
         self._interfaces.pop(tag, None)
     
     def getInterface(self, tag):
@@ -131,10 +131,10 @@ class ROSManager(ManagerBase):
         log.msg('Unregister user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
         self.getInterface(tag).removePushReceiver(commID, target)
     
-    def addParameter(self, parameter):
+    def registerParameter(self, parameter):
         """ Callback for Parameter instance to register the parameter.
         """
-        log.msg('Add parameter "{0}".'.format(parameter.name))
+        log.msg('Register parameter "{0}".'.format(parameter.name))
         self._parameters[parameter.name] = parameter
     
     def removeParameter(self, name):
@@ -170,20 +170,6 @@ class ROSManager(ManagerBase):
                         'push' : False,
                         'uid'  : uid }
         self._commManager.sendMessage(msg)
-
-    def runTaskInSeparateThread(self, func, *args, **kw):
-        """ Convenience method to run any function in a separate thread.
-
-            This method should not be overwritten.
-
-            @param func:    Callable which should be executed in separate thread.
-            @type  func:    callable
-
-            @param *args:   Any positional arguments which will be passed to 'func'.
-
-            @param *kw:     Any keyworded arguments which will be passed to 'func'.
-        """
-        self.reactor.callInThread(func, args, kw)
 
     def shutdown(self):
         """ Method is called when the manager is stopped.

@@ -43,7 +43,7 @@ class _ParamMonitor(object):
         """ Add a parameter to the parameter server.
         """
         self._init(parameter.name, parameter.value)
-        manager.registerParameter()
+        manager.registerParameter(self)
     
     def _init(self, name, value):
         """ Internally used method by the constructor. Necessary for FileParam.

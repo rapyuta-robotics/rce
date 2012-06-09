@@ -55,6 +55,9 @@ class _InterfaceMonitor(object):
         
         # List of all push receivers
         self.pushReceivers = []
+        
+        # Register the interface with the manager
+        self._manager.registerInterface(self)
     
     @property
     def tag(self):
@@ -74,15 +77,10 @@ class _InterfaceMonitor(object):
 
             @raise:     InternalError if the interface can not be started.
         """
-        if not self._manager:
-            raise InternalError('Can not start an interface without a registered manager.')
-
         if self.ready:
             return
 
         self._start()
-
-        self._manager.registerInterface(self)
         self.ready = True
     
     def addPushReceiver(self, commID, tag):
@@ -190,9 +188,7 @@ class _InterfaceMonitor(object):
             return
 
         self._stop()
-
         self.ready = False
-        self._manager.unregisterInterface(self)
 
 class ServiceMonitor(_InterfaceMonitor):
     """ Class which is used to handle and monitor a service interface.
@@ -318,7 +314,7 @@ class ServiceMonitor(_InterfaceMonitor):
 
     def _send(self, msg, pushResult):
         task = ServiceMonitor.ServiceTask(self, msg, pushResult)
-        self._manager.runTaskInSeparateThread(task.run)
+        self._manager.reactor.callInThread(task.run)
         
         if pushResult[0]:
             while 1:
