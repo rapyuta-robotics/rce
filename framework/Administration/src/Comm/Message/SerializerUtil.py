@@ -49,12 +49,15 @@ _F_LEN = _F_STRUCT.size
 class Serializer(object):
     """ Class which is used to serialize a message.
     """
-    def __init__(self, buf=MessageFIFO()):
+    def __init__(self, buf=None):
         """ Initialize the Serializer.
             
             @param buf:     FIFO into which the message should be serialized.
             @type  buf:     MessageFIFO
         """
+        if not buf:
+            buf = MessageFIFO()
+        
         self._buf = buf
     
     def addHeader(self, length, dest, origin, msgType, msgNr):

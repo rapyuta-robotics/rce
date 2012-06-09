@@ -184,6 +184,7 @@ class Container(object):
         if not rosgraph.names.is_legal_name(namespace):
             raise InvalidRequest('The namespace "{0}" is not valid.'.format(namespace))
         
+        log.msg('Start node "{0}/{1}" (tag: "{2}") in container "{3}".'.format(pkg, exe, tag, self._commID))
         msg = Message()
         msg.msgType = MsgTypes.ROS_ADD
         msg.content = Node(tag, pkg, exe, namespace)
@@ -196,6 +197,7 @@ class Container(object):
                             be removed.
             @type  tag:     str
         """
+        log.msg('Remove node (tag: "{0}") from container "{1}".'.format(tag, self._commID))
         msg = Message()
         msg.msgType = MsgTypes.ROS_REMOVE
         msg.content = { 'type' : ComponentDefinition.RM_NODE,
@@ -231,6 +233,7 @@ class Container(object):
         elif paramType == 'file':
             content = FileParam(name, value)
         
+        log.msg('Add parameter "{0}" to container "{1}".'.format(name, self._commID))
         msg = Message()
         msg.msgType = MsgTypes.ROS_ADD
         msg.content = content
@@ -242,6 +245,7 @@ class Container(object):
             @param name:    Name of the parameter which should be removed.
             @type  name:    str
         """
+        log.msg('Remove parameter "{0}" from container "{1}".'.format(name, self._commID))
         msg = Message()
         msg.msgType = MsgTypes.ROS_REMOVE
         msg.content = { 'type' : ComponentDefinition.RM_PARAMETER,
@@ -292,7 +296,18 @@ class Container(object):
         if interfaceTag in self._interfaces:
             if not self._interfaces[interfaceTag].validate(interfaceTag, rosAddr, msgType, interfaceType):
                 raise InvalidRequest('Another interface with the same tag already exists.')
+            
+            log.msg('Tried to add the same interface (tag: "{0}") twice to container "{1}".'.format(
+                interfaceTag, 
+                self._commID
+            ))
         else:
+            log.msg('Add interface "{0}" (type: "{1}"; tag: "{2}") to container "{3}".'.format(
+                rosAddr,
+                interfaceType,
+                interfaceTag,
+                self._commID
+            ))
             self._interfaces[interfaceTag] = Interface( self,
                                                         self._loader,
                                                         interfaceTag,
@@ -309,6 +324,7 @@ class Container(object):
         if interfaceTag not in self._interfaces:
             raise InvalidRequest('Can not remove the interface. Tag does not exist.')
         
+        log.msg('Remove interface (tag: "{0}") from container "{1}".'.format(interfaceTag, self._commID))
         del self._interfaces[interfaceTag]
     
     def activateInterface(self, interfaceTag, target, commID):
@@ -321,6 +337,12 @@ class Container(object):
         
         try:
             self._interfaces[interfaceTag].registerUser(target, commID)
+            log.msg('Activate interface (tag: "{0}") for user "({1}, {2})" in container "{3}".'.format(
+                interfaceTag,
+                commID,
+                target,
+                self._commID
+            ))
         except KeyError:
             raise InternalError('Can not activate an interface which does not exist.')
     
@@ -332,6 +354,12 @@ class Container(object):
         
         try:
             self._interfaces[interfaceTag].unregisterUser(target, commID)
+            log.msg('Deactivate interface (tag: "{0}") for user "({1}, {2})" in container "{3}".'.format(
+                interfaceTag,
+                commID,
+                target,
+                self._commID
+            ))
         except KeyError:
             raise InternalError('Can not deactivate an interface which does not exist.')
     

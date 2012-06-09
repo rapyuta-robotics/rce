@@ -26,7 +26,6 @@
 from zope.interface import implements
 
 # twisted specific imports
-from twisted.python import log
 from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import Protocol
 from twisted.internet.interfaces import IPushProducer, IConsumer
@@ -192,13 +191,10 @@ class ReappengineProtocol(Protocol, object):
     def requestSend(self):
         """ Request that this protocol instance sends a message.
         """
-        log.msg('Protocol received send request. (Producer: {0}, Initialized: {1})'.format(self._producer, self._initialized))
         if not self._producer and self._initialized:
-            log.msg('Protocol try to get a new message to send.')
             producer = self.factory.commManager.router.getNextProducer(self._dest)
             
             if producer:
-                log.msg('Protocol requested a new message to send.')
                 producer.send(self)
 
     def registerProducer(self, producer, streaming):
