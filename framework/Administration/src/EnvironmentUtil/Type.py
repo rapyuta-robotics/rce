@@ -113,41 +113,31 @@ class ROSRemoveMessage(object):
     def deserialize(self, s):
         return { 'tag' : s.getElement(), 'type' : s.getElement() }
 
-class ROSAddUserMessage(object):
-    """ Message type to register a new user with an interface.
+class ROSUserMessage(object):
+    """ Message type to (un)register a new user with an interface.
         
         The fields are:
             tag     Tag which should be used to identify the interface to which the
                     user should be added
             commID  Communication ID of the node to which the messages should be sent
             target  Tag of the receiving interface/user
+            add     Flag to indicate whether the user should be added or removed
     """
     implements(IContentSerializer)
     
-    IDENTIFIER = MsgTypes.ROS_ADD_USER
+    IDENTIFIER = MsgTypes.ROS_USER
     
     def serialize(self, s, msg):
         s.addElement(msg['tag'])
         s.addElement(msg['commID'])
         s.addElement(msg['target'])
+        s.addBool(msg['add'])
     
     def deserialize(self, s):
-        return { 'tag'    : s.getElement,
-                 'commID' : s.getElement,
-                 'target' : s.getElement }
-
-class ROSRemoveUserMessage(object):
-    """ Message type to unregister an user from an interface.
-    """
-    implements(IContentSerializer)
-    
-    IDENTIFIER = MsgTypes.ROS_ADD_USER
-    
-    def serialize(self, s, msg):
-        s.addElement(msg[''])
-    
-    def deserialize(self, s):
-        return { '' : s.getElement }
+        return { 'tag'    : s.getElement(),
+                 'commID' : s.getElement(),
+                 'target' : s.getElement(),
+                 'add'    : s.getBool() }
 
 class ROSMsgMessage(object):
     """ Message type for a single ROS message.

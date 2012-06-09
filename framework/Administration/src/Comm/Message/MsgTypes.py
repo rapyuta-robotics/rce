@@ -46,8 +46,7 @@
         
         RA  Add ROS component
         RR  Remove ROS component
-        RU  Add user to an Interface
-        RD  Remove user from an Interface
+        RU  Add/Remove user to/from an Interface
         RM  ROS Message
         RB  Response from ROS
         RG  Get ROS Message
@@ -75,8 +74,7 @@ LOAD_INFO = 'LI'
 
 ROS_ADD = 'RA'
 ROS_REMOVE = 'RR'
-ROS_ADD_USER = 'RU'
-ROS_REMOVE_USER = 'RD'
+ROS_USER = 'RU'
 ROS_MSG = 'RM'
 ROS_RESPONSE = 'RB'
 ROS_GET = 'RG'

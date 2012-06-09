@@ -65,8 +65,7 @@ def main(reactor, commID, satelliteID):
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE,
-                                      MsgTypes.ROS_ADD_USER,
-                                      MsgTypes.ROS_REMOVE_USER,
+                                      MsgTypes.ROS_USER,
                                       # MsgTypes.ROS_GET,    # Only push valid; no pull
                                       MsgTypes.ROS_MSG ])
     #reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())

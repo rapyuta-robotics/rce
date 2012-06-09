@@ -26,8 +26,8 @@
 from Exceptions import InternalError
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
-from Type import ROSAddMessage, ROSRemoveMessage, ROSAddUserMessage, ROSRemoveUserMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
-from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSAddUserProcessor, ROSRemoveUserProcessor, ROSMessageContainerProcessor #, ROSGetProcessor
+from Type import ROSAddMessage, ROSRemoveMessage, ROSUserMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
+from Processor import ROSAddProcessor, ROSRemoveProcessor, ROSUserProcessor, ROSMessageContainerProcessor #, ROSGetProcessor
 
 from ROSComponents.Node import NodeForwarder
 from ROSComponents.Interface import ServiceInterface, PublisherInterface, SubscriberInterface
@@ -64,16 +64,14 @@ class ROSManager(object):
                                     FileParam ])
         self._commMngr.registerContentSerializers([ rosAdd,
                                                     ROSRemoveMessage(),
-                                                    ROSAddUserMessage(),
-                                                    ROSRemoveUserMessage(),
+                                                    ROSUserMessage(),
                                                     ROSMsgMessage() ])
         # ROSResponseMessage(), ROSGetMessage()
         
         # Register Message Processors
         self._commMngr.registerMessageProcessors([ ROSAddProcessor(self, commMngr),
                                                    ROSRemoveProcessor(self, commMngr),
-                                                   ROSAddUserProcessor(self, commMngr),
-                                                   ROSRemoveUserProcessor(self, commMngr),
+                                                   ROSUserProcessor(self, commMngr),
                                                    ROSMessageContainerProcessor(self, commMngr) ])
         # ROSGetProcessor(self, commMngr)
     

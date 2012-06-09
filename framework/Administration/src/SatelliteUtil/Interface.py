@@ -110,10 +110,11 @@ class Interface(object):
             self._start()
         
         msg = Message()
-        msg.msgType = MsgTypes.ROS_ADD_USER
+        msg.msgType = MsgTypes.ROS_USER
         msg.content = { 'tag'    : self._tag,
                         'target' : target,
-                        'commID' : commID }
+                        'commID' : commID,
+                        'add'    : True }
         self._container.send(msg)
         
         self._ref.append((target, commID))
@@ -128,10 +129,11 @@ class Interface(object):
             self._stop()
         else:
             msg = Message()
-            msg.msgType = MsgTypes.ROS_REMOVE_USER
+            msg.msgType = MsgTypes.ROS_USER
             msg.content = { 'tag'    : self._tag,
                             'target' : target,
-                            'commID' : commID }
+                            'commID' : commID,
+                            'add'    : False }
             self._container.send(msg)
     
     def send(self, msg, sender):

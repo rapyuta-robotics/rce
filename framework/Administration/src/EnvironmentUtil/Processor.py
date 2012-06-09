@@ -109,23 +109,18 @@ class ROSRemoveProcessor(ROSProcessorBase):
         else:
             raise InvalidRequest('Unknown type to remove received.')
 
-class ROSAddUserProcessor(ROSProcessorBase):
+class ROSUserProcessor(ROSProcessorBase):
     """ Message processor to add a new user for an interface.
     """
-    IDENTIFIER = MsgTypes.ROS_ADD_USER
+    IDENTIFIER = MsgTypes.ROS_USER
     
     def processMessage(self, msg):
         msg = msg.content
-        self.manager.addInterfaceUser(msg['tag'], msg['target'], msg['commID'])
-
-class ROSRemoveUserProcessor(ROSProcessorBase):
-    """ Message processor to remove an user from an interface.
-    """
-    IDENTIFIER = MsgTypes.ROS_REMOVE_USER
-    
-    def processMessage(self, msg):
-        msg = msg.content
-        self.manager.removeInterfaceUser(msg['tag'], msg['target'], msg['commID'])
+        
+        if msg['add']:
+            self.manager.addInterfaceUser(msg['tag'], msg['target'], msg['commID'])
+        else:
+            self.manager.removeInterfaceUser(msg['tag'], msg['target'], msg['commID'])
 
 class ROSMessageContainerProcessor(ROSProcessorBase):
     """ Message processor for a single ROS message in the container node.
