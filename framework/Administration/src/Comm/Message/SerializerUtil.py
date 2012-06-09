@@ -61,12 +61,22 @@ class Serializer(object):
         """ Serialize a header.
             
             This method should not be used directly by the content serializers!
+            
+            @raise:     SerializationError
         """
+        targetLength = len(self._buf) + MsgDef.HEADER_LENGTH
+        
+        if targetLength != length:
+            raise SerializationError('Expected length of serializer does not match given message length.')
+        
         self._buf.pushFront(_I_STRUCT.pack(msgNr))
         self._buf.pushFront(msgType)
         self._buf.pushFront(origin)
         self._buf.pushFront(dest)
         self._buf.pushFront(_I_STRUCT.pack(length))
+        
+        if len(self._buf) != targetLength:
+            raise SerializationError('Length of header does not match the specifications.')
     
     def addIdentifier(self, identifier, length):
         """ Serialize a single identifier.

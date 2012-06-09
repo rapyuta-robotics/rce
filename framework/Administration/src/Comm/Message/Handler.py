@@ -169,7 +169,7 @@ class _Sender(_Base):
             self._consumer.write(data)
             self._sent += length
         
-        if (self._sent == self._msgLen or not self._buf) or self._aborted:
+        if self._sent == self._msgLen or not self._buf or self._aborted:
             log.msg('Message Handler: {0} of {1} bytes sent.'.format(self._sent, self._msgLen))
             self._consumer.unregisterProducer()
 

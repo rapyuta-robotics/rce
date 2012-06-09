@@ -22,6 +22,9 @@
 #       
 #       
 
+# twisted specific imports
+from twisted.python import log
+
 # Custom imports
 from Exceptions import InternalError
 from Comm.Message.Base import Message
@@ -93,12 +96,14 @@ class ROSManager(object):
 
         if tag in self._interfaces:
             raise InternalError('There is already an interface with the same tag.')
-
+        
+        log.msg('Register the new interface "{0}".'.format(tag))
         self._interfaces[tag] = interface
     
     def removeInterface(self, tag):
         """ Callback for MessageProcessor to remove an interface.
         """
+        log.msg('Register the interface "{0}".'.format(tag))
         self._interfaces.pop(tag, None)
     
     def getInterface(self, tag):
@@ -114,21 +119,25 @@ class ROSManager(object):
     def addInterfaceUser(self, tag, target, commID):
         """ # TODO: Add description.
         """
+        log.msg('Register user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
         self.getInterface(tag).addPushReceiver(commID, target)
     
     def removeInterfaceUser(self, tag, target, commID):
         """ # TODO: Add description.
         """
+        log.msg('Unregister user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
         self.getInterface(tag).removePushReceiver(commID, target)
     
     def addParameter(self, parameter):
         """ Callback for Parameter instance to register the parameter.
         """
+        log.msg('Add parameter "{0}".'.format(parameter.name))
         self._parameters[parameter.name] = parameter
     
     def removeParameter(self, name):
         """ Callback for MessageProcessor to remove a parameter.
         """
+        log.msg('Remove parameter "{0}".'.format(name))
         self._parameters.pop(name, None)
     
     def sendROSMessage(self, rosMsg, dest, tag, user, uid):
