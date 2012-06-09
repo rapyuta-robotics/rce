@@ -24,6 +24,8 @@
 
 # Custom imports
 from Exceptions import InvalidRequest
+from NodeManager import ManagerBase
+
 from EnvironmentUtil.Type import ROSAddMessage, ROSRemoveMessage
 from Processor import ROSAddProcessor, ROSRemoveProcessor
 
@@ -31,17 +33,18 @@ from ROSComponents.Node import Node
 from ROSComponents.NodeMonitor import NodeMonitor
 from ROSUtil import Loader
 
-class LauncherManager(object):
+class LauncherManager(ManagerBase):
     """ Manager which handles launching the ROS nodes.
     """
-    def __init__(self, commMngr):
+    def __init__(self, commManager):
         """ Initialize the LauncherManager.
             
-            @param commMngr:    CommManager which should be used to communicate.
-            @type  commMngr:    CommManager
+            @param commManager:     CommManager which should be used to communicate.
+            @type  commManager:     CommManager
         """
+        super(LauncherManager, self).__init__(commManager)
+        
         # References used by the manager
-        self._commMngr = commMngr
         self._loader = Loader()
         
         # Storage of all nodes
@@ -50,12 +53,12 @@ class LauncherManager(object):
         # Register Content Serializers
         rosAdd = ROSAddMessage()
         rosAdd.registerComponents([ Node ])
-        self._commMngr.registerContentSerializers([ rosAdd,
-                                                    ROSRemoveMessage() ])
+        self._commManager.registerContentSerializers([ rosAdd,
+                                                       ROSRemoveMessage() ])
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessors([ ROSAddProcessor(self),
-                                                   ROSRemoveProcessor(self) ])
+        self._commManager.registerMessageProcessors([ ROSAddProcessor(self),
+                                                      ROSRemoveProcessor(self) ])
     
     def addNode(self, node):
         """ Add a Node to the ROS environment.
@@ -69,7 +72,7 @@ class LauncherManager(object):
         if tag in self._nodes:
             raise InvalidRequest('Node already exists.')
         
-        nodeMonitor = NodeMonitor(self._commMngr.reactor, self._loader, node)
+        nodeMonitor = NodeMonitor(self.reactor, self._loader, node)
         nodeMonitor.start()
         self._nodes[tag] = nodeMonitor
     

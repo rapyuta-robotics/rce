@@ -29,17 +29,19 @@ from twisted.internet.defer import Deferred
 # Custom imports
 import settings
 from Exceptions import InvalidRequest
+from NodeManager import ManagerBase
+
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
 from Comm.Factory import ReappengineClientFactory
+from Triggers import SatelliteRoutingTrigger
 
 from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
 from EnvironmentUtil.Type import ROSAddMessage, ROSRemoveMessage, ROSUserMessage, ROSMsgMessage
 from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
 from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor
-from Triggers import SatelliteRoutingTrigger
 
 from DBUtil.DBInterface import DBInterface
 
@@ -50,23 +52,24 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 from ROSUtil import Loader
 
-class SatelliteManager(object):
+class SatelliteManager(ManagerBase):
     """ Manager which is used for the satellites nodes, which represent the communication
         relay for the container nodes on a single machine.
     """
-    def __init__(self, commMngr, ctx):
+    def __init__(self, commManager, ctx):
         """ Initialize the necessary variables for the SatelliteManager.
             
-            @param commMngr:    CommManager which should be used to communicate.
-            @type  commMngr:    CommManager
+            @param commManager:     CommManager which should be used to communicate.
+            @type  commManaggr:     CommManager
             
             @param ctx:     SSLContext which is used for the connections to
                             the other satellite nodes.
             @type  ctx:     # TODO: Determine type of argument
         """
+        super(SatelliteManager, self).__init__(commManager)
+        
         # References used by the manager
-        self._commMngr = commMngr
-        self._dbInterface = DBInterface(commMngr)   # TODO: Atm not used!
+        self._dbInterface = DBInterface(commManager)   # TODO: Atm not used!
         self._loader = Loader()
         self._converter = Converter()
         
@@ -91,24 +94,24 @@ class SatelliteManager(object):
                                     FloatParam,
                                     BoolParam,
                                     FileParam ])
-        self._commMngr.registerContentSerializers([ ConnectDirectiveMessage(),
-                                                    GetCommIDRequestMessage(),
-                                                    GetCommIDResponseMessage(),
-                                                    DelCommIDRequestMessage(),
-                                                    StartContainerMessage(),
-                                                    StopContainerMessage(),
-                                                    #ContainerStatusMessage(),    # <- necessary?
-                                                    rosAdd,
-                                                    ROSRemoveMessage(),
-                                                    ROSUserMessage(),
-                                                    ROSMsgMessage() ])
+        self._commManager.registerContentSerializers([ ConnectDirectiveMessage(),
+                                                       GetCommIDRequestMessage(),
+                                                       GetCommIDResponseMessage(),
+                                                       DelCommIDRequestMessage(),
+                                                       StartContainerMessage(),
+                                                       StopContainerMessage(),
+                                                       #ContainerStatusMessage(),    # <- necessary?
+                                                       rosAdd,
+                                                       ROSRemoveMessage(),
+                                                       ROSUserMessage(),
+                                                       ROSMsgMessage() ])
         # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessors([ ConnectDirectiveProcessor(self),
-                                                   GetCommIDProcessor(self),
-                                                   #ContainerStatusProcessor(self),
-                                                   ROSMsgProcessor(self) ])
+        self._commManager.registerMessageProcessors([ ConnectDirectiveProcessor(self),
+                                                      GetCommIDProcessor(self),
+                                                      #ContainerStatusProcessor(self),
+                                                      ROSMsgProcessor(self) ])
         # TODO: Add all valid messages
     
     @property
@@ -231,13 +234,13 @@ class SatelliteManager(object):
     def _connectToSatellite(self, commID, ip):
         """ Connect to another satellite node.
         """
-        factory = ReappengineClientFactory( self._commMngr, commID,
+        factory = ReappengineClientFactory( self._commManager, commID,
                                             '',
-                                            SatelliteRoutingTrigger(self._commMngr, self) )
+                                            SatelliteRoutingTrigger(self._commManager, self) )
         factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                           MsgTypes.ROS_MSG ])
-        #self._commMngr.reactor.connectSSL(ip, port, factory, self._ctx)
-        self._commMngr.reactor.connectTCP(ip, settings.PORT_SATELLITE_SATELLITE, factory)
+        #self.reactor.connectSSL(ip, port, factory, self._ctx)
+        self.reactor.connectTCP(ip, settings.PORT_SATELLITE_SATELLITE, factory)
         # TODO: Set to SSL
     
     def connectToSatellites(self, satellites):
@@ -265,7 +268,7 @@ class SatelliteManager(object):
         msg = Message()
         msg.msgType = MsgTypes.ID_REQUEST
         msg.dest = MsgDef.MASTER_ADDR
-        self._commMngr.sendMessage(msg)
+        self._commManager.sendMessage(msg)
         
         return deferred
     
@@ -287,7 +290,7 @@ class SatelliteManager(object):
         msg.msgType = MsgTypes.ROUTE_INFO
         msg.dest = settings.LOAD_INFO_UPDATE
         msg.content = None # TODO: Add meaningful information
-        self._commMngr.sendMessage(msg)
+        self._commManager.sendMessage(msg)
     
     def shutdown(self):
         """ Method is called when the manager is stopped.

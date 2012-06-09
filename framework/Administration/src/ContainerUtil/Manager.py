@@ -33,6 +33,7 @@ import shutil
 
 # Custom imports
 import settings
+from NodeManager import ManagerBase
 from Comm.Message import MsgDef
 from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage
 from Processor import StartContainerProcessor, StopContainerProcessor
@@ -46,18 +47,16 @@ class LXCProtocol(ProcessProtocol):
     def processEnded(self, reason):
         self._deferred.callback(reason)
 
-class ContainerManager(object):
+class ContainerManager(ManagerBase):
     """ Manager which handles container specific task.
     """
-    def __init__(self, commMngr):
+    def __init__(self, commManager):
         """ Initialize the ContainerManager.
             
-            @param commMngr:    CommManager which should be used to communicate.
-            @type  commMngr:    CommManager
+            @param commManager:     CommManager which should be used to communicate.
+            @type  commManager:     CommManager
         """
-        # References used by the manager
-        self._commMngr = commMngr
-        self._reactor = commMngr.reactor
+        super(ContainerManager, self).__init__(commManager)
         
         # Validate loaded directories from settings
         self._confDir = settings.CONF_DIR
@@ -101,13 +100,13 @@ class ContainerManager(object):
         self._commIDs = []
         
         # Register Content Serializers
-        self._commMngr.registerContentSerializers([ StartContainerMessage(),
-                                                    StopContainerMessage(),
-                                                    ContainerStatusMessage() ])
+        self._commManager.registerContentSerializers([ StartContainerMessage(),
+                                                       StopContainerMessage(),
+                                                       ContainerStatusMessage() ])
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessors([ StartContainerProcessor(self),
-                                                   StopContainerProcessor(self) ])
+        self._commManager.registerMessageProcessors([ StartContainerProcessor(self),
+                                                      StopContainerProcessor(self) ])
     
     def _createConfigFile(self, commID):
         """ Create a config file based on the given parameters.
@@ -326,7 +325,7 @@ class ContainerManager(object):
                     '-n', commID,
                     '-f', os.path.join(self._confDir, commID, 'config'),
                     '-d' ]
-            self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
+            self.reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
         except:
             log.msg('Caught an exception when trying to start the container.')
             import sys, traceback #@Reimport
@@ -336,7 +335,7 @@ class ContainerManager(object):
             deferred.errback(msg)
             return
         else:
-            self._reactor.callFromThread(self._commIDs.append, commID)
+            self.reactor.callFromThread(self._commIDs.append, commID)
     
     def startContainer(self, commID, homeDir):
         """ Callback for message processor to stop a container.
@@ -348,7 +347,7 @@ class ContainerManager(object):
             deferred.errback('There is already a container registered under the same CommID.')
             return
         
-        self._reactor.callInThread(self._startContainer, deferred, commID, homeDir)
+        self.reactor.callInThread(self._startContainer, deferred, commID, homeDir)
         
         def reportSuccess(_):
             log.msg('Container successfully started.')
@@ -380,7 +379,7 @@ class ContainerManager(object):
                 shutil.rmtree(os.path.join(self._dataDir, commID))
                 
                 # Remove commID from internal list
-                self._reactor.callFromThread(self._commIDs.remove, commID)
+                self.reactor.callFromThread(self._commIDs.remove, commID)
             except:
                 import sys, traceback
                 etype, value, _ = sys.exc_info()
@@ -395,7 +394,7 @@ class ContainerManager(object):
         
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', commID]
-            self._reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
+            self.reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
         except:
             import sys, traceback
             etype, value, _ = sys.exc_info()
@@ -414,7 +413,7 @@ class ContainerManager(object):
             deferred.errback('There is no container registered under this CommID.')
             return
         
-        self._reactor.callInThread(self._stopContainer, deferred, commID)
+        self.reactor.callInThread(self._stopContainer, deferred, commID)
         
         def reportSuccess(_):
             log.msg('Container successfully stopped.')

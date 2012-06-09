@@ -51,7 +51,7 @@ class EmptyTrigger(object):
 class ReappengineFactory(object):
     """ Base class which implements base methods for all Reappengine Factories.
     """
-    def __init__(self, commMngr, trigger=EmptyTrigger()):
+    def __init__(self, commMngr, trigger=None):
         """ Initialize the ReappengineFactory.
             
             @param commMngr:    CommManager instance which should be used with this
@@ -65,6 +65,9 @@ class ReappengineFactory(object):
             @raise:     InternalError if the trigger does not implement the "IPostInitTrigger"
                         interface.
         """
+        if not trigger:
+            trigger = EmptyTrigger()
+        
         self._commManager = commMngr
         self._filter = set([MsgTypes.INIT_REQUEST])
         
@@ -139,7 +142,7 @@ class ReappengineFactory(object):
 class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
     """ Factory which is used for client connections.
     """
-    def __init__(self, commMngr, satelliteID, trigger=EmptyTrigger()):
+    def __init__(self, commMngr, satelliteID, trigger=None):
         """ Initialize the ReappengineClientFactory.
 
             @param commMngr:    CommManager which is responsible for handling the communication

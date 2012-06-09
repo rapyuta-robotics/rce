@@ -32,7 +32,7 @@ import os, sys
 
 # Custom imports
 import settings
-from Comm.UIDClient import UIDClientFactory
+from MasterUtil.UIDClient import UIDClientFactory
 
 class LoggerProtocol(ProcessProtocol):
     """ Simple ProcessProtocol which forwards the stdout of the subprocesses to the

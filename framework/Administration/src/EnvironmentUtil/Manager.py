@@ -27,6 +27,8 @@ from twisted.python import log
 
 # Custom imports
 from Exceptions import InternalError
+from NodeManager import ManagerBase
+
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
 from Type import ROSAddMessage, ROSRemoveMessage, ROSUserMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
@@ -37,17 +39,18 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 from ROSUtil import Loader
 
-class ROSManager(object):
+class ROSManager(ManagerBase):
     """ Manager which handles ROS specific tasks.
     """
-    def __init__(self, commMngr):
+    def __init__(self, commManager):
         """ Initialize the ROSManager.
             
-            @param commMngr:    CommManager which should be used to communicate.
-            @type  commMngr:    CommManager
+            @param commManager:     CommManager which should be used to communicate.
+            @type  commManager:     CommManager
         """
+        super(ROSManager, self).__init__(commManager)
+        
         # References used by the manager
-        self._commMngr = commMngr
         self._loader = Loader()
         
         # Storage for references
@@ -65,17 +68,17 @@ class ROSManager(object):
                                     FloatParam,
                                     BoolParam,
                                     FileParam ])
-        self._commMngr.registerContentSerializers([ rosAdd,
-                                                    ROSRemoveMessage(),
-                                                    ROSUserMessage(),
-                                                    ROSMsgMessage() ])
+        self._commManager.registerContentSerializers([ rosAdd,
+                                                       ROSRemoveMessage(),
+                                                       ROSUserMessage(),
+                                                       ROSMsgMessage() ])
         # ROSResponseMessage(), ROSGetMessage()
         
         # Register Message Processors
-        self._commMngr.registerMessageProcessors([ ROSAddProcessor(self, commMngr),
-                                                   ROSRemoveProcessor(self, commMngr),
-                                                   ROSUserProcessor(self, commMngr),
-                                                   ROSMessageContainerProcessor(self, commMngr) ])
+        self._commManager.registerMessageProcessors([ ROSAddProcessor(self, commManager),
+                                                      ROSRemoveProcessor(self, commManager),
+                                                      ROSUserProcessor(self, commManager),
+                                                      ROSMessageContainerProcessor(self, commManager) ])
         # ROSGetProcessor(self, commMngr)
     
     @property
@@ -166,7 +169,7 @@ class ROSManager(object):
                         'user' : user,
                         'push' : False,
                         'uid'  : uid }
-        self._commMngr.sendMessage(msg)
+        self._commManager.sendMessage(msg)
 
     def runTaskInSeparateThread(self, func, *args, **kw):
         """ Convenience method to run any function in a separate thread.
@@ -180,7 +183,7 @@ class ROSManager(object):
 
             @param *kw:     Any keyworded arguments which will be passed to 'func'.
         """
-        self._commMngr.reactor.callInThread(func, args, kw)
+        self.reactor.callInThread(func, args, kw)
 
     def shutdown(self):
         """ Method is called when the manager is stopped.

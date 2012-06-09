@@ -34,24 +34,24 @@ import random
 
 # Custom imports
 import settings
+from NodeManager import ManagerBase
 from Comm.Message import MsgDef
 from Comm.Interfaces import IUIDServer
 from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
-class MasterManager(object):
+class MasterManager(ManagerBase):
     """ Manager which is used for master node who is responsible for the management
         of the satellites nodes and is the connection point for the outside world.
     """
     implements(IUIDServer)
     
-    def __init__(self, commMngr):
+    def __init__(self, commManager):
         """ Initialize the necessary variables for the MasterManager.
             
-            @param commMngr:    CommManager which should be used to communicate.
-            @type  commMngr:    CommManager
+            @param commManager:     CommManager which should be used to communicate.
+            @type  commManager:     CommManager
         """
-        # References used by the manager
-        self._commMngr = commMngr
+        super(MasterManager, self).__init__(commManager)
         
         # List of all available satellites
         # Key:   CommID
@@ -67,14 +67,14 @@ class MasterManager(object):
         self._commIDs = set()
         
         # Register Content Serializers
-        self._commMngr.registerContentSerializers([ ConnectDirectiveMessage(),
-                                                    GetCommIDRequestMessage(),
-                                                    GetCommIDResponseMessage(),
-                                                    DelCommIDRequestMessage() ])
+        self._commManager.registerContentSerializers([ ConnectDirectiveMessage(),
+                                                       GetCommIDRequestMessage(),
+                                                       GetCommIDResponseMessage(),
+                                                       DelCommIDRequestMessage() ])
         # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
-        #self._commMngr.registerMessageProcessors([ ConnectDirectiveProcessor(self) ])
+        #self._commManager.registerMessageProcessors([ ConnectDirectiveProcessor(self) ])
         # TODO: Add all valid messages  
     
     def getUID(self):
@@ -138,7 +138,7 @@ class MasterManager(object):
             @rtype:     str
         """
         while 1:
-            commID = ''.join(random.choice(string.ascii_uppercase) for _ in xrange(MsgDef.ADDRESS_LENGTH))
+            commID = ''.join(random.choice(MsgDef.ADDR_BASE) for _ in xrange(MsgDef.ADDRESS_LENGTH))
             
             if commID not in self._commIDs:
                 self._commIDs.add(commID)
