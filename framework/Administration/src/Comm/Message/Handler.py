@@ -305,12 +305,9 @@ def receive(factory, msgType, msgLen, origin, dest, init):
     
     if init:
         # Other side is not yet authenticated
-        log.msg('Received a message in uninitialized state.')
         return _EndReceiver(commManager, init, msgLen, origin, commID)
     
     # Everything ok; get the next message consumer
-    log.msg('Received a message in initialized state.')
-    
     if dest == commID or dest == MsgDef.NEIGHBOR_ADDR:
         # Message is for this node
         return _EndReceiver(commManager, commManager, msgLen, origin, commID)

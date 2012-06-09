@@ -183,7 +183,6 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
             conn.transport.loseConnection()
     
     def processInitMessage(self, msg, conn):
-        log.msg('Process init message...')
         # First some base checks of message header
         if msg.msgType != MsgTypes.INIT_REQUEST:
             log.msg('Received message type different from INIT_REQUEST before initialization of protocol instance has been completed.')
@@ -225,7 +224,6 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
         return ReappengineProtocol(self, addr)
     
     def processInitMessage(self, msg, conn):
-        log.msg('Process init message...')
         # First some base checks of message header
         if msg.msgType != MsgTypes.INIT_REQUEST:
             log.msg('Received message type different from INIT_REQUEST before initialization of protocol instance has been completed.')
