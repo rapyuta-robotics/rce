@@ -68,7 +68,7 @@ class Message(object):
         serializer = manager.getSerializer(self.msgType)
         
         if not serializer:
-            raise SerializationError('The message can not be serialized (Unknown message type).')
+            raise SerializationError('The message can not be serialized (Unknown message type: "{0}").'.format(self.msgType))
         
         s = Serializer()
         serializer.serialize(s, self.content)
@@ -115,7 +115,7 @@ class Message(object):
         serializer = manager.getSerializer(msg.msgType)
         
         if not serializer:
-            raise SerializationError('The message can not be serialized (Unknown message type).')
+            raise SerializationError('The message can not be serialized (Unknown message type: "{0}").'.format(msg.msgType))
         
         msg.content = serializer.deserialize(s)
         

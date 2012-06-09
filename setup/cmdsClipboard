@@ -10,7 +10,7 @@
 
 === Add Interface ===
 
-{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{}
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"Test/test","interfaceType":"service","className":"Test/QueryTest"}]}}
 
 
 === Start Node/Add Interface together ===
