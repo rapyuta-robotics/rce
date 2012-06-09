@@ -56,7 +56,7 @@ body {
 <script type="text/javascript" src="jquery-1.7.2.js"></script>
 <script type="text/javascript">
 
-var wsuri = "ws://192.168.237.131:9000/";
+var wsuri = "ws://localhost:9000/";
 var webSocket = null;
 
 var receivedMsgNum = 0;
@@ -84,17 +84,19 @@ var CH_data = new Object();
 CH_data.containerTag = "cTag01"
 cmd_CH.data=CH_data;
 
-
-
 window.onload = function() {
+	document.getElementById('wsuri').value = wsuri; //default value
+}
+
+function connectToRCE() {
+	wsuri = document.getElementById('wsuri').value;
+	console.log('connect button pressed. wsuri:='+wsuri);
+	updateRobotStatus("Trying to connect ...");
 	if ("WebSocket" in window) {
 		webSocket = new WebSocket(wsuri);
-		updateRobotStatus("Trying to connect ...");
-		//TODO: Is it really establised ? 
 	}else {
 		//Firefox currently prefixes the WebSocket object
 		webSocket = new MozWebSocket(wsuri);
-		updateRobotStatus("Trying to connect ...");
 	}
 	
 	webSocket.onmessage = function(e) {
@@ -338,6 +340,11 @@ function updateContainerID(id){
       <button onclick='clearErrorMsg(); return false'>clear</button>
 		</div>
 		<div class="col2">
+			<br>
+			<textarea rows="1" cols="25" id='wsuri'></textarea>
+			<button onclick='connectToRCE(); return false'>connect</button><br>
+			<i>Example: ws://192.168.237.131:9000/ </i><br>
+			<br>
       <br>Cloud Engine Response (JSON)<br>
 			<textarea rows="40" cols="40" id='receiverConsole'></textarea><br>
 		</div> 
