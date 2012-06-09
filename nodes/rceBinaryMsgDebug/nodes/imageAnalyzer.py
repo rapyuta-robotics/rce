@@ -1,45 +1,45 @@
 #!/usr/bin/env python
-import roslib
 import roslib; roslib.load_manifest('rceBinaryMsgDebug')
-
-import sys
 import rospy
+
 import cv
-from std_msgs.msg import String
+
+from geometry_msgs.msg import Pose2D
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-class image_converter:
-
+class imageAnalyzer(object):
+    
   def __init__(self):
-    self.image_pub = rospy.Publisher("image_topic_results",Image)
-
+    self.bridge = CvBridge()
+    
+    # Estimated circle center point pulisher
+    self.circleCenterPublisher = rospy.Publisher("est_ccPos",Pose2D) 
+    
   def callback(self,data):
     try:
-      cv_image = self.bridge.imgmsg_to_cv(data, "bgr8")
+        img = self.bridge.imgmsg_to_cv(data, "mono8")
     except CvBridgeError, e:
-      print e
+        print e
 
-    (cols,rows) = cv.GetSize(cv_image)
-    if cols > 60 and rows > 60 :
-      cv.Circle(cv_image, (50,50), 10, 255)
+    moments = cv.Moments(img)
+    
+    data = Pose2D()
+    m00 = cv.GetSpatialMoment(moments, 0, 0)
+    data.x = cv.GetSpatialMoment(moments, 1, 0) / m00
+    data.y = cv.GetSpatialMoment(moments, 0, 1) / m00
+    data.theta = 0.0
+    
+    self.circleCenterPublisher.publish(data)
+    
+    print data.x / 500
+    print data.y / 500
+    
 
-    cv.ShowImage("Image window", cv_image)
-    cv.WaitKey(3)
+if __name__ == "__main__":
+    rospy.init_node('image_converter')
+    
+    ia = imageAnalyzer()
+    rospy.Subscriber('circle', Image, ia.callback)
 
-    try:
-      self.image_pub.publish(self.bridge.cv_to_imgmsg(cv_image, "bgr8"))
-    except CvBridgeError, e:
-      print e
-
-def main(args):
-  ic = image_converter()
-  rospy.init_node('image_converter', anonymous=True)
-  try:
     rospy.spin()
-  except KeyboardInterrupt:
-    print "Shutting down"
-  cv.DestroyAllWindows()
-
-if __name__ == '__main__':
-    main(sys.argv)
