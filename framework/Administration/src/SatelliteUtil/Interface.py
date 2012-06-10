@@ -164,7 +164,7 @@ class Interface(object):
                         'tag'  : self._tag,
                         'user' : sender,
                         'push' : True,
-                        'id'   : clientMsg['msgID'] }
+                        'uid'  : clientMsg['msgID'] }
         self._container.send(msg)
     
     def receive(self, msg):

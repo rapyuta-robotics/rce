@@ -107,8 +107,11 @@ class ROSRemoveMessage(object):
     IDENTIFIER = MsgTypes.ROS_REMOVE
     
     def serialize(self, s, msg):
-        s.addElement(msg['tag'])
-        s.addElement(msg['type'])
+        try:
+            s.addElement(msg['tag'])
+            s.addElement(msg['type'])
+        except KeyError as e:
+            raise SerializationError('Could not serialize message of type ROSRemoveMessage. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'tag' : s.getElement(), 'type' : s.getElement() }
@@ -128,10 +131,13 @@ class ROSUserMessage(object):
     IDENTIFIER = MsgTypes.ROS_USER
     
     def serialize(self, s, msg):
-        s.addElement(msg['tag'])
-        s.addElement(msg['commID'])
-        s.addElement(msg['target'])
-        s.addBool(msg['add'])
+        try:
+            s.addElement(msg['tag'])
+            s.addElement(msg['commID'])
+            s.addElement(msg['target'])
+            s.addBool(msg['add'])
+        except KeyError as e:
+            raise SerializationError('Could not serialize message of type ROSUserMessage. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'tag'    : s.getElement(),
@@ -168,7 +174,7 @@ class ROSMsgMessage(object):
             s.addElement(data['uid'])
             s.addBool(data['push'])
         except KeyError as e:
-            raise SerializationError('Could not serialize message of type ROSMessage: {0}'.format(e))
+            raise SerializationError('Could not serialize message of type ROSMessage. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'msg'  : s.getElement(),
@@ -198,7 +204,7 @@ class ROSResponseMessage(object):
             s.addElement(data['msg'])
             s.addBool(data['error'])
         except KeyError as e:
-            raise SerializationError('Could not serialize message of type ROSResponse: {0}'.format(e))
+            raise SerializationError('Could not serialize message of type ROSResponse. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'msg'   : s.getElement(),
@@ -224,7 +230,7 @@ class ROSGetMessage(object):
             s.addElement(data['name'])
             s.addElement(data['uid'])
         except KeyError as e:
-            raise SerializationError('Could not serialize message of type ROSGet: {0}'.format(e))
+            raise SerializationError('Could not serialize message of type ROSGet. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'name' : s.getElement(),

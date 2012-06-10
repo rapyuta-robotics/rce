@@ -45,7 +45,7 @@ class StartContainerMessage(object):
             s.addElement(data['commID'])
             s.addElement(data['home'])
         except KeyError as e:
-            raise SerializationError('Could not serialize message of type StartContainer: {0}'.format(e))
+            raise SerializationError('Could not serialize message of type StartContainer. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'commID' : s.getElement(),
@@ -65,7 +65,7 @@ class StopContainerMessage(object):
         try:
             s.addElement(data['commID'])
         except KeyError as e:
-            raise SerializationError('Could not serialize message of type StopContainer: {0}'.format(e))
+            raise SerializationError('Could not serialize message of type StopContainer. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'commID' : s.getElement() }

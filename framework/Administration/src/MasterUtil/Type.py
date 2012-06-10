@@ -45,7 +45,7 @@ class ConnectDirectiveMessage(object):
                 s.addElement(element['commID'])
                 s.addElement(element['ip'])
             except KeyError as e:
-                raise SerializationError('Could not serialize message of type ConnectDirective: {0}'.format(e))
+                raise SerializationError('Could not serialize message of type ConnectDirective. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return [{ 'commID' : s.getElement(), 'ip' : s.getElement() } for _ in xrange(s.getInt())]
@@ -84,7 +84,10 @@ class DelCommIDRequestMessage(object):
     IDENTIFIER = MsgTypes.ID_DEL
     
     def serialize(self, s, data):
-        s.addElement(data['commID'])
+        try:
+            s.addElement(data['commID'])
+        except KeyError as e:
+            raise SerializationError('Could not serialize message of type DelCommIDRequestMessage. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
         return { 'commID' : s.getElement() }
