@@ -123,7 +123,7 @@ class Interface(object):
     def unregisterUser(self, target, commID):
         """ # TODO: Add description
         """
-        self._reg.remove((target, commID))
+        self._ref.remove((target, commID))
         
         if not self._ref:
             # There are no more references to this interface; therefore, remove it
