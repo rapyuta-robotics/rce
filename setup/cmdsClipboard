@@ -8,14 +8,29 @@
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}]}}
 
 
+=== Remove Node ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"removeNodes":["nodeTag"]}}
+
+
 === Add Interface ===
 
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
 
 
+=== Remove Interface ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"removeInterfaces":["Test/getSum"]}}
+
+
 === Add Parameter ===
 
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"setParam":[{"paramName":"test","paramValue":3.0,"paramType":"float"}]}}
+
+
+=== Remove Parameter ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"deleteParam":["test"]}}
 
 
 === Start Node/Add Interface together ===

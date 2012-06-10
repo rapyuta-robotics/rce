@@ -72,14 +72,11 @@ class LauncherManager(ManagerBase):
                             information which should be added.
             @type  node:    Node
         """
-        tag = node.tag
-        
-        if tag in self._nodes:
+        if node.tag in self._nodes:
             raise InvalidRequest('Node already exists.')
         
         nodeMonitor = NodeMonitor(self, node)
         nodeMonitor.start()
-        self._nodes[tag] = nodeMonitor
     
     def removeNode(self, tag):
         """ Remove a Node from the ROS environment.
@@ -89,8 +86,23 @@ class LauncherManager(ManagerBase):
             @type  tag:     str
         """
         try:
-            del self._nodes[tag]
-            # self._nodes[tag].pop(tag).stop() <- implicitly called by destructor of NodeMonitor
+            self._nodes[tag].stop()
+        except KeyError:
+            raise InvalidRequest('Node does not exist.')
+    
+    def registerNode(self, node):
+        """ Callback for NodeMonitor to register the node.
+        """
+        if node.tag in self._nodes:
+            raise InvalidRequest('Node already exists.')
+        
+        self._nodes[node.tag] = node
+    
+    def unregisterNode(self, node):
+        """ Callback for NodeMonitor to unregister the node.
+        """
+        try:
+            del self._nodes[node.tag]
         except KeyError:
             raise InvalidRequest('Node does not exist.')
     

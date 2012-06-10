@@ -71,6 +71,11 @@ class NodeMonitor(object):
         
         self._escalationLvl = 0
     
+    @property
+    def tag(self):
+        """ Node tag to identify the node. """
+        return self._node.tag
+    
     def start(self):
         """ Launch the node.
 
@@ -103,7 +108,8 @@ class NodeMonitor(object):
             has been launched.
         """
         self._process = process
-        self._running = False
+        self._running = True
+        self._manager.registerNode(self)
     
     def isAlive(self):
         """ Check whether the node/process is alive.
@@ -116,8 +122,9 @@ class NodeMonitor(object):
     def stopped(self):
         """ Callback for ROSProcessProtocol to signal that the process has died.
         """
-        self._process = None
+        self._manager.unregisterNode(self)
         self._running = False
+        self._process = None
     
     def stop(self):
         """ Stop the node.
@@ -135,9 +142,3 @@ class NodeMonitor(object):
         if escalation[1]:
             self._escalationLvl += 1
             self._manager.reactor.callLater(escalation[1], self.stop)
-    
-    def __del__(self):
-        """ Destructor.
-        """
-        if self._running:
-            self.stop()
