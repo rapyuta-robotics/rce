@@ -60,6 +60,11 @@ class _ParamMonitor(object):
         except rospy.ROSException as e:
             raise InternalError('ROS Parameter Server reported an error: {0}'.format(str(e)))
     
+    @property
+    def name(self):
+        """ Name of the parameter. """
+        return self._name
+    
     def remove(self):
         """ Method which is used to remove the parameter from the parameter server.
         """

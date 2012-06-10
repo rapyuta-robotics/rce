@@ -179,7 +179,7 @@ class Interface(object):
             raise InvalidRequest(str(e))
         
         self._container.receivedFromInterface({ 'type'         : self._msgType, 
-                                                'msgID'        : msg['id'],
+                                                'msgID'        : msg['uid'],
                                                 'interfaceTag' : msg['tag'],
                                                 'msg'          : jsonMsg })
     
