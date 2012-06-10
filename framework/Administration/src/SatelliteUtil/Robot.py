@@ -75,8 +75,8 @@ class Robot(object):
         homeFolder = '/opt/rce/users/test'
 
         container = Container( self._commManager,
+                               self._satelliteManager,
                                self,
-                               self._satelliteManager.loader,
                                containerTag,
                                commID,
                                homeFolder )

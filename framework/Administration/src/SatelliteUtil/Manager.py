@@ -119,6 +119,11 @@ class SatelliteManager(ManagerBase):
         """ Loader for ROS resources. """
         return self._loader
     
+    @property
+    def converter(self):
+        """ Converter for ROS messages. """
+        return self._converter
+    
     ##################################################
     ### Robot
     

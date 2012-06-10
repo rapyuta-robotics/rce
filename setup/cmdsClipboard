@@ -15,11 +15,14 @@
 
 === Start Node/Add Interface together ===
 
-{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}],
-"addInterfaces":[{"name":"Test/test","interfaceType":"service","className":"Test/QueryTest"}]}}
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}],"addInterfaces":[{"name":"Test/test","interfaceType":"service","className":"Test/QueryTest"}]}}
 
 
 === Activate Interface ===
 
 {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"Test/test":true}}
 
+
+=== Send Service Request ===
+
+{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/QueryTest","msgID":"msgID","interfaceTag":"Test/test","msg":{"a":3,"b":-5}}}
