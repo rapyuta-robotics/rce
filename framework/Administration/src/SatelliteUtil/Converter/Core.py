@@ -132,7 +132,7 @@ class Converter(object):
     
     _CUSTOM_TYPES = {} 
     
-    def _stringify(self, obj):
+    def _stringify(self, objType, obj):
         """ Internally used method to make sure that strings are of type str and not unicode.
         """
         if isinstance(obj, unicode):
@@ -217,7 +217,7 @@ class Converter(object):
             
             if listBool and not isinstance(field, list):
                 raise TypeError('Given data does not match the definition of the ROS message.')
-
+            
             if slotType in Converter._BASE_TYPES:
                 convFunc = self._stringify
             elif slotType in Converter._SPECIAL_TYPES:
