@@ -271,11 +271,11 @@ class ServiceMonitor(_InterfaceMonitor):
                     raise self._error
                 else:
                     commID, user = self._pushResult
-                    self._manager.sendROSMessage( self._msg,
-                                                  commID,
-                                                  self._interfaceTag,
-                                                  user,
-                                                  self._msgID )
+                    self._srv._manager.sendROSMessage( self._msg,
+                                                       commID,
+                                                       self._interfaceTag,
+                                                       user,
+                                                       self._msgID )
         
         ### TODO: Not used in pure push implementation
         def getResult(self):

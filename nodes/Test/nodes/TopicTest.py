@@ -25,7 +25,7 @@
 import roslib; roslib.load_manifest('Test')
 import rospy
 
-from Test.msg import Int
+from std_msgs import Int32
 from Test.srv import TopicService, TopicServiceResponse
 
 global currentSum
@@ -43,7 +43,7 @@ def main():
     #print '--------------------\nStart Topic-Test\n--------------------'
     rospy.init_node('topic_test')
     srv = rospy.Service('getSum', TopicService, getSum)
-    topic = rospy.Subscriber('addInt', Int, addInt)
+    topic = rospy.Subscriber('addInt', Int32, addInt)
     rospy.spin()
 
 if __name__ == '__main__':

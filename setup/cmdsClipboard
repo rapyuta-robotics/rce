@@ -5,24 +5,28 @@
 
 === Start Node ===
 
-{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}]}}
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}]}}
 
 
 === Add Interface ===
 
-{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"Test/test","interfaceType":"service","className":"Test/QueryTest"}]}}
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
 
 
 === Start Node/Add Interface together ===
 
-{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}],"addInterfaces":[{"name":"Test/test","interfaceType":"service","className":"Test/QueryTest"}]}}
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"nodeTag","namespace":"Test"}],"addInterfaces":"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
 
 
 === Activate Interface ===
 
-{"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"Test/test":true}}
+{"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"Test/addInt":true,"Test/getSum":true}}
 
 
 === Send Service Request ===
 
-{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/QueryTest","msgID":"msgID","interfaceTag":"Test/test","msg":{"a":3,"b":-5}}}
+{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"std_msgs/Int32","msgID":"msgID_0","interfaceTag":"Test/addInt","msg":{"data":3}}}
+
+{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"std_msgs/Int32","msgID":"msgID_1","interfaceTag":"Test/addInt","msg":{"data":7}}}
+
+{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/TopicService","msgID":"msgID_2","interfaceTag":"Test/getSum","msg":{}}}
