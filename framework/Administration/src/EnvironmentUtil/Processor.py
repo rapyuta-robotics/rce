@@ -80,10 +80,13 @@ class ROSAddProcessor(ROSProcessorBase):
             fwdMsg.content = msg
             self.commManager.sendMessage(fwdMsg)
         elif msg.IDENTIFIER in self._INTERFACES:
-            self.manager.addInterface()
-            self._INTERFACES[msg.IDENTIFIER](msg, self.manager)
+            self.manager.addInterface(
+                self._INTERFACES[msg.IDENTIFIER]( self.manager,
+                                                  self.commManager.reactor,
+                                                  msg )
+            )
         elif msg.IDENTIFIER in self._PARAMETERS:
-            self._PARAMETERS[msg.IDENTIFIER](msg)
+            self.manager.addParameter(self._PARAMETERS[msg.IDENTIFIER](msg))
         else:
             raise InvalidRequest('Unknown component to add received.')
 

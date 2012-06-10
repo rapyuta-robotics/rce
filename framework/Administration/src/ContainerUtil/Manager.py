@@ -224,7 +224,7 @@ class ContainerManager(ManagerBase):
                                               '--',
                                               commID,
                                               '{0}{1}'.format( MsgDef.PREFIX_PUB_ADDR,
-                                                               self._commMngr.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
+                                                               self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:])]),
                               'end script',
                               '' ])
        

@@ -286,7 +286,7 @@ class Robot(object):
                             message. (Necessary keys: type, msgID, interfaceTag, msg)
             @type  msg:     { str : ... }
         """
-        self._containers[containerTag].send(msg)
+        self._containers[containerTag].sendToInterface(msg)
     
     def sendROSMsgToRobot(self, containerTag, msg):
         """ Method is called when a message should be sent to the robot.

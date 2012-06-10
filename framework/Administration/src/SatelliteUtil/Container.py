@@ -50,8 +50,8 @@ class Container(object):
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
             
-            @param satelliteManager:   SatelliteManager which is used in this node.
-            @type  satelliteManager:   SatelliteManager
+            @param satelliteMngr:   SatelliteManager which is used in this node.
+            @type  satelliteMngr:   SatelliteManager
             
             @param robot:       Robot instance to which this container belongs.
             @type  robot:       Robot
@@ -400,7 +400,7 @@ class Container(object):
             @type  msg:     { str : ... }
         """
         try:
-            self._commMngr.reactor.callInThread(
+            self._commManager.reactor.callInThread(
                 self._interfaces[msg['interfaceTag']].send,
                 msg,
                 self._robot.robotID
@@ -417,3 +417,4 @@ class Container(object):
             @type  msg:     { str : ... }
         """
         self._robot.sendROSMsgToRobot(self._tag, msg)
+
