@@ -101,6 +101,7 @@ class ROSManager(ManagerBase):
             raise InternalError('There is already an interface with the same tag.')
         
         log.msg('Register new interface "{0}".'.format(tag))
+        interface.start()
         self._interfaces[tag] = interface
     
     def removeInterface(self, tag):
@@ -113,7 +114,7 @@ class ROSManager(ManagerBase):
         log.msg('Remove interface "{0}".'.format(tag))
         
         try:
-            del self._interfaces[tag]
+            self._interfaces.pop(tag).stop()
         except KeyError:
             pass
     

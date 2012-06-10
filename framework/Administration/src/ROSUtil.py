@@ -43,6 +43,18 @@ class Loader(object):
     def _loadModule(self, pkg, clsType, cls):
         """ Internally used method to load a module.
         """
+        if isinstance(pkg, unicode):
+            try:
+                pkg = str(pkg)
+            except UnicodeEncodeError:
+                raise InternalError('The package "{0}" is not valid.'.format(pkg))
+        
+        if isinstance(cls, unicode):
+            try:
+                cls = str(cls)
+            except UnicodeEncodeError:
+                raise InternalError('The class "{0}" is not valid.'.format(cls))
+        
         try:
             return __import__('.'.join([pkg, clsType]), fromlist=[cls])
         except ImportError:

@@ -273,7 +273,7 @@ class ServiceMonitor(_InterfaceMonitor):
                     commID, user = self._pushResult
                     self._srv._manager.sendROSMessage( self._msg,
                                                        commID,
-                                                       self._interfaceTag,
+                                                       self._srv._interfaceTag,
                                                        user,
                                                        self._msgID )
         
