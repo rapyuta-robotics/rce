@@ -86,8 +86,8 @@ class ROSManager(ManagerBase):
         """ Loader for ROS resources. """
         return self._loader
     
-    def registerInterface(self, interface):
-        """ Callback for InterfaceMonitor instance to register the interface.
+    def addInterface(self, interface):
+        """ Callback for MessageProcessor to add an interface.
 
             @param interface:   InterfaceMonitor which should be registered.
             @type  interface:   InterfaceMonitor
@@ -105,9 +105,17 @@ class ROSManager(ManagerBase):
     
     def removeInterface(self, tag):
         """ Callback for MessageProcessor to remove an interface.
+            
+            @param tag:     Tag which is used to identify the interface which should
+                            be removed.
+            @type  tag:     str
         """
         log.msg('Remove interface "{0}".'.format(tag))
-        self._interfaces.pop(tag, None)
+        
+        try:
+            del self._interfaces[tag]
+        except KeyError:
+            pass
     
     def getInterface(self, tag):
         """ Get the interface matching the given tag.
@@ -123,25 +131,42 @@ class ROSManager(ManagerBase):
         """ # TODO: Add description.
         """
         log.msg('Register user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
-        self.getInterface(tag).addPushReceiver(commID, target)
+        self.getInterface(tag).addUser(commID, target)
     
     def removeInterfaceUser(self, tag, target, commID):
         """ # TODO: Add description.
         """
         log.msg('Unregister user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
-        self.getInterface(tag).removePushReceiver(commID, target)
+        self.getInterface(tag).removeUser(commID, target)
     
-    def registerParameter(self, parameter):
-        """ Callback for Parameter instance to register the parameter.
+    def addParameter(self, parameter):
+        """ Callback for MessageProcessor to add a parameter. If the parameter
+            already exists, the old will be removed and the new one kept.
+
+            @param parameter:   ParameterMonitor which should be registered.
+            @type  parameter:   ParameterMonitor
         """
-        log.msg('Register parameter "{0}".'.format(parameter.name))
-        self._parameters[parameter.name] = parameter
+        name = parameter.name
+        log.msg('Register parameter "{0}".'.format(name))
+        
+        if name in self._parameters:
+            self._parameters[name].remove()
+        
+        self._parameters[name] = parameter
     
     def removeParameter(self, name):
         """ Callback for MessageProcessor to remove a parameter.
+            
+            @param name:    Name which is used to identify the parameter which should
+                            be removed.
+            @type  name:    str
         """
         log.msg('Remove parameter "{0}".'.format(name))
-        self._parameters.pop(name, None)
+        
+        try:
+            self._parameters.pop(name).remove()
+        except KeyError:
+            pass
     
     def sendROSMessage(self, rosMsg, dest, tag, user, uid):
         """ Send a ROS message to the specified destination.
@@ -167,7 +192,7 @@ class ROSManager(ManagerBase):
         msg.content = { 'msg'  : rosMsg,
                         'tag'  : tag,
                         'user' : user,
-                        'push' : False,
+                        'push' : True,
                         'uid'  : uid }
         self._commManager.sendMessage(msg)
 

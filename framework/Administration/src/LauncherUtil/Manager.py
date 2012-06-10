@@ -60,6 +60,11 @@ class LauncherManager(ManagerBase):
         self._commManager.registerMessageProcessors([ ROSAddProcessor(self),
                                                       ROSRemoveProcessor(self) ])
     
+    @property
+    def loader(self):
+        """ Loader for ROS components """
+        return self._loader
+    
     def addNode(self, node):
         """ Add a Node to the ROS environment.
             
@@ -72,7 +77,7 @@ class LauncherManager(ManagerBase):
         if tag in self._nodes:
             raise InvalidRequest('Node already exists.')
         
-        nodeMonitor = NodeMonitor(self.reactor, self._loader, node)
+        nodeMonitor = NodeMonitor(self, node)
         nodeMonitor.start()
         self._nodes[tag] = nodeMonitor
     
@@ -92,6 +97,7 @@ class LauncherManager(ManagerBase):
     def shutdown(self):
         """ Method is called when the manager is stopped.
         """
+        self._nodes = {}
         ### TODO: Can't wait for termination at the moment
         ###       Need something similar to initSlave.py
 #        if self._nodes:

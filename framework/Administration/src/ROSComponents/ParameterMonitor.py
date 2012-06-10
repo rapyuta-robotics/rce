@@ -39,15 +39,16 @@ import ComponentDefinition
 class _ParamMonitor(object):
     """ Base class which provides the basic functionalities to handle incoming parameters.
     """
-    def __init__(self, parameter, manager):
+    def __init__(self, parameter):
         """ Add a parameter to the parameter server.
         """
         self._init(parameter.name, parameter.value)
-        manager.registerParameter(self)
     
     def _init(self, name, value):
         """ Internally used method by the constructor. Necessary for FileParam.
         """
+        self._registered = False
+        
         self._name = name
         
         try:
@@ -55,16 +56,26 @@ class _ParamMonitor(object):
                 log.msg('Warning: Parameter already exists.')
             
             rospy.set_param(name, value)
+            self._registered = True
         except rospy.ROSException as e:
             raise InternalError('ROS Parameter Server reported an error: {0}'.format(str(e)))
+    
+    def remove(self):
+        """ Method which is used to remove the parameter from the parameter server.
+        """
+        if self._registered:
+            try:
+                rospy.delete_param(self._name)
+            except rospy.ROSException:
+                pass
+            
+            self._registered = False
+        
     
     def __del__(self):
         """ Remove a parameter from the parameter server.
         """
-        try:
-            rospy.delete_param(self._name)
-        except rospy.ROSException:
-            pass
+        self.remove()
 
 class IntMonitor(_ParamMonitor):
     """ Class which allows to handle an integer parameter.

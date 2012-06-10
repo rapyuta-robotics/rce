@@ -52,20 +52,17 @@ class NodeMonitor(object):
                          ('TERM',    2),
                          ('KILL', None) ]
     
-    def __init__(self, reactor, loader, node):
+    def __init__(self, manager, node):
         """ Initialize the NodeMonitor instance.
             
-            @param reactor:     twisted reactor instance
-            
-            @param loader:      Loader which is used to locate the executables
-                                for starting a node.
-            @type  loader:      Loader
+            @param manager:     Manager instance used in this node which
+                                has references to the ROS component loader
+                                and the twisted reactor.
             
             @param node:    Node instance which should be monitored.
             @type  node:    Node
         """
-        self._reactor = reactor
-        self._loader = loader
+        self._manager = manager
         self._node = node
         
         self._process = None
@@ -84,7 +81,7 @@ class NodeMonitor(object):
         
         # Find and validate executable
         try:
-            cmd = [self._loader.findNode(self._node.pkg, self._node.exe)]
+            cmd = [self._manager.loader.findNode(self._node.pkg, self._node.exe)]
         except ResourceNotFound as e:
             raise InvalidRequest('Could not identify which node to launch: {0}'.format(e))
         
@@ -99,7 +96,7 @@ class NodeMonitor(object):
         log.msg('Start Node {0}/{2} [pkg: {1}].'.format( self._node.namespace,
                                                          self._node.pkg,
                                                          self._node.exe ))
-        self._reactor.spawnProcess(ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
+        self._manager.reactor.spawnProcess(ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
     
     def started(self, process):
         """ Callback for ROSProcessProtocol to signal that the process
@@ -137,7 +134,7 @@ class NodeMonitor(object):
         
         if escalation[1]:
             self._escalationLvl += 1
-            self._reactor.callLater(self.stop, escalation[1])
+            self._manager.reactor.callLater(escalation[1], self.stop)
     
     def __del__(self):
         """ Destructor.

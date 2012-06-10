@@ -80,9 +80,10 @@ class ROSAddProcessor(ROSProcessorBase):
             fwdMsg.content = msg
             self.commManager.sendMessage(fwdMsg)
         elif msg.IDENTIFIER in self._INTERFACES:
+            self.manager.addInterface()
             self._INTERFACES[msg.IDENTIFIER](msg, self.manager)
         elif msg.IDENTIFIER in self._PARAMETERS:
-            self._PARAMETERS[msg.IDENTIFIER](msg, self.manager)
+            self._PARAMETERS[msg.IDENTIFIER](msg)
         else:
             raise InvalidRequest('Unknown component to add received.')
 
@@ -128,26 +129,13 @@ class ROSMessageContainerProcessor(ROSProcessorBase):
     IDENTIFIER = MsgTypes.ROS_MSG
     
     def processMessage(self, msg):
-        rosMsg = msg.content['msg']
-        interface = self.manager.getInterface(msg.content['name'])
+        content = msg.content
+        interface = self.manager.getInterface(content['tag'])
         
-        if msg.content['push']:
-            try:
-                interface.send(rosMsg, (msg.origin, msg.content['uid']))
-            except InternalError as e:
-                log.msg('Could not send ROS Message: {0}'.format(e))
-        else:
-            respMsg = Message()
-            respMsg.msgType = MsgTypes.ROS_RESPONSE
-            respMsg.dest = msg.origin
-            
-            try:
-                respMsg.content = { 'msg' : interface.send(rosMsg), 'error' : False }
-            except InternalError as e:
-                log.msg('Could not send ROS Message: {0}'.format(e))
-                respMsg.content = { 'msg' : str(e), 'error' : True }
-            
-            self.commManager.sendMessage(respMsg)
+        try:
+            interface.send(content['msg'], content['uid'], msg.origin, content['user'], content['push'])
+        except InternalError as e:
+            log.msg('Could not send ROS Message: {0}'.format(e))
 
 ### TODO: Not used for pure push implementation
 class ROSGetProcessor(ROSProcessorBase):
