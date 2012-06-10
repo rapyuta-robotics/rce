@@ -137,21 +137,21 @@ class Interface(object):
                             'add'    : False }
             self._container.send(msg)
     
-    def send(self, msg, sender):
+    def send(self, clientMsg, sender):
         """ # TODO: Add description
             
-            @param msg:     Corresponds to the dictionary of the field 'data' of the received
-                            message. (Necessary keys: type, msgID, msg)
-            @type  msg:     { str : ... }
+            @param clientMsg:   Corresponds to the dictionary of the field 'data' of the received
+                                message. (Necessary keys: type, msgID, msg)
+            @type  clientMsg:   { str : ... }
             
             @param sender:  Identifier of the sender.
             @type  sender:  str
         """
-        if msg['type'] != self._msgType:
+        if clientMsg['type'] != self._msgType:
             raise InvalidRequest('Sent message type does not match the used message for this interface.')
         
         try:
-            rosMsg = self._converter.decode(self._toMsgCls, msg['msg'])
+            rosMsg = self._converter.decode(self._toMsgCls, clientMsg['msg'])
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
@@ -164,8 +164,7 @@ class Interface(object):
                         'tag'  : self._tag,
                         'user' : sender,
                         'push' : True,
-                        'id'   : msg['msgID'] }
-        
+                        'id'   : clientMsg['msgID'] }
         self._container.send(msg)
     
     def receive(self, msg):
