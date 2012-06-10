@@ -35,7 +35,7 @@ class _InterfaceBase(object):
     """
     implements(ISerializable)
     
-    def __init__(self, interfaceName, interfaceTag):
+    def __init__(self, interfaceName, interfaceTag, interfaceClass=''):
         """ Initialize the Interface instance.
 
             @param interfaceName:   ROS address of the interface.
@@ -43,6 +43,10 @@ class _InterfaceBase(object):
 
             @param interfaceTag:    Tag which is used to identify the interface.
             @type  interfaceTag:    str
+            
+            @param interfaceClass:  Message/Service class which is necessary to
+                                    use the interface.
+            @type  interfaceClass:  str
         """
         if isinstance(interfaceName, unicode):
             try:
@@ -50,8 +54,15 @@ class _InterfaceBase(object):
             except UnicodeEncodeError:
                 raise InternalError('The interface name {0} is not valid.'.format(interfaceName))
         
+        if isinstance(interfaceClass, unicode):
+            try:
+                interfaceClass = str(interfaceClass)
+            except UnicodeEncodeError:
+                raise InternalError('The communication class {0} is not valid.'.format(interfaceClass))
+        
         self._interfaceName = interfaceName
         self._interfaceTag = interfaceTag
+        self._interfaceClass = interfaceClass
     
     @property
     def name(self):
@@ -63,6 +74,16 @@ class _InterfaceBase(object):
         """ Tag which is used to identify the interface. """
         return self._interfaceTag
     
+    @property
+    def msgCls(self):
+        """ Message class of the interface (equal to srvCls). """
+        return self._interfaceClass
+    
+    @property
+    def srvCls(self):
+        """ Message class of the interface (equal to msgCls). """
+        return self._interfaceClass
+    
     def serialize(self, s):
         """ Serialize the Interface object.
             
@@ -73,6 +94,7 @@ class _InterfaceBase(object):
         """
         s.addElement(self._interfaceName)
         s.addElement(self._interfaceTag)
+        s.addElement(self._interfaceClass)
     
     @classmethod
     def deserialize(cls, s):
@@ -83,61 +105,12 @@ class _InterfaceBase(object):
             
             @raise:     SerializationError
         """
-        return cls(s.getElement(), s.getElement())
+        return cls(s.getElement(), s.getElement(), s.getElement())
 
 class ServiceInterface(_InterfaceBase):
     """ Class which represents a service interface.
     """
     IDENTIFIER = ComponentDefinition.INTERFACE_SRV
-    
-    def __init__(self, interfaceName, interfaceTag, srvClass):
-        """ Initialize the Interface instance.
-
-            @param interfaceName:   ROS name of the interface.
-            @type  interfaceName:   str
-
-            @param interfaceTag:    Tag which is used to identify the interface.
-            @type  interfaceTag:    str
-
-            @param srvClass:        Service class (only used for service interfaces).
-            @type  srvClass:        str
-        """
-        super(ServiceInterface, self).__init__(interfaceName, interfaceTag)
-        
-        if isinstance(srvClass, unicode):
-            try:
-                srvClass = str(srvClass)
-            except UnicodeEncodeError:
-                raise InternalError('The communication class {0} is not valid.'.format(cls))
-        
-        self._srvClass = srvClass
-    
-    @property
-    def srvClass(self):
-        """ Service class of the interface. """
-        return self._srvClass
-    
-    def serialize(self, s):
-        """ Serialize the ServiceInterface object.
-            
-            @param s:   Serializer instance into which the message should be serialized.
-            @type  s:   Serializer
-            
-            @raise:     SerializationError
-        """
-        super(ServiceInterface, self).serialize(s)
-        s.addElement(self._srvClass)
-
-    @classmethod
-    def deserialize(cls, s):
-        """ Deserialize the ServiceInterface object.
-            
-            @param s:   Serializer instance from which the message should be deserialized.
-            @type  s:   Serializer
-            
-            @raise:     SerializationError
-        """
-        return cls(s.getElement(), s.getElement(), s.getElement())
 
 class PublisherInterface(_InterfaceBase):
     """ Class which represents a publisher interface.

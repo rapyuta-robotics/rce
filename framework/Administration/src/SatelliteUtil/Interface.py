@@ -34,6 +34,10 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 class Interface(object):
     """ Class which represents an interface. It is associated with a container.
     """
+    _MAP = { 'service'    : ServiceInterface,
+             'publisher'  : PublisherInterface,
+             'subscriber' : SubscriberInterface }
+    
     def __init__(self, satelliteMngr, container, tag, rosAddr, msgType, interfaceType):
         """ Initialize the Interface.
             
@@ -82,16 +86,9 @@ class Interface(object):
     def _start(self):
         """ Internal method to send a request to start the interface.
         """
-        if self._interfaceType == 'service':
-            content = ServiceInterface(self._rosAddr, self._tag, self._msgType)
-        elif self._interfaceType == 'publisher':
-            content = PublisherInterface(self._rosAddr, self._tag)
-        elif self._interfaceType == 'subscriber':
-            content = SubscriberInterface(self._rosAddr, self._tag)
-        
         msg = Message()
         msg.msgType = MsgTypes.ROS_ADD
-        msg.content = content
+        msg.content = Interface._MAP[self._interfaceType](self._rosAddr, self._tag, self._msgType)
         self._container.send(msg)
     
     def _stop(self):

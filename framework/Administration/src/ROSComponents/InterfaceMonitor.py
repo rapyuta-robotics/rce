@@ -301,13 +301,12 @@ class ServiceMonitor(_InterfaceMonitor):
     def __init__(self, manager, reactor, interface):
         super(ServiceMonitor, self).__init__(manager, reactor, interface)
         
-        args = interface.srvClass.split('/')
+        args = interface.srvCls.split('/')
         
         if len(args) != 2:
-            raise InvalidRequest('Service type is not valid. Has to be of the from pkg/msg, i.e. std_msgs/Int8.')
+            raise InvalidRequest('Service type is not valid. Has to be of the form pkg/msg, i.e. std_msgs/Int8.')
         
         self._srvCls = manager.loader.loadSrv(*args)
-        self._srvCls._request_class = rospy.AnyMsg
         self._srvCls._response_class = rospy.AnyMsg
 
         self._tasks = {}
@@ -356,9 +355,21 @@ class PublisherMonitor(_InterfaceMonitor):
     """ Represents a publisher interface for a node.
     """
     IDENTIFIER = ComponentDefinition.INTERFACE_PUB
+    
+    def __init__(self, manager, reactor, interface):
+        super(PublisherMonitor, self).__init__(manager, reactor, interface)
+        
+        args = interface.msgCls.split('/')
+        
+        if len(args) != 2:
+            raise InvalidRequest('Message type is not valid. Has to be of the form pkg/msg, i.e. std_msgs/Int8.')
+        
+        self._msgCls = manager.loader.loadMsg(*args)
 
+    __init__.__doc__ = _InterfaceMonitor.__init__.__doc__
+    
     def _start(self):
-        self._publisher = rospy.Publisher(self._interfaceName, rospy.AnyMsg, latch=True)
+        self._publisher = rospy.Publisher(self._interfaceName, self._msgCls, latch=True)
 
     def _stop(self):
         self._publisher.unregister()
