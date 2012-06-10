@@ -388,7 +388,10 @@ class Container(object):
             return
         
         try:
-            self._interfaces[msg['tag']].receive(msg)
+            self._commManager.reactor.callInThread(
+                self._interfaces[msg['tag']].send,
+                msg
+            )
         except KeyError:
             raise InternalError('Can not process received message. Interface does not exist.')
     

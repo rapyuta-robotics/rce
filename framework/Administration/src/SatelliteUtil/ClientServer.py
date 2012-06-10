@@ -91,11 +91,11 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
 
             if 'setParam' in data:
                 for param in  data['setParam']:
-                    self._robot.setParam(msg['dest'], param['paramName'] , param['paramValue'],  param['paramType'])
+                    self._robot.addParameter(msg['dest'], param['paramName'] , param['paramValue'],  param['paramType'])
                     
             if 'deleteParam' in data:
                 for paramName in data['deleteParam']:
-                    self._robot.deleteParam(msg['dest'], paramName)
+                    self._robot.removeParameter(msg['dest'], paramName)
         
         elif msg['type'] == ClientMsgTypes.INTERFACE_STATE:
             for interfaceTag, activate in data.iteritems():

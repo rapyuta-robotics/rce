@@ -13,6 +13,11 @@
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
 
 
+=== Add Parameter ===
+
+{"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"setParam":[{"paramName":"test","paramValue":3.0,"paramType":"float"}]}}
+
+
 === Start Node/Add Interface together ===
 
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}],"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
