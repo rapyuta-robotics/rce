@@ -25,7 +25,7 @@
 import roslib; roslib.load_manifest('Test')
 import rospy
 
-from std_msgs import Int32
+from std_msgs.msg import Int32
 from Test.srv import TopicService, TopicServiceResponse
 
 global currentSum
