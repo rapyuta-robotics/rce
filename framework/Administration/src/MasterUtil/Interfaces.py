@@ -25,16 +25,12 @@
 # zope specific imports
 from zope.interface import Interface
 
-class IPostInitTrigger(Interface):
-    """ Interface which declares the necessary method which all post init triggers
+class IUIDServer(Interface):
+    """ Interface which declares the necessary method which all UID server implementations
         have to implement.
     """
-    def trigger(origin, ip): #@NoSelf
-        """ This method is called whenever the PostInitTrigger should be triggered.
-            
-            @param origin:  CommID of request origin.
-            @type  origin:  str
-            
-            @param ip:      IP address of request origin.
-            @type  ip:      str
+    def getUID(): #@NoSelf
+        """ Return a unique ID which can be used as a communication ID.
+                        
+            @return:    Valid string which can be used to connect to the server.
         """

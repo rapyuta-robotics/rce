@@ -1,4 +1,4 @@
-#Sat Jun 09 23:06:42 CEST 2012
+#Mon Jun 11 11:48:50 CEST 2012
 eclipse.preferences.version=1
 encoding//Administration/src/Comm/CommManager.py=utf-8
 encoding//Administration/src/Comm/CommUtil.py=utf-8
@@ -37,6 +37,7 @@ encoding//Administration/src/Launcher.py=utf-8
 encoding//Administration/src/LauncherUtil/Manager.py=utf-8
 encoding//Administration/src/LauncherUtil/Processor.py=utf-8
 encoding//Administration/src/Master.py=utf-8
+encoding//Administration/src/MasterUtil/Interfaces.py=utf-8
 encoding//Administration/src/MasterUtil/Manager.py=utf-8
 encoding//Administration/src/MasterUtil/Processor.py=utf-8
 encoding//Administration/src/MasterUtil/Type.py=utf-8
