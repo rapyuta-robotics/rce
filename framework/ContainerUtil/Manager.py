@@ -108,7 +108,7 @@ class ContainerManager(ManagerBase):
         self._commManager.registerMessageProcessors([ StartContainerProcessor(self),
                                                       StopContainerProcessor(self) ])
     
-    def _createConfigFile(self, commID):
+    def _createConfigFile(self, confDir):
         """ Create a config file based on the given parameters.
         """
         content = '\n'.join([ 'lxc.utsname = ros',
@@ -116,9 +116,7 @@ class ContainerManager(ManagerBase):
                               'lxc.tty = 4',
                               'lxc.pts = 1024',
                               'lxc.rootfs = {rootfs}'.format(rootfs=self._rootfs),
-                              'lxc.mount = {fstab}'.format(
-                                  fstab=os.path.join(self._confDir, commID, 'fstab')
-                              ),
+                              'lxc.mount = {fstab}'.format(fstab=os.path.join(confDir, 'fstab')),
                               '',
                               'lxc.network.type = veth',
                               'lxc.network.flags = up',
@@ -144,15 +142,12 @@ class ContainerManager(ManagerBase):
                               'lxc.cgroup.devices.allow = c 254:0 rwm',
                               '' ])
         
-        with open(os.path.join(self._confDir, commID, 'config'), 'w') as f:
+        with open(os.path.join(confDir, 'config'), 'w') as f:
             f.write(content)
     
-    def _createFstabFile(self, commID, homeDir):
+    def _createFstabFile(self, confDir, dataDir):
         """ Create a fstab file based on the given parameters.
         """
-        if not os.path.isabs(homeDir):
-            raise ValueError('Home directory is not an absolute path.')
-        
         content = '\n'.join([ 'proc     {proc}      proc     nodev,noexec,nosuid 0 0'.format(
                                   proc=os.path.join(self._rootfs, 'proc')
                               ),
@@ -163,7 +158,7 @@ class ContainerManager(ManagerBase):
                                   sysfs=os.path.join(self._rootfs, 'sys')
                               ),
                               '{homeDir}    {rootfsHome}    none    bind 0 0'.format(
-                                  homeDir=homeDir,
+                                  homeDir=os.path.join(dataDir, 'ros'),
                                   rootfsHome=os.path.join(self._rootfs, 'home/ros')
                               ),
                               '{srcDir}    {rootfsLib}    none    bind,ro 0 0'.format(
@@ -175,23 +170,23 @@ class ContainerManager(ManagerBase):
                                   rootfsPkgs=os.path.join(self._rootfs, 'opt/rce/packages')
                               ),
                               '{dataDir}    {rootfsData}    none    bind 0 0'.format(
-                                  dataDir=os.path.join(self._dataDir, commID),
+                                  dataDir=os.path.join(dataDir, 'rce'),
                                   rootfsData=os.path.join(self._rootfs, 'opt/rce/data')
                               ),
                               '{upstart}    {initDir}    none    bind,ro 0 0'.format(
-                                  upstart=os.path.join(self._confDir, commID, 'upstartComm'),
+                                  upstart=os.path.join(confDir, 'upstartComm'),
                                   initDir=os.path.join(self._rootfs, 'etc/init/rceComm.conf')
                               ),
                               '{upstart}   {initDir}   none   bind,ro 0 0'.format(
-                                  upstart=os.path.join(self._confDir, commID, 'upstartLauncher'),
+                                  upstart=os.path.join(confDir, 'upstartLauncher'),
                                   initDir=os.path.join(self._rootfs, 'etc/init/rceLauncher.conf')
                               ),
                               '' ])
         
-        with open(os.path.join(self._confDir, commID, 'fstab'), 'w') as f:
+        with open(os.path.join(confDir, 'fstab'), 'w') as f:
             f.write(content)
     
-    def _createUpstartScripts(self, commID):
+    def _createUpstartScripts(self, commID, confDir):
         """ Create an upstart script based on the given parameters.
         """
         content = '\n'.join([ '# description',
@@ -228,7 +223,7 @@ class ContainerManager(ManagerBase):
                               'end script',
                               '' ])
        
-        with open(os.path.join(self._confDir, commID, 'upstartComm'), 'w') as f:
+        with open(os.path.join(confDir, 'upstartComm'), 'w') as f:
             f.write(content)
         
         content = '\n'.join([ '# description',
@@ -259,13 +254,13 @@ class ContainerManager(ManagerBase):
                               'end script',
                               '' ])
        
-        with open(os.path.join(self._confDir, commID, 'upstartLauncher'), 'w') as f:
+        with open(os.path.join(confDir, 'upstartLauncher'), 'w') as f:
             f.write(content)
     
-    def _startContainer(self, deferred, commID, homeDir):
+    def _startContainer(self, deferred, commID):
         """ Internally used method to start a container.
         """
-        # Create folder for config and fstab file
+        # Assemble path for config and fstab file
         confDir = os.path.join(self._confDir, commID)
         
         if os.path.isdir(confDir):
@@ -274,7 +269,7 @@ class ContainerManager(ManagerBase):
             deferred.errback(msg)
             return
         
-        # Create folder for temporary data
+        # Assemble path for temporary data
         dataDir = os.path.join(self._dataDir, commID)
         
         if os.path.isdir(dataDir):
@@ -287,16 +282,18 @@ class ContainerManager(ManagerBase):
             log.msg('Create files and directories...')
             os.mkdir(confDir)
             os.mkdir(dataDir)
+            os.mkdir(os.path.join(dataDir, 'rce'))
+            os.mkdir(os.path.join(dataDir, 'ros'))
             os.chmod(dataDir, 0700)
             
             # Construct config file
-            self._createConfigFile(commID)
+            self._createConfigFile(confDir)
             
             # Construct fstab file
-            self._createFstabFile(commID, homeDir)
+            self._createFstabFile(confDir, dataDir)
             
             # Construct startup scripts
-            self._createUpstartScripts(commID)
+            self._createUpstartScripts(commID, confDir)
         except:
             log.msg('Caught and exception when trying to create the config files for the container.')
             import sys, traceback
@@ -347,7 +344,7 @@ class ContainerManager(ManagerBase):
             deferred.errback('There is already a container registered under the same CommID.')
             return
         
-        self.reactor.callInThread(self._startContainer, deferred, commID, homeDir)
+        self.reactor.callInThread(self._startContainer, deferred, commID)
         
         def reportSuccess(_):
             log.msg('Container successfully started.')

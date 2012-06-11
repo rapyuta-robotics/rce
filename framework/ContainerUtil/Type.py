@@ -34,7 +34,6 @@ class StartContainerMessage(object):
         
         The fields are:
             commID  CommID which is used to identify the container
-            home    Home directory which should be used
     """
     implements(IContentSerializer)
     
@@ -43,13 +42,11 @@ class StartContainerMessage(object):
     def serialize(self, s, data):
         try:
             s.addElement(data['commID'])
-            s.addElement(data['home'])
         except KeyError as e:
             raise SerializationError('Could not serialize message of type StartContainer. Missing key: {0}'.format(e))
     
     def deserialize(self, s):
-        return { 'commID' : s.getElement(),
-                 'home'   : s.getElement() }
+        return { 'commID' : s.getElement() }
 
 class StopContainerMessage(object):
     """ Message type to stop a container.

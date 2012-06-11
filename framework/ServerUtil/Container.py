@@ -44,7 +44,7 @@ class Container(object):
     """ Class which represents a container. It is associated with a robot.
         A container can have multiple interfaces.
     """
-    def __init__(self, commMngr, serverMngr, robot, tag, commID, homeDir):
+    def __init__(self, commMngr, serverMngr, robot, tag, commID):
         """ Initialize the Container.
             
             @param commMngr:    CommManager which should be used to communicate.
@@ -62,16 +62,12 @@ class Container(object):
             @param commID:      CommID which is used for the environment node inside the
                                 container and which is used to identify the container.
             @type  commID:      str
-            
-            @param homeDir:     Directory which should be used as home directory for container.
-            @type  homeDir:     str
         """
         self._commManager = commMngr
         self._serverManager = serverMngr
         self._robot = robot
         self._tag = tag
         self._commID = commID
-        self._homeDir = homeDir
         
         self._interfaces = {}
         self._rosAddrs = set()
@@ -120,8 +116,7 @@ class Container(object):
         msg = Message()
         msg.msgType = MsgTypes.CONTAINER_START
         msg.dest = MsgDef.PREFIX_PRIV_ADDR + self._commManager.commID[MsgDef.PREFIX_LENGTH_ADDR:]
-        msg.content = { 'commID' : self._commID,
-                        'home'   : self._homeDir }
+        msg.content = { 'commID' : self._commID }
         
         log.msg('Start container "{0}".'.format(self._commID))
         self._commManager.sendMessage(msg)

@@ -72,14 +72,12 @@ class Robot(object):
 ##                log.msg('The home folder is not a valid directory.')
 ##                return
         commID = 'TESTID'
-        homeFolder = '/opt/rce/users/test'
 
         container = Container( self._commManager,
                                self._serverManager,
                                self,
                                containerTag,
-                               commID,
-                               homeFolder )
+                               commID )
         
         # Send request to start the container
         container.start()
