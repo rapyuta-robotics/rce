@@ -176,7 +176,7 @@ class RCEClientFactory(RCEFactory, ReconnectingClientFactory):
         msg.msgType = MsgTypes.INIT_REQUEST
         msg.dest = MsgDef.NEIGHBOR_ADDR
         
-        msg.content = { 'remoteID'   : self._serverID }
+        msg.content = { 'remoteID' : self._serverID }
         
         try:
             buf = msg.serialize(self._commManager)

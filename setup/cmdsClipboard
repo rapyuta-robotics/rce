@@ -3,6 +3,11 @@
 {"type":"CS","dest":"$$$$$$","orig":"robotUniqueID","data":{"containerTag":"containerTag01"}}
 
 
+=== Destroy Container ===
+
+{"type":"CH","dest":"$$$$$$","orig":"robotUniqueID","data":{"containerTag":"containerTag01"}}
+
+
 === Start Node ===
 
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}]}}
