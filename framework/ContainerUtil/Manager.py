@@ -315,7 +315,7 @@ class ContainerManager(ManagerBase):
             log.msg('Start container...')
             cmd = [ '/usr/bin/lxc-start',
                     '-n', commID,
-                    '-f', os.path.join(self._confDir, commID, 'config'),
+                    '-f', os.path.join(confDir, 'config'),
                     '-d' ]
             self.reactor.spawnProcess(LXCProtocol(_deferred), cmd[0], cmd, env=os.environ)
         except:
