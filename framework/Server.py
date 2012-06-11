@@ -39,9 +39,9 @@ from Comm.Message import  MsgTypes
 from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory
 from Comm.CommManager import CommManager
 from Comm.CommUtil import validateSuffix
-from SatelliteUtil.Manager import SatelliteManager
-from SatelliteUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger
-from SatelliteUtil.ClientServer import WebSocketCloudEngineFactory
+from ServerUtil.Manager import SatelliteManager
+from ServerUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger
+from ServerUtil.ClientServer import WebSocketCloudEngineFactory
 
 class EnvironmentServerFactory(ReappengineServerFactory):
     """ ReappengineServerFactory which is used in the satellite node for the connections

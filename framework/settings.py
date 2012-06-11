@@ -30,7 +30,7 @@
 
 # Custom converters for django/piston input to ROS messages.
 CONVERTER_CLASSES = (
-    'SatelliteUtil.Converter._ImageConverter.ImageConverter',
+    'ServerUtil.Converter._ImageConverter.ImageConverter',
 )
 
 # Definition of django database

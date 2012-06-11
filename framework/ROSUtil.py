@@ -12,6 +12,7 @@ from twisted.python import log
 
 # Python specific imports
 import os
+from Exceptions import InternalError
 
 class ResourceNotFound(Exception):
     """ Error is raised by the Loader when a resource can not be found.
