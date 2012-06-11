@@ -68,7 +68,7 @@ class GetCommIDResponseMessage(object):
     """
     implements(IContentSerializer)
     
-    IDENTIFIER = MsgTypes.ID_REQUEST
+    IDENTIFIER = MsgTypes.ID_RESPONSE
     
     def serialize(self, s, data):
         s.addElement(data['commID'])
