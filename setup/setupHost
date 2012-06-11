@@ -1,11 +1,6 @@
 ### Setup machine for lxc containers
 ### http://www.activestate.com/blog/2011/10/virtualization-ec2-cloud-using-lxc
 
-## Setup bridge
-brctl addbr br0
-brctl setfd br0 0
-ifconfig br0 192.168.3.1 up
-
 ## Setup iptables
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 sysctl -w net.ipv4.ip_forward=1
@@ -17,10 +12,10 @@ sysctl -w net.ipv4.ip_forward=1
 	bogus-priv
 	interface = br0
 	listen-address = 127.0.0.1
-	listen-address = 192.168.3.1
+	listen-address = 10.0.3.1
 	expand-hosts
 	domain = containers
-	dhcp-range = 192.168.3.50,192.168.3.200,1h
+	dhcp-range = 10.0.3.50,10.0.3.150,1h
 
 # Edit file /etc/dhcp/dhclient.conf
 	# Add at the beginning of the file
