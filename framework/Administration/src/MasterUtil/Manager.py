@@ -36,7 +36,7 @@ import random
 import settings
 from NodeManager import ManagerBase
 from Comm.Message import MsgDef
-from Comm.Interfaces import IUIDServer
+from Interfaces import IUIDServer
 from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
 class MasterManager(ManagerBase):
