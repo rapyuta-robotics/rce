@@ -31,11 +31,11 @@ import ClientMsgTypes
 class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the reCloudEngine.
     """
-    def __init__(self, commManager, satelliteManager):
+    def __init__(self, commManager, serverManager):
         """ Initialize the Protocol.
         """
         self._commManager = commManager
-        self._satelliteManager = satelliteManager
+        self._serverManager = serverManager
         self._robot = None
         self._incompleteMsgs = []   # List of tuples (incompleteMsg, incompleteURIList, arrivalTime)
         
@@ -62,7 +62,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         
         if msg['type'] == ClientMsgTypes.CREATE_CONTAINER:
             if not self._robot:
-                self._robot = Robot(self._commManager, self._satelliteManager, self, msg['orig'])
+                self._robot = Robot(self._commManager, self._serverManager, self, msg['orig'])
             self._robot.createContainer(data['containerTag'])
         
         elif msg['type'] == ClientMsgTypes.DESTROY_CONTAINER:
@@ -212,17 +212,17 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
 class WebSocketCloudEngineFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the reCloudEngine.
     """
-    def __init__(self, commManager, satelliteManager, url):
+    def __init__(self, commManager, serverManager, url):
         """ Initialize the Factory.
         """
         WebSocketServerFactory.__init__(self, url)
         
         self._commManager = commManager
-        self._satelliteManager = satelliteManager
+        self._serverManager = serverManager
     
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection attempt is made.
         """
-        p = WebSocketCloudEngineProtocol(self._commManager, self._satelliteManager)
+        p = WebSocketCloudEngineProtocol(self._commManager, self._serverManager)
         p.factory = self
         return p

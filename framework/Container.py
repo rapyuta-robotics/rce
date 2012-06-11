@@ -33,7 +33,7 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
-from Comm.Factory import ReappengineServerFactory
+from Comm.Factory import RCEServerFactory
 from Comm.CommManager import CommManager
 from Comm.CommUtil import validateSuffix
 from ContainerUtil.Manager import ContainerManager
@@ -52,8 +52,8 @@ def main(reactor, uid):
     # Initialize twisted
     log.msg('Initialize twisted')
     
-    # Server for connection(s) from the satellite
-    factory = ReappengineServerFactory(commManager) # , trigger)
+    # Server for connection(s) from the server
+    factory = RCEServerFactory(commManager) # , trigger)
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_START,
                                       MsgTypes.CONTAINER_STOP ])

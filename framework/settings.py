@@ -101,7 +101,7 @@ ADDRESS_LENGTH = 6
 # IP address of Master
 IP_MASTER = 'localhost'
 
-# IP address of satellite for containers
+# IP address of server for containers
 IP_SATELLITE = '10.0.3.1'
 
 # Port of Master
@@ -116,10 +116,10 @@ PORT_DB = 10015
 # Port of Container Manager
 PORT_CONTAINER_MNGR = 10020
 
-# Port of Satellite for other Satellites
+# Port of Server for other Servers
 PORT_SATELLITE_SATELLITE = 10025
 
-# Port of Satellite for Environment Nodes
+# Port of Server for Environment Nodes
 PORT_SATELLITE_ENVIRONMENT = 11010
 
 # Port of Launcher

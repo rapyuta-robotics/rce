@@ -44,14 +44,14 @@ class Container(object):
     """ Class which represents a container. It is associated with a robot.
         A container can have multiple interfaces.
     """
-    def __init__(self, commMngr, satelliteMngr, robot, tag, commID, homeDir):
+    def __init__(self, commMngr, serverMngr, robot, tag, commID, homeDir):
         """ Initialize the Container.
             
             @param commMngr:    CommManager which should be used to communicate.
             @type  commMngr:    CommManager
             
-            @param satelliteMngr:   SatelliteManager which is used in this node.
-            @type  satelliteMngr:   SatelliteManager
+            @param serverMngr:   ServerManager which is used in this node.
+            @type  serverMngr:   ServerManager
             
             @param robot:       Robot instance to which this container belongs.
             @type  robot:       Robot
@@ -67,7 +67,7 @@ class Container(object):
             @type  homeDir:     str
         """
         self._commManager = commMngr
-        self._satelliteManager = satelliteMngr
+        self._serverManager = serverMngr
         self._robot = robot
         self._tag = tag
         self._commID = commID
@@ -306,7 +306,7 @@ class Container(object):
                 interfaceTag,
                 self._commID
             ))
-            self._interfaces[interfaceTag] = Interface( self._satelliteManager,
+            self._interfaces[interfaceTag] = Interface( self._serverManager,
                                                         self,
                                                         interfaceTag,
                                                         rosAddr,

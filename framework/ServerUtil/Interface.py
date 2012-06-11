@@ -38,7 +38,7 @@ class Interface(object):
              'publisher'  : PublisherInterface,
              'subscriber' : SubscriberInterface }
     
-    def __init__(self, satelliteMngr, container, tag, rosAddr, msgType, interfaceType):
+    def __init__(self, serverMngr, container, tag, rosAddr, msgType, interfaceType):
         """ Initialize the Interface.
             
              # TODO: Add description
@@ -48,7 +48,7 @@ class Interface(object):
         self._rosAddr = rosAddr
         self._msgType = msgType
         self._interfaceType = interfaceType
-        self._converter = satelliteMngr.converter
+        self._converter = serverMngr.converter
         
         try:
             container.reserveAddr(rosAddr)
@@ -61,15 +61,15 @@ class Interface(object):
             raise InvalidRequest('msg/srv type is not valid. Has to be of the from pkg/msg, i.e. std_msgs/Int8.')
         
         if interfaceType == 'service':
-            srvCls = satelliteMngr.loader.loadSrv(*args)
+            srvCls = serverMngr.loader.loadSrv(*args)
             self._toMsgCls = srvCls._request_class
             self._fromMsgCls = srvCls._response_class
         elif interfaceType == 'publisher':
-            self._toMsgCls = satelliteMngr.loader.loadMsg(*args)
+            self._toMsgCls = serverMngr.loader.loadMsg(*args)
             self._fromMsgCls = None
         elif interfaceType == 'subscriber':
             self._toMsgCls = None
-            self._fromMsgCls = satelliteMngr.loader.loadMsg(*args)
+            self._fromMsgCls = serverMngr.loader.loadMsg(*args)
         else:
             raise ValueError('"{0}" is not a valid interface type.'.format(interfaceType))
         

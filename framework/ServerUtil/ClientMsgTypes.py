@@ -22,7 +22,7 @@
 #       
 #       
 
-""" Message Types of Reappengine Client Protocol:
+""" Message Types of RCE Client Protocol:
         
         CS      Create a container
         CSR     Update on container status

@@ -33,7 +33,7 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
-from Comm.Factory import ReappengineServerFactory
+from Comm.Factory import RCEServerFactory
 from Comm.CommManager import CommManager
 
 from DBUtil.DBBase import DBBase
@@ -83,8 +83,8 @@ def main(reactor):
     # Initialize twisted
     log.msg('Initialize twisted')
     
-    # Server for connections from the satellites
-    factory = ReappengineServerFactory( commManager )
+    # Server for connections from the servers
+    factory = RCEServerFactory( commManager )
     factory.addApprovedMessageTypes([ MsgTypes.DB_REQUEST ])
     #reactor.listenSSL(settings.PORT_DB, factory, ctx)
     reactor.listenTCP(settings.PORT_DB, factory)

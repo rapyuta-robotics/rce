@@ -41,7 +41,7 @@ from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResp
 
 class MasterManager(ManagerBase):
     """ Manager which is used for master node who is responsible for the management
-        of the satellites nodes and is the connection point for the outside world.
+        of the servers nodes and is the connection point for the outside world.
     """
     implements(IUIDServer)
     
@@ -53,10 +53,10 @@ class MasterManager(ManagerBase):
         """
         super(MasterManager, self).__init__(commManager)
         
-        # List of all available satellites
+        # List of all available servers
         # Key:   CommID
-        # Value: IP address of the satellite
-        self._satellites = {}
+        # Value: IP address of the server
+        self._servers = {}
         
         # Dictionary of currently reserved, but not yet confirmed UIDs
         # Key:   UID
@@ -80,14 +80,14 @@ class MasterManager(ManagerBase):
     def getUID(self):
         """ Callback method which provides a new UID for a machine.
             
-            @return:    Unique ID which should be used to build the CommID for Satellite and
+            @return:    Unique ID which should be used to build the CommID for Server and
                         Container Node.
             @rtype:     str
         """
         while 1:
             uid = ''.join(random.choice(MsgDef.ADDR_BASE) for _ in xrange(MsgDef.SUFFIX_LENGTH_ADDR))
             
-            if '{0}{1}'.format(MsgDef.PREFIX_PUB_ADDR, uid) not in self._satellites \
+            if '{0}{1}'.format(MsgDef.PREFIX_PUB_ADDR, uid) not in self._servers \
                 and uid not in self._tmpUIDs:
                 break
         
@@ -106,30 +106,30 @@ class MasterManager(ManagerBase):
         """
         return uid in self._tmpUIDs
     
-    def addSatellite(self, commID, ip):
-        """ Callback method for the factory to register a satellite connection.
+    def addServer(self, commID, ip):
+        """ Callback method for the factory to register a server connection.
         """
-        log.msg('Register satellite with ID: "{0}"; IP: "{1}"'.format(commID, ip))
-        self._satellites[commID] = ip
+        log.msg('Register server with ID: "{0}"; IP: "{1}"'.format(commID, ip))
+        self._servers[commID] = ip
         del self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]]
     
-    def removeSatellite(self, commID):
-        """ Callback method for the factory to unregister a satellite connection.
+    def removeServer(self, commID):
+        """ Callback method for the factory to unregister a server connection.
         """
-        if commID in self._satellites:
+        if commID in self._servers:
             # First add the UID again to the list of not yet confirmed UIDs in case
-            # the satellite just lost the connection and did not leave intentionally
+            # the server just lost the connection and did not leave intentionally
             self._tmpUIDs[commID[MsgDef.PREFIX_LENGTH_ADDR:]] = datetime.now()
-            del self._satellites[commID]
+            del self._servers[commID]
     
-    def getSatellites(self):
-        """ Get a list of all available satellites and their connection information.
+    def getServers(self):
+        """ Get a list of all available servers and their connection information.
             
-            @return:    List of connection information of all available satellites, where
+            @return:    List of connection information of all available servers, where
                         connection information a dictionary is with the keys ip, commID.
             @rtype:     [ { str : str } ]
         """
-        return [{ 'commID' : commID, 'ip' : ip } for commID, ip in self._satellites.iteritems()]
+        return [{ 'commID' : commID, 'ip' : ip } for commID, ip in self._servers.iteritems()]
     
     def getCommID(self):
         """ Callback method which provides a new CommID for a container.
@@ -159,7 +159,7 @@ class MasterManager(ManagerBase):
             log.msg('Destroyed CommID "{0}".'.format(commID))
     
     def clean(self):
-        """ Method is regularly called to free no longer claimed unique satellite IDs.
+        """ Method is regularly called to free no longer claimed unique server IDs.
         """
         limit = datetime.now() - timedelta(seconds=settings.UID_TIMEOUT)
         

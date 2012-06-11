@@ -38,14 +38,14 @@ import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
 from Comm.Message.Base import Message
-from Comm.Factory import ReappengineServerFactory
+from Comm.Factory import RCEServerFactory
 from Comm.CommManager import CommManager
 from Comm.Interfaces import IPostInitTrigger
 from MasterUtil.Manager import MasterManager
 from MasterUtil.UIDServer import UIDServerFactory
 
 class MasterTrigger(object):
-    """ PostInitTrigger which is used to send the available satellite as connection directive.
+    """ PostInitTrigger which is used to send the available server as connection directive.
     """
     implements(IPostInitTrigger)
     
@@ -66,14 +66,14 @@ class MasterTrigger(object):
         msg = Message()
         msg.msgType = MsgTypes.CONNECT
         msg.dest = origin
-        msg.content = self.masterManager.getSatellites()
+        msg.content = self.masterManager.getServers()
         self.commManager.sendMessage(msg)
         
-        self.masterManager.addSatellite(origin, ip)
+        self.masterManager.addServer(origin, ip)
 
-class MasterServerFactory(ReappengineServerFactory):
-    """ ReappengineServerFactory which is used in the master node for the connections to the
-        satellite nodes.
+class MasterServerFactory(RCEServerFactory):
+    """ RCEServerFactory which is used in the master node for the connections to the
+        server nodes.
     """
     def __init__(self, commMngr, masterMngr):
         """ Initialize the MasterServerFactory.
@@ -93,7 +93,7 @@ class MasterServerFactory(ReappengineServerFactory):
     
     def unregisterConnection(self, conn):
         super(MasterServerFactory, self).unregisterConnection(conn)
-        self._masterManager.removeSatellite(conn.dest)
+        self._masterManager.removeServer(conn.dest)
 
 def main(reactor):
     # Start logger
@@ -112,7 +112,7 @@ def main(reactor):
     # Server for UID distribution
     reactor.listenTCP(settings.PORT_UID, UIDServerFactory(masterManager))
     
-    # Server for connections from the satellites
+    # Server for connections from the servers
     factory = MasterServerFactory( commManager,
                                    masterManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,  # TODO: <- Necessary?

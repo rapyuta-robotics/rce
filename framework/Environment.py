@@ -37,11 +37,11 @@ import settings
 from Comm.CommUtil import validateAddress
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
-from Comm.Factory import ReappengineClientFactory
+from Comm.Factory import RCEClientFactory
 from Comm.CommManager import CommManager
 from EnvironmentUtil.Manager import ROSManager
 
-def main(reactor, commID, satelliteID):
+def main(reactor, commID, serverID):
     # Start logger
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
@@ -59,9 +59,9 @@ def main(reactor, commID, satelliteID):
     # Initialize twisted
     log.msg('Initialize twisted')
     
-    # Client for connection to satellite
-    factory = ReappengineClientFactory( commManager,
-                                        satelliteID )
+    # Client for connection to server
+    factory = RCEClientFactory( commManager,
+                                        serverID )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE,
@@ -72,7 +72,7 @@ def main(reactor, commID, satelliteID):
     reactor.connectTCP(settings.IP_SATELLITE, settings.PORT_SATELLITE_ENVIRONMENT, factory)
     
     # Client for connection to launcher
-    factory = ReappengineClientFactory( commManager,
+    factory = RCEClientFactory( commManager,
                                         MsgDef.LAUNCHER_ADDR )
     #reactor.connectSSL('localhost', settings.PORT_LAUNCHER, factory, ClientContextFactory())
     reactor.connectTCP('localhost', settings.PORT_LAUNCHER, factory)
@@ -100,7 +100,7 @@ def _get_argparse():
                             description='Administrator of App Nodes in Linux Container for the reappengine.')
 
     parser.add_argument('commID', help='Communication address of this node.')
-    parser.add_argument('satelliteID', help='Communication address of the node to which a connection should be established.')
+    parser.add_argument('serverID', help='Communication address of the node to which a connection should be established.')
     
     return parser
 
@@ -114,8 +114,8 @@ if __name__ == '__main__':
         print 'CommID is not a valid address.'
         exit(1)
      
-    if not validateAddress(args.satelliteID):
-        print 'SatelliteID is not a valid address.'
+    if not validateAddress(args.serverID):
+        print 'ServerID is not a valid address.'
         exit(1)
     
-    main(reactor, args.commID, args.satelliteID)
+    main(reactor, args.commID, args.serverID)

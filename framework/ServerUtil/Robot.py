@@ -31,20 +31,20 @@ class Robot(object):
     """ Class which represents a robot. It is associated with a websocket connection.
         A robot can have multiple containers.
     """
-    def __init__(self, commMngr, satelliteMngr, connection, robotID):
+    def __init__(self, commMngr, serverMngr, connection, robotID):
         """ Initialize the Robot.
             
             # TODO: Add description
         """
         self._commManager = commMngr
-        self._satelliteManager = satelliteMngr
+        self._serverManager = serverMngr
         self._connection = connection
         self._robotID = robotID
         
         self._containers = {}
         
-        # Register robot with Satellite Manager
-        self._satelliteManager.registerRobot(self)
+        # Register robot with Server Manager
+        self._serverManager.registerRobot(self)
     
     @property
     def robotID(self):
@@ -75,7 +75,7 @@ class Robot(object):
         homeFolder = '/opt/rce/users/test'
 
         container = Container( self._commManager,
-                               self._satelliteManager,
+                               self._serverManager,
                                self,
                                containerTag,
                                commID,
@@ -88,17 +88,17 @@ class Robot(object):
         self._containers[containerTag] = container
         
         # Register container in the manager
-        self._satelliteManager.registerContainer(container)
+        self._serverManager.registerContainer(container)
         
-##        deferredRobot = self._satelliteManager.getRobotSpecs(self._robotID)
-##        deferredCommID = self._satelliteManager.getNewCommID()
+##        deferredRobot = self._serverManager.getRobotSpecs(self._robotID)
+##        deferredCommID = self._serverManager.getNewCommID()
 ##        deferredList = DeferredList([deferredRobot, deferredCommID])
 ##        deferredList.addCallback(processRobotSpecs)
     
     def destroyContainer(self, containerTag):
         container = self._containers.pop(containerTag)
         container.stop()
-        self._satelliteManager.unregisterContainer(container)
+        self._serverManager.unregisterContainer(container)
     
     def addNode(self, containerTag, nodeTag, package, executable, namespace):
         """ Add a node to the ROS environment in the container matching the

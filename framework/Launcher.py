@@ -33,7 +33,7 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
-from Comm.Factory import ReappengineServerFactory
+from Comm.Factory import RCEServerFactory
 from Comm.CommManager import CommManager
 from LauncherUtil.Manager import LauncherManager
 
@@ -52,7 +52,7 @@ def main(reactor):
     log.msg('Initialize twisted')
     
     # Server for connection from the environment
-    factory = ReappengineServerFactory( commManager )
+    factory = RCEServerFactory( commManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE ])
     #reactor.listenSSL(settings.PORT_LAUNCHER, factory, ClientContextFactory())

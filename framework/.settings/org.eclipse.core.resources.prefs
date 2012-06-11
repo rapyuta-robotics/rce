@@ -1,4 +1,4 @@
-#Mon Jun 11 15:20:32 CEST 2012
+#Mon Jun 11 15:32:20 CEST 2012
 eclipse.preferences.version=1
 encoding//Comm/CommManager.py=utf-8
 encoding//Comm/CommUtil.py=utf-8
@@ -64,5 +64,5 @@ encoding/Master.py=utf-8
 encoding/MiscUtility.py=utf-8
 encoding/NodeManager.py=utf-8
 encoding/Server.py=utf-8
-encoding/initSlave.py=utf-8
+encoding/initServer.py=utf-8
 encoding/settings.py=utf-8

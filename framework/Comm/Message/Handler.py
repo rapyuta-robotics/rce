@@ -31,7 +31,7 @@ from twisted.internet.interfaces import IConsumer
 
 # Custom imports
 from Exceptions import InternalError, SerializationError
-from Interfaces import IReappengineProducer
+from Interfaces import IRCEProducer
 import MsgDef
 from Base import Message
 from FIFO import MessageFIFO
@@ -88,7 +88,7 @@ class _Base(object):
 
 class _Receiver(_Base):
     """ Receiver for messages which implements the necessary interface such that it can
-        be used by the ReappengineProtocol.
+        be used by the RCEProtocol.
     """
     implements(IConsumer)
     
@@ -123,9 +123,9 @@ class _Receiver(_Base):
 
 class _Sender(_Base):
     """ Sender for messages which implements the necessary interface such that it can
-        be used by the ReappengineProtocol.
+        be used by the RCEProtocol.
     """
-    implements(IReappengineProducer)
+    implements(IRCEProducer)
     
     def __init__(self, msgLen, origin, dest, buf):
         super(_Sender, self).__init__(msgLen, origin, dest, buf)
@@ -181,7 +181,7 @@ class _Sender(_Base):
                                 It is also possible to use any consumer which implements the
                                 IConsumer interface; however, in this case this method has
                                 to be called manually.
-            @type  consumer:    ReappengineProtocol (or any IConsumer)
+            @type  consumer:    RCEProtocol (or any IConsumer)
         """
         if self._consumer:
             raise InternalError('This message sender is already sending a message.')
@@ -192,9 +192,9 @@ class _Sender(_Base):
 
 class _Forwarder(_Receiver, _Sender):
     """ Forwarder for messages which implements the necessary interfaces such that it can
-        be used by the ReappengineProtocol.
+        be used by the RCEProtocol.
     """
-    implements(IConsumer, IReappengineProducer)
+    implements(IConsumer, IRCEProducer)
     
     def __init__(self, msgLen, origin, dest):
         """ Initialize the MessageHandler.
@@ -230,7 +230,7 @@ class _Forwarder(_Receiver, _Sender):
 
 class _EndReceiver(_Receiver):
     """ Receiver for messages with endpoint in the current node which implements
-        the necessary interface such that it can be used by the ReappengineProtocol.
+        the necessary interface such that it can be used by the RCEProtocol.
     """
     def __init__(self, manager, handler, msgLen, origin, dest):
         super(_EndReceiver, self).__init__(msgLen, origin, dest, MessageFIFO())
@@ -271,7 +271,7 @@ def receive(factory, msgType, msgLen, origin, dest, init):
         
         @param factory:     Factory which is responsible for the connection from which the
                             message originated.
-        @type  factory:     ReappengineFactory
+        @type  factory:     RCEFactory
         
         @param msgType:     Message type.
         @type  msgType:     str
@@ -287,7 +287,7 @@ def receive(factory, msgType, msgLen, origin, dest, init):
         
         @param init:    Protocol instance which has to be initialized.
                         If the protocol is already initialized None should be used.
-        @type  init:    ReappengineProtocol / None
+        @type  init:    RCEProtocol / None
     """
     if msgLen > MsgDef.MAX_LENGTH:
         # TODO: What to do with message which is too long?

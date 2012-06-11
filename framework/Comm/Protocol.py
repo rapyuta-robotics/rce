@@ -35,8 +35,8 @@ from Exceptions import InternalError
 from Message import MsgDef
 from Message.Handler import receive
 
-class ReappengineProtocol(Protocol, object):
-    """ Reappengine Protocol.
+class RCEProtocol(Protocol, object):
+    """ RCE Protocol.
 
         To send a message using this protocol a push producer should be
         registered with this protocol. The direct usage of the transport
@@ -45,10 +45,10 @@ class ReappengineProtocol(Protocol, object):
     implements(IPushProducer, IConsumer)
 
     def __init__(self, factory, addr):
-        """ Instantiate the Reappengine Protocol.
+        """ Initialize the RCEProtocol.
             
             @param factory:     Factory which created this connection.
-            @type  factory:     ReappengineFactory
+            @type  factory:     RCEFactory
             
             @param addr:    Address object which is given as argument to buildProtocol of
                             the factory.

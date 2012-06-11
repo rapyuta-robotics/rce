@@ -28,7 +28,7 @@ from zope.interface import Attribute, Interface
 # twisted specific imports
 from twisted.internet.interfaces import IPushProducer
 
-class IReappengineProducer(IPushProducer):
+class IRCEProducer(IPushProducer):
     """ Interface for all producers in the reappengine.
     """
     origin = Attribute("""
@@ -44,7 +44,7 @@ class IReappengineProducer(IPushProducer):
                                 It is also possible to use any consumer which implements the
                                 IConsumer interface; however, in this case the method send has
                                 to be called manually.
-            @type  consumer:    ReappengineProtocol (or any IConsumer)
+            @type  consumer:    RCEProtocol (or any IConsumer)
         """
 
 class IContentSerializer(Interface):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       Satellite.py
+#       Server.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -36,36 +36,36 @@ import sys
 import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
-from Comm.Factory import ReappengineClientFactory, ReappengineServerFactory
+from Comm.Factory import RCEClientFactory, RCEServerFactory
 from Comm.CommManager import CommManager
 from Comm.CommUtil import validateSuffix
-from ServerUtil.Manager import SatelliteManager
-from ServerUtil.Triggers import BaseRoutingTrigger, SatelliteRoutingTrigger, EnvironmentRoutingTrigger
+from ServerUtil.Manager import ServerManager
+from ServerUtil.Triggers import BaseRoutingTrigger, ServerRoutingTrigger, EnvironmentRoutingTrigger
 from ServerUtil.ClientServer import WebSocketCloudEngineFactory
 
-class EnvironmentServerFactory(ReappengineServerFactory):
-    """ ReappengineServerFactory which is used in the satellite node for the connections
+class EnvironmentServerFactory(RCEServerFactory):
+    """ RCEServerFactory which is used in the server node for the connections
         to the environment nodes.
     """
-    def __init__(self, commMngr, satelliteMngr):
+    def __init__(self, commMngr, serverMngr):
         """ Initialize the EnvironmentServerFactory.
             
             @param commMngr:    CommManager instance which should be used with this
                                 factory and its build protocols.
             @type  commMngr:    CommManager
             
-            @param satelliteMngr:   SatelliteManager which is used in this node.
-            @type  satelliteMngr:   SatelliteManager
+            @param serverMngr:   ServerManager which is used in this node.
+            @type  serverMngr:   ServerManager
         """
-        super(EnvironmentServerFactory, self).__init__(commMngr, EnvironmentRoutingTrigger(commMngr, satelliteMngr))
-        self._satelliteManager = satelliteMngr
+        super(EnvironmentServerFactory, self).__init__(commMngr, EnvironmentRoutingTrigger(commMngr, serverMngr))
+        self._serverManager = serverMngr
     
     def authOrigin(self, origin):
-        return self._satelliteManager.authenticateContainerConnection(origin)
+        return self._serverManager.authenticateContainerConnection(origin)
     
     def unregisterConnection(self, conn):
         super(EnvironmentServerFactory, self).unregisterConnection(conn)
-        self._satelliteManager.setConnectedFlagContainer(conn.dest, False)
+        self._serverManager.setConnectedFlagContainer(conn.dest, False)
 
 def main(reactor, ip, uid):
     log.startLogging(sys.stdout)
@@ -76,30 +76,30 @@ def main(reactor, ip, uid):
     
     # Create Manager
     commManager = CommManager(reactor, commID)
-    satelliteManager = SatelliteManager(commManager, None)#ctx.getContext())
+    serverManager = ServerManager(commManager, None)#ctx.getContext())
     
     # Initialize twisted
     log.msg('Initialize twisted')
     
     # Server for connections from the containers
     factory = EnvironmentServerFactory( commManager,
-                                        satelliteManager )
+                                        serverManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_RESPONSE,
                                       MsgTypes.ROS_MSG ])
     #reactor.listenSSL(settings.PORT_SATELLITE_ENVIRONMENT, factory, ctx)
     reactor.listenTCP(settings.PORT_SATELLITE_ENVIRONMENT, factory)
     
-    # Server for connections from other satellites
-    factory = ReappengineServerFactory( commManager,
-                                        SatelliteRoutingTrigger(commManager, satelliteManager) )
+    # Server for connections from other servers
+    factory = RCEServerFactory( commManager,
+                                        ServerRoutingTrigger(commManager, serverManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_MSG ])
     #reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
     reactor.listenTCP(settings.PORT_SATELLITE_SATELLITE, factory)
     
     # Client for connection to Container Node
-    factory = ReappengineClientFactory( commManager,
+    factory = RCEClientFactory( commManager,
                                         MsgDef.PREFIX_PRIV_ADDR + uid,
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
@@ -108,7 +108,7 @@ def main(reactor, ip, uid):
     reactor.connectTCP('localhost', settings.PORT_CONTAINER_MNGR, factory)
     
     # Client for connection to Master
-    factory = ReappengineClientFactory( commManager,
+    factory = RCEClientFactory( commManager,
                                         MsgDef.MASTER_ADDR,
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
@@ -117,26 +117,26 @@ def main(reactor, ip, uid):
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
     # Server for connections from robots, i.e. the web, brokered by the master node
-    listenWS(WebSocketCloudEngineFactory(commManager, satelliteManager, "ws://localhost:9000"))
+    listenWS(WebSocketCloudEngineFactory(commManager, serverManager, "ws://localhost:9000"))
     
     # Setup periodic calling of Load Balancer Updater
     log.msg('Add periodic call for Load Balancer Update.')
-    LoopingCall(satelliteManager.updateLoadInfo).start(settings.LOAD_INFO_UPDATE)
+    LoopingCall(serverManager.updateLoadInfo).start(settings.LOAD_INFO_UPDATE)
     
     # Setup shutdown hooks
-    #reactor.addSystemEventTrigger('before', 'shutdown', satelliteManager.shutdown)
+    #reactor.addSystemEventTrigger('before', 'shutdown', serverManager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     # Start twisted
     log.msg('Initialization completed')
     log.msg('Enter mainloop')
     reactor.run()
-    log.msg('Leaving Satellite')
+    log.msg('Leaving Server')
 
 def _get_argparse():
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(prog='Satellite',
+    parser = ArgumentParser(prog='Server',
                             description='# TODO: Add description')
 
     parser.add_argument('uid', help='Unique ID which is used to identify this machine.')

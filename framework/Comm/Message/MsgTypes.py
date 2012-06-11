@@ -22,7 +22,7 @@
 #       
 #       
 
-""" Message Types of Reappengine Protocol:
+""" Message Types of RCE Protocol:
         
         AR  Initialization request
         AI  Routing information

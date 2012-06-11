@@ -34,8 +34,8 @@ from NodeManager import ManagerBase
 from Comm.Message import MsgDef
 from Comm.Message import MsgTypes
 from Comm.Message.Base import Message
-from Comm.Factory import ReappengineClientFactory
-from Triggers import SatelliteRoutingTrigger
+from Comm.Factory import RCEClientFactory
+from Triggers import ServerRoutingTrigger
 
 from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
 from EnvironmentUtil.Type import ROSAddMessage, ROSRemoveMessage, ROSUserMessage, ROSMsgMessage
@@ -52,28 +52,28 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 from ROSUtil import Loader
 
-class SatelliteManager(ManagerBase):
-    """ Manager which is used for the satellites nodes, which represent the communication
+class ServerManager(ManagerBase):
+    """ Manager which is used for the servers nodes, which represent the communication
         relay for the container nodes on a single machine.
     """
     def __init__(self, commManager, ctx):
-        """ Initialize the necessary variables for the SatelliteManager.
+        """ Initialize the necessary variables for the ServerManager.
             
             @param commManager:     CommManager which should be used to communicate.
             @type  commManaggr:     CommManager
             
             @param ctx:     SSLContext which is used for the connections to
-                            the other satellite nodes.
+                            the other server nodes.
             @type  ctx:     # TODO: Determine type of argument
         """
-        super(SatelliteManager, self).__init__(commManager)
+        super(ServerManager, self).__init__(commManager)
         
         # References used by the manager
         self._dbInterface = DBInterface(commManager)   # TODO: Atm not used!
         self._loader = Loader()
         self._converter = Converter()
         
-        # SSL Context which is used to connect to other satellites
+        # SSL Context which is used to connect to other servers
         self._ctx = ctx
         
         # Storage for all connected robots and all containers
@@ -225,38 +225,38 @@ class SatelliteManager(ManagerBase):
     ##################################################
     ### Routing
     
-    def getSatelliteRouting(self):
+    def getServerRouting(self):
         """ Callback for PostInitTrigger.
             
             Returns the routing information for all nodes which should be
             routed through this node, i.e. all container nodes managed by this
-            satellite node.
+            server node.
             
             @rtype:     [ str ]
         """
         return self._containers.keys()
     
-    def _connectToSatellite(self, commID, ip):
-        """ Connect to another satellite node.
+    def _connectToServer(self, commID, ip):
+        """ Connect to another server node.
         """
-        factory = ReappengineClientFactory( self._commManager, commID,
+        factory = RCEClientFactory( self._commManager, commID,
                                             '',
-                                            SatelliteRoutingTrigger(self._commManager, self) )
+                                            ServerRoutingTrigger(self._commManager, self) )
         factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                           MsgTypes.ROS_MSG ])
         #self.reactor.connectSSL(ip, port, factory, self._ctx)
         self.reactor.connectTCP(ip, settings.PORT_SATELLITE_SATELLITE, factory)
         # TODO: Set to SSL
     
-    def connectToSatellites(self, satellites):
-        """ Callback for MessageProcessor to connect to specified satellites.
+    def connectToServers(self, servers):
+        """ Callback for MessageProcessor to connect to specified servers.
             
-            @param satellites:  List of dictionaries containing the necessary
-                                information of each satellite (ip, port, commID).
-            @type  satellites:  [ { str : str } ]
+            @param servers:  List of dictionaries containing the necessary
+                                information of each server (ip, port, commID).
+            @type  servers:  [ { str : str } ]
         """
-        for satellite in satellites:
-            self._connectToSatellite(satellite['commID'], satellite['ip'])
+        for server in servers:
+            self._connectToServer(server['commID'], server['ip'])
     
     ##################################################
     ### Management

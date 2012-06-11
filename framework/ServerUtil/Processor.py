@@ -29,27 +29,27 @@ from zope.interface import implements
 from Comm.Message.Interfaces import IMessageProcessor
 from Comm.Message import MsgTypes
 
-class SatelliteProcessorBase(object):
+class ServerProcessorBase(object):
     """ Base class for all standard processors.
     """
     implements(IMessageProcessor)
     
     def __init__(self, manager):
-        """ @param manager:     SatelliteManager which is used in this node.
-            @type  manager:     SatelliteManager
+        """ @param manager:     ServerManager which is used in this node.
+            @type  manager:     ServerManager
         """
         self.manager = manager
 
-class ConnectDirectiveProcessor(SatelliteProcessorBase):
+class ConnectDirectiveProcessor(ServerProcessorBase):
     """ Message processor which executes the directives from the message and connects
         to all specified nodes.
     """
     IDENTIFIER = MsgTypes.CONNECT
     
     def processMessage(self, msg):
-        self.manager.connectToSatellites(msg.content)
+        self.manager.connectToServers(msg.content)
 
-class GetCommIDProcessor(SatelliteProcessorBase):
+class GetCommIDProcessor(ServerProcessorBase):
     """ Message processor for a getCommID request.
     """
     IDENTIFIER = MsgTypes.ID_REQUEST
@@ -57,7 +57,7 @@ class GetCommIDProcessor(SatelliteProcessorBase):
     def processMessage(self, msg):
         self.manager.setNewCommId(msg.content['commID'])
 
-class ROSMsgProcessor(SatelliteProcessorBase):
+class ROSMsgProcessor(ServerProcessorBase):
     """ Message processor to handle and convert a ROS message for forwarding to robot.
     """
     IDENTIFIER = MsgTypes.ROS_MSG
@@ -66,7 +66,7 @@ class ROSMsgProcessor(SatelliteProcessorBase):
         self.manager.receivedROSMessage(msg)
 
 ### TODO: Not used
-class ContainerStatusProcessor(SatelliteProcessorBase):
+class ContainerStatusProcessor(ServerProcessorBase):
     """ # TODO: Add description
     """
     IDENTIFIER = MsgTypes.CONTAINER_STATUS

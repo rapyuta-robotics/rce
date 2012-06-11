@@ -22,7 +22,7 @@
 #       
 #       
 
-""" Message Content Identifier of ROS Messages of Reappengine Protocol:
+""" Message Content Identifier of ROS Messages of RCE Protocol:
         
         n   Node (for removal)
         i   Interface (for removal)

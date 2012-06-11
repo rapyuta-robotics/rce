@@ -33,7 +33,7 @@ from twisted.internet.protocol import ServerFactory, ReconnectingClientFactory
 
 # Custom imports
 from Exceptions import InternalError, SerializationError
-from Protocol import ReappengineProtocol
+from Protocol import RCEProtocol
 from Message import MsgDef
 from Message import MsgTypes
 from Message.Base import Message
@@ -48,11 +48,11 @@ class EmptyTrigger(object):
     def trigger(self, origin, ip):
         pass
 
-class ReappengineFactory(object):
-    """ Base class which implements base methods for all Reappengine Factories.
+class RCEFactory(object):
+    """ Base class which implements base methods for all RCEFactories.
     """
     def __init__(self, commMngr, trigger=None):
-        """ Initialize the ReappengineFactory.
+        """ Initialize the RCEFactory.
             
             @param commMngr:    CommManager instance which should be used with this
                                 factory and its build protocols.
@@ -117,7 +117,7 @@ class ReappengineFactory(object):
         """ Method which is called when the connection has been made.
             
             @param conn:    Protocol instance which just has been made.
-            @type  conn:    ReappengineProtocol
+            @type  conn:    RCEProtocol
         """
     
     def processInitMessage(self, msg, conn):
@@ -128,37 +128,37 @@ class ReappengineFactory(object):
             @type  msg:     Message
             
             @param conn:    Protocol instance who received the initialization message.
-            @type  conn:    ReappengineProtocol
+            @type  conn:    RCEProtocol
         """
     
     def unregisterConnection(self, conn):
         """ This method should be called to remove any references to the given connection.
             
             @param conn:    Protocol instance who should be unregistered.
-            @type  conn:    ReappengineProtocol
+            @type  conn:    RCEProtocol
         """
         self._commManager.router.unregisterConnection(conn)
 
-class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
+class RCEClientFactory(RCEFactory, ReconnectingClientFactory):
     """ Factory which is used for client connections.
     """
-    def __init__(self, commMngr, satelliteID, trigger=None):
-        """ Initialize the ReappengineClientFactory.
+    def __init__(self, commMngr, serverID, trigger=None):
+        """ Initialize the RCEClientFactory.
 
             @param commMngr:    CommManager which is responsible for handling the communication
                                 in this node.
             @type  commMngr:    CommManager
             
-            @param satelliteID:     CommID of the satellite node.
-            @type  satelliteID:     str
+            @param serverID:     CommID of the server node.
+            @type  serverID:     str
             
             @param trigger:     Instance which should be used as PostInitTrigger.
                                 If argument is omitted the PostInitTrigger does nothing.
             @type  trigger:     IPostInitTrigger
         """
-        ReappengineFactory.__init__(self, commMngr, trigger)
+        RCEFactory.__init__(self, commMngr, trigger)
         
-        self._satelliteID = satelliteID
+        self._serverID = serverID
     
     def buildProtocol(self, addr):
         """ Builds a new protocol instance.
@@ -169,14 +169,14 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
             This method should not be overwritten.
         """
         self.resetDelay()
-        return ReappengineProtocol(self, addr)
+        return RCEProtocol(self, addr)
     
     def startInit(self, conn):
         msg = Message()
         msg.msgType = MsgTypes.INIT_REQUEST
         msg.dest = MsgDef.NEIGHBOR_ADDR
         
-        msg.content = { 'remoteID'   : self._satelliteID }
+        msg.content = { 'remoteID'   : self._serverID }
         
         try:
             buf = msg.serialize(self._commManager)
@@ -194,8 +194,8 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
         
         origin = msg.origin
         
-        if origin != self._satelliteID:
-            log.msg('Received origin ID does not match this node satellite ID for initialization of protocol instance.')
+        if origin != self._serverID:
+            log.msg('Received origin ID does not match this node server ID for initialization of protocol instance.')
             conn.transport.loseConnection()
             return
         
@@ -213,7 +213,7 @@ class ReappengineClientFactory(ReappengineFactory, ReconnectingClientFactory):
         # Trigger the post init method
         self._trigger.trigger(origin, conn.ip)
 
-class ReappengineServerFactory(ReappengineFactory, ServerFactory):
+class RCEServerFactory(RCEFactory, ServerFactory):
     """ Factory which is used for server connections.
     """
     def buildProtocol(self, addr):
@@ -224,7 +224,7 @@ class ReappengineServerFactory(ReappengineFactory, ServerFactory):
 
             This method should not be overwritten.
         """
-        return ReappengineProtocol(self, addr)
+        return RCEProtocol(self, addr)
     
     def processInitMessage(self, msg, conn):
         # First some base checks of message header

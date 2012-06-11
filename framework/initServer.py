@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       initSlave.py
+#       initServer.py
 #       
 #       Copyright 2012 dominique hunziker <dominique.hunziker@gmail.com>
 #       
@@ -92,7 +92,7 @@ def main(reactor):
         exit(1)
     
     containerExe = os.path.join(settings.ROOT_SRC_DIR, 'Container.py')
-    satelliteExe = os.path.join(settings.ROOT_SRC_DIR, 'Satellite.py')
+    serverExe = os.path.join(settings.ROOT_SRC_DIR, 'Server.py')
     
     if not os.path.isfile(containerExe):
         print('Root source directory does not contain the file "Container.py".')
@@ -102,28 +102,28 @@ def main(reactor):
         print('File "Container.py" in root source directory is not executable.')
         exit(1)
     
-    if not os.path.isfile(satelliteExe):
-        print('Root source directory does not contain the file "Satellite.py".')
+    if not os.path.isfile(serverExe):
+        print('Root source directory does not contain the file "Server.py".')
         exit(1)
     
-    if not os.access(satelliteExe, os.X_OK):
-        print('File "Satellite.py" in root source directory is not executable.')
+    if not os.access(serverExe, os.X_OK):
+        print('File "Server.py" in root source directory is not executable.')
         exit(1)
     
     deferred = Deferred()
     
     containerDeferred = Deferred()
     containerProtocol = LoggerProtocol(containerDeferred)
-    satelliteDeferred = Deferred()
-    satelliteProtocol = LoggerProtocol(satelliteDeferred)
-    termDeferreds = DeferredList([containerDeferred, satelliteDeferred])
+    serverDeferred = Deferred()
+    serverProtocol = LoggerProtocol(serverDeferred)
+    termDeferreds = DeferredList([containerDeferred, serverDeferred])
     
     def callback(suffix):
         cmd = [containerExe, suffix]
         reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
         
-        cmd = [satelliteExe, suffix, settings.IP_MASTER]
-        reactor.spawnProcess(satelliteProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
+        cmd = [serverExe, suffix, settings.IP_MASTER]
+        reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
     
     def errback(errMsg):
         log.msg(errMsg)
@@ -136,7 +136,7 @@ def main(reactor):
     
     def shutdown():
         containerProtocol.terminate(reactor)
-        satelliteProtocol.terminate(reactor)
+        serverProtocol.terminate(reactor)
         return termDeferreds
     
     reactor.addSystemEventTrigger('before', 'shutdown', shutdown)

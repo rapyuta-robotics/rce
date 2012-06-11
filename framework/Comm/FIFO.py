@@ -35,7 +35,7 @@ from datetime import datetime, timedelta
 # Custom imports
 import settings
 from Exceptions import InternalError
-from Message.Interfaces import IReappengineProducer
+from Message.Interfaces import IRCEProducer
 
 class ProducerFIFO(object):
     """ FIFO which is used for buffering the outgoing messages to a specific destination.
@@ -63,10 +63,10 @@ class ProducerFIFO(object):
         """ Add a new producer to the FIFO.
         """
         try:
-            verifyObject(IReappengineProducer, producer)
+            verifyObject(IRCEProducer, producer)
         except Invalid as e:
             raise InternalError(
-                'Verification of the producer class "{0}" for the Interface "IReappengineProducer" failed: {1}'.format(
+                'Verification of the producer class "{0}" for the Interface "IRCEProducer" failed: {1}'.format(
                     producer.__class__.__name__,
                     e
                 )

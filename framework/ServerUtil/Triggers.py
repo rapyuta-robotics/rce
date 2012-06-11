@@ -59,46 +59,46 @@ class BaseRoutingTrigger(CommonRoutingTrigger):
     def trigger(self, origin, ip):
         self.sendRoutingInfo(origin, [ (None, True) ])
 
-class SatelliteRoutingTrigger(CommonRoutingTrigger):
+class ServerRoutingTrigger(CommonRoutingTrigger):
     """ PostInitTrigger which is used to send the available container IDs as routing info.
     """
-    def __init__(self, commMngr, satelliteMngr):
-        """ Initialize the SatelliteRoutingTrigger.
+    def __init__(self, commMngr, serverMngr):
+        """ Initialize the ServerRoutingTrigger.
 
             @param commMngr:    CommManager which is responsible for handling the communication
                                 in this node.
             @type  commMngr:    CommManager
             
-            @param satelliteMngr:   SatelliteManager which is responsible for the handling of
+            @param serverMngr:   ServerManager which is responsible for the handling of
                                     this node.
-            @type  satelliteMngr:   SatelliteManager
+            @type  serverMngr:   ServerManager
         """
-        super(SatelliteRoutingTrigger, self).__init__(commMngr)
+        super(ServerRoutingTrigger, self).__init__(commMngr)
         
-        self.satelliteManager = satelliteMngr
+        self.serverManager = serverMngr
     
     def trigger(self, origin, ip):
-        self.sendRoutingInfo(origin, self.satelliteManager.getSatelliteRouting())
+        self.sendRoutingInfo(origin, self.serverManager.getServerRouting())
 
 class EnvironmentRoutingTrigger(CommonRoutingTrigger):
     """ PostInitTrigger which is used to send the CommID of this node as default routing info
         and additionally add set the container to connected.
     """
-    def __init__(self, commMngr, satelliteMngr):
-        """ Initialize the SatelliteRoutingTrigger.
+    def __init__(self, commMngr, serverMngr):
+        """ Initialize the ServerRoutingTrigger.
 
             @param commMngr:    CommManager which is responsible for handling the communication
                                 in this node.
             @type  commMngr:    CommManager
             
-            @param satelliteMngr:   SatelliteManager which is responsible for the handling of
+            @param serverMngr:   ServerManager which is responsible for the handling of
                                     this node.
-            @type  satelliteMngr:   SatelliteManager
+            @type  serverMngr:   ServerManager
         """
         super(EnvironmentRoutingTrigger, self).__init__(commMngr)
         
-        self.satelliteManager = satelliteMngr
+        self.serverManager = serverMngr
     
     def trigger(self, origin, ip):
         self.sendRoutingInfo(origin, [ (None, True) ])
-        self.satelliteManager.setConnectedFlagContainer(origin, True)
+        self.serverManager.setConnectedFlagContainer(origin, True)

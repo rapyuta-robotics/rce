@@ -64,7 +64,7 @@ class Router(object):
         """ Callback for Protocol instance to register the connection.
 
             @param conn:    Protocol instance which has established the connection.
-            @type  conn:    ReappengineProtocol
+            @type  conn:    RCEProtocol
         """
         dest = conn.dest
         
@@ -94,7 +94,7 @@ class Router(object):
         """ Callback for Protocol instance to unregister the connection.
 
             @param conn:    Protocol instance which should be unregistered.
-            @type  conn:    ReappengineProtocol
+            @type  conn:    RCEProtocol
         """
         self._connections.pop(conn.dest, None)
         
