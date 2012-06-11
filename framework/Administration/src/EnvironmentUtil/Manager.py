@@ -29,6 +29,7 @@ from twisted.python import log
 from Exceptions import InternalError
 from NodeManager import ManagerBase
 
+from Comm.Message.FIFO import MessageFIFO
 from Comm.Message.Base import Message
 from Comm.Message import MsgTypes
 from Type import ROSAddMessage, ROSRemoveMessage, ROSUserMessage, ROSMsgMessage #, ROSResponseMessage, ROSGetMessage
@@ -187,10 +188,13 @@ class ROSManager(ManagerBase):
             @param uid:     Unique ID to identify the message
             @type  uid:     str
         """
+        fifo = MessageFIFO()
+        fifo.push(rosMsg)
+        
         msg = Message()
         msg.msgType = MsgTypes.ROS_MSG
         msg.dest = dest
-        msg.content = { 'msg'  : rosMsg,
+        msg.content = { 'msg'  : fifo,
                         'tag'  : tag,
                         'user' : user,
                         'push' : True,

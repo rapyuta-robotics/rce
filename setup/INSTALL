@@ -1,43 +1,43 @@
-1. 	Deploy on a local virtual machine environment 
-	Load Ubutnu 12.04 serveubuntu-12.04-server ISO into you virtual machine (Checked in VMware Fusion 4.0)
+1. 	Deploy on a local virtual machine:
+	Load Ubutnu 12.04 serveubuntu-12.04-server ISO into you virtual machine
 	http://releases.ubuntu.com/12.04/ubuntu-12.04-server-amd64.iso
+	tested on: VMware Fusion 4.0 
 	
-	Deploy on 
+	Deploy on an IaaS platform
 	Lauch the Image provided by your IaaS perovider
-	
-2.	ping google.com to check your internet connectivity and DNS.
+	tested on: Rackspace	
 
-3.  Install the ssh deamons
+2.	Ping google.com to check your internet connectivity and DNS.
+
+3.  	Install the ssh deamons
 	sudo apt-get install openssh-client openssh-server
-    (Installing automatically starts them too)
+    	n.b. Installing starts them automatically
 
 4.	sudo apt-get install git-core
 	git config --global user.name "<your name>"
 	git config --global user.email "<your email>"
-	(Git is awsome ! you SHOULD use it, visit https://help.github.com/articles/set-up-git for more info)
+	visit https://help.github.com/articles/set-up-git for more info
 
-	cd /usr/local/bin/
-	sudo wget http://github-media-downloads.s3.amazonaws.com/osx/git-credential-osxkeychain
-	sudo chmod +x /usr/local/bin/git-credential-osxkeychain
-	(you may need them)
-
-5.	cd .ssh 
+	cd .ssh 
 	ssh-keygen -t rsa -C "gajan@ethz.ch"
 	(Generate authentication keys)
 	
-6.	cd /opt
+6.	Clone the rce repository (switch branches if necessary)
+	cd /opt
 	sudo git clone https://github.com/IDSCETHZurich/reappengine.git rce 
-	Clone the rce repository (switch branches if necessary)
+	
 
-7.	sudo apt-get install lxc bridge-utils dnsmasq debootstrap
-	(linux-container requirements, after installing you should see new network interfce [lxcbr0])
+7.	Install the linux-container requirements
+	sudo apt-get install lxc bridge-utils dnsmasq debootstrap
+	n.b. after installing you should see new network interfce [lxcbr0])
 
 8.	Run setupContainer.bash to generate a 12.04 container for LXC
 	cd /opt/rce/setup
 	sudo bash setupContainer.bash --path=/opt/rce/container
-	(You set the mirror to the one near you)
+	n.b. You may set the ubuntu mirror to the one near you
 	
-9.	chroot into the container
+9.	Install ROS inside the container
+	chroot into the container
 	sudo chroot /opt/rce/container/rootfs
 	
 	apt-get install wget 
@@ -48,22 +48,23 @@
 	apt-get install ros-fuerte-ros-comm
 	apt-get install ros-fuerte-navigation
 	
-	(and get out of container using [exit])
+	- and get out of container using [exit] 
 
-10.	Install ROS
+10.	Install ROS in the container host
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
 	wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 	sudo apt-get update
 	sudo apt-get install ros-fuerte-ros-comm
 	sudo apt-get install ros-fuerte-navigation
 	
-11. Install the websockets related libraries
+11. 	Install the websockets related libraries
 	sudo apt-get install python-twisted-core
 	sudo easy_install AutoBahn
 
-12.	open setup/setupHost.sh and follow instructions
+12.	Open setup/setupHost.sh and follow instructions
 
-13. lxc-start -n ros -f ../setup/stdConfig 
+13. 	Start the container and perform initial setups:
+		lxc-start -n ros -f ../setup/stdConfig 
 
 		. /opt/ros/fuerte/setup.sh 
 		export ROS_HOSTNAME=localhost
@@ -83,6 +84,6 @@
 		chown rce:rce data 
 		poweroff
 
-14.	Start RCE.
+14.	Start RCE
 	. /opt/ros/fuerte/setup.sh 
 	python Master.py &

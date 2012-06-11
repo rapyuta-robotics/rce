@@ -261,6 +261,7 @@ class ServiceMonitor(_InterfaceMonitor):
             except rospy.ROSInterruptException:
                 return
             except Exception as e:
+                raise
                 self._error = e
             else:
                 self._msg = response._buff
@@ -307,6 +308,7 @@ class ServiceMonitor(_InterfaceMonitor):
             raise InvalidRequest('Service type is not valid. Has to be of the form pkg/msg, i.e. std_msgs/Int8.')
         
         self._srvCls = manager.loader.loadSrv(*args)
+        self._srvCls._request_class = rospy.AnyMsg
         self._srvCls._response_class = rospy.AnyMsg
 
         self._tasks = {}
