@@ -1,6 +1,0 @@
-*.pyc
-*.so
-trash
-src/trash
-src/cert.pem
-src/key.pem
