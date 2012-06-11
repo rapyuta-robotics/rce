@@ -71,7 +71,7 @@ DATA_DIR = '/opt/rce/container/data'
 ROOT_SRC_DIR = '/opt/rce/framework'
 
 # Absolute path to source package directory
-ROOT_PKG_DIR = '/opt/rce/nodes'
+ROOT_PKG_DIR = '/opt/rce/test'
 
 # Time interval in which the newest load information are sent to the master node/load balancer
 LOAD_INFO_UPDATE = 5

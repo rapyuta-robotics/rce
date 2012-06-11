@@ -112,7 +112,8 @@ def main(reactor, ip, uid):
                                         MsgDef.MASTER_ADDR,
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
-                                      MsgTypes.CONNECT ])
+                                      MsgTypes.CONNECT,
+                                      MsgTypes.ID_RESPONSE ])
     #reactor.connectSSL(ip, settings.PORT_MASTER, factory, ctx)
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     

@@ -38,6 +38,7 @@ from NodeManager import ManagerBase
 from Comm.Message import MsgDef
 from Interfaces import IUIDServer
 from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
+from Processor import GetCommIDProcessor, DelCommIDProcessor
 
 class MasterManager(ManagerBase):
     """ Manager which is used for master node who is responsible for the management
@@ -74,7 +75,9 @@ class MasterManager(ManagerBase):
         # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
-        #self._commManager.registerMessageProcessors([ ConnectDirectiveProcessor(self) ])
+        self._commManager.registerMessageProcessors([ #ConnectDirectiveProcessor(self),
+                                                      GetCommIDProcessor(self, commManager),
+                                                      DelCommIDProcessor(self, commManager) ])
         # TODO: Add all valid messages  
     
     def getUID(self):

@@ -329,7 +329,7 @@ class ContainerManager(ManagerBase):
         else:
             self.reactor.callFromThread(self._commIDs.append, commID)
     
-    def startContainer(self, commID, homeDir):
+    def startContainer(self, commID):
         """ Callback for message processor to stop a container.
         """
         deferred = Deferred()
