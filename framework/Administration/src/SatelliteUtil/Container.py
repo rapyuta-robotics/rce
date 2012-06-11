@@ -389,7 +389,7 @@ class Container(object):
         
         try:
             self._commManager.reactor.callInThread(
-                self._interfaces[msg['tag']].send,
+                self._interfaces[msg['tag']].receive,
                 msg
             )
         except KeyError:
