@@ -191,11 +191,11 @@ class ContainerManager(ManagerBase):
         """
         content = '\n'.join([ '# description',
                               'author "Dominique Hunziker"',
-                              'description "CommNode of reCloudEngine - Framework for managing and using ROS nodes"',
+                              'description "ReCloudEngine Comm - Framework for managing and using ROS Apps"',
                               '',
                               '# start/stop conditions',
-                              'start on runlevel [2345]',
-                              'stop on runlevel [016]',
+                              'start on started rce',
+                              'stop on stopping rce',
                               '',
                               'kill timeout 5',
                               '',
@@ -204,10 +204,6 @@ class ContainerManager(ManagerBase):
                               '\t. /etc/environment',
                               '\t. /opt/ros/fuerte/setup.sh',
                               '\tROS_PACKAGE_PATH=/opt/rce/packages:$ROS_PACKAGE_PATH',
-                              '\t',
-                              '\t# need to switch owner and access of temporary data dir',
-                              '\tchmod 700 /opt/rce/data',
-                              '\tchown rce:rce /opt/rce/data',
                               '\t',
                               '\t# start environment node',
                               '\t'+' '.join([ 'start-stop-daemon',
@@ -228,11 +224,11 @@ class ContainerManager(ManagerBase):
         
         content = '\n'.join([ '# description',
                               'author "Dominique Hunziker"',
-                              'description "Launcher of reCloudEngine - Framework for managing and using ROS nodes"',
+                              'description "ReCloudEngine Launcher - Framework for managing and using ROS Apps"',
                               '',
                               '# start/stop conditions',
-                              'start on runlevel [2345]',
-                              'stop on runlevel [016]',
+                              'start on started rce',
+                              'stop on stopping rce',
                               '',
                               '# timeout before the process is killed; generous as a lot of processes have',
                               '# to be terminated by the launcher.',
@@ -284,7 +280,6 @@ class ContainerManager(ManagerBase):
             os.mkdir(dataDir)
             os.mkdir(os.path.join(dataDir, 'rce'))
             os.mkdir(os.path.join(dataDir, 'ros'))
-            os.chmod(dataDir, 0700)
             
             # Construct config file
             self._createConfigFile(confDir)

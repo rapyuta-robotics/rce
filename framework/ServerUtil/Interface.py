@@ -49,6 +49,7 @@ class Interface(object):
         self._msgType = msgType
         self._interfaceType = interfaceType
         self._converter = serverMngr.converter
+        self._ref = []
         
         try:
             container.reserveAddr(rosAddr)
@@ -72,8 +73,6 @@ class Interface(object):
             self._fromMsgCls = serverMngr.loader.loadMsg(*args)
         else:
             raise ValueError('"{0}" is not a valid interface type.'.format(interfaceType))
-        
-        self._ref = []
     
     def validate(self, tag, rosAddr, msgType, interfaceType):
         """ # TODO: Add description
