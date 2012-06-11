@@ -38,11 +38,11 @@ import settings
 from Comm.Message import MsgDef
 from Comm.Message import  MsgTypes
 from Comm.Message.Base import Message
-from Comm.UIDServer import UIDServerFactory
 from Comm.Factory import ReappengineServerFactory
 from Comm.CommManager import CommManager
 from Comm.Interfaces import IPostInitTrigger
 from MasterUtil.Manager import MasterManager
+from MasterUtil.UIDServer import UIDServerFactory
 
 class MasterTrigger(object):
     """ PostInitTrigger which is used to send the available satellite as connection directive.
