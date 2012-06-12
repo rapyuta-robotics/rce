@@ -323,7 +323,16 @@ class Container(object):
     def activateInterface(self, interfaceTag, target, commID):
         """ Activate an interface for a user.
             
-            # TODO: Add description
+            @param interfaceTag:    Tag which is used to identify the interface which
+                                    should be activated for a user.
+            @type  interfaceTag:    str
+            
+            @param target:      Tag which is used to identify the user/interface for
+                                which the interface should be activated.
+            @type  target:      str
+            
+            @param commID:      Communication ID where the target is coming from.
+            @type  commID:      str
         """
         if not self._connected:
             raise InternalError('Container has to be connected before an interface can be activated.')
@@ -340,7 +349,18 @@ class Container(object):
             raise InternalError('Can not activate an interface which does not exist.')
     
     def deactivateInterface(self, interfaceTag, target, commID):
-        """ # TODO: Add description
+        """ Deactivate an interface for a user.
+            
+            @param interfaceTag:    Tag which is used to identify the interface which
+                                    should be deactivated for a user.
+            @type  interfaceTag:    str
+            
+            @param target:      Tag which is used to identify the user/interface for
+                                which the interface should be deactivated.
+            @type  target:      str
+            
+            @param commID:      Communication ID where the target is coming from.
+            @type  commID:      str
         """
         if not self._connected:
             raise InternalError('Container has to be connected before an interface can be deactivated.')

@@ -72,13 +72,10 @@ class MasterManager(ManagerBase):
                                                        GetCommIDRequestMessage(),
                                                        GetCommIDResponseMessage(),
                                                        DelCommIDRequestMessage() ])
-        # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
-        self._commManager.registerMessageProcessors([ #ConnectDirectiveProcessor(self),
-                                                      GetCommIDProcessor(self, commManager),
+        self._commManager.registerMessageProcessors([ GetCommIDProcessor(self, commManager),
                                                       DelCommIDProcessor(self, commManager) ])
-        # TODO: Add all valid messages  
     
     def getUID(self):
         """ Callback method which provides a new UID for a machine.

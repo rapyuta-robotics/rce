@@ -130,13 +130,35 @@ class ROSManager(ManagerBase):
         return self._interfaces[tag]
     
     def addInterfaceUser(self, tag, target, commID):
-        """ # TODO: Add description.
+        """ Activate an interface for a user.
+            
+            @param tag:         Tag which is used to identify the interface which
+                                should be activated for a user.
+            @type  tag:         str
+            
+            @param target:      Tag which is used to identify the user/interface for
+                                which the interface should be activated.
+            @type  target:      str
+            
+            @param commID:      Communication ID where the target is coming from.
+            @type  commID:      str
         """
         log.msg('Register user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
         self.getInterface(tag).addUser(commID, target)
     
     def removeInterfaceUser(self, tag, target, commID):
-        """ # TODO: Add description.
+        """ Deactivate an interface for a user.
+            
+            @param tag:         Tag which is used to identify the interface which
+                                should be deactivated for a user.
+            @type  tag:         str
+            
+            @param target:      Tag which is used to identify the user/interface for
+                                which the interface should be deactivated.
+            @type  target:      str
+            
+            @param commID:      Communication ID where the target is coming from.
+            @type  commID:      str
         """
         log.msg('Unregister user "({0}, {1})" for interface "{2}".'.format(commID, target, tag))
         self.getInterface(tag).removeUser(commID, target)

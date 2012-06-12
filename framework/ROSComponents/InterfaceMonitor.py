@@ -261,7 +261,6 @@ class ServiceMonitor(_InterfaceMonitor):
             except rospy.ROSInterruptException:
                 return
             except Exception as e:
-                raise
                 self._error = e
             else:
                 self._msg = response._buff
@@ -278,7 +277,7 @@ class ServiceMonitor(_InterfaceMonitor):
                                                        user,
                                                        self._msgID )
         
-        ### TODO: Not used in pure push implementation
+        ### TODO: Not used for pure push implementation
         def getResult(self):
             """ Get the result of this task.
 

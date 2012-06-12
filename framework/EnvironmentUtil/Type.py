@@ -64,13 +64,14 @@ class ROSAddMessage(object):
             self._componentCls[component.IDENTIFIER] = component
     
     # TODO: Not really necessary; just for completeness
+    #       Not called from anywhere at the moment.
     def unregisterComponent(self, component):
         """ Unregister a component class.
             
-            @param component:   # TODO:
-            @type  component:   # TODO:
+            @param component:   TODO
+            @type  component:   TODO
         """
-        del self._componentCls[" TODO: Depends on type of component"]
+        del self._componentCls["TODO - Depends on type of component"]
     
     def serialize(self, s, data):
         try:

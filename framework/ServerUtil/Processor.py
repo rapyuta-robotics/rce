@@ -64,12 +64,3 @@ class ROSMsgProcessor(ServerProcessorBase):
     
     def processMessage(self, msg):
         self.manager.receivedROSMessage(msg)
-
-### TODO: Not used
-class ContainerStatusProcessor(ServerProcessorBase):
-    """ # TODO: Add description
-    """
-    IDENTIFIER = MsgTypes.CONTAINER_STATUS
-    
-    def processMessage(self, msg):
-        pass # TODO: Add

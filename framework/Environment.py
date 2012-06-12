@@ -97,10 +97,10 @@ def _get_argparse():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(prog='Environment',
-                            description='Administrator of App Nodes in Linux Container for the reappengine.')
+                            description='Communication interface of ROS Apps and the Server node of the framework.')
 
     parser.add_argument('commID', help='Communication address of this node.')
-    parser.add_argument('serverID', help='Communication address of the node to which a connection should be established.')
+    parser.add_argument('serverID', help='Communication address of the server node to which a connection should be established.')
     
     return parser
 

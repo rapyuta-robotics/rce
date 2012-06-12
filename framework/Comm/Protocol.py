@@ -267,6 +267,5 @@ class RCEProtocol(Protocol, object):
         # Unregister the connection from the factory
         self.factory.unregisterConnection(self)
         
-        # TODO: Is anything else necessary?
         if not reason.check(ConnectionDone):
             reason.printTraceback(detail='verbose')

@@ -34,7 +34,13 @@ class Robot(object):
     def __init__(self, commMngr, serverMngr, connection, robotID):
         """ Initialize the Robot.
             
-            # TODO: Add description
+            @param commMngr:    CommManager which is used in this node.
+            @type  commMngr:    CommManager
+            
+            @param serverMngr:  ServerManager which is used in this node.
+            @type  serverMngr:  ServerManager
+            
+            # TODO: Will change with addition of multiple robots using same Robot instance.
         """
         self._commManager = commMngr
         self._serverManager = serverMngr

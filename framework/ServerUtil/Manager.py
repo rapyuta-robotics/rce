@@ -37,13 +37,13 @@ from Comm.Message.Base import Message
 from Comm.Factory import RCEClientFactory
 from Triggers import ServerRoutingTrigger
 
-from ContainerUtil.Type import StartContainerMessage, StopContainerMessage #, ContainerStatusMessage
+from ContainerUtil.Type import StartContainerMessage, StopContainerMessage
 from EnvironmentUtil.Type import ROSAddMessage, ROSRemoveMessage, ROSUserMessage, ROSMsgMessage
 from MasterUtil.Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 
-from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor #, ContainerStatusProcessor
+from Processor import ConnectDirectiveProcessor, GetCommIDProcessor, ROSMsgProcessor
 
-from DBUtil.DBInterface import DBInterface
+#from DBUtil.DBInterface import DBInterface
 
 from Converter.Core import Converter
 
@@ -69,7 +69,7 @@ class ServerManager(ManagerBase):
         super(ServerManager, self).__init__(commManager)
         
         # References used by the manager
-        self._dbInterface = DBInterface(commManager)   # TODO: Atm not used!
+        #self._dbInterface = DBInterface(commManager)   # TODO: Atm not used!
         self._loader = Loader()
         self._converter = Converter()
         
@@ -100,19 +100,15 @@ class ServerManager(ManagerBase):
                                                        DelCommIDRequestMessage(),
                                                        StartContainerMessage(),
                                                        StopContainerMessage(),
-                                                       #ContainerStatusMessage(),    # <- necessary?
                                                        rosAdd,
                                                        ROSRemoveMessage(),
                                                        ROSUserMessage(),
                                                        ROSMsgMessage() ])
-        # TODO: Check if all these Serializers are necessary
         
         # Register Message Processors
         self._commManager.registerMessageProcessors([ ConnectDirectiveProcessor(self),
                                                       GetCommIDProcessor(self),
-                                                      #ContainerStatusProcessor(self),
                                                       ROSMsgProcessor(self) ])
-        # TODO: Add all valid messages
     
     @property
     def loader(self):
@@ -246,7 +242,7 @@ class ServerManager(ManagerBase):
                                           MsgTypes.ROS_MSG ])
         #self.reactor.connectSSL(ip, port, factory, self._ctx)
         self.reactor.connectTCP(ip, settings.PORT_SATELLITE_SATELLITE, factory)
-        # TODO: Set to SSL
+        # TODO: Switch to SSL
     
     def connectToServers(self, servers):
         """ Callback for MessageProcessor to connect to specified servers.
