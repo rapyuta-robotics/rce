@@ -66,18 +66,3 @@ class StopContainerMessage(object):
     
     def deserialize(self, s):
         return { 'commID' : s.getElement() }
-
-class ContainerStatusMessage(object):
-    """ Message type to # TODO: What exactly is this message used for?
-    """
-    implements(IContentSerializer)
-    
-    IDENTIFIER = MsgTypes.CONTAINER_STATUS
-    
-    def serialize(self, s, data):
-        # TODO: What is part of the message
-        return ''
-    
-    def deserialize(self, data):
-        # TODO: What is part of the message
-        return {}

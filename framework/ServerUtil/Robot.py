@@ -34,7 +34,13 @@ class Robot(object):
     def __init__(self, commMngr, serverMngr, connection, robotID):
         """ Initialize the Robot.
             
-            # TODO: Add description
+            @param commMngr:    CommManager which is used in this node.
+            @type  commMngr:    CommManager
+            
+            @param serverMngr:  ServerManager which is used in this node.
+            @type  serverMngr:  ServerManager
+            
+            # TODO: Will change with addition of multiple robots using same Robot instance.
         """
         self._commManager = commMngr
         self._serverManager = serverMngr
@@ -52,46 +58,24 @@ class Robot(object):
         return self._robotID
     
     def createContainer(self, containerTag):
-##        def processRobotSpecs(results):
-##            if not (results[0][0] and results[1][0]):
-##                log.msg('Could not get necessary data to start a new container.')
-##                return
-##            
-##            homeFolder = results[0][1]
-##            commID = results[1][1]
-##            
-##            if not validateAddress(commID):
-##                log.msg('The CommID is not a valid address.')
-##                return
-##            
-##            if commID in self._containers:
-##                log.msg('There is already a container with the same CommID.')
-##                return
-##            
-##            if not os.path.isdir(homeFolder):
-##                log.msg('The home folder is not a valid directory.')
-##                return
-        commID = 'TESTID'
-
-        container = Container( self._commManager,
-                               self._serverManager,
-                               self,
-                               containerTag,
-                               commID )
+        def _createContainer(commID):
+            container = Container( self._commManager,
+                                   self._serverManager,
+                                   self,
+                                   containerTag,
+                                   commID )
+            
+            # Send request to start the container
+            container.start()
+            
+            # Register container in this robot instance
+            self._containers[containerTag] = container
+            
+            # Register container in the manager
+            self._serverManager.registerContainer(container)
         
-        # Send request to start the container
-        container.start()
-        
-        # Register container in this robot instance
-        self._containers[containerTag] = container
-        
-        # Register container in the manager
-        self._serverManager.registerContainer(container)
-        
-##        deferredRobot = self._serverManager.getRobotSpecs(self._robotID)
-##        deferredCommID = self._serverManager.getNewCommID()
-##        deferredList = DeferredList([deferredRobot, deferredCommID])
-##        deferredList.addCallback(processRobotSpecs)
+        deferred = self._serverManager.getNewCommID()
+        deferred.addCallback(_createContainer)
     
     def destroyContainer(self, containerTag):
         container = self._containers.pop(containerTag)

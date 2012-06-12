@@ -173,7 +173,7 @@ class CommManager(object):
         if msg.msgType in self._processors:
             self._processors[msg.msgType].processMessage(msg)
         else:
-            log.msg('Received a message whose type can not be handled by this CommManager.')
+            log.msg('Received a message whose type ("{0}") can not be handled by this CommManager.'.format(msg.msgType))
     
     def shutdown(self):
         """ Method which should be used when the CommManager is terminated.

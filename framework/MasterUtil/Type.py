@@ -68,7 +68,7 @@ class GetCommIDResponseMessage(object):
     """
     implements(IContentSerializer)
     
-    IDENTIFIER = MsgTypes.ID_REQUEST
+    IDENTIFIER = MsgTypes.ID_RESPONSE
     
     def serialize(self, s, data):
         s.addElement(data['commID'])
@@ -92,6 +92,7 @@ class DelCommIDRequestMessage(object):
     def deserialize(self, s):
         return { 'commID' : s.getElement() }
 
+# TODO: Atm not used!
 class LoadInfoMessage(object):
     """ Message type to provide the load balancer with the necessary information.
     """
@@ -100,7 +101,7 @@ class LoadInfoMessage(object):
     IDENTIFIER = MsgTypes.LOAD_INFO
     
     def serialize(self, s, data):
-        pass # TODO: Add
+        pass
     
     def deserialize(self, data):
-        pass # TODO: Add
+        pass

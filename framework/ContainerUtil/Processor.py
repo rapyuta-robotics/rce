@@ -47,7 +47,7 @@ class StartContainerProcessor(ContainerProcessorBase):
     
     def processMessage(self, msg):
         msg = msg.content
-        self.manager.startContainer(msg['commID'], msg['home'])
+        self.manager.startContainer(msg['commID'])
 
 class StopContainerProcessor(ContainerProcessorBase):
     """ Message processor to stop a container.

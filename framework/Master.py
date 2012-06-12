@@ -116,7 +116,9 @@ def main(reactor):
     factory = MasterServerFactory( commManager,
                                    masterManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,  # TODO: <- Necessary?
-                                      MsgTypes.LOAD_INFO ])
+                                      MsgTypes.LOAD_INFO,
+                                      MsgTypes.ID_REQUEST,
+                                      MsgTypes.ID_DEL ])
     #reactor.listenSSL(settings.PORT_MASTER, factory, ctx)
     reactor.listenTCP(settings.PORT_MASTER, factory)
     

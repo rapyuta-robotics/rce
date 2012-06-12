@@ -72,7 +72,7 @@ def main(reactor, ip, uid):
     
     log.msg('Start initialization...')
     commID = MsgDef.PREFIX_PUB_ADDR + uid
-    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
+    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: Switch to SSL
     
     # Create Manager
     commManager = CommManager(reactor, commID)
@@ -112,7 +112,8 @@ def main(reactor, ip, uid):
                                         MsgDef.MASTER_ADDR,
                                         BaseRoutingTrigger(commManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
-                                      MsgTypes.CONNECT ])
+                                      MsgTypes.CONNECT,
+                                      MsgTypes.ID_RESPONSE ])
     #reactor.connectSSL(ip, settings.PORT_MASTER, factory, ctx)
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
@@ -137,7 +138,7 @@ def _get_argparse():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(prog='Server',
-                            description='# TODO: Add description')
+                            description='Responsible for communication in one machine for the framework.')
 
     parser.add_argument('uid', help='Unique ID which is used to identify this machine.')
     parser.add_argument('ip', type=str, help='IP address of the Master node.')

@@ -41,7 +41,28 @@ class Interface(object):
     def __init__(self, serverMngr, container, tag, rosAddr, msgType, interfaceType):
         """ Initialize the Interface.
             
-             # TODO: Add description
+            @param serverMngr:      ServerManager which is used in this node.
+            @type  serverMngr:      ServerManager
+            
+            @param container:       Container to which this interface belongs.
+            @type  container:       Container
+            
+            @param tag:         Tag which is used to identify this interface.
+            @type  tag:         str
+            
+            @param rosAddr:     Address which is used for the interface in the ROS
+                                environment, i.e. '/namespace/interaceName'.
+            @type  rosAddr:     str
+            
+            @param msgType:     Message type of the form package/messageClass, i.e.
+                                'std_msgs/Int8'.
+            @type  msgType:     str
+            
+            @param interfaceType:   Interface type; valid values are:
+                                        service, publisher, subscriber
+            @type  interfaceType:   str
+            
+            @raise:     InvalidRequest, InternalError
         """
         self._container = container
         self._tag = tag
@@ -49,6 +70,7 @@ class Interface(object):
         self._msgType = msgType
         self._interfaceType = interfaceType
         self._converter = serverMngr.converter
+        self._ref = []
         
         try:
             container.reserveAddr(rosAddr)
@@ -72,11 +94,13 @@ class Interface(object):
             self._fromMsgCls = serverMngr.loader.loadMsg(*args)
         else:
             raise ValueError('"{0}" is not a valid interface type.'.format(interfaceType))
-        
-        self._ref = []
     
     def validate(self, tag, rosAddr, msgType, interfaceType):
-        """ # TODO: Add description
+        """ Method is used to check whether this interface matches the given
+            configuration or not. For an argument description refer to __init__.
+            
+            @return:    True if the interface matches the given configuration:
+                        False otherwise.
         """
         return ( tag == self._tag and
                  rosAddr == self._rosAddr and
@@ -101,7 +125,14 @@ class Interface(object):
         self._container.send(msg)
     
     def registerUser(self, target, commID):
-        """ # TODO: Add description
+        """ Register a user such that he is allowed to use this interface.
+            
+            @param target:      Tag which is used to identify the user/interface who
+                                is permitted to use the interface.
+            @type  target:      str
+            
+            @param commID:      Communication ID where the target is coming from.
+            @type  commID:      str
         """
         if not self._ref:
             # There are no references to this interface so far; therefore, add it
@@ -118,7 +149,14 @@ class Interface(object):
         self._ref.append((target, commID))
     
     def unregisterUser(self, target, commID):
-        """ # TODO: Add description
+        """ Unregister a user such that he is no longer allowed to use this interface.
+            
+            @param target:      Tag which is used to identify the user/interface who
+                                is no longer permitted to use the interface.
+            @type  target:      str
+            
+            @param commID:      Communication ID where the target is coming from.
+            @type  commID:      str
         """
         self._ref.remove((target, commID))
         
@@ -135,7 +173,7 @@ class Interface(object):
             self._container.send(msg)
     
     def send(self, clientMsg, sender):
-        """ # TODO: Add description
+        """ Send a ROS message to the represented Interface.
             
             @param clientMsg:   Corresponds to the dictionary of the field 'data' of the received
                                 message. (Necessary keys: type, msgID, msg)
@@ -165,7 +203,7 @@ class Interface(object):
         self._container.send(msg)
     
     def receive(self, msg):
-        """ # TODO: Add description
+        """ Process a received ROS message from the represented Interface.
             
             @param msg:     Content of received ROS message.
             @type  msg:     { str : ... }

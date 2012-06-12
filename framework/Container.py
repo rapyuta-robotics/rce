@@ -43,7 +43,7 @@ def main(reactor, uid):
     
     log.msg('Start initialization...')
     commID = MsgDef.PREFIX_PRIV_ADDR + uid
-    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: ???
+    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: Switch to SSL
     
     # Create Manager
     commManager = CommManager(reactor, commID)
@@ -74,7 +74,7 @@ def _get_argparse():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(prog='ContainerManager',
-                            description='# TODO: Add description')
+                            description='Manager of the containers in one machine for the framework.')
 
     parser.add_argument('uid', help='Unique ID which is used to identify this machine.')
 

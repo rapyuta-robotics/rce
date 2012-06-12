@@ -52,10 +52,10 @@ class ConnectDirectiveProcessor(ServerProcessorBase):
 class GetCommIDProcessor(ServerProcessorBase):
     """ Message processor for a getCommID request.
     """
-    IDENTIFIER = MsgTypes.ID_REQUEST
+    IDENTIFIER = MsgTypes.ID_RESPONSE
     
     def processMessage(self, msg):
-        self.manager.setNewCommId(msg.content['commID'])
+        self.manager.setNewCommID(msg.content['commID'])
 
 class ROSMsgProcessor(ServerProcessorBase):
     """ Message processor to handle and convert a ROS message for forwarding to robot.
@@ -64,12 +64,3 @@ class ROSMsgProcessor(ServerProcessorBase):
     
     def processMessage(self, msg):
         self.manager.receivedROSMessage(msg)
-
-### TODO: Not used
-class ContainerStatusProcessor(ServerProcessorBase):
-    """ # TODO: Add description
-    """
-    IDENTIFIER = MsgTypes.CONTAINER_STATUS
-    
-    def processMessage(self, msg):
-        pass # TODO: Add
