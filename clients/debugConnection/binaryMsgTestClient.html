@@ -74,12 +74,26 @@ function onmessage(event) {
 		
 	}else{
 		console.log('Info: received a non-blob');
+		
+		}
 	}
 };
 
-function sendMsg(){
-	webSocket.send(document.getElementById('msg').value);
-	console.log('Info: sent message');
+
+var blobToSend; 
+var blobReady = false;
+
+function sendImageMsg(){
+	if(blobReady){
+		//send JSON with UUID
+		webSocket.send(document.getElementById('JSONImageMsg').value);
+		
+		//send Blob
+		webSocket.send(blobToSend);
+		blobReady = False;
+	}else{
+		console.log('Blob is not ready to send');
+	}
 }
 
 function handleFileSelect(evt) {
@@ -97,12 +111,15 @@ function handleFileSelect(evt) {
 		localFileReader.onload = function(event) {
 			console.log('Info: Local file successfully loaded');
 			uuidStr = uuid();
-			console.log('Info: UUID - '+uuidStr+', length - '+uuidStr.length);
-			console.log('Info: type ['+typeof(localFileReader.result)+']');
+
+			//load JSON with UUID into text box
+			txtJSON = '{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"Test/modifyImage","msg":{"data":'+uuidStr+'}}}';	
+			document.getElementById('JSONImageMsg').value = txtJSON;		
 			
-			var b = Blob([uuidStr, localFileReader.result]); //this fails in chromium
+			blobToSend = Blob([uuidStr, localFileReader.result]); //this fails in chromium
 			//webSocket.send(localFileReader.result); //to just send the file
-			webSocket.send(b);
+			//webSocket.send(b);
+			blobReady = true;
 			console.log('Info: '+localFileReader.result.byteLength+' bytes of data sent to rce')
 		};
 		
@@ -129,13 +146,13 @@ function uuid() {
 </script>
 
 <body>
-<textarea rows="3" cols="25" id='msg'></textarea> <br>
-<button onclick='sendMsg(); return false'>send</button> <br><br>
 
-<input type="file" id="files" name="files[]"/><br> <!--[multiple] before closing tags allows you to load multiple files -->
-
-<br>
-
+<br>---------------------------<br>
+<input type="file" id="files" name="files[]"/><br> 
+<textarea rows="5" cols="40" id='JSONImageMsg'></textarea> <br>
+<button onclick='sendImageMsg(); return false'>send sensor_msgs/Image</button> <br>
+<br>---------------------------<br>
+Retreived image:<br>
 <canvas id="myCanvas"  width="640" height="480"></canvas>
 </body>
 </html>

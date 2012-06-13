@@ -62,7 +62,7 @@ var webSocket = null;
 var receivedMsgNum = 0;
 
 //generate dummyID for the robot
-var robotUniqueID = guidGenerator();
+var robotUniqueID = "robotUniqueID";
 
 var robotStatus = "Not connected";
 var containerID = "--";
@@ -86,6 +86,24 @@ cmd_CH.data=CH_data;
 
 window.onload = function() {
 	document.getElementById('wsuri').value = wsuri; //default value
+	
+	// Check for the file API support.
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+  	console.log('Info: All the File APIs are supported.');
+	} else {
+  	console.log('Warn: The File APIs are not fully supported in this browser.');
+	}
+	
+	//file event listener
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	
+	//image canvas
+	canvas = document.getElementById("myCanvas");
+	context = canvas.getContext("2d");
+	imageObj = new Image();
+	imageObj.onload = function() {
+		context.drawImage(imageObj, 0, 0);
+	}
 }
 
 function connectToRCE() {
@@ -98,11 +116,53 @@ function connectToRCE() {
 		//Firefox currently prefixes the WebSocket object
 		webSocket = new MozWebSocket(wsuri);
 	}
+	webSocket.onmessage = onmessage;
 	
-	webSocket.onmessage = function(e) {
-		receivedMsgNum += 1;
-		var infoString = 'received message # '+receivedMsgNum+'\r\n';
-		document.getElementById('receiverConsole').value = (infoString + e.data + '\r\n---\r\n\r\n') + document.getElementById('receiverConsole').value;
+	webSocket.onopen = function() {
+		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+		console.log('connection open.')
+	};
+}
+
+function onmessage(event) {
+	console.log('== Message from RCE ==');
+	
+	if (event.data instanceof Blob) {
+		console.log('Info: received a Blob');
+		var rceMsgReader = new FileReader();
+		var textReader = new FileReader();
+		rceMsgReader.onerror = function(event) {
+			console.log('Error: Failed to read the rce message');
+		};
+		textReader.onload = function(event) {
+			console.log('Info: UUID from RCE - '+textReader.result);
+		};
+		
+		rceMsgReader.onload = function(event) {
+			console.log('Info: loaded blob as dataURL');
+			
+			//now draw the image in the browser
+			
+			var imageDataURL = rceMsgReader.result;
+			if (imageDataURL.indexOf("data:base64,") == 0){
+				//mime is missing - chrome gonna complain
+				imageDataURL = "data:image/png;base64," + imageDataURL.slice(12,imageDataURL.length);
+				console.log('MIME is missing .. but fixed.');		
+			}
+			
+			imageDataURL = imageDataURL.replace('application/octet-stream','image/png');
+			imageObj.src = imageDataURL;
+		};
+
+		uidBlob = event.data.slice(1,32,'text')
+		textReader.readAsText(uidBlob);
+		imageBlob = event.data.slice(32,event.data.size,'image/png')
+		rceMsgReader.readAsDataURL(imageBlob);
+		
+	}else{
+		console.log('Info: received a non-blob');
+		
+		document.getElementById('receiverConsole').value = ('== Message from RCE ==\r\n' + event.data + '\r\n---\r\n\r\n') + document.getElementById('receiverConsole').value;
 		//if message is a CSR update container ID
 		var msg = jQuery.parseJSON(e.data)
 		if(msg.type == "CSR"){
@@ -111,12 +171,8 @@ function connectToRCE() {
 			 updateContainerID(msg.data.containerID);
 		}
 	}
-	
-	webSocket.onopen = function() {
-		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
-		console.log('connection open.')
-	};
 }
+
 
 function sendCommand() {
 	var okToSend = true;
@@ -163,16 +219,67 @@ function sendCommand() {
 	}
 }
 
-function guidGenerator() {
-	var S4 = function() {
-		return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-	};
-	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+//////////////////////////////////////////////////////////////////////
+/////////////////																	////////////////////
+/////////////////				Binary Msg Upload 				////////////////////
+/////////////////																	////////////////////
+//////////////////////////////////////////////////////////////////////
+
+var blobToSend; 
+var blobReady = false;
+
+function sendImageMsg(){
+	if(blobReady){
+		//send JSON with UUID
+		webSocket.send(document.getElementById('JSONImageMsg').value);
+		
+		//send Blob
+		webSocket.send(blobToSend);
+		blobReady = false;
+	}else{
+		console.log('Blob is not ready to send');
+	}
 }
 
-function loadCS(){
-  jsonStr = JSON.stringify(cmd_CS);
-  SetCommand(jsonStr);
+function handleFileSelect(evt) {
+	var files = evt.target.files; 
+	//getting only the first file
+	console.log(files[0].type);
+	
+	if (files[0].type == 'image/png'){
+		console.log('Correct file type');
+		var localFileReader = new FileReader();
+
+		localFileReader.onerror = function(event) {
+			console.log('Error: Failed to read the file');
+		};
+		localFileReader.onload = function(event) {
+			console.log('Info: Local file successfully loaded');
+			uuidStr = uuid();
+
+			//load JSON with UUID into text box
+			txtJSON = '{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"Test/modifyImage","msg":{"data":'+uuidStr+'}}}';	
+			document.getElementById('JSONImageMsg').value = txtJSON;		
+			
+			blobToSend = Blob([uuidStr, localFileReader.result]); //this fails in chromium
+			blobReady = true;
+
+		};
+		
+		localFileReader.readAsArrayBuffer(files[0]);
+		//localFileReader.readAsDataURL(files[0]);
+	}else{
+		console.log('Error: Please choose a image/png file');
+	}
+}
+
+function uuid() {
+  var uuid = "", i, random;
+  for (i = 0; i < 32; i++) {
+    random = Math.random() * 16 | 0;
+    uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+  }
+  return uuid;
 }
 
 function loadCH(){
@@ -337,7 +444,15 @@ function updateContainerID(id){
       <b>Robot Status:</b> <div id='robotStatus'>Not connected</div>
       <b>container ID:</b> <div id='containerID'>--</div>
       <b>Error:</b> <div id='errorMsg'>--</div>
-      <button onclick='clearErrorMsg(); return false'>clear</button>
+      <button onclick='clearErrorMsg(); return false'>clear</button><br>
+      
+      ---<br>
+      <h4>sensor_msgs/Image test</h4>
+			<input type="file" id="files" name="files[]"/><br> 
+			<textarea rows="5" cols="40" id='JSONImageMsg'></textarea> <br>
+			<button onclick='sendImageMsg(); return false'>send sensor_msgs/Image</button> <br>
+      
+      
 		</div>
 		<div class="col2">
 			<br>
@@ -347,6 +462,10 @@ function updateContainerID(id){
 			<br>
       <br>Cloud Engine Response (JSON)<br>
 			<textarea rows="40" cols="40" id='receiverConsole'></textarea><br>
+			---<br>
+			<h4>sensor_msgs/Image test</h4>
+			Retreived image:<br>
+<canvas id="myCanvas"  width="640" height="480"></canvas>
 		</div> 
 	</div> 
 	<div class="footer">
