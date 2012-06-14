@@ -119,7 +119,7 @@ class Robot(object):
             @type  status:      bool
         """
         self._conn.sendMessage({ 'type' : ClientMsgTypes.STATUS_CONTAINER,
-                                 'dest' : self.connction.robotID,
+                                 'dest' : self._robotID,
                                  'orig' : '$$$$$$',
                                  'data' : { containerTag : status } })
     

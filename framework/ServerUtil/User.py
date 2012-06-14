@@ -329,10 +329,7 @@ class User(object):
             @type  msg:     { str : ... }
         """
         try:
-            self._robots[robotID].sendMessage({ 'type' : ClientMsgTypes.MESSAGE,
-                                                'dest' : robotID,
-                                                'orig' : containerTag,
-                                                'data' : msg })
+            self._robots[robotID].sendROSMsgToRobot(containerTag, msg)
         except KeyError:
             raise InternalError('Connection to robot does not not exist.')
     
@@ -349,7 +346,4 @@ class User(object):
             @type  status:      bool
         """
         for robotID, robot in self._robots.iteritems():
-            robot.sendMessage({ 'type' : ClientMsgTypes.STATUS_CONTAINER,
-                                'dest' : robotID,
-                                'orig' : '$$$$$$',
-                                'data' : { containerTag : status } })
+            robot.sendContainerUpdate(containerTag, status)
