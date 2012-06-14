@@ -27,10 +27,10 @@ print(cmd_CSR_js)
 
 # Configuration Message - Distroy Container
 cmd_CH = {
-  "type":"CH",
-  "dest":"$$$$$$",
+            "type":"CH",
+            "dest":"$$$$$$",
             "orig":"robotUniqueID",  
-            "data":{"containerID":"cid"}
+            "data":{"containerTag":"cTag"}
             }
 
 cmd_CH_js = json.dumps(cmd_CH)
@@ -40,7 +40,7 @@ print(cmd_CH_js)
 # Configuration Message - Change Components - For a specific container 
 nodeConfigs = [{
     "pkg":"name of package",
-    "exe":"name of executable"
+    "exe":"name of executable",
     "nodeTag":"nn",
     "namespace":"ns",
     }]
@@ -70,7 +70,7 @@ cmd_CC_js = json.dumps(cmd_CC)
 print(cmd_CC_js)
 
 cmd_CI = {
-			"type":"CL",
+            "type":"CL",
             "dest":"containerTag",
             "orig":"robotUniqueID",
             "data":{

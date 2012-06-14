@@ -43,7 +43,7 @@
 {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}],"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
 
 
-=== Activate Interface ===
+=== Register Interface ===
 
 {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"Test/addInt":true,"Test/getSum":true}}
 

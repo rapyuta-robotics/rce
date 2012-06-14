@@ -29,7 +29,7 @@
         CH      Destroy a container
         
         CC      Change a ROS component (Node, Parameter, Interface)
-        CI      Activate/Deactivate an Interface
+        CI      register/unregister from an Interface
         
         CM      ROS Message
 """
