@@ -25,17 +25,18 @@ except ImportError:
 # Custom imports
 import settings
 from Exceptions import InvalidRequest
-from Robot import Robot
 import ClientMsgTypes
+from Robot import Robot
 
 class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the reCloudEngine.
     """
-    def __init__(self, commManager, serverManager):
+    def __init__(self, serverManager):
         """ Initialize the Protocol.
         """
-        self._commManager = commManager
         self._serverManager = serverManager
+        
+        self._user = None
         self._robot = None
         self._incompleteMsgs = []   # List of tuples (incompleteMsg, incompleteURIList, arrivalTime)
         
@@ -60,26 +61,37 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         data = msg['data']
         
-        if msg['type'] == ClientMsgTypes.CREATE_CONTAINER:
-            if not self._robot:
-                self._robot = Robot(self._commManager, self._serverManager, self, msg['orig'])
-            self._robot.createContainer(data['containerTag'])
+        # Check if there is a robot associated with this connection
+        if not self._robot or not self._user:
+            # TODO: At the moment dummy implementation
+            self._user = self._serverManager.getUser('', '')
+#            if msg['type'] == ClientMsgTypes.INIT:
+#                self._user = self._serverManager.getUser(data['name'], data['key'])
+#            else:
+#                raise ValueError('First message has to be an INIT message.')
+            self._robot = Robot(self._user, msg['orig'], self)
+            self._user.registerRobot(self._robot)
         
+        # TODO: In the future this should go to the master/load balancer first
+        if msg['type'] == ClientMsgTypes.CREATE_CONTAINER:
+            self._user.createContainer(data['containerTag'])
+        
+        # TODO: In the future this should go to the master/load balancer first
         elif msg['type'] == ClientMsgTypes.DESTROY_CONTAINER:
-            self._robot.destroyContainer(data['containerTag'])
+            self._user.destroyContainer(data['containerTag'])
         
         elif msg['type'] == ClientMsgTypes.CHANGE_COMPONENT:
             if 'addNodes' in data:
                 for node in data['addNodes']:
-                    self._robot.addNode(msg['dest'], node['nodeTag'], node['pkg'], node['exe'], node['namespace'])
+                    self._user.addNode(msg['dest'], node['nodeTag'], node['pkg'], node['exe'], node['namespace'])
                 
             if 'removeNodes' in data:
                 for nodeTag in data['removeNodes']:
-                    self._robot.removeNode(msg['dest'], nodeTag)
+                    self._user.removeNode(msg['dest'], nodeTag)
                 
             if 'addInterfaces' in data:
                 for interfaceConfig in data['addInterfaces']:
-                    self._robot.addInterface( msg['dest'],
+                    self._user.addInterface( msg['dest'],
                                               interfaceConfig['name'],  # <- Interface Tag for simplicity equal to inteface name!
                                               interfaceConfig['name'],
                                               interfaceConfig['interfaceType'],
@@ -87,15 +99,15 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
 
             if 'removeInterfaces' in data:
                 for interfaceTag in data['removeInterfaces']:
-                    self._robot.removeInterface(msg['dest'], interfaceTag)
+                    self._user.removeInterface(msg['dest'], interfaceTag)
 
             if 'setParam' in data:
                 for param in  data['setParam']:
-                    self._robot.addParameter(msg['dest'], param['paramName'] , param['paramValue'],  param['paramType'])
+                    self._user.addParameter(msg['dest'], param['paramName'] , param['paramValue'],  param['paramType'])
                     
             if 'deleteParam' in data:
                 for paramName in data['deleteParam']:
-                    self._robot.removeParameter(msg['dest'], paramName)
+                    self._user.removeParameter(msg['dest'], paramName)
         
         elif msg['type'] == ClientMsgTypes.INTERFACE_STATE:
             for interfaceTag, activate in data.iteritems():
@@ -110,8 +122,10 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 self._incompleteMsgs.append((msg, uriList, datetime.now()))
             else:
                 self._robot.sendROSMsgToContainer(msg['dest'], data)
+        elif msg['type'] == ClientMsgTypes.INIT:
+            raise InvalidRequest('Connection is already initialized.')
         else:
-            raise InvalidRequest('This type is not supported')
+            raise InvalidRequest('This type is not supported.')
     
     def _binaryMsgHandle(self, msg):
         """ Internally used method to handle incoming binary messages.
@@ -180,7 +194,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         return uriBinary, multidict
     
     def sendMessage(self, msg):
-        """ This method is called by the Robot instance to send a message to the robot.
+        """ This method is called by the User instance to send a message to the robot.
             
             @param msg:     Message which should be sent
         """
@@ -190,11 +204,15 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         
         for binData in URIBinary:
             WebSocketServerProtocol.sendMessage(self, binData[0] + binData[1].getvalue(), binary=True)
-            
-    def connectionLost(self, reason):
-        """ Method is called by the twisted engine when the connection has been lost.
+    
+    def onClose(self, wasClean, code, reason):
+        """ Method is called by the autobahn engine when the connection has been lost.
         """
-        self._robot = None
+        if self._robot and self._user:
+            self._robot.close()
+            self._user.unregisterRobot(self._robot)
+            self._robot = None
+            self._user = None
     
     def _cleanUp(self):
         """ Internally used method to remove old incomplete messages.
@@ -212,17 +230,16 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
 class WebSocketCloudEngineFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the reCloudEngine.
     """
-    def __init__(self, commManager, serverManager, url):
+    def __init__(self, serverManager, url):
         """ Initialize the Factory.
         """
         WebSocketServerFactory.__init__(self, url)
         
-        self._commManager = commManager
         self._serverManager = serverManager
     
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection attempt is made.
         """
-        p = WebSocketCloudEngineProtocol(self._commManager, self._serverManager)
+        p = WebSocketCloudEngineProtocol(self._serverManager)
         p.factory = self
         return p

@@ -70,7 +70,7 @@ class Interface(object):
         self._msgType = msgType
         self._interfaceType = interfaceType
         self._converter = serverMngr.converter
-        self._ref = []
+        self._ref = set()
         
         try:
             container.reserveAddr(rosAddr)
@@ -146,7 +146,7 @@ class Interface(object):
                         'add'    : True }
         self._container.send(msg)
         
-        self._ref.append((target, commID))
+        self._ref.add((target, commID))
     
     def unregisterUser(self, target, commID):
         """ Unregister a user such that he is no longer allowed to use this interface.
@@ -216,10 +216,11 @@ class Interface(object):
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
-        self._container.receivedFromInterface({ 'type'         : self._msgType, 
-                                                'msgID'        : msg['uid'],
-                                                'interfaceTag' : msg['tag'],
-                                                'msg'          : jsonMsg })
+        self._container.receivedFromInterface( msg['user'],
+                                               { 'type'         : self._msgType, 
+                                                 'msgID'        : msg['uid'],
+                                                 'interfaceTag' : msg['tag'],
+                                                 'msg'          : jsonMsg } )
     
     def __del__(self):
         """ Destructor.

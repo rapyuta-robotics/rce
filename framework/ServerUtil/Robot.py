@@ -23,252 +23,69 @@
 #       
 
 # Custom imports
-from Exceptions import InvalidRequest
-from Container import Container
+from Exceptions import InvalidRequest, InternalError
 import ClientMsgTypes
 
 class Robot(object):
-    """ Class which represents a robot. It is associated with a websocket connection.
-        A robot can have multiple containers.
+    """ Class which represents a robot. A robot has a single websocket connection
+        and a single User instance.
     """
-    def __init__(self, commMngr, serverMngr, connection, robotID):
+    def __init__(self, user, robotID, conn):
         """ Initialize the Robot.
             
-            @param commMngr:    CommManager which is used in this node.
-            @type  commMngr:    CommManager
+            @param user:    User to which this Robot belongs.
+            @type  user:    User
             
-            @param serverMngr:  ServerManager which is used in this node.
-            @type  serverMngr:  ServerManager
+            @param robotID:     ID of the represented robot.
+            @type  robotID:     str
             
-            # TODO: Will change with addition of multiple robots using same Robot instance.
+            @param conn:    Connection to the robot.
+            @type  conn:    WebSocketCloudEngineProtocol
         """
-        self._commManager = commMngr
-        self._serverManager = serverMngr
-        self._connection = connection
+        self._user = user
         self._robotID = robotID
+        self._conn = conn
         
-        self._containers = {}
-        
-        # Register robot with Server Manager
-        self._serverManager.registerRobot(self)
+        self._activeInterfaces = set()
     
     @property
     def robotID(self):
         """ RobotID """
         return self._robotID
     
-    def createContainer(self, containerTag):
-        def _createContainer(commID):
-            container = Container( self._commManager,
-                                   self._serverManager,
-                                   self,
-                                   containerTag,
-                                   commID )
-            
-            # Send request to start the container
-            container.start()
-            
-            # Register container in this robot instance
-            self._containers[containerTag] = container
-            
-            # Register container in the manager
-            self._serverManager.registerContainer(container)
-        
-        deferred = self._serverManager.getNewCommID()
-        deferred.addCallback(_createContainer)
-    
-    def destroyContainer(self, containerTag):
-        container = self._containers.pop(containerTag)
-        container.stop()
-        self._serverManager.unregisterContainer(container)
-    
-    def addNode(self, containerTag, nodeTag, package, executable, namespace):
-        """ Add a node to the ROS environment in the container matching the
-            given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container in which the node should be added.
-            @type  containerTag:    str
-            
-            @param nodeTag:     Tag which is used to identify the ROS node which
-                                should added.
-            @type  nodeTag:     str
-
-            @param package:     Package name where the node can be found.
-            @type  package:     str
-
-            @param executable:  Name of executable which should be launched.
-            @type  executable:  str
-            
-            @param namespace:   Namesapce in which the node should be started
-                                in the environment.
-            @type  namespace:   str
-            
-            @raise:     InvalidRequest if the nodeName is not a valid ROS name.
-                        InvalidRequest if the container tag is not valid.
-        """
-        try:
-            self._containers[containerTag].addNode(nodeTag, package, executable, namespace)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
-    
-    def removeNode(self, containerTag, nodeTag):
-        """ Remove a node from the ROS environment in the container matching the
-            given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container from which the node should be removed.
-            @type  containerTag:    str
-            
-            @param nodeTag:     Tag which is used to identify the ROS node which
-                                should removed.
-            @type  nodeTag:     str
-            
-            @raise:     InvalidRequest if the container tag is not valid.
-        """
-        try:
-            self._containers[containerTag].removeNode(nodeTag)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
-    
-    def addInterface(self, containerTag, interfaceTag, address, interfaceType, className):
-        """ Add an interface to the container matching the given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container in which the interface should be added.
-            @type  containerTag:    str
-            
-            @param interfaceTag:    Tag which is used to identify the interface to add.
-            @type  interfaceTag:    str
-            
-            @param address:     ROS name/address which the interface should use.
-            @type  address:     str
-            
-            @param interfaceType:   Type of the interface. Valid types are 'service', 'publisher',
-                                    and 'subscriber'.
-            @type  interfaceType:   str
-            
-            @param className:   Message type/Service type consisting of the package and the name
-                                of the message/service, i.e. 'std_msgs/Int32'.
-            @type  className:   str
-            
-            @raise:     InvalidRequest if the container tag is not valid.
-        """
-        try:
-            self._containers[containerTag].addInterface(interfaceTag, address, className, interfaceType)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
-    
-    def removeInterface(self, containerTag, interfaceTag):
-        """ Remove an interface to the container matching the given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container from which the interface should be removed.
-            @type  containerTag:    str
-            
-            @param interfaceTag:    Tag which is used to identify the interface to remove.
-            @type  interfaceTag:    str
-            
-            @raise:     InvalidRequest if the container tag is not valid.
-        """
-        try:
-            self._containers[containerTag].removeInterface(interfaceTag)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
-    
     def activateInterface(self, containerTag, interfaceTag):
         """ Activate an interface to the container matching the given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container in which the interface should activated.
-            @type  containerTag:    str
-            
-            @param interfaceTag:    Tag which is used to identify the interface to activate.
-            @type  interfaceTag:    str
-            
-            @raise:     InvalidRequest if the container tag is not valid.
+            - Update the list of all activated interfaces.
+            - Forwards the call to the User instance. For more information refer to
+              the doc string of the User class.
         """
-        try:
-            self._containers[containerTag].activateInterface(interfaceTag, self._robotID, self._commManager.commID)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
+        self._activeInterfaces.add((containerTag, interfaceTag))
+        self._user.activateInterface(containerTag, interfaceTag, self._robotID)
     
     def deactivateInterface(self, containerTag, interfaceTag):
         """ Deactivate an interface to the container matching the given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container in which the interface should deactivated.
-            @type  containerTag:    str
-            
-            @param interfaceTag:    Tag which is used to identify the interface to deactivate.
-            @type  interfaceTag:    str
-            
-            @raise:     InvalidRequest if the container tag is not valid.
+            - Update the list of all activated interfaces.
+            - Forwards the call to the User instance. For more information refer to
+              the doc string of the User class.
         """
-        try:
-            self._containers[containerTag].deactivateInterface(interfaceTag, self._robotID, self._commManager.commID)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
-    
-    def addParameter(self, containerTag, name, value, paramType):
-        """ Add a parameter to the parameter server in the container matching the
-            given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container in which the parameter should be added.
-            @type  containerTag:    str
-            
-            @param name:    Name of the parameter which should be added.
-            @type  name:    str
-            
-            @param value:   Value of the parameter which should be added.
-            @type  value:   Depends on @param paramType
-            
-            @param paramType:   Type of the parameter to add. Valid options are:
-                                    int, str, float, bool, file
-            @type  paramType:   str
-            
-            @raise:     InvalidRequest if the name is not a valid ROS name.
-                        InvalidRequest if the container tag is not valid.
-        """
-        try:
-            self._containers[containerTag].addParameter(name, value, paramType)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
-    
-    def removeParameter(self, containerTag, name):
-        """ Remove a parameter from the parameter server in the container matching
-            the given container tag.
-            
-            @param containerTag:    Container tag which is used to identify the
-                                    container from which the parameter should be
-                                    removed.
-            @type  containerTag:    str
-            
-            @param name:    Name of the parameter which should be removed.
-            @type  name:    str
-            
-            @raise:     InvalidRequest if the container tag is not valid.
-        """
-        try:
-            self._containers[containerTag].removeParameter(name)
-        except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
+        interface = (containerTag, interfaceTag)
+        
+        if interface not in self._activeInterfaces:
+            return
+        
+        self._activeInterfaces.remove(interface)
+        self._deactivateInterface(containerTag, interfaceTag, self._robotID)
     
     def sendROSMsgToContainer(self, containerTag, msg):
         """ Method is called when a complete message has been received by the robot
             and should now be processed and forwarded.
-            
-            @param containerTag:    Container tag which is used to identify a previously
-                                    started container which should be used as message
-                                    destination.
-            @type  containerTag:    str
-            
-            @param msg:     Corresponds to the dictionary of the field 'data' of the received
-                            message. (Necessary keys: type, msgID, interfaceTag, msg)
-            @type  msg:     { str : ... }
+            Forwards the call to the User instance. For more information refer to
+            the doc string of the User class.
         """
-        self._containers[containerTag].sendToInterface(msg)
+        if msg['orig'] != self._robotID:
+            raise InvalidRequest('Can not use multiple RobotIDs with the same connection.')
+        
+        self._user.sendROSMsgToContainer(containerTag, msg)
     
     def sendROSMsgToRobot(self, containerTag, msg):
         """ Method is called when a message should be sent to the robot.
@@ -281,10 +98,13 @@ class Robot(object):
                             (Necessary keys: type, msgID, interfaceTag, msg)
             @type  msg:     { str : ... }
         """
-        self._connection.sendMessage({ 'type' : ClientMsgTypes.MESSAGE,
-                                       'dest' : self._robotID,
-                                       'orig' : containerTag,
-                                       'data' : msg })
+        try:
+            self._conn.sendMessage({ 'type' : ClientMsgTypes.MESSAGE,
+                                     'dest' : self._robotID,
+                                     'orig' : containerTag,
+                                     'data' : msg })
+        except KeyError:
+            raise InternalError('Connection to robot does not not exist.')
     
     def sendContainerUpdate(self, containerTag, status):
         """ Method is called when a container status update should be sent to
@@ -298,7 +118,18 @@ class Robot(object):
                                     True <=> Connected; False <=> Not Connected.
             @type  status:      bool
         """
-        self._connection.sendMessage({ 'type' : ClientMsgTypes.STATUS_CONTAINER,
-                                       'dest' : self._robotID,
-                                       'orig' : '$$$$$$',
-                                       'data' : { containerTag : status } })
+        self._conn.sendMessage({ 'type' : ClientMsgTypes.STATUS_CONTAINER,
+                                 'dest' : self.connction.robotID,
+                                 'orig' : '$$$$$$',
+                                 'data' : { containerTag : status } })
+    
+    def close(self):
+        """ Method is called when the underlying connection has been closed.
+        """
+        for containerTag, interfaceTag in self._activeInterfaces:
+            try:
+                self._deactivateInterface(containerTag, interfaceTag)
+            except InternalError:
+                pass
+        
+        self._activeInterfaces.clear()

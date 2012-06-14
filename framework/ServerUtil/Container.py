@@ -44,7 +44,7 @@ class Container(object):
     """ Class which represents a container. It is associated with a robot.
         A container can have multiple interfaces.
     """
-    def __init__(self, commMngr, serverMngr, robot, tag, commID):
+    def __init__(self, commMngr, serverMngr, user, tag, commID):
         """ Initialize the Container.
             
             @param commMngr:    CommManager which should be used to communicate.
@@ -53,8 +53,8 @@ class Container(object):
             @param serverMngr:   ServerManager which is used in this node.
             @type  serverMngr:   ServerManager
             
-            @param robot:       Robot instance to which this container belongs.
-            @type  robot:       Robot
+            @param user:        User instance to which this container belongs.
+            @type  user:        User
             
             @param tag:         Tag which is used by the robot to identify this container.
             @type  tag:         str
@@ -65,7 +65,7 @@ class Container(object):
         """
         self._commManager = commMngr
         self._serverManager = serverMngr
-        self._robot = robot
+        self._user = user
         self._tag = tag
         self._commID = commID
         
@@ -102,10 +102,10 @@ class Container(object):
                 raise InvalidRequest('Tried to set container to connected which already is registered as connected.')
             
             self._connected = True
-            self._robot.sendContainerUpdate(self._tag, True)
+            self._user.sendContainerUpdate(self._tag, True)
         else:
             self._connected = False
-            self._robot.sendContainerUpdate(self._tag, False)
+            self._user.sendContainerUpdate(self._tag, False)
     
     def start(self):
         """ Send a Request to start the container.
@@ -398,10 +398,6 @@ class Container(object):
         """
         msg = msg.content
         
-        if msg['user'] != self._robot.robotID:
-            log.msg('Received a ROS message from a container with an invalid destination.')
-            return
-        
         try:
             self._commManager.reactor.callInThread(
                 self._interfaces[msg['tag']].receive,
@@ -411,7 +407,7 @@ class Container(object):
             raise InternalError('Can not process received message. Interface does not exist.')
     
     def sendToInterface(self, msg):
-        """ Send a message to the interface matching the given tag. (Called by the Robot)
+        """ Send a message to the interface matching the given tag. (Called by the User)
             
             @param msg:     Corresponds to the dictionary of the field 'data' of the received
                             message. (Necessary keys: type, msgID, interfaceTag, msg)
@@ -421,18 +417,21 @@ class Container(object):
             self._commManager.reactor.callInThread(
                 self._interfaces[msg['interfaceTag']].send,
                 msg,
-                self._robot.robotID
+                self._user.robotID
             )
         except KeyError:
             raise InternalError('Can not send message. Interface does not exist.')
     
-    def receivedFromInterface(self, msg):
+    def receivedFromInterface(self, robotID, msg):
         """ Received a message from an interface and should now be processed.
             (Called by the Interface)
+            
+            @param robotID:     ID which is used to identify the receiving robot.
+            @type  robotID:     str
             
             @param msg:     Message which was received in form of a dictionary matching
                             the structure of the ROS message.
             @type  msg:     { str : ... }
         """
-        self._robot.sendROSMsgToRobot(self._tag, msg)
+        self._user.sendROSMsgToRobot(self._tag, robotID, msg)
 

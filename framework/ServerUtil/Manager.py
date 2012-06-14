@@ -52,6 +52,8 @@ from ROSComponents.Interface import ServiceInterface, PublisherInterface, Subscr
 from ROSComponents.Parameter import IntParam, StrParam, FloatParam, BoolParam, FileParam
 from ROSUtil import Loader
 
+from User import User
+
 class ServerManager(ManagerBase):
     """ Manager which is used for the servers nodes, which represent the communication
         relay for the container nodes on a single machine.
@@ -76,8 +78,10 @@ class ServerManager(ManagerBase):
         # SSL Context which is used to connect to other servers
         self._ctx = ctx
         
-        # Storage for all connected robots and all containers
-        self._robots = {}
+        # Storage for all active users in this node
+        self._users = { 'test' : User(commManager, self, 'test') }    # TODO: At the moment dummy implementation
+        
+        # Storage for all containers
         self._containers = {}
         
         # Storage for pending requests for a new CommID
@@ -121,36 +125,21 @@ class ServerManager(ManagerBase):
         return self._converter
     
     ##################################################
-    ### Robot
+    ### User
     
-    def registerRobot(self, robot):
-        """ Callback method for robots to register themselves with the manager.
-            
-            @param robot:   Robot which should be registered. The robot needs to have
-                            an unique robotID.
-            @type  robot:   Robot
-        """
-        uid = robot.robotID
-        
-        if uid in self._robots:
-            raise InvalidRequest('Robot with the same ID is already registered.')
-        
-        self._robots[uid] = robot
+    # TODO: Implement in the future
+    def addUser(self):
+        pass
     
-    # TODO: Needs to be called from somewhere!
-    def unregisterRobot(self, robot):
-        """ Unregister robot from the manager.
-            
-            @param robot:   Robot which should be unregistered. The robot needs to have
-                            an unique robotID.
-            @type  robot:   Robot
+    # TODO: Implement in the future
+    def removeUser(self):
+        pass
+    
+    # TODO: At the moment dummy implementation
+    def getUser(self, name, key):
+        """ At the moment a dummy function which returns always the same user.
         """
-        uid = robot.robotID
-        
-        if uid not in self._robots:
-            raise InvalidRequest('Robot is not registered.')
-        
-        del self._robots[uid]
+        return self._users['test']
     
     ##################################################
     ### Container

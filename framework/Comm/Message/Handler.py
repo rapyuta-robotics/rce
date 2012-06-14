@@ -194,8 +194,6 @@ class _Forwarder(_Receiver, _Sender):
     """ Forwarder for messages which implements the necessary interfaces such that it can
         be used by the RCEProtocol.
     """
-    implements(IConsumer, IRCEProducer)
-    
     def __init__(self, msgLen, origin, dest):
         """ Initialize the MessageHandler.
             

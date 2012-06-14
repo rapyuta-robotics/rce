@@ -31,7 +31,7 @@ from ThreadUtil import CentralizedLoop
 
 class SQLiteError(Exception):
     """ This error is raised if an error occurred in conjunction with
-        an SQLite database.
+        a SQLite database.
     """
     pass
 
