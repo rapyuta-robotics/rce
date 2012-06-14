@@ -98,7 +98,7 @@ class Router(object):
         """
         self._connections.pop(conn.dest, None)
         
-        # TODO: Fire an routeInfoUpdate event (probably only for selected connections)
+        # TODO: Fire a routeInfoUpdate event (probably only for selected connections)
         #       Only necessary in Server node; check if this is not done there.
     
     def registerProducer(self, producer, dest):

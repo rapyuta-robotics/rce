@@ -24,6 +24,8 @@
 
 """ Message Types of RCE Client Protocol:
         
+        IN      Initialize the connection
+        
         CS      Create a container
         CSR     Update on container status
         CH      Destroy a container
@@ -33,6 +35,8 @@
         
         CM      ROS Message
 """
+
+INIT = 'IN'
 
 CREATE_CONTAINER = 'CS'
 STATUS_CONTAINER = 'CSR'

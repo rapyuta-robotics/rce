@@ -31,7 +31,7 @@ import ComponentDefinition
 from Interfaces import ISerializable
 
 class _ParamBase(object):
-    """ Base class which represents an parameter for a node.
+    """ Base class which represents a parameter for a node.
     """
     implements(ISerializable)
     
