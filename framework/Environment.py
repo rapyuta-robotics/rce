@@ -61,7 +61,7 @@ def main(reactor, commID, serverID):
     
     # Client for connection to server
     factory = RCEClientFactory( commManager,
-                                        serverID )
+                                serverID )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE,
@@ -73,7 +73,7 @@ def main(reactor, commID, serverID):
     
     # Client for connection to launcher
     factory = RCEClientFactory( commManager,
-                                        MsgDef.LAUNCHER_ADDR )
+                                MsgDef.LAUNCHER_ADDR )
     #reactor.connectSSL('localhost', settings.PORT_LAUNCHER, factory, ClientContextFactory())
     reactor.connectTCP('localhost', settings.PORT_LAUNCHER, factory)
 

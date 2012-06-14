@@ -72,6 +72,9 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             self._robot = Robot(self._user, msg['orig'], self)
             self._user.registerRobot(self._robot)
         
+        if msg['orig'] != self._robot.robotID:
+            raise InvalidRequest('Can not use multiple RobotIDs with the same connection.')
+        
         # TODO: In the future this should go to the master/load balancer first
         if msg['type'] == ClientMsgTypes.CREATE_CONTAINER:
             self._user.createContainer(data['containerTag'])

@@ -84,15 +84,15 @@ def main(reactor, ip, uid):
     # Server for connections from the containers
     factory = EnvironmentServerFactory( commManager,
                                         serverManager )
-    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
-                                      MsgTypes.ROS_RESPONSE,
+    factory.addApprovedMessageTypes([ # MsgTypes.ROUTE_INFO,
+    #                                  MsgTypes.ROS_RESPONSE, # Only used in pull implementation
                                       MsgTypes.ROS_MSG ])
     #reactor.listenSSL(settings.PORT_SATELLITE_ENVIRONMENT, factory, ctx)
     reactor.listenTCP(settings.PORT_SATELLITE_ENVIRONMENT, factory)
     
     # Server for connections from other servers
     factory = RCEServerFactory( commManager,
-                                        ServerRoutingTrigger(commManager, serverManager) )
+                                ServerRoutingTrigger(commManager, serverManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_MSG ])
     #reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
@@ -100,25 +100,25 @@ def main(reactor, ip, uid):
     
     # Client for connection to Container Node
     factory = RCEClientFactory( commManager,
-                                        MsgDef.PREFIX_PRIV_ADDR + uid,
-                                        BaseRoutingTrigger(commManager) )
-    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
-                                      MsgTypes.CONTAINER_STATUS ])
+                                MsgDef.PREFIX_PRIV_ADDR + uid,
+                                BaseRoutingTrigger(commManager) )
+    #factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
+    #                                  MsgTypes.CONTAINER_STATUS ])
     #reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)
     reactor.connectTCP('localhost', settings.PORT_CONTAINER_MNGR, factory)
     
     # Client for connection to Master
     factory = RCEClientFactory( commManager,
-                                        MsgDef.MASTER_ADDR,
-                                        BaseRoutingTrigger(commManager) )
-    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
+                                MsgDef.MASTER_ADDR,
+                                BaseRoutingTrigger(commManager) )
+    factory.addApprovedMessageTypes([ # MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONNECT,
                                       MsgTypes.ID_RESPONSE ])
     #reactor.connectSSL(ip, settings.PORT_MASTER, factory, ctx)
     reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
     # Server for connections from robots, i.e. the web, brokered by the master node
-    listenWS(WebSocketCloudEngineFactory(commManager, serverManager, "ws://localhost:9000"))
+    listenWS(WebSocketCloudEngineFactory(serverManager, "ws://localhost:9000"))
     
     # Setup periodic calling of Load Balancer Updater
     log.msg('Add periodic call for Load Balancer Update.')

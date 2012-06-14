@@ -35,7 +35,7 @@ import shutil
 import settings
 from NodeManager import ManagerBase
 from Comm.Message import MsgDef
-from Type import StartContainerMessage, StopContainerMessage, ContainerStatusMessage
+from Type import StartContainerMessage, StopContainerMessage
 from Processor import StartContainerProcessor, StopContainerProcessor
 
 class LXCProtocol(ProcessProtocol):
@@ -101,8 +101,7 @@ class ContainerManager(ManagerBase):
         
         # Register Content Serializers
         self._commManager.registerContentSerializers([ StartContainerMessage(),
-                                                       StopContainerMessage(),
-                                                       ContainerStatusMessage() ])
+                                                       StopContainerMessage() ])
         
         # Register Message Processors
         self._commManager.registerMessageProcessors([ StartContainerProcessor(self),

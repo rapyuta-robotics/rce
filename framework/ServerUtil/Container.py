@@ -406,8 +406,11 @@ class Container(object):
         except KeyError:
             raise InternalError('Can not process received message. Interface does not exist.')
     
-    def sendToInterface(self, msg):
+    def sendToInterface(self, robotID, msg):
         """ Send a message to the interface matching the given tag. (Called by the User)
+            
+            @param robotID:     ID which is used to identify the sender of the message.
+            @type  robotID:     str
             
             @param msg:     Corresponds to the dictionary of the field 'data' of the received
                             message. (Necessary keys: type, msgID, interfaceTag, msg)
@@ -417,7 +420,7 @@ class Container(object):
             self._commManager.reactor.callInThread(
                 self._interfaces[msg['interfaceTag']].send,
                 msg,
-                self._user.robotID
+                robotID
             )
         except KeyError:
             raise InternalError('Can not send message. Interface does not exist.')
