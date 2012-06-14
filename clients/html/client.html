@@ -13,9 +13,9 @@
 .header{
   float: left;
   width: 100%;
-  height: 10px;
+  height: 30px;
   background-color: #ffffff;
-  padding:15px
+  padding:5px
 }
 .colleft{
   position: relative;
@@ -53,6 +53,7 @@ body {
 }
 </style>
 
+<script type="text/javascript" src="rce_cmds.js"></script>
 <script type="text/javascript" src="jquery-1.7.2.js"></script>
 <script type="text/javascript">
 
@@ -67,22 +68,8 @@ var robotUniqueID = "robotUniqueID";
 var robotStatus = "Not connected";
 var containerID = "--";
 
-var cmd_CS = new Object();
-cmd_CS.type="CS";
-cmd_CS.dest="$$$$$$";
-cmd_CS.orig="robotUniqueID";
-var CS_data = new Object();
-CS_data.containerTag = "containerTag01";
-cmd_CS.data=CS_data;
-
-
-var cmd_CH = new Object();
-cmd_CH.type="CH";
-cmd_CH.dest="$$$$$$";
-cmd_CH.orig="robotUniqueID";
-var CH_data = new Object();
-CH_data.containerTag = "cTag01"
-cmd_CH.data=CH_data;
+//var cmd_CS = jQuery.parseJSON('dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CS", "orig": "robotUniqueID"}');
+//var cmd_CH = jQuery.parseJSON('{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CH", "orig": "robotUniqueID"}');
 
 window.onload = function() {
 	document.getElementById('wsuri').value = wsuri; //default value
@@ -104,6 +91,9 @@ window.onload = function() {
 	imageObj.onload = function() {
 		context.drawImage(imageObj, 0, 0);
 	}
+	
+	//Debugging
+	for each (var cmd in cmdList) console.log(cmd.name);
 }
 
 function connectToRCE() {
@@ -424,14 +414,23 @@ function updateContainerID(id){
 <body>
 <div class="mask">
 	<div class="header">
-		RoboEarth Cloud Engine - HTML Client
+		<h3>RoboEarth Cloud Engine - HTML Client</h3>
 	</div>
 	<div class="colleft">
 		<div class="col1">
       <br>Command (JSON) <br>
 			<textarea rows="10" cols="40" id='commandConsole'></textarea><br>
 			<button onclick='sendCommand(); return false'>send command</button><br>
-      ---<br>
+      <b>Robot Status:</b> <div id='robotStatus'>Not connected</div>
+      <b>container ID:</b> <div id='containerID'>--</div>
+      <b>Error:</b> <div id='errorMsg'>--</div>
+      <button onclick='clearErrorMsg(); return false'>clear</button><br>
+      <h4>Load debug messages</h4>
+      <SELECT NAME="Month_list">
+				<Option value="-1" >-- select to load --</option>
+			</SELECT>
+      
+      <!--
       <button onclick='loadCS(); return false'>load CS msg</button><br>
       Send a create container request to the RoboEarth Cloud Engine<br>
       ---<br>
@@ -450,14 +449,12 @@ function updateContainerID(id){
       <b>Robot Status:</b> <div id='robotStatus'>Not connected</div>
       <b>container ID:</b> <div id='containerID'>--</div>
       <b>Error:</b> <div id='errorMsg'>--</div>
-      <button onclick='clearErrorMsg(); return false'>clear</button><br>
+      <button onclick='clearErrorMsg(); return false'>clear</button><br>-->
       
-      ---<br>
-      <h4>sensor_msgs/Image test</h4>
+      <h4>Load sensor_msgs/Image</h4>
 			<input type="file" id="files" name="files[]"/><br> 
 			<textarea rows="5" cols="40" id='JSONImageMsg'></textarea> <br>
 			<button onclick='sendImageMsg(); return false'>send sensor_msgs/Image</button> <br>
-      
       
 		</div>
 		<div class="col2">
@@ -468,9 +465,8 @@ function updateContainerID(id){
 			<br>
       <br>Cloud Engine Response (JSON)<br>
 			<textarea rows="40" cols="40" id='receiverConsole'></textarea><br>
-			---<br>
-			<h4>sensor_msgs/Image test</h4>
-			Retreived image:<br>
+
+			<h4>sensor_msgs/Image Received</h4>
 <canvas id="myCanvas"  width="640" height="480"></canvas>
 		</div> 
 	</div> 

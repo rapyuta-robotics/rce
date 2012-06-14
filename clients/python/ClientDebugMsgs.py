@@ -79,26 +79,34 @@ cmd_RM_general_twist = {
     
     
 # Specific commands for the test suite
-cmd_CS_debug = cmd_CS
+class debugCmd(object):
+    def __init__(self, cmd, name, info):
+        self.cmd = cmd
+        self.name = name
+        self.info = info
 
-cmd_CH_debug = cmd_CH
 
-cmd_CC_startDebugNodes = {  "type":"CC",
+cmd_CS_debug = debugCmd(cmd_CS,'cmd_CS_debug','Create Container')
+
+cmd_CH_debug = debugCmd(cmd_CH,'cmd_CS_debug','Destroy Container')
+
+cmd_CC_startDebugNodes = debugCmd({  "type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"addNodes":[{"pkg":"Test",
                                                 "exe":"TopicTest.py",
                                                 "nodeTag":"nodeTag",
                                                 "namespace":"Test"}]}
-                        }
+                        },'cmd_CC_startDebugNodes','Start Nodes')
+                        
  
-cmd_CC_removeDebugNodes = { "type":"CC",
+cmd_CC_removeDebugNodes = debugCmd({ "type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"removeNodes":["nodeTag"]}
-                        }
+                        },'cmd_CC_removeDebugNodes','Remove Nodes')
                         
-cmd_CC_addDebugInterface = {"type":"CC",
+cmd_CC_addDebugInterface = debugCmd({"type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"addInterfaces":[{"name":"Test/getSum",
@@ -108,61 +116,62 @@ cmd_CC_addDebugInterface = {"type":"CC",
                                                     "interfaceType":"publisher",
                                                     "className":"std_msgs/Int32"}]
                                     }
-                            }
+                            },'cmd_CC_removeDebugNodes','Add Interface')
                             
-cmd_CC_removeDebugInterface = {"type":"CC",
+cmd_CC_removeDebugInterface = debugCmd({"type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
-                            "data":{"removeInterfaces":["Test/getSum"]}}
+                            "data":{"removeInterfaces":["Test/getSum"]}},
+                            'cmd_CC_removeDebugInterface','Remove Interface')
                             
-cmd_CC_addDebugParameters = {"type":"CC",
+cmd_CC_addDebugParameters = debugCmd({"type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"setParam":[{"paramName":"test","paramValue":3.0,"paramType":"float"}]}
-                            }
+                            },'cmd_CC_addDebugParameters','Add Parameters')
 
-cmd_CC_removeDebugParameters = {"type":"CC",
+cmd_CC_removeDebugParameters = debugCmd({"type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"deleteParam":["test"]}
-                            }
+                            },'cmd_CC_removeDebugParameters','Remove Parameters')
                             
-cmd_CC_startNodeaddInterfaceDebug = {"type":"CC",
+cmd_CC_startNodeaddInterfaceDebug = debugCmd({"type":"CC",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
-                            "data":{"addNodes":cmd_CC_startDebugNodes['data']['addNodes'],
-                                    "addInterfaces":cmd_CC_addDebugInterface['data']['addInterfaces']}
-                            }
+                            "data":{"addNodes":cmd_CC_startDebugNodes.cmd['data']['addNodes'],
+                                    "addInterfaces":cmd_CC_addDebugInterface.cmd['data']['addInterfaces']}
+                            },'cmd_CC_startNodeaddInterfaceDebug','Start Node/Add Interface together')
                             
-cmd_CI_registerAtDebugInterface = {"type":"CI",
+cmd_CI_registerAtDebugInterface = debugCmd({"type":"CI",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"Test/addInt":True,"Test/getSum":True}
-                            }
+                            },'cmd_CI_registerAtDebugInterface','Register Interface')
 
-cmd_CM_debugServiceRequest_1 = {"type":"CM",
+cmd_CM_debugServiceRequest_1 = debugCmd({"type":"CM",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"std_msgs/Int32",
                                     "msgID":"msgID_0",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":3}}
-                            }
+                            },'cmd_CM_debugServiceRequest_1','Send Service Request - I')
                             
-cmd_CM_debugServiceRequest_2 = {"type":"CM",
+cmd_CM_debugServiceRequest_2 = debugCmd({"type":"CM",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"std_msgs/Int32",
                                     "msgID":"msgID_1",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":7}}
-                            }
+                            },'cmd_CM_debugServiceRequest_2','Send Service Request - II')
 
-cmd_CM_debugServiceRequest_3 = {"type":"CM",
+cmd_CM_debugServiceRequest_3 = debugCmd({"type":"CM",
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"Test/TopicService",
                                 "msgID":"msgID_2",
                                 "interfaceTag":
                                 "Test/getSum","msg":{}}
-                            }
+                            },'cmd_CM_debugServiceRequest_3','Send Service Request - III')
