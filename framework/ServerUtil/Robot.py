@@ -82,10 +82,7 @@ class Robot(object):
             Forwards the call to the User instance. For more information refer to
             the doc string of the User class.
         """
-        if msg['orig'] != self._robotID:
-            raise InvalidRequest('Can not use multiple RobotIDs with the same connection.')
-        
-        self._user.sendROSMsgToContainer(containerTag, msg)
+        self._user.sendROSMsgToContainer(containerTag, self._robotID, msg)
     
     def sendROSMsgToRobot(self, containerTag, msg):
         """ Method is called when a message should be sent to the robot.

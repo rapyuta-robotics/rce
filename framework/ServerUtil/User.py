@@ -25,7 +25,6 @@
 # Custom imports
 from Exceptions import InvalidRequest, InternalError
 from Container import Container
-import ClientMsgTypes
 
 class User(object):
     """ Class which represents a user. A user can have multiple robots
@@ -299,7 +298,7 @@ class User(object):
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     
-    def sendROSMsgToContainer(self, containerTag, msg):
+    def sendROSMsgToContainer(self, containerTag, robotID, msg):
         """ Method is called when a complete message has been received by the robot
             and should now be processed and forwarded.
             
@@ -308,11 +307,14 @@ class User(object):
                                     destination.
             @type  containerTag:    str
             
+            @param robotID:     ID which is used to identify the sender of the message.
+            @type  robotID:     str
+            
             @param msg:     Corresponds to the dictionary of the field 'data' of the received
                             message. (Necessary keys: type, msgID, interfaceTag, msg)
             @type  msg:     { str : ... }
         """
-        self._containers[containerTag].sendToInterface(msg)
+        self._containers[containerTag].sendToInterface(robotID, msg)
     
     def sendROSMsgToRobot(self, containerTag, robotID, msg):
         """ Method is called when a message should be sent to the robot.
@@ -345,5 +347,5 @@ class User(object):
                                     True <=> Connected; False <=> Not Connected.
             @type  status:      bool
         """
-        for robotID, robot in self._robots.iteritems():
+        for robot in self._robots.itervalues():
             robot.sendContainerUpdate(containerTag, status)
