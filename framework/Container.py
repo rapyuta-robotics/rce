@@ -54,7 +54,7 @@ def main(reactor, uid):
     
     # Server for connection(s) from the server
     factory = RCEServerFactory(commManager) # , trigger)
-    factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
+    factory.addApprovedMessageTypes([ # MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_START,
                                       MsgTypes.CONTAINER_STOP ])
     #reactor.listenSSL(settings.PORT_CONTAINER_MNGR, factory, ctx)
