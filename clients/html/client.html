@@ -282,6 +282,12 @@ function uuid() {
   return uuid;
 }
 
+
+function loadCS(){
+  jsonStr = JSON.stringify(cmd_CS);
+  SetCommand(jsonStr);
+}
+
 function loadCH(){
 	//if(robotStatus == "Container Assigned"){
 	if(true){
