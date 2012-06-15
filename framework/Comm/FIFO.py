@@ -31,6 +31,7 @@ from twisted.python import log
 
 # Python specific imports
 from datetime import datetime, timedelta
+from collections import deque
 
 # Custom imports
 import settings
@@ -46,7 +47,7 @@ class ProducerFIFO(object):
             @param dest:    The destination for which this producer FIFO is used.
             @type  dest:    str
         """
-        self._fifo = []
+        self._fifo = deque()
         self._dest = dest
     
     @property
@@ -86,17 +87,19 @@ class ProducerFIFO(object):
             
             @rtype:     MessageSender or MessageForwarder
         """
-        return self._fifo.pop(0)[0]
+        return self._fifo.popleft()[0]
     
     def clean(self):
         """ Remove producers which have exceeded the timeout.
         """
+        i = 0
         limit = datetime.now() - timedelta(seconds=settings.MSG_QUQUE_TIMEOUT)
         
-        for i in xrange(len(self._fifo)):
-            if self._fifo[i][1] > limit:
-                if i:
-                    self._fifo = self._fifo[i:]
-                    log.msg('{0} Producer(s) has been dropped from queue for destination "{1}".'.format(i, self._dest))
-                
+        while len(self._fifo):
+            if self._fifo[0][1] < limit:
+                self._fifo.popleft()
+            else:
                 break
+        
+        if i:
+            log.msg('{0} Producer(s) has been dropped from queue for destination "{1}".'.format(i, self._dest))

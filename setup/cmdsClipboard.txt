@@ -73,7 +73,7 @@ Register Interface:
     {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"binary/circle":true,"binary/ccPos":true}}
 
 SendPose:
-    {"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"geometry_msgs/Pose2D","msgID":"msgID_0","interfaceTag":"binary/ccPos","msg":{"x":150.0,"y":400.0,"theta":0.0}}}
+    {"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"geometry_msgs/Pose2D","msgID":"msgID_0","interfaceTag":"binary/ccPos","msg":{"x":0.2,"y":0.6,"theta":0.0}}}
 
 
 === Binary Test 2 ===
