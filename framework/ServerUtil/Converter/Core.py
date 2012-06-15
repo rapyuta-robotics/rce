@@ -140,22 +140,9 @@ class Converter(object):
         else:
             return obj
     
-    def encode(self, rosMsg):
-        """ Generate django compatible data from a ROS message.
-
-            @param rosMsg:  The ROS message instance which should be converted.
-            @type  rosMsg:  ROS message instance
-
-            @return:    Dictionary containing the parsed message. The basic form does map
-                        each field in the ROS message to a key / value pair in the returned
-                        data dict. Binaries are added as StringIO instances.
-            @rtype:     {}
-
-            @raise:     TypeError, ValueError
+    def _encode(self, rosMsg):
+        """ Internally used method which is responsible for the heavy lifting.
         """
-        if not isinstance(rosMsg, genpy.message.Message):
-            raise TypeError('Given rosMsg object is not an instance of genpy.message.Message.')
-
         data = {}
 
         for (slotName, slotType) in zip(rosMsg.__slots__, rosMsg._slot_types):
@@ -174,7 +161,7 @@ class Converter(object):
             elif slotType in Converter._CUSTOM_TYPES:
                 convFunc = Converter._CUSTOM_TYPES[slotType]().encode
             else:
-                convFunc = self.encode
+                convFunc = self._encode
             
             try:
                 if listBool:
@@ -185,6 +172,33 @@ class Converter(object):
                 raise ValueError('{0}.{1}: {2}'.format(rosMsg.__class.__.__name__, slotName, e))
 
         return data
+    
+    def encode(self, rosMsg, msgType):
+        """ Generate django compatible data from a ROS message.
+
+            @param rosMsg:  The ROS message instance which should be converted.
+            @type  rosMsg:  ROS message instance
+            
+            @param msgType:     Message type of ROS message as a string, i.e. 'std_msgs/Int8'.
+            @type  msgType:     str
+
+            @return:    Dictionary containing the parsed message. The basic form does map
+                        each field in the ROS message to a key / value pair in the returned
+                        data dict. Binaries are added as StringIO instances.
+            @rtype:     {}
+
+            @raise:     TypeError, ValueError
+        """
+        if not isinstance(rosMsg, genpy.message.Message):
+            raise TypeError('Given rosMsg object is not an instance of genpy.message.Message.')
+
+        if msgType in Converter._SPECIAL_TYPES:
+            return Converter._SPECIAL_TYPES[slotType]().encode(rosMsg)
+        
+        if msgType in Converter._CUSTOM_TYPES:
+            return Converter._CUSTOM_TYPES[slotType]().encode(rosMsg)
+        
+        return self._encode(rosMsg)
 
     def decode(self, MsgCls, data):
         """ Generate a ROS message from django compatible data.
