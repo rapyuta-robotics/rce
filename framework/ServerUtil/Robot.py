@@ -125,7 +125,7 @@ class Robot(object):
         """
         for containerTag, interfaceTag in self._activeInterfaces:
             try:
-                self._user.deactivateInterface(containerTag, interfaceTag)
+                self._user.deactivateInterface(containerTag, interfaceTag, self._robotID)
             except InternalError:
                 pass
         

@@ -84,7 +84,6 @@ Nodes and Interfaces:
 together:
     {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageAnalyser.py","nodeTag":"imgAnalyser","namespace":"binary"}],"addInterfaces":[{"name":"binary/circle","interfaceType":"publisher","className":"sensor_msgs/Image"},{"name":"binary/est_ccPos","interfaceType":"subscriber","className":"geometry_msgs/Pose2D"}]}}
 
-
 Register Interface:
     {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"binary/circle":true,"binary/est_ccPos":true}}
 
