@@ -68,9 +68,6 @@ var robotUniqueID = "robotUniqueID";
 var robotStatus = "Not connected";
 var containerID = "--";
 
-//var cmd_CS = jQuery.parseJSON('dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CS", "orig": "robotUniqueID"}');
-//var cmd_CH = jQuery.parseJSON('{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CH", "orig": "robotUniqueID"}');
-
 window.onload = function() {
 	document.getElementById('wsuri').value = wsuri; //default value
 	
@@ -92,8 +89,11 @@ window.onload = function() {
 		context.drawImage(imageObj, 0, 0);
 	}
 	
-	//Debugging
-	for each (var cmd in cmdList) console.log(cmd.name);
+	//load and add debug commands 
+	var select = document.getElementById('cmd_list');
+	for(var i = 0; i < cmdList.length; i++){
+		select.options.add(new Option(cmdList[i].info, i))
+	}
 }
 
 function connectToRCE() {
@@ -209,6 +209,49 @@ function sendCommand() {
 	}
 }
 
+
+function raiseError(error){
+	document.getElementById('errorMsg').innerText = error;
+	console.log(error)
+}
+
+function updateRobotStatus(status){
+	document.getElementById('errorMsg').innerText = status;
+	robotStatus = status;
+}
+
+function clearCommandConsole(){
+	document.getElementById('commandConsole').value = "";
+}
+
+function SetCommand(cmd){
+	document.getElementById('commandConsole').value = cmd;
+}
+
+function clearCommand(){
+	document.getElementById('commandConsole').value = "";
+}
+
+function clearErrorMsg(){
+	document.getElementById('errorMsg').innerText = "--";
+}
+
+function updateContainerID(id){
+	containerID = id; 
+	document.getElementById('containerID').innerText = id;
+}
+
+function loadCommand(sel){
+	var i = sel.options[sel.selectedIndex].value;  
+	if (i == -1){ // --select to load--
+		clearCommand()
+	}else{
+		document.getElementById('commandConsole').value = JSON.stringify(cmdList[i].cmd);
+	}
+	 
+}
+
+
 //////////////////////////////////////////////////////////////////////
 /////////////////																	////////////////////
 /////////////////				Binary Msg Upload 				////////////////////
@@ -271,142 +314,6 @@ function uuid() {
   }
   return uuid;
 }
-
-
-function loadCS(){
-  jsonStr = JSON.stringify(cmd_CS);
-  SetCommand(jsonStr);
-}
-
-function loadCH(){
-	//if(robotStatus == "Container Assigned"){
-	if(true){
-		containerDetails = new Object();
-		containerDetails.containerID = containerID;
-		cmd_CH.data = containerDetails;
-		jsonStr = JSON.stringify(cmd_CH);
-		SetCommand(jsonStr);
-	}else{
-		raiseError("You can not delete a non assigned container (loadCH)");
-		clearCommandConsole();
-	}
-}
-
-function loadCM(){
-	if(robotStatus == "Container Assigned"){
-		var dataMsg = new Object()
-		dataMsg.firstname = 'fn';
-		dataMsg.lastname = 'ln';
-	
-		var cmd_CM = new Object();
-		cmd_CM.type="CC";
-		cmd_CM.dest="$$$$$$";
-		cmd_CM.orig=robotUniqueID;
-		cmd_CM.data = new Object();
-
-		cmd_CM.data.type = 'my_msgs/fullname';
-		cmd_CM.data.interfaceID = 'iid1';
-		cmd_CM.data.msgID = 'mid1';
-		cmd_CM.data.msg = dataMsg;
-	
-		jsonStr = JSON.stringify(cmd_CM);
-		SetCommand(jsonStr);
-	}else{
-		raiseError("Can not send other msgs before creating a container (loadCM())");
-	}
-}
-  nodeConfigs = [{"pkg":"Test","exe":"Test.py","nodeTag":"Test","namespace":"Test"}]
-
-
-function loadCC(){
-	//if(robotStatus == "Container Assigned"){
-	if(true){
-		var param = new Object();
-		param.paramName = 'pNm';
-		param.paramValue = 'value2';
-		param.paramType = 'pType';
-	
-		var nodeConfig1 = new Object()
-		nodeConfig1.pkg = 'Test';
-		nodeConfig1.exe = 'Test.py';
-		nodeConfig1.nodeTag = 'nodeTag';
-		nodeConfig1.namespace = 'Test';
-	
-		var nodeConfigs = new Array(nodeConfig1);
-		
-		var interfaceConfig = new Object();
-		interfaceConfig.interfaceName = 'iNm';
-		interfaceConfig.interfaceType = 'iType';
-		interfaceConfig.className = 'clsNm'
-	
-		var cmd_CC = new Object();
-		cmd_CC.type="CC";
-		cmd_CC.dest="containerTag01";
-		cmd_CC.orig="robotUniqueID";
-		
-		cmd_CC.data = new Object();
-		cmd_CC.data.addNodes = new Array(nodeConfig1);
-		//cmd_CC.data.removeNodes = new Array("ns2/nid1");
-		//cmd_CC.data.addInterfaces = new Array(interfaceConfig)
-		//cmd_CC.data.removeInterface = new Array("iNm");
-		//cmd_CC.data.setParam = new Array(param);
-		//cmd_CC.data.deleteParam = new Array("pNm");
-		
-		jsonStr = JSON.stringify(cmd_CC);
-		SetCommand(jsonStr);
-	}else{
-		raiseError("Can not send other msgs before creating a container (CC)");
-	}
-}
-
-
-function loadCI(){
-	//if(robotStatus == "Container Assigned"){
-	if(true){
-		var data = new Object();
-		data.itag = true;
-		
-		var cmd_CI = new Object();
-		cmd_CI.type = 'CI';
-		cmd_CI.dest = 'containerTag';
-		cmd_CI.orig = 'robotUniqueID';
-		cmd_CI.data = data;
-		
-		
-		jsonStr = JSON.stringify(cmd_CI);
-		SetCommand(jsonStr);
-	}else{
-		raiseError("Can not send other msgs before creating a container (CI)");
-	}
-}
-
-
-function raiseError(error){
-	document.getElementById('errorMsg').innerText = error;
-	console.log(error)
-}
-
-function updateRobotStatus(status){
-	document.getElementById('errorMsg').innerText = status;
-	robotStatus = status;
-}
-
-function clearCommandConsole(){
-	document.getElementById('commandConsole').value = "";
-}
-
-function SetCommand(cmd){
-	document.getElementById('commandConsole').value = cmd;
-}
-
-function clearErrorMsg(){
-	document.getElementById('errorMsg').innerText = "--";
-}
-
-function updateContainerID(id){
-	containerID = id; 
-	document.getElementById('containerID').innerText = id;
-}
 </script>
 
 
@@ -419,41 +326,21 @@ function updateContainerID(id){
 	<div class="colleft">
 		<div class="col1">
       <br>Command (JSON) <br>
-			<textarea rows="10" cols="40" id='commandConsole'></textarea><br>
-			<button onclick='sendCommand(); return false'>send command</button><br>
+			<textarea rows="10" cols="50" id='commandConsole'></textarea><br>
+			<select id="cmd_list" onchange='loadCommand(this)'>
+				<Option value="-1" >-- select to load --</option>
+			</select>
+			<br><button onclick='sendCommand(); return false'>send command</button>
+			<hr>
+			
       <b>Robot Status:</b> <div id='robotStatus'>Not connected</div>
-      <b>container ID:</b> <div id='containerID'>--</div>
+      <!--<b>container ID:</b> <div id='containerID'>--</div>-->
       <b>Error:</b> <div id='errorMsg'>--</div>
       <button onclick='clearErrorMsg(); return false'>clear</button><br>
-      <h4>Load debug messages</h4>
-      <SELECT NAME="Month_list">
-				<Option value="-1" >-- select to load --</option>
-			</SELECT>
-      
-      <!--
-      <button onclick='loadCS(); return false'>load CS msg</button><br>
-      Send a create container request to the RoboEarth Cloud Engine<br>
-      ---<br>
-      <button onclick='loadCH(); return false'>load CH msg</button><br>
-      Send a distroy container request to the RoboEarth Cloud Engine<br>
-      ---<br>
-      <button onclick='loadCC(); return false'>load sample CC msg</button><br>
-      Send a configure component request to the RoboEarth Cloud Engine<br>
-      ---<br>
-      <button onclick='loadCI(); return false'>load sample CI msg</button><br>
-      Register as a receiver for the Interface (type Publisher)<br>
-      ---<br>
-      <button onclick='loadCM(); return false'>load sample CM msg</button><br>
-      Send a data message to the RoboEarth Cloud Engine<br>
-      ---<br>
-      <b>Robot Status:</b> <div id='robotStatus'>Not connected</div>
-      <b>container ID:</b> <div id='containerID'>--</div>
-      <b>Error:</b> <div id='errorMsg'>--</div>
-      <button onclick='clearErrorMsg(); return false'>clear</button><br>-->
-      
+			<hr>
       <h4>Load sensor_msgs/Image</h4>
 			<input type="file" id="files" name="files[]"/><br> 
-			<textarea rows="5" cols="40" id='JSONImageMsg'></textarea> <br>
+			<textarea rows="5" cols="50" id='JSONImageMsg'></textarea> <br>
 			<button onclick='sendImageMsg(); return false'>send sensor_msgs/Image</button> <br>
       
 		</div>
@@ -462,10 +349,10 @@ function updateContainerID(id){
 			<textarea rows="1" cols="25" id='wsuri'></textarea>
 			<button onclick='connectToRCE(); return false'>connect</button><br>
 			<i>Example: ws://192.168.237.131:9000/ </i><br>
-			<br>
+			<hr>
       <br>Cloud Engine Response (JSON)<br>
-			<textarea rows="40" cols="40" id='receiverConsole'></textarea><br>
-
+			<textarea rows="30" cols="50" id='receiverConsole'></textarea><br>
+			<hr>
 			<h4>sensor_msgs/Image Received</h4>
 <canvas id="myCanvas"  width="640" height="480"></canvas>
 		</div> 
