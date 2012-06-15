@@ -176,6 +176,7 @@ class RCEProtocol(Protocol, object):
             else:
                 # We haven't reached the end of the message yet
                 self._msgHandler.write(data)
+                data = ''
 
                 # Update number of parsed bytes
                 self._parsedBytes += lenBuf
