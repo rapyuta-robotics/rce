@@ -46,7 +46,7 @@ import Image
 from Interfaces import IROSConverter
 
 class ImageConverter(object):
-    """ Convert images from Django style to ROS style and back.
+    """ Convert images from PNG file format to ROS sensor message format and back.
     """
     implements(IROSConverter)
     
@@ -58,7 +58,7 @@ class ImageConverter(object):
 
     def decode(self, rosMsgType, imgObj):
         """ Convert a image stored (PIL library readable image file format)
-            in a cStringIO.StringO object to a ROS compatible message
+            in a StringIO object to a ROS compatible message
             (sensor_msgs.Image).
         """
         if not _checkIsStringIO(imgObj):
@@ -86,7 +86,7 @@ class ImageConverter(object):
 
     def encode(self, rosMsg):
         """ Convert a ROS compatible message (sensor_msgs.Image) to a
-            JPEG encoded image stored in a cStringIO.StringO object.
+            PNG encoded image stored in a StringIO object.
         """
         if not isinstance(rosMsg, sensor_msgs.msg.Image):
             raise TypeError('Given object is not a sensor_msgs.msg.Image instance.')

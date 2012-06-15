@@ -23,7 +23,7 @@
 #       
 
 # Custom imports
-from Exceptions import InvalidRequest, InternalError
+from Exceptions import InternalError
 import ClientMsgTypes
 
 class Robot(object):
@@ -125,7 +125,7 @@ class Robot(object):
         """
         for containerTag, interfaceTag in self._activeInterfaces:
             try:
-                self._deactivateInterface(containerTag, interfaceTag)
+                self._user.deactivateInterface(containerTag, interfaceTag)
             except InternalError:
                 pass
         

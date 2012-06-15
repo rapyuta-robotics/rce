@@ -138,6 +138,7 @@ class RCEProtocol(Protocol, object):
                     self._msgDest = data[MsgDef.POS_DEST:MsgDef.POS_DEST + MsgDef.ADDRESS_LENGTH]
                     msgType = data[MsgDef.POS_MSG_TYPE:MsgDef.POS_MSG_TYPE + MsgDef.MSG_TYPE_LENGTH]
                     
+                    # According to convention of receive set appropriate value
                     if self._initialized:
                         protocol = None
                     else:
@@ -157,7 +158,7 @@ class RCEProtocol(Protocol, object):
                 else:
                     # Not enough data available to process header return
                     self._recvBuf = data
-                    break
+                    return
             
             # Check if we have reached the end of a message in the buffer
             if lenBuf + self._parsedBytes >= self._currentMsgLength:

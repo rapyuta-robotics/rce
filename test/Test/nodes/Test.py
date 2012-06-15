@@ -12,7 +12,7 @@ _ENCODINGMAP_PY_TO_ROS = {'L' : 'mono8', 'RGB' : 'rgb8', 'RGBA' : 'rgba8', 'YCbC
 _PIL_MODE_CHANNELS = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }
 
 def image_PyToROS(imageObj):
-    """ Converts a python PIL.Image instance to a ROS sensor.msgs.Image
+    """ Converts a python PIL.Image instance to a ROS sensor_msgs.msgs.Image
         instance. If the given object is not a datetime.datetime
         instance the object is returned unchanged.
     """

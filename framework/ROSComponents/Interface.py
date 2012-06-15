@@ -35,7 +35,7 @@ class _InterfaceBase(object):
     """
     implements(ISerializable)
     
-    def __init__(self, interfaceName, interfaceTag, interfaceClass=''):
+    def __init__(self, interfaceName, interfaceTag, interfaceClass):
         """ Initialize the Interface instance.
 
             @param interfaceName:   ROS address of the interface.

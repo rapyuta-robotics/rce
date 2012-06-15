@@ -1,3 +1,6 @@
+Rackspace IP
+198.101.199.174
+
 === Create Container ===
 
 {"type":"CS","dest":"$$$$$$","orig":"robotUniqueID","data":{"containerTag":"containerTag01"}}
@@ -55,3 +58,34 @@
 {"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"std_msgs/Int32","msgID":"msgID_1","interfaceTag":"Test/addInt","msg":{"data":7}}}
 
 {"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/TopicService","msgID":"msgID_2","interfaceTag":"Test/getSum","msg":{}}}
+
+
+=== Binary Test ===
+
+Nodes and Interfaces:
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageGenerator.py","nodeTag":"imgGen","namespace":"binary"}]}}
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"binary/circle","interfaceType":"subscriber","className":"sensor_msgs/Image"},{"name":"binary/ccPos","interfaceType":"publisher","className":"geometry_msgs/Pose2D"}]}}
+together:
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageGenerator.py","nodeTag":"imgGen","namespace":"binary"}],"addInterfaces":[{"name":"binary/circle","interfaceType":"subscriber","className":"sensor_msgs/Image"},{"name":"binary/ccPos","interfaceType":"publisher","className":"geometry_msgs/Pose2D"}]}}
+
+
+Register Interface:
+    {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"binary/circle":true,"binary/ccPos":true}}
+
+SendPose:
+    {"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"geometry_msgs/Pose2D","msgID":"msgID_0","interfaceTag":"binary/ccPos","msg":{"x":150.0,"y":400.0,"theta":0.0}}}
+
+
+=== Binary Test 2 ===
+Nodes and Interface:
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"testNode","namespace":"TestBin"}]}}
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"TestBin/test","interfaceType":"service","className":"Test/QueryTest"}]}}
+together:
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"testNode","namespace":"TestBin"}],"addInterfaces":[{"name":"TestBin/test","interfaceType":"service","className":"Test/QueryTest"}]}}
+
+Register Interface:
+    {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"TestBin/test":true}}
+
+Send sum:
+    {"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/QueryTest","msgID":"msgID_0","interfaceTag":"TestBin/test","msg":{"a":3,"b":5}}}
+
