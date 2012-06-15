@@ -27,6 +27,7 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
+from twisted.python.threadable import isInIOThread
 from twisted.internet.interfaces import IConsumer
 
 # Custom imports
@@ -262,7 +263,10 @@ def send(manager, msg):
     except SerializationError as e:
         log.msg('Message could not be sent: {0}'.format(str(e)))
     else:
-        manager.reactor.callFromThread(manager.router.registerProducer, sender, msg.dest)
+        if isInIOThread():
+            manager.router.registerProducer(sender, msg.dest)
+        else:
+            manager.reactor.callFromThread(manager.router.registerProducer, sender, msg.dest)
 
 def receive(factory, msgType, msgLen, origin, dest, init):
     """ Function which is used to construct a new message handler for an incoming message.

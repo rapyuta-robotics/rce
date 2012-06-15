@@ -132,7 +132,7 @@ PORT_LAUNCHER = 11011
 #######################################
 
 # Maximal length for a message in bytes
-MAX_LENGTH_MESSAGE = 99999
+MAX_LENGTH_MESSAGE = 10000000 # ~10mb
 
 # Time in seconds after which queue messages are removed from the queue
 MSG_QUQUE_TIMEOUT = 30

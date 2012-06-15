@@ -186,7 +186,7 @@ class Interface(object):
             raise InvalidRequest('Sent message type does not match the used message for this interface.')
         
         try:
-            rosMsg = self._converter.decode(self._toMsgCls, clientMsg['msg'])
+            rosMsg = self._converter.decode(self._toMsgCls, self._msgType, lientMsg['msg'])
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
@@ -212,9 +212,9 @@ class Interface(object):
         rosMsg.deserialize(msg['msg'])
         
         try:
-            jsonMsg = self._converter.encode(rosMsg)
+            jsonMsg = self._converter.encode(rosMsg, self._msgType)
         except (TypeError, ValueError) as e:
-            raise InvalidRequest(str(e))
+            raise #InvalidRequest(str(e))
         
         self._container.receivedFromInterface( msg['user'],
                                                { 'type'         : self._msgType, 

@@ -100,7 +100,7 @@ class _TimeConverter(object):
 
 class Converter(object):
     """ This class is used to provide a possibility to convert a ROS
-        message to a Django compatible format and back.
+        message to a json compatible format and back.
 
         To add customized Converters add the corresponding class to the
         settings.CONVERTER_CLASSES tuple.
@@ -112,22 +112,22 @@ class Converter(object):
         values as the methods of this class.
         As an example view the classes _DurationConverter and _TimeConverter.
     """
-    _BASE_TYPES = { 'bool' : bool,
-                    'byte' : int,
-                    'char' : int,
-                    'uint8' : int,
-                    'int8' : int,
-                    'uint16' : int,
-                    'int16' : int,
-                    'uint32' : int,
-                    'int32' : int,
-                    'uint64' : long,
-                    'int64' : long,
+    _BASE_TYPES = { 'bool'    : bool,
+                    'byte'    : int,
+                    'char'    : int,
+                    'uint8'   : int,
+                    'int8'    : int,
+                    'uint16'  : int,
+                    'int16'   : int,
+                    'uint32'  : int,
+                    'int32'   : int,
+                    'uint64'  : long,
+                    'int64'   : long,
                     'float32' : float,
                     'float64' : float,
-                    'string' : str }
+                    'string'  : str }
 
-    _SPECIAL_TYPES = {  'time' : _TimeConverter,
+    _SPECIAL_TYPES = {  'time'     : _TimeConverter,
                         'duration' : _DurationConverter }
     
     _CUSTOM_TYPES = {} 
@@ -169,12 +169,12 @@ class Converter(object):
                 else:
                     data[slotName] = convFunc(field)
             except ValueError as e:
-                raise ValueError('{0}.{1}: {2}'.format(rosMsg.__class.__.__name__, slotName, e))
+                raise ValueError('{0}.{1}: {2}'.format(rosMsg.__class__.__name__, slotName, e))
 
         return data
     
     def encode(self, rosMsg, msgType):
-        """ Generate django compatible data from a ROS message.
+        """ Generate json compatible data from a ROS message.
 
             @param rosMsg:  The ROS message instance which should be converted.
             @type  rosMsg:  ROS message instance
@@ -193,15 +193,15 @@ class Converter(object):
             raise TypeError('Given rosMsg object is not an instance of genpy.message.Message.')
 
         if msgType in Converter._SPECIAL_TYPES:
-            return Converter._SPECIAL_TYPES[slotType]().encode(rosMsg)
+            return Converter._SPECIAL_TYPES[msgType]().encode(rosMsg)
         
         if msgType in Converter._CUSTOM_TYPES:
-            return Converter._CUSTOM_TYPES[slotType]().encode(rosMsg)
+            return Converter._CUSTOM_TYPES[msgType]().encode(rosMsg)
         
         return self._encode(rosMsg)
 
     def decode(self, MsgCls, data):
-        """ Generate a ROS message from django compatible data.
+        """ Generate a ROS message from json compatible data.
 
             @param MsgCls:  ROS message class which should into which the decoded
                             data should filled.

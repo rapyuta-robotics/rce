@@ -120,7 +120,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                     self._robot.deactivateInterface(msg['dest'], interfaceTag)
         
         elif msg['type'] == ClientMsgTypes.MESSAGE:
-            uriList = self._recursiveURISearch(data['msg'])
+            uriList = self._recursiveURISearch(msg)
             if uriList:
                 self._incompleteMsgs.append((msg, uriList, datetime.now()))
             else:
@@ -158,7 +158,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """ Method is called by the Autobahn engine when a message has been received
             from the client.
         """
-        log.msg('WebSocket: Received new message from robot.')
+        log.msg('WebSocket: Received new message from robot. (binary={0})'.format(binary))
         
         try:
             if binary:
@@ -190,7 +190,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         
         for k in keys:
             tmpURI = uuid.uuid4().hex
-            uriBinary.append((tmpURI, v))
+            uriBinary.append((tmpURI, multidict[k]))
             del multidict[k]
             multidict['{0}*'.format(k)] = tmpURI
         
