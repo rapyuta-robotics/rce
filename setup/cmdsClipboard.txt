@@ -77,6 +77,19 @@ SendPose:
 
 
 === Binary Test 2 ===
+
+Nodes and Interfaces:
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageAnalyser.py","nodeTag":"imgAnalyser","namespace":"binary"}]}}
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"binary/circle","interfaceType":"publisher","className":"sensor_msgs/Image"},{"name":"binary/est_ccPos","interfaceType":"subscriber","className":"geometry_msgs/Pose2D"}]}}
+together:
+    {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageAnalyser.py","nodeTag":"imgAnalyser","namespace":"binary"}],"addInterfaces":[{"name":"binary/circle","interfaceType":"publisher","className":"sensor_msgs/Image"},{"name":"binary/est_ccPos","interfaceType":"subscriber","className":"geometry_msgs/Pose2D"}]}}
+
+
+Register Interface:
+    {"type":"CI","dest":"containerTag01","orig":"robotUniqueID","data":{"binary/circle":true,"binary/est_ccPos":true}}
+
+
+=== Binary Test 3 ===
 Nodes and Interface:
     {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"testNode","namespace":"TestBin"}]}}
     {"type":"CC","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"TestBin/test","interfaceType":"service","className":"Test/QueryTest"}]}}

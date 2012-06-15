@@ -51,7 +51,7 @@ from Exceptions import InternalError
 from Interfaces import IROSConverter
 
 class _DurationConverter(object):
-    """ Convert ROS Duration type to django style and back.
+    """ Convert ROS Duration type to json style and back.
     """
     def decode(self, rosMsgType, data):
         """ Generate a rospy.rostime.Duration instance based on the
@@ -69,7 +69,7 @@ class _DurationConverter(object):
             raise TypeError('Received object is not a Duration instance.')
 
 class _TimeConverter(object):
-    """ Convert ROS Time type to django style and back.
+    """ Convert ROS Time type to json style and back.
     """
     def decode(self, rosMsgType, data):
         """ Generate a rospy.rostime.Time instance based on the given
@@ -199,24 +199,9 @@ class Converter(object):
             return Converter._CUSTOM_TYPES[msgType]().encode(rosMsg)
         
         return self._encode(rosMsg)
-
-    def decode(self, MsgCls, data):
-        """ Generate a ROS message from json compatible data.
-
-            @param MsgCls:  ROS message class which should into which the decoded
-                            data should filled.
-            @type  MsgCls:  ROS Message class
-
-            @param data:    Dictionary with keys matching the fields in
-                            the desired ROS message.
-                            Binary files should be included as StringIO instances.
-            @param data:    { str : {} }
-
-            @return:    ROS message of type @param rosMsg containing the
-                        given data.
-            @rtype:     ROS message of type @param rosMsg
-
-            @raise:     TypeError, ValueError
+    
+    def _decode(self, MsgCls, data):
+        """ Internally used method which is responsible for the heavy lifting.
         """
         rosMsg = MsgCls()
 
@@ -242,7 +227,7 @@ class Converter(object):
             elif slotType in Converter._CUSTOM_TYPES and _checkIsStringIO(field):
                 convFunc = Converter._CUSTOM_TYPES[slotType]().decode
             else:
-                convFunc = self.decode
+                convFunc = self._decode
 
             if listBool:
                 msgData = map(lambda ele: convFunc(slotType, ele), field)
@@ -252,6 +237,35 @@ class Converter(object):
             setattr(rosMsg, slotName, msgData)
 
         return rosMsg
+    
+    def decode(self, MsgCls, msgType, data):
+        """ Generate a ROS message from json compatible data.
+
+            @param MsgCls:  ROS message class into which the decoded data
+                            should filled.
+            @type  MsgCls:  ROS Message class
+            
+            @param msgType:     Message type of ROS message as a string,
+                                i.e. 'std_msgs/Int8'.
+            @type  msgType:     str
+
+            @param data:    Dictionary with keys matching the fields in the
+                            desired ROS message. Binary files should be
+                            included as StringIO instances.
+            @param data:    { str : {} }
+
+            @return:    ROS message of type rosMsg containing the given data.
+            @rtype:     ROS message of type rosMsg
+
+            @raise:     TypeError, ValueError
+        """
+        if msgType in Converter._SPECIAL_TYPES:
+            return Converter._SPECIAL_TYPES[msgType]().decode(MsgCls, data)
+        
+        if msgType in Converter._CUSTOM_TYPES and _checkIsStringIO(data):
+            return Converter._CUSTOM_TYPES[msgType]().decode(MsgCls, data)
+        
+        return self._decode(MsgCls, data)
 
 def _initialize_Converter():
     for converter in settings.CONVERTER_CLASSES:

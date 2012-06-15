@@ -56,7 +56,7 @@ class ImageConverter(object):
     _ENCODINGMAP_ROS_TO_PY = { 'mono8' : 'L', 'rgb8' : 'RGB', 'rgba8' : 'RGBA', 'yuv422' : 'YCbCr' }
     _PIL_MODE_CHANNELS = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }
 
-    def decode(self, rosMsgType, imgObj):
+    def decode(self, _, imgObj):
         """ Convert a image stored (PIL library readable image file format)
             in a StringIO object to a ROS compatible message
             (sensor_msgs.Image).
