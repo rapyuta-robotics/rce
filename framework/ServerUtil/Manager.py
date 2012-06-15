@@ -73,7 +73,18 @@ class ServerManager(ManagerBase):
         # References used by the manager
         #self._dbInterface = DBInterface(commManager)   # TODO: Atm not used!
         self._loader = Loader()
-        self._converter = Converter()
+        self._converter = Converter(self._loader)
+        
+        # Add all custom converters to the Converter
+        for converter in settings.CONVERTER_CLASSES:
+            # Get correct path/name of the converter
+            convList = converter.rsplit('.', 1)
+            module = convList[0]
+            className = convList[1]
+    
+            # Load the converter
+            mod = __import__(module, fromlist=[className])
+            self._converter.addCustomConverter(getattr(mod, className))
         
         # SSL Context which is used to connect to other servers
         self._ctx = ctx

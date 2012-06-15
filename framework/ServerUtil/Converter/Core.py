@@ -46,7 +46,6 @@ except ImportError:
         return isinstance(obj, StringIO)
 
 # Custom imports
-import settings
 from Exceptions import InternalError
 from Interfaces import IROSConverter
 
@@ -130,7 +129,53 @@ class Converter(object):
     _SPECIAL_TYPES = {  'time'     : _TimeConverter,
                         'duration' : _DurationConverter }
     
-    _CUSTOM_TYPES = {} 
+    def __init__(self, loader):
+        """ Initialize the Converter.
+            
+            @param loader:      Used loader for ROS resources.
+            @type  loader:      Loader
+        """
+        self._loader = loader
+        self._customTypes = {}
+    
+    def addCustomConverter(self, converter):
+        """ Register a new custom Converter.
+        """
+        try:
+            verifyClass(IROSConverter, converter)
+        except Invalid as e:
+            raise InternalError(
+                'Verification of the class "{0}" for the Interface "IROSConverter" failed: {1}'.format(
+                    converter.__name__,
+                    e
+                )
+            )
+        
+        if converter.MESSAGE_TYPE in self._customTypes:
+            raise InternalError(
+                'There are multiple Converters given for message type "{0}".'.format(
+                    converter.MESSAGE_TYPE
+                )
+            )
+        
+        args = converter.MESSAGE_TYPE.split('/')
+        
+        if len(args) != 2:
+            raise InternalError('msg type is not valid. Has to be of the from pkg/msg, i.e. std_msgs/Int8.')
+        
+        self._customTypes[converter.MESSAGE_TYPE] = (converter, self._loader.loadMsg(*args))
+    
+    def removeCustomConverter(self, msgType):
+        """ Unregister a custom Converter.
+            
+            @param msgType:     Message type of ROS message as a string, i.e. 'std_msgs/Int8',
+                                for which the converter should be removed.
+            @type  msgType:     str
+        """
+        try:
+            del self._customTypes[msgType]
+        except KeyError:
+            InternalError('Tried to remove a cutom converter which was never added.')
     
     def _stringify(self, objType, obj):
         """ Internally used method to make sure that strings are of type str and not unicode.
@@ -159,7 +204,7 @@ class Converter(object):
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().encode
             elif slotType in Converter._CUSTOM_TYPES:
-                convFunc = Converter._CUSTOM_TYPES[slotType]().encode
+                convFunc = Converter._CUSTOM_TYPES[slotType][0]().encode
             else:
                 convFunc = self._encode
             
@@ -173,14 +218,11 @@ class Converter(object):
 
         return data
     
-    def encode(self, rosMsg, msgType):
+    def encode(self, rosMsg):
         """ Generate json compatible data from a ROS message.
 
             @param rosMsg:  The ROS message instance which should be converted.
             @type  rosMsg:  ROS message instance
-            
-            @param msgType:     Message type of ROS message as a string, i.e. 'std_msgs/Int8'.
-            @type  msgType:     str
 
             @return:    Dictionary containing the parsed message. The basic form does map
                         each field in the ROS message to a key / value pair in the returned
@@ -191,12 +233,10 @@ class Converter(object):
         """
         if not isinstance(rosMsg, genpy.message.Message):
             raise TypeError('Given rosMsg object is not an instance of genpy.message.Message.')
-
-        if msgType in Converter._SPECIAL_TYPES:
-            return Converter._SPECIAL_TYPES[msgType]().encode(rosMsg)
         
-        if msgType in Converter._CUSTOM_TYPES:
-            return Converter._CUSTOM_TYPES[msgType]().encode(rosMsg)
+        for converter, cls in self._customTypes.itervalues():
+            if isinstance(rosMsg, cls):
+                return converter().encode(rosMsg)
         
         return self._encode(rosMsg)
     
@@ -225,7 +265,7 @@ class Converter(object):
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().decode
             elif slotType in Converter._CUSTOM_TYPES and _checkIsStringIO(field):
-                convFunc = Converter._CUSTOM_TYPES[slotType]().decode
+                convFunc = Converter._CUSTOM_TYPES[slotType][0]().decode
             else:
                 convFunc = self._decode
 
@@ -238,16 +278,12 @@ class Converter(object):
 
         return rosMsg
     
-    def decode(self, MsgCls, msgType, data):
+    def decode(self, MsgCls, data):
         """ Generate a ROS message from json compatible data.
 
             @param MsgCls:  ROS message class into which the decoded data
                             should filled.
             @type  MsgCls:  ROS Message class
-            
-            @param msgType:     Message type of ROS message as a string,
-                                i.e. 'std_msgs/Int8'.
-            @type  msgType:     str
 
             @param data:    Dictionary with keys matching the fields in the
                             desired ROS message. Binary files should be
@@ -259,44 +295,9 @@ class Converter(object):
 
             @raise:     TypeError, ValueError
         """
-        if msgType in Converter._SPECIAL_TYPES:
-            return Converter._SPECIAL_TYPES[msgType]().decode(MsgCls, data)
-        
-        if msgType in Converter._CUSTOM_TYPES and _checkIsStringIO(data):
-            return Converter._CUSTOM_TYPES[msgType]().decode(MsgCls, data)
+        if _checkIsStringIO(data):
+            for converter, cls in self._customTypes.itervalues():
+                if isinstance(MsgCls, cls):
+                    return converter().decode(MsgCls, data)
         
         return self._decode(MsgCls, data)
-
-def _initialize_Converter():
-    for converter in settings.CONVERTER_CLASSES:
-        # Get correct path/name of the converter
-        convList = converter.rsplit('.', 1)
-        module = convList[0]
-        className = convList[1]
-
-        # Load the converter
-        mod = __import__(module, fromlist=[className])
-        convClass = getattr(mod, className)
-        
-        try:
-            verifyClass(IROSConverter, convClass)
-        except Invalid as e:
-            raise InternalError(
-                'Verification of the class "{0}" for the Interface "IROSConverter" failed: {1}'.format(
-                    convClass.__name__,
-                    e
-                )
-            )
-        
-        if convClass.MESSAGE_TYPE in Converter._CUSTOM_TYPES:
-            raise InternalError(
-                'There are multiple Converters given for message type "{0}".'.format(
-                    convClass.MESSAGE_TYPE
-                )
-            )
-        
-        Converter._CUSTOM_TYPES[convClass.MESSAGE_TYPE] = convClass
-
-_initialize_Converter()
-
-del _initialize_Converter
