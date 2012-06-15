@@ -175,11 +175,14 @@ class Converter(object):
                 convFunc = Converter._CUSTOM_TYPES[slotType]().encode
             else:
                 convFunc = self.encode
-
-            if listBool:
-                data[slotName] = map(convFunc, field)
-            else:
-                data[slotName] = convFunc(field)
+            
+            try:
+                if listBool:
+                    data[slotName] = map(convFunc, field)
+                else:
+                    data[slotName] = convFunc(field)
+            except ValueError as e:
+                raise ValueError('{0}.{1}: {2}'.format(rosMsg.__class.__.__name__, slotName, e))
 
         return data
 
