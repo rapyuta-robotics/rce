@@ -134,7 +134,8 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """ Internally used method to handle incoming binary messages.
         """
         uri = msg[:32]
-        binaryData = StringIO().write(msg[33:])
+        binaryData = StringIO()
+        binaryData.write(msg[33:])
         
         # Find and replace URI with data
         for incompleteMsg in self._incompleteMsgs:

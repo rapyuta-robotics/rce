@@ -203,8 +203,8 @@ class Converter(object):
                 convFunc = Converter._BASE_TYPES[slotType]
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().encode
-            elif slotType in Converter._CUSTOM_TYPES:
-                convFunc = Converter._CUSTOM_TYPES[slotType][0]().encode
+            elif slotType in self._customTypes:
+                convFunc = self._customTypes[slotType][0]().encode
             else:
                 convFunc = self._encode
             
@@ -264,8 +264,8 @@ class Converter(object):
                 convFunc = self._stringify
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().decode
-            elif slotType in Converter._CUSTOM_TYPES and _checkIsStringIO(field):
-                convFunc = Converter._CUSTOM_TYPES[slotType][0]().decode
+            elif slotType in self._customTypes and _checkIsStringIO(field):
+                convFunc = self._customTypes[slotType][0]().decode
             else:
                 convFunc = self._decode
 
@@ -297,7 +297,7 @@ class Converter(object):
         """
         if _checkIsStringIO(data):
             for converter, cls in self._customTypes.itervalues():
-                if isinstance(MsgCls, cls):
+                if MsgCls == cls:
                     return converter().decode(MsgCls, data)
         
         return self._decode(MsgCls, data)
