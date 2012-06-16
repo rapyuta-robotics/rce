@@ -18,7 +18,7 @@ cmd_CSR = {
             }
     
     
-# Configuration Message - Distroy Container
+# Configuration Message - Destroy Container
 cmd_CH = {
             "type":"CH",
             "dest":"$$$$$$",
