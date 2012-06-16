@@ -1,19 +1,19 @@
 from ClientDebugMsgs import *
 import json
 
-cmds = [cmd_CS_debug,
-        cmd_CH_debug,
-        cmd_CC_startDebugNodes, 
-        cmd_CC_removeDebugNodes,
-        cmd_CC_addDebugInterface,
-        cmd_CC_removeDebugInterface,
-        cmd_CC_addDebugParameters,
-        cmd_CC_removeDebugParameters,
-        cmd_CC_startNodeaddInterfaceDebug,
-        cmd_CI_registerAtDebugInterface,
-        cmd_CM_debugServiceRequest_1,
-        cmd_CM_debugServiceRequest_2,
-        cmd_CM_debugServiceRequest_3]
+cmds = [cmd_CC_debug,
+        cmd_DC_debug,
+        cmd_CN_startDebugNodes, 
+        cmd_CN_removeDebugNodes,
+        cmd_CN_addDebugInterface,
+        cmd_CN_removeDebugInterface,
+        cmd_CN_addDebugParameters,
+        cmd_CN_removeDebugParameters,
+        cmd_CN_startNodeaddInterfaceDebug,
+        cmd_IR_registerAtDebugInterface,
+        cmd_DM_debugServiceRequest_1,
+        cmd_DM_debugServiceRequest_2,
+        cmd_DM_debugServiceRequest_3]
 
 
 

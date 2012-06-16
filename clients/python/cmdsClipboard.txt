@@ -1,52 +1,52 @@
 === Create Container ===
 
-{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CS", "orig": "robotUniqueID"}
+{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CC", "orig": "robotUniqueID"}
 
 === Destroy Container ===
 
-{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CH", "orig": "robotUniqueID"}
+{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "DC", "orig": "robotUniqueID"}
 
 === Start Nodes ===
 
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Remove Nodes ===
 
-{"dest": "containerTag01", "data": {"removeNodes": ["nodeTag"]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"removeNodes": ["nodeTag"]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Add Interface ===
 
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Remove Interface ===
 
-{"dest": "containerTag01", "data": {"removeInterfaces": ["Test/getSum"]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"removeInterfaces": ["Test/getSum"]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Add Parameters ===
 
-{"dest": "containerTag01", "data": {"setParam": [{"paramValue": 3.0, "paramType": "float", "paramName": "test"}]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"setParam": [{"paramValue": 3.0, "paramType": "float", "paramName": "test"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Remove Parameters ===
 
-{"dest": "containerTag01", "data": {"deleteParam": ["test"]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"deleteParam": ["test"]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Start Node/Add Interface together ===
 
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}], "addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CC", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}], "addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Register Interface ===
 
-{"dest": "containerTag01", "data": {"Test/addInt": true, "Test/getSum": true}, "type": "CI", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"Test/addInt": true, "Test/getSum": true}, "type": "IR", "orig": "robotUniqueID"}
 
 === Send Service Request - I ===
 
-{"dest": "containerTag01", "data": {"msg": {"data": 3}, "msgID": "msgID_0", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "CM", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"msg": {"data": 3}, "msgID": "msgID_0", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
 
 === Send Service Request - II ===
 
-{"dest": "containerTag01", "data": {"msg": {"data": 7}, "msgID": "msgID_1", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "CM", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"msg": {"data": 7}, "msgID": "msgID_1", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
 
 === Send Service Request - III ===
 
-{"dest": "containerTag01", "data": {"msg": {}, "msgID": "msgID_2", "type": "Test/TopicService", "interfaceTag": "Test/getSum"}, "type": "CM", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"msg": {}, "msgID": "msgID_2", "type": "Test/TopicService", "interfaceTag": "Test/getSum"}, "type": "DM", "orig": "robotUniqueID"}
 
