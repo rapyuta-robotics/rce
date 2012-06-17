@@ -83,7 +83,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         elif msg['type'] == ClientMsgTypes.DESTROY_CONTAINER:
             self._user.destroyContainer(data['containerTag'])
         
-        elif msg['type'] == ClientMsgTypes.CHANGE_COMPONENT:
+        elif msg['type'] == ClientMsgTypes.CONFIGURE_COMPONENT:
             if 'addNodes' in data:
                 for node in data['addNodes']:
                     self._user.addNode(msg['dest'], node['nodeTag'], node['pkg'], node['exe'], node['namespace'])
@@ -112,14 +112,14 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 for paramName in data['deleteParam']:
                     self._user.removeParameter(msg['dest'], paramName)
         
-        elif msg['type'] == ClientMsgTypes.INTERFACE_STATE:
+        elif msg['type'] == ClientMsgTypes.INTERFACE_REGISTRATION:
             for interfaceTag, activate in data.iteritems():
                 if activate:
                     self._robot.activateInterface(msg['dest'], interfaceTag)
                 else:
                     self._robot.deactivateInterface(msg['dest'], interfaceTag)
         
-        elif msg['type'] == ClientMsgTypes.MESSAGE:
+        elif msg['type'] == ClientMsgTypes.DATA_MESSAGE:
             uriList = self._recursiveURISearch(msg)
             if uriList:
                 self._incompleteMsgs.append((msg, uriList, datetime.now()))

@@ -26,23 +26,23 @@
         
         IN      Initialize the connection
         
-        CS      Create a container
-        CSR     Update on container status
-        CH      Destroy a container
+        CC      Create a container
+        CS      Update on container status
+        DC      Destroy a container
         
-        CC      Change a ROS component (Node, Parameter, Interface)
-        CI      register/unregister from an Interface
+        CN      Change a ROS component (Node, Parameter, Interface)
+        IR      register/unregister from an Interface
         
-        CM      ROS Message
+        DM      ROS Message
 """
 
-INIT = 'IN'
+INIT = 'IN' # not used in the current release
 
-CREATE_CONTAINER = 'CS'
-STATUS_CONTAINER = 'CSR'
-DESTROY_CONTAINER = 'CH'
+CREATE_CONTAINER = 'CC'
+CONTAINER_STATUS = 'CS'
+DESTROY_CONTAINER = 'DC'
 
-CHANGE_COMPONENT = 'CC'
-INTERFACE_STATE = 'CI'
+CONFIGURE_COMPONENT = 'CN'
+INTERFACE_REGISTRATION = 'IR'
 
-MESSAGE = 'CM'
+DATA_MESSAGE = 'DM'

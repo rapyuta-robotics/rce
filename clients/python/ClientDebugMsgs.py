@@ -1,41 +1,42 @@
 #!/usr/bin/env python
+import ClientMsgTypes
 
 # Configuration Message - Create Container
-cmd_CS = {
-            "type":"CS",
+cmd_CC = {
+            "type":ClientMsgTypes.CREATE_CONTAINER,
             "dest":"$$$$$$",
             "orig":"robotUniqueID", 
             "data":{"containerTag":"containerTag01"} #This tag will be used as a reference in the future
             }
            
 
-# Configuration Message - Create Container Response
-cmd_CSR = {
-            "type":"CSR",
+# Configuration Message - Container Status
+cmd_CS = {
+            "type":ClientMsgTypes.CONTAINER_STATUS,
             "dest":"robotUniqueID",
             "orig":"$$$$$$",
             "data":{"cTag":"bool: True <-> Connected; False <-> not Connected"} #cTag - tag of the created container
             }
     
     
-# Configuration Message - Distroy Container
-cmd_CH = {
-            "type":"CH",
+# Configuration Message - Destroy Container
+cmd_DC = {
+            "type":ClientMsgTypes.DESTROY_CONTAINER,
             "dest":"$$$$$$",
             "orig":"robotUniqueID",  
             "data":{"containerTag":"containerTag01"}
             }
             
             
-# Configuration Message - Change Components - For a specific container 
+# Configuration Message - Configure Components - For a specific container 
 nodeConfigs = [{
                 "pkg":"name of package",
                 "exe":"name of executable",
                 "nodeTag":"nn",
                 "namespace":"ns",
     }]
-cmd_CC_general = {
-            "type":"CC",
+cmd_CN_general = {
+            "type":ClientMsgTypes.CONFIGURE_COMPONENT,
             "dest":"containerTag",
             "orig":"robotUniqueID",
             "data":{
@@ -55,8 +56,8 @@ cmd_CC_general = {
             }
 
 # register/unregister from an Interface
-cmd_CI_general = {
-            "type":"CL",
+cmd_IR_general = {
+            "type":ClientMsgTypes.INTERFACE_REGISTRATION,
             "dest":"containerTag",
             "orig":"robotUniqueID",
             "data":{
@@ -66,14 +67,14 @@ cmd_CI_general = {
 
 # Data Messages
 msg = {"linear":{"x":0,"y":0,"z":0},"angular":{"x":0,"y":0,"z":0}};
-cmd_RM_general_twist = {
-    "type":"RM",
+cmd_DM_general_twist = {
+    "type":ClientMsgTypes.DATA_MESSAGE,
     "dest":"destination_container/robot",
     "orig":"origin_container/robot",
     "data":{
         "type":"geometry_msgs/Twist", # Service/Msg type # This is actually redundant: Interface has all details
         "msgID":"mid",  # Applicable only to services. Only if you want to maintain correspondence between request and response.
-        "interfaceName":'inm', # Corresponds to the receiver in rosbridge
+        "interfaceName":'inm', # self explanatory
         "msg":msg} # In case of srv call: _request_class of the srv class
     }
     
@@ -86,27 +87,27 @@ class debugCmd(object):
         self.info = info
 
 
-cmd_CS_debug = debugCmd(cmd_CS,'cmd_CS_debug','Create Container')
+cmd_CC_debug = debugCmd(cmd_CC,'cmd_CC_debug','Create Container')
 
-cmd_CH_debug = debugCmd(cmd_CH,'cmd_CS_debug','Destroy Container')
+cmd_DC_debug = debugCmd(cmd_DC,'cmd_CC_debug','Destroy Container')
 
-cmd_CC_startDebugNodes = debugCmd({  "type":"CC",
+cmd_CN_startDebugNodes = debugCmd({  "type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"addNodes":[{"pkg":"Test",
                                                 "exe":"TopicTest.py",
                                                 "nodeTag":"nodeTag",
                                                 "namespace":"Test"}]}
-                        },'cmd_CC_startDebugNodes','Start Nodes')
+                        },'cmd_CN_startDebugNodes','Start Nodes')
                         
  
-cmd_CC_removeDebugNodes = debugCmd({ "type":"CC",
+cmd_CN_removeDebugNodes = debugCmd({ "type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"removeNodes":["nodeTag"]}
-                        },'cmd_CC_removeDebugNodes','Remove Nodes')
+                        },'cmd_CN_removeDebugNodes','Remove Nodes')
                         
-cmd_CC_addDebugInterface = debugCmd({"type":"CC",
+cmd_CN_addDebugInterface = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"addInterfaces":[{"name":"Test/getSum",
@@ -116,62 +117,62 @@ cmd_CC_addDebugInterface = debugCmd({"type":"CC",
                                                     "interfaceType":"publisher",
                                                     "className":"std_msgs/Int32"}]
                                     }
-                            },'cmd_CC_removeDebugNodes','Add Interface')
+                            },'cmd_CN_removeDebugNodes','Add Interface')
                             
-cmd_CC_removeDebugInterface = debugCmd({"type":"CC",
+cmd_CN_removeDebugInterface = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"removeInterfaces":["Test/getSum"]}},
-                            'cmd_CC_removeDebugInterface','Remove Interface')
+                            'cmd_CN_removeDebugInterface','Remove Interface')
                             
-cmd_CC_addDebugParameters = debugCmd({"type":"CC",
+cmd_CN_addDebugParameters = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"setParam":[{"paramName":"test","paramValue":3.0,"paramType":"float"}]}
-                            },'cmd_CC_addDebugParameters','Add Parameters')
+                            },'cmd_CN_addDebugParameters','Add Parameters')
 
-cmd_CC_removeDebugParameters = debugCmd({"type":"CC",
+cmd_CN_removeDebugParameters = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"deleteParam":["test"]}
-                            },'cmd_CC_removeDebugParameters','Remove Parameters')
+                            },'cmd_CN_removeDebugParameters','Remove Parameters')
                             
-cmd_CC_startNodeaddInterfaceDebug = debugCmd({"type":"CC",
+cmd_CN_startNodeaddInterfaceDebug = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
-                            "data":{"addNodes":cmd_CC_startDebugNodes.cmd['data']['addNodes'],
-                                    "addInterfaces":cmd_CC_addDebugInterface.cmd['data']['addInterfaces']}
-                            },'cmd_CC_startNodeaddInterfaceDebug','Start Node/Add Interface together')
+                            "data":{"addNodes":cmd_CN_startDebugNodes.cmd['data']['addNodes'],
+                                    "addInterfaces":cmd_CN_addDebugInterface.cmd['data']['addInterfaces']}
+                            },'cmd_CN_startNodeaddInterfaceDebug','Start Node/Add Interface together')
                             
-cmd_CI_registerAtDebugInterface = debugCmd({"type":"CI",
+cmd_IR_registerAtDebugInterface = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"Test/addInt":True,"Test/getSum":True}
-                            },'cmd_CI_registerAtDebugInterface','Register Interface')
+                            },'cmd_IR_registerAtDebugInterface','Register Interface')
 
-cmd_CM_debugServiceRequest_1 = debugCmd({"type":"CM",
+cmd_DM_debugServiceRequest_1 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"std_msgs/Int32",
                                     "msgID":"msgID_0",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":3}}
-                            },'cmd_CM_debugServiceRequest_1','Send Service Request - I')
+                            },'cmd_DM_debugServiceRequest_1','Send Service Request - I')
                             
-cmd_CM_debugServiceRequest_2 = debugCmd({"type":"CM",
+cmd_DM_debugServiceRequest_2 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"std_msgs/Int32",
                                     "msgID":"msgID_1",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":7}}
-                            },'cmd_CM_debugServiceRequest_2','Send Service Request - II')
+                            },'cmd_DM_debugServiceRequest_2','Send Service Request - II')
 
-cmd_CM_debugServiceRequest_3 = debugCmd({"type":"CM",
+cmd_DM_debugServiceRequest_3 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"Test/TopicService",
                                 "msgID":"msgID_2",
                                 "interfaceTag":
                                 "Test/getSum","msg":{}}
-                            },'cmd_CM_debugServiceRequest_3','Send Service Request - III')
+                            },'cmd_DM_debugServiceRequest_3','Send Service Request - III')

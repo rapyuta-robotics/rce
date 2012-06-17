@@ -96,7 +96,7 @@ class Robot(object):
             @type  msg:     { str : ... }
         """
         try:
-            self._conn.sendMessage({ 'type' : ClientMsgTypes.MESSAGE,
+            self._conn.sendMessage({ 'type' : ClientMsgTypes.DATA_MESSAGE,
                                      'dest' : self._robotID,
                                      'orig' : containerTag,
                                      'data' : msg })
@@ -115,7 +115,7 @@ class Robot(object):
                                     True <=> Connected; False <=> Not Connected.
             @type  status:      bool
         """
-        self._conn.sendMessage({ 'type' : ClientMsgTypes.STATUS_CONTAINER,
+        self._conn.sendMessage({ 'type' : ClientMsgTypes.CONTAINER_STATUS,
                                  'dest' : self._robotID,
                                  'orig' : '$$$$$$',
                                  'data' : { containerTag : status } })
