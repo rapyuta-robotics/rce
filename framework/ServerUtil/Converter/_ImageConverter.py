@@ -64,9 +64,6 @@ class ImageConverter(object):
         if not _checkIsStringIO(imgObj):
             raise TypeError('Given object is not a StringIO instance.')
         
-        with open('tst.png', 'w') as f:
-            f.write(imgObj.getvalue())
-        
         # Checking of image according to django.forms.fields.ImageField
         try:
             imgObj.reset()

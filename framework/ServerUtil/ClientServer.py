@@ -135,7 +135,7 @@ class WebSocketCloudEngineProtocol(WebSocketServerProtocol):
         """
         uri = msg[:32]
         binaryData = StringIO()
-        binaryData.write(msg[33:])
+        binaryData.write(msg[32:])
         
         # Find and replace URI with data
         for incompleteMsg in self._incompleteMsgs:
