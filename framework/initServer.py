@@ -141,74 +141,78 @@ def main(reactor, caFileName):
     termDeferreds = DeferredList([containerDeferred, serverDeferred])
     
     def callback((suffix, cert, key)):
-        if settings.USE_SSL:
-            # Create necessary directories
-            serverPath = os.path.join(settings.SSL_DIR, 'server')
-            containerPath = os.path.join(settings.SSL_DIR, 'container')
+        try:
+            if settings.USE_SSL:
+                # Create necessary directories
+                serverPath = os.path.join(settings.SSL_DIR, 'server')
+                containerPath = os.path.join(settings.SSL_DIR, 'container')
+                
+                # Change access and ownership of directories
+                os.mkdir(serverPath)
+                os.chmod(serverPath, 0700)
+                os.chown(serverPath, 1000, 1000)
+                
+                os.mkdir(containerPath)
+                os.chmod(containerPath, 0700)
+                
+                # Add clean up of directories
+                def cleanUp(result):
+                    shutil.rmtree(serverPath, True)
+                    shutil.rmtree(containerPath, True)
+                    return result
+                
+                termDeferreds.addCallbacks(cleanUp, cleanUp)
+                
+                # Save the received, signed certificate and key for the server (connection to the master)
+                with open(os.path.join(serverPath, 'toMaster.cert'), 'w') as f:
+                    f.write(cert)
+                
+                writeKeyToFile(key, os.path.join(serverPath, 'toMaster.key'))
+                
+                # Create a certificate to sign certificates for communication between server and container node
+                (caCert, caKey) = createKeyCertPair('Machine')
+                
+                writeCertToFile(caCert, os.path.join(settings.SSL_DIR, 'Machine.cert'))
+                
+                # Create and save the certificate for the server (connection to the container)
+                (cert, key) = createKeyCertPair( MsgDef.PREFIX_PUB_ADDR + suffix,
+                                                 caCert,
+                                                 caKey )
+                
+                writeCertToFile(cert, os.path.join(serverPath, 'toContainer.cert'))
+                writeKeyToFile(key, os.path.join(serverPath, 'toContainer.key'))
+                
+                # Create and save the certificate for the container (connection to the server)
+                (cert, key) = createKeyCertPair( MsgDef.PREFIX_PRIV_ADDR + suffix,
+                                                 caCert,
+                                                 caKey )
+                
+                writeCertToFile(cert, os.path.join(containerPath, 'toServer.cert'))
+                writeKeyToFile(key, os.path.join(containerPath, 'toServer.key'))
+                
+                # Create a certificate to sign certificates for communication between server and environment nodes
+                (caCert, caKey) = createKeyCertPair('Container')
+                
+                writeCertToFile(caCert, os.path.join(settings.SSL_DIR, 'Container.cert'))
+                writeKeyToFile(caKey, os.path.join(containerPath, 'env.key'))
+                
+                # Create and save the certificate for the server (connection to environments)
+                (cert, key) = createKeyCertPair( MsgDef.PREFIX_PUB_ADDR + suffix,
+                                                 caCert,
+                                                 caKey )
+                
+                writeCertToFile(cert, os.path.join(serverPath, 'toEnv.cert'))
+                writeKeyToFile(key, os.path.join(serverPath, 'toEnv.key'))
             
-            # Change access and ownership of directories
-            os.mkdir(serverPath)
-            os.chmod(serverPath, 0700)
-            os.chown(serverPath, 1000, 1000)
+            cmd = [containerExe, suffix]
+            reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
             
-            os.mkdir(containerPath)
-            os.chmod(containerPath, 0700)
-            
-            # Add clean up of directories
-            def cleanUp(result):
-                shutil.rmtree(serverPath, True)
-                shutil.rmtree(containerPath, True)
-                return result
-            
-            termDeferreds.addCallbacks(cleanUp, cleanUp)
-            
-            # Save the received, signed certificate and key for the server (connection to the master)
-            with open(os.path.join(serverPath, 'toMaster.cert'), 'w') as f:
-                f.write(cert)
-            
-            writeKeyToFile(key, os.path.join(serverPath, 'toMaster.key'))
-            
-            # Create a certificate to sign certificates for communication between server and container node
-            (caCert, caKey) = createKeyCertPair('Machine')
-            
-            writeCertToFile(caCert, os.path.join(settings.SSL_DIR, 'Machine.cert'))
-            
-            # Create and save the certificate for the server (connection to the container)
-            (cert, key) = createKeyCertPair( MsgDef.PREFIX_PUB_ADDR + suffix,
-                                             caCert,
-                                             caKey )
-            
-            writeCertToFile(cert, os.path.join(serverPath, 'toContainer.cert'))
-            writeKeyToFile(key, os.path.join(serverPath, 'toContainer.key'))
-            
-            # Create and save the certificate for the container (connection to the server)
-            (cert, key) = createKeyCertPair( MsgDef.PREFIX_PRIV_ADDR + suffix,
-                                             caCert,
-                                             caKey )
-            
-            writeCertToFile(cert, os.path.join(containerPath, 'toServer.cert'))
-            writeKeyToFile(key, os.path.join(containerPath, 'toServer.key'))
-            
-            # Create a certificate to sign certificates for communication between server and environment nodes
-            (caCert, caKey) = createKeyCertPair('Container')
-            
-            writeCertToFile(caCert, os.path.join(settings.SSL_DIR, 'Container.cert'))
-            writeKeyToFile(caKey, os.path.join(containerPath, 'env.key'))
-            
-            # Create and save the certificate for the server (connection to environments)
-            (cert, key) = createKeyCertPair( MsgDef.PREFIX_PUB_ADDR + suffix,
-                                             caCert,
-                                             caKey )
-            
-            writeCertToFile(cert, os.path.join(serverPath, 'toEnv.cert'))
-            writeKeyToFile(key, os.path.join(serverPath, 'toEnv.key'))
-        
-        cmd = [containerExe, suffix]
-        reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
-        
-        user = getpwnam(settings.SERVER_USER)
-        cmd = [serverExe, suffix, settings.IP_MASTER]
-        reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=user.pw_uid, gid=user.pw_gid)
+            user = getpwnam(settings.SERVER_USER)
+            cmd = [serverExe, suffix, settings.IP_MASTER]
+            reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=user.pw_uid, gid=user.pw_gid)
+        except Exception as e:
+            log.msg(str(e))
+            reactor.stop()
     
     def errback(errMsg):
         log.msg(errMsg)

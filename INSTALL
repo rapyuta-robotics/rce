@@ -98,6 +98,10 @@
 13. Install libraries needed for Custom Converters
     sudo apt-get install python-imaging
 
-14. Copy upstart script to container
+14. Create necessary folders holding temporary data of containers
+    sudo mkdir -p /opt/rce/container/data
+    sudo mkdir -p /opt/rce/container/config
+
+15. Copy upstart script to container
     sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
 
