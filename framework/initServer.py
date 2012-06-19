@@ -212,12 +212,11 @@ def main(reactor, caFileName):
             reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=user.pw_uid, gid=user.pw_gid)
         except Exception as e:
             log.msg(str(e))
-            reactor.stop()
+            exit(1)
     
     def errback(errMsg):
         log.msg(errMsg)
-        print errMsg
-        reactor.stop()
+        exit(1)
     
     deferred.addCallbacks(callback, errback)
     
