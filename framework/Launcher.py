@@ -40,9 +40,6 @@ def main(reactor):
     
     log.msg('Start initialization...')
     
-    if settings.USE_SSL:
-        ctx = None
-    
     # Create Manager
     commManager = CommManager(reactor, MsgDef.LAUNCHER_ADDR)
     LauncherManager(commManager)
@@ -54,10 +51,7 @@ def main(reactor):
     factory = RCEServerFactory( commManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE ])
-    if settings.USE_SSL:
-        reactor.listenSSL(settings.PORT_LAUNCHER, factory, ctx)
-    else:
-        reactor.listenTCP(settings.PORT_LAUNCHER, factory)
+    reactor.listenTCP(settings.PORT_LAUNCHER, factory)
     
     # Start twisted
     log.msg('Initialization completed')
@@ -78,7 +72,7 @@ def _get_argparse():
 if __name__ == '__main__':
     from twisted.internet import reactor
 
-    #parser = _get_argparse()
-    #args = parser.parse_args()
+    parser = _get_argparse()
+    args = parser.parse_args()
     
     main(reactor)
