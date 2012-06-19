@@ -11,11 +11,23 @@ cmds = [cmd_CC_debug,
         cmd_CN_removeDebugParameters,
         cmd_CN_startNodeaddInterfaceDebug,
         cmd_IR_registerAtDebugInterface,
-        cmd_DM_debugServiceRequest_1,
-        cmd_DM_debugServiceRequest_2,
-        cmd_DM_debugServiceRequest_3]
-
-
+        cmd_DM_debugJSONServiceRequest_1,
+		cmd_DM_debugJSONServiceRequest_2,
+		cmd_DM_debugJSONServiceRequest_3,
+		cmd_CN_binaryReceiving_N,
+		cmd_CN_binaryReceiving_I,				
+		cmd_CN_binaryReceiving_NI,
+		cmd_IR_binaryReceiving,
+		cmd_DM_binaryReceiving,
+		cmd_DM_binarySending_N,
+		cmd_DM_binarySending_I,
+		cmd_DM_binarySending_NI,
+		cmd_IR_binarySending,
+		cmd_DM_binaryComplexReceiving_N,
+		cmd_DM_binaryComplexReceiving_I,
+		cmd_DM_binaryComplexReceiving_NI,
+		cmd_IR_binaryComplexReceiving,
+		cmd_DM_binaryComplexReceiving ]
 
 
 # .txt clipboard
