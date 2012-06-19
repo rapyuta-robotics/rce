@@ -179,7 +179,7 @@ function sendCommand() {
 	}
 	
 	//container creation checks
-	if(msg.type=="CS"){
+	if(msg.type=="CC"){
 		if(robotStatus == "Container Assigned"){
 				raiseError("Robot is already assigned a container");
 				okToSend = false;
@@ -187,7 +187,7 @@ function sendCommand() {
 	}
 	
 	//container delete checks
-	if(msg.type=="CH"){
+	if(msg.type=="DC"){
 		if(robotStatus != "Container Assigned"){
 			raiseError("You can not delete a non assigned container");
 			okToSend = false;
@@ -197,13 +197,13 @@ function sendCommand() {
 		}
 	}
 	
-	if(msg.type=="CM" || msg.type=="CC"){
+	if(msg.type=="DM" || msg.type=="CN"){
 		if(robotStatus != "Container Assigned"){
 			raiseError("Can not send other msgs before creating a container");
 			//okToSend = false;
 			}
 	}
-	if(okToSend){
+	if(okToSend=true){ //Sending everything to rce now
 		webSocket.send(msg_json);
 		console.log('message sent.')
 	}
@@ -253,9 +253,9 @@ function loadCommand(sel){
 
 
 //////////////////////////////////////////////////////////////////////
-/////////////////																	////////////////////
-/////////////////				Binary Msg Upload 				////////////////////
-/////////////////																	////////////////////
+/////////////////								 	//////////////////
+/////////////////	   	Binary Msg Upload			//////////////////
+/////////////////									//////////////////
 //////////////////////////////////////////////////////////////////////
 
 var blobToSend; 
@@ -291,7 +291,7 @@ function handleFileSelect(evt) {
 			uuidStr = uuid();
 
 			//load JSON with UUID into text box
-			txtJSON = '{"type":"CM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"Test/modifyImage","msg":{"data":'+uuidStr+'}}}';	
+			txtJSON = '{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"Test/modifyImage","msg":{"data":'+uuidStr+'}}}';	
 			document.getElementById('JSONImageMsg').value = txtJSON;		
 			
 			blobToSend = Blob([uuidStr, localFileReader.result]); //this fails in chromium
