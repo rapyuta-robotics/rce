@@ -92,7 +92,7 @@ class DelCommIDRequestMessage(object):
     def deserialize(self, s):
         return { 'commID' : s.getElement() }
 
-# TODO: Atm not used!
+# TODO: At the moment not used!
 class LoadInfoMessage(object):
     """ Message type to provide the load balancer with the necessary information.
     """

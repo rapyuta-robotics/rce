@@ -38,6 +38,9 @@ from Comm.Message import MsgDef
 from Type import StartContainerMessage, StopContainerMessage
 from Processor import StartContainerProcessor, StopContainerProcessor
 
+if settings.USE_SSL:
+    from SSLUtil import createKeyCertPair, loadCertFile, loadKeyFile, writeCertToFile, writeKeyToFile
+
 class LXCProtocol(ProcessProtocol):
     """ Protocol which is used to handle the LXC commands.
     """
@@ -277,8 +280,23 @@ class ContainerManager(ManagerBase):
             log.msg('Create files and directories...')
             os.mkdir(confDir)
             os.mkdir(dataDir)
-            os.mkdir(os.path.join(dataDir, 'rce'))
-            os.mkdir(os.path.join(dataDir, 'ros'))
+            
+            rceDir = os.path.join(dataDir, 'rce')
+            rosDir = os.path.join(dataDir, 'ros')
+            os.mkdir(rceDir)
+            os.mkdir(rosDir)
+            
+            if settings.USE_SSL:
+                # Create a new certificate and key for environment node
+                caCertPath = os.path.join(settings.SSL_DIR, 'Container.cert')
+                caCert = loadCertFile(caCertPath)
+                caKey = loadKeyFile(os.path.join(settings.SSL_DIR, 'container/env.key'))
+                (cert, key) = createKeyCertPair(commID, caCert, caKey)
+                
+                # Copy/save file to data directory
+                shutil.copyfile(caCertPath, os.path.join(rceDir, 'ca.pem'))
+                writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
+                writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
             
             # Construct config file
             self._createConfigFile(confDir)

@@ -24,10 +24,6 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import ClientContextFactory
-
-# Python specific imports
-import sys
 
 # Custom imports
 import settings
@@ -43,7 +39,7 @@ def main(reactor):
     log.startLogging(f)
     
     log.msg('Start initialization...')
-
+    
     # Create Manager
     commManager = CommManager(reactor, MsgDef.LAUNCHER_ADDR)
     LauncherManager(commManager)
@@ -55,7 +51,6 @@ def main(reactor):
     factory = RCEServerFactory( commManager )
     factory.addApprovedMessageTypes([ MsgTypes.ROS_ADD,
                                       MsgTypes.ROS_REMOVE ])
-    #reactor.listenSSL(settings.PORT_LAUNCHER, factory, ClientContextFactory())
     reactor.listenTCP(settings.PORT_LAUNCHER, factory)
     
     # Start twisted
@@ -63,6 +58,8 @@ def main(reactor):
     log.msg('Enter mainloop')
     reactor.run()
     log.msg('Leaving Launcher')
+    
+    f.close()
 
 def _get_argparse():
     from argparse import ArgumentParser
@@ -75,7 +72,7 @@ def _get_argparse():
 if __name__ == '__main__':
     from twisted.internet import reactor
 
-    #parser = _get_argparse()
-    #args = parser.parse_args()
+    parser = _get_argparse()
+    args = parser.parse_args()
     
     main(reactor)

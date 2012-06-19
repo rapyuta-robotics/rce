@@ -27,13 +27,15 @@ from zope.interface.verify import verifyObject
 from zope.interface.exceptions import Invalid
 
 # twisted specific imports
-from twisted.internet.protocol import Protocol, ServerFactory
+from twisted.internet.protocol import ServerFactory
+from twisted.protocols.basic import LineReceiver
 
 # Custom imports
+import settings
 from Exceptions import InternalError
 from Interfaces import IUIDServer
 
-class UIDServerProtocol(Protocol):
+class UIDServerProtocol(LineReceiver):
     """ Protocol which is used by the server to send a new UID for a machine.
     """
     def __init__(self, uidServer):
@@ -43,13 +45,32 @@ class UIDServerProtocol(Protocol):
             @type  uidServer:   IUIDServer
         """
         self._uidServer = uidServer
+        self._buff = []
     
     def connectionMade(self):
-        """Callback which is called by twisted when the connection has been established.
+        """ Callback which is called by twisted when connection is established.
         """
-        uid = self._uidServer.getUID()
-        self.transport.write(uid)
-        self.transport.loseConnection()
+        self.transport.write('{0}{1}'.format(self._uidServer.getUID(), self.delimiter))
+        
+        if not settings.USE_SSL:
+            self.transport.loseConnection()
+    
+    def lineReceived(self, line):
+        """ Callback which is called by twisted when a line has been received.
+        """
+        if settings.USE_SSL:
+            if not line:
+                self.transport.write(
+                    '{0}{1}'.format(
+                        self._uidServer.getCertificate(
+                            '\n'.join(self._buff),
+                        ),
+                        self.delimiter
+                    )
+                )
+                self.transport.loseConnection()
+            else:
+                self._buff.append(line)
 
 class UIDServerFactory(ServerFactory):
     """ Factory which is used on the server side to provide clients with a UID.

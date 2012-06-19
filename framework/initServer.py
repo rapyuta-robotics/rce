@@ -29,10 +29,15 @@ from twisted.internet.defer import Deferred, DeferredList
 
 # Python specific imports
 import os, sys
+import shutil
 
 # Custom imports
 import settings
+from Comm.Message import MsgDef
 from MasterUtil.UIDClient import UIDClientFactory
+
+if settings.USE_SSL:
+    from SSLUtil import createKeyCertPair, writeCertToFile, writeKeyToFile, RCEClientContext
 
 class LoggerProtocol(ProcessProtocol):
     """ Simple ProcessProtocol which forwards the stdout of the subprocesses to the
@@ -84,7 +89,7 @@ class LoggerProtocol(ProcessProtocol):
                 self._escalation += 1
                 self._stopCall = reactor.callLater(escalation[1], self.terminate, reactor)
 
-def main(reactor):
+def main(reactor, caFileName):
     log.startLogging(sys.stdout)
     
     if not os.path.isdir(settings.ROOT_SRC_DIR):
@@ -118,12 +123,74 @@ def main(reactor):
     serverProtocol = LoggerProtocol(serverDeferred)
     termDeferreds = DeferredList([containerDeferred, serverDeferred])
     
-    def callback(suffix):
-        cmd = [containerExe, suffix]
-        reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
+    def callback((suffix, cert, key)):
+        containerCmd = [containerExe, suffix]
+        serverCmd = [serverExe, suffix, settings.IP_MASTER]
         
-        cmd = [serverExe, suffix, settings.IP_MASTER]
-        reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=1000, gid=1000)
+        if settings.USE_SSL:
+            # Create necessary directories
+            serverPath = os.path.join(settings.SSL_DIR, 'server')
+            containerPath = os.path.join(settings.SSL_DIR, 'container')
+            
+            # Change access and ownership of directories
+            os.mkdir(serverPath)
+            os.chmod(serverPath, 0700)
+            os.chown(serverPath, 1000, 1000)
+            
+            os.mkdir(containerPath)
+            os.chmod(containerPath, 0700)
+            
+            # Add clean up of directories
+            def cleanUp(result):
+                shutil.rmtree(serverPath, True)
+                shutil.rmtree(containerPath, True)
+                return result
+            
+            termDeferreds.addCallbacks(cleanUp, cleanUp)
+            
+            # Save the received, signed certificate and key for the server (connection to the master)
+            with open(os.path.join(serverPath, 'toMaster.cert'), 'w') as f:
+                f.write(cert)
+            
+            writeKeyToFile(key, os.path.join(serverPath, 'toMaster.key'))
+            
+            # Create a certificate to sign certificates for communication between server and container node
+            (caCert, caKey) = createKeyCertPair('Machine')
+            
+            writeCertToFile(caCert, os.path.join(settings.SSL_DIR, 'Machine.cert'))
+            
+            # Create and save the certificate for the server (connection to the container)
+            (cert, key) = createKeyCertPair( MsgDef.PREFIX_PUB_ADDR + suffix,
+                                             caCert,
+                                             caKey )
+            
+            writeCertToFile(cert, os.path.join(serverPath, 'toContainer.cert'))
+            writeKeyToFile(key, os.path.join(serverPath, 'toContainer.key'))
+            
+            # Create and save the certificate for the container (connection to the server)
+            (cert, key) = createKeyCertPair( MsgDef.PREFIX_PRIV_ADDR + suffix,
+                                             caCert,
+                                             caKey )
+            
+            writeCertToFile(cert, os.path.join(containerPath, 'toServer.cert'))
+            writeKeyToFile(key, os.path.join(containerPath, 'toServer.key'))
+            
+            # Create a certificate to sign certificates for communication between server and environment nodes
+            (caCert, caKey) = createKeyCertPair('Container')
+            
+            writeCertToFile(caCert, os.path.join(settings.SSL_DIR, 'Container.cert'))
+            writeKeyToFile(caKey, os.path.join(containerPath, 'env.key'))
+            
+            # Create and save the certificate for the server (connection to environments)
+            (cert, key) = createKeyCertPair( MsgDef.PREFIX_PUB_ADDR + suffix,
+                                             caCert,
+                                             caKey )
+            
+            writeCertToFile(cert, os.path.join(serverPath, 'toEnv.cert'))
+            writeKeyToFile(key, os.path.join(serverPath, 'toEnv.key'))
+        
+        reactor.spawnProcess(containerProtocol, containerCmd[0], containerCmd, env=os.environ) # uid=0, gid=0
+        reactor.spawnProcess(serverProtocol, serverCmd[0], serverCmd, env=os.environ, uid=1000, gid=1000)
     
     def errback(errMsg):
         log.msg(errMsg)
@@ -132,7 +199,13 @@ def main(reactor):
     
     deferred.addCallbacks(callback, errback)
     
-    reactor.connectTCP(settings.IP_MASTER, settings.PORT_UID, UIDClientFactory(deferred))
+    if settings.USE_SSL:
+        reactor.connectSSL( settings.IP_MASTER,
+                            settings.PORT_UID,
+                            UIDClientFactory(deferred),
+                            RCEClientContext(caFileName) )
+    else:
+        reactor.connectTCP(settings.IP_MASTER, settings.PORT_UID, UIDClientFactory(deferred))
     
     def shutdown():
         containerProtocol.terminate(reactor)
@@ -143,6 +216,23 @@ def main(reactor):
     
     reactor.run()
 
+def _get_argparse():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(prog='initServer',
+                            description='Script which is used to set up a machine for the ReCloudEngine.')
+
+    parser.add_argument('--cert', help='Path to the certificate file which is used to connect with the Master.', default='')
+    
+    return parser
+
 if __name__ == '__main__':
     from twisted.internet import reactor
-    main(reactor)
+    
+    parser = _get_argparse()
+    args = parser.parse_args()
+    
+    if settings.USE_SSL and not os.path.isfile(args.cert):
+        raise ValueError('Certificate path is not a valid file.')
+    
+    main(reactor, args.cert)

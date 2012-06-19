@@ -25,12 +25,11 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import DefaultOpenSSLContextFactory
 from twisted.internet.task import LoopingCall
 from autobahn.websocket import listenWS
 
 # Python specific imports
-import sys
+import os, sys
 
 # Custom imports
 import settings
@@ -42,6 +41,9 @@ from Comm.CommUtil import validateSuffix
 from ServerUtil.Manager import ServerManager
 from ServerUtil.Triggers import BaseRoutingTrigger, ServerRoutingTrigger, EnvironmentRoutingTrigger
 from ServerUtil.ClientServer import WebSocketCloudEngineFactory
+
+if settings.USE_SSL:
+    from SSLUtil import RCEClientContext, RCEServerContext
 
 class EnvironmentServerFactory(RCEServerFactory):
     """ RCEServerFactory which is used in the server node for the connections
@@ -72,11 +74,36 @@ def main(reactor, ip, uid):
     
     log.msg('Start initialization...')
     commID = MsgDef.PREFIX_PUB_ADDR + uid
-    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: Switch to SSL
+    
+    if settings.USE_SSL:
+        pathToRCE = os.path.join(settings.SSL_DIR, 'RCE.cert')
+        path = os.path.join(settings.SSL_DIR, 'server')
+        
+        # SSL ContextFactory for connections from other server nodes
+        serverContext = RCEServerContext( pathToRCE,
+                                          os.path.join(path, 'toMaster.cert'),
+                                          os.path.join(path, 'toMaster.key') )
+        
+        # SSL ContextFactory for connections to other server nodes and to master node
+        clientContext = RCEClientContext( pathToRCE,
+                                          os.path.join(path, 'toMaster.cert'),
+                                          os.path.join(path, 'toMaster.key') )
+        
+        # SSL ContextFactory for connection to container node
+        containerContext = RCEClientContext( os.path.join(settings.SSL_DIR, 'Machine.cert'),
+                                             os.path.join(path, 'toContainer.cert'),
+                                             os.path.join(path, 'toContainer.key') )
+        
+        # SSL ContextFactory for connections from environment nodes
+        environmentContext = RCEServerContext( os.path.join(settings.SSL_DIR, 'Container.cert'),
+                                               os.path.join(path, 'toEnv.cert'),
+                                               os.path.join(path, 'toEnv.key') )
+    else:
+        clientContext = None
     
     # Create Manager
     commManager = CommManager(reactor, commID)
-    serverManager = ServerManager(commManager, None)#ctx.getContext())
+    serverManager = ServerManager(commManager, clientContext)
     
     # Initialize twisted
     log.msg('Initialize twisted')
@@ -87,16 +114,20 @@ def main(reactor, ip, uid):
     factory.addApprovedMessageTypes([ # MsgTypes.ROUTE_INFO,
     #                                  MsgTypes.ROS_RESPONSE, # Only used in pull implementation
                                       MsgTypes.ROS_MSG ])
-    #reactor.listenSSL(settings.PORT_SATELLITE_ENVIRONMENT, factory, ctx)
-    reactor.listenTCP(settings.PORT_SATELLITE_ENVIRONMENT, factory)
+    if settings.USE_SSL:
+        reactor.listenSSL(settings.PORT_SERVER_ENVIRONMENT, factory, environmentContext)
+    else:
+        reactor.listenTCP(settings.PORT_SERVER_ENVIRONMENT, factory)
     
     # Server for connections from other servers
     factory = RCEServerFactory( commManager,
                                 ServerRoutingTrigger(commManager, serverManager) )
     factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                       MsgTypes.ROS_MSG ])
-    #reactor.listenSSL(settings.PORT_SATELLITE_SATELLITE, factory, ctx)
-    reactor.listenTCP(settings.PORT_SATELLITE_SATELLITE, factory)
+    if settings.USE_SSL:
+        reactor.listenSSL(settings.PORT_SERVER_SERVER, factory, serverContext)
+    else:
+        reactor.listenTCP(settings.PORT_SERVER_SERVER, factory)
     
     # Client for connection to Container Node
     factory = RCEClientFactory( commManager,
@@ -104,8 +135,10 @@ def main(reactor, ip, uid):
                                 BaseRoutingTrigger(commManager) )
     #factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
     #                                  MsgTypes.CONTAINER_STATUS ])
-    #reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, ctx)
-    reactor.connectTCP('localhost', settings.PORT_CONTAINER_MNGR, factory)
+    if settings.USE_SSL:
+        reactor.connectSSL('localhost', settings.PORT_CONTAINER_MNGR, factory, containerContext)
+    else:
+        reactor.connectTCP('localhost', settings.PORT_CONTAINER_MNGR, factory)
     
     # Client for connection to Master
     factory = RCEClientFactory( commManager,
@@ -114,8 +147,10 @@ def main(reactor, ip, uid):
     factory.addApprovedMessageTypes([ # MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONNECT,
                                       MsgTypes.ID_RESPONSE ])
-    #reactor.connectSSL(ip, settings.PORT_MASTER, factory, ctx)
-    reactor.connectTCP(ip, settings.PORT_MASTER, factory)
+    if settings.USE_SSL:
+        reactor.connectSSL(ip, settings.PORT_MASTER, factory, clientContext)
+    else:
+        reactor.connectTCP(ip, settings.PORT_MASTER, factory)
     
     # Server for connections from robots, i.e. the web, brokered by the master node
     listenWS(WebSocketCloudEngineFactory(serverManager, "ws://localhost:9000"))

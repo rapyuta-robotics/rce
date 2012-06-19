@@ -27,10 +27,6 @@ import rospy
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import ClientContextFactory
-
-# Python specific imports
-import sys
 
 # Custom imports
 import settings
@@ -41,13 +37,21 @@ from Comm.Factory import RCEClientFactory
 from Comm.CommManager import CommManager
 from EnvironmentUtil.Manager import ROSManager
 
+if settings.USE_SSL:
+    from SSLUtil import RCEClientContext
+
 def main(reactor, commID, serverID):
     # Start logger
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
     
     log.msg('Start initialization...')
-
+    
+    if settings.USE_SSL:
+        ctx = RCEClientContext( '/opt/rce/data/ca.pem',
+                                '/opt/rce/data/cert.pem',
+                                '/opt/rce/data/key.pem' )
+    
     # Init ROS
     log.msg('Initialize ROS node')
     rospy.init_node('Administration')
@@ -68,13 +72,14 @@ def main(reactor, commID, serverID):
                                       MsgTypes.ROS_USER,
                                       # MsgTypes.ROS_GET,    # Only push valid; no pull
                                       MsgTypes.ROS_MSG ])
-    #reactor.connectSSL(ip, settings.PORT_SATELLITE_ENVIRONMENT, factory, ClientContextFactory())
-    reactor.connectTCP(settings.IP_SATELLITE, settings.PORT_SATELLITE_ENVIRONMENT, factory)
+    if settings.USE_SSL:
+        reactor.connectSSL(settings.IP_SERVER, settings.PORT_SERVER_ENVIRONMENT, factory, ctx)
+    else:
+        reactor.connectTCP(settings.IP_SERVER, settings.PORT_SERVER_ENVIRONMENT, factory)
     
     # Client for connection to launcher
     factory = RCEClientFactory( commManager,
                                 MsgDef.LAUNCHER_ADDR )
-    #reactor.connectSSL('localhost', settings.PORT_LAUNCHER, factory, ClientContextFactory())
     reactor.connectTCP('localhost', settings.PORT_LAUNCHER, factory)
 
     # Add shutdown hooks
@@ -92,6 +97,8 @@ def main(reactor, commID, serverID):
     log.msg('Enter mainloop')
     reactor.run(installSignalHandlers=False)
     log.msg('Leaving Administrator')
+    
+    f.close()
 
 def _get_argparse():
     from argparse import ArgumentParser
