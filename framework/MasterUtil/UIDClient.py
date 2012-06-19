@@ -24,9 +24,17 @@
 
 # twisted specific imports
 from twisted.internet.error import ConnectionDone
-from twisted.internet.protocol import Protocol, ClientFactory
+from twisted.internet.protocol import ClientFactory
+from twisted.protocols.basic import LineReceiver
 
-class UIDClientProtocol(Protocol):
+# Custom imports
+import settings
+from Comm.CommUtil import validateSuffix
+
+if settings.USE_SSL:
+    from SSLUtil import createKey, createCertReq, dumpCertReq
+
+class UIDClientProtocol(LineReceiver):
     """ Protocol which is used by a client to retrieve a new UID for a machine.
     """
     def __init__(self, deferred):
@@ -36,18 +44,44 @@ class UIDClientProtocol(Protocol):
             @type  deferred:    Deferred
         """
         self._deferred = deferred
-        self._buff = ''
+        self._buff = []
+        
+        self._uid = None
+        
+        if settings.USE_SSL:
+            self._key = createKey()
+        else:
+            self._key = None
     
-    def dataReceived(self, data):
-        """ Callback which is called by twisted when new data arrived.
+    def lineReceived(self, line):
+        """ Callback which is called by twisted when a line has been received.
         """
-        self._buff += data
+        if not self._uid:
+            if not validateSuffix(line):
+                raise ValueError('Received address suffix is not valid.')
+            
+            self._uid = line
+            
+            if settings.USE_SSL:
+                self.transport.write(
+                    '{0}{1}{1}'.format(
+                        dumpCertReq(
+                            createCertReq(
+                                self._key,
+                                'Server-{0}'.format(line)
+                            )
+                        ),
+                        self.delimiter
+                    )
+                )
+        else:
+            self._buff.append(line)
     
     def connectionLost(self, reason):
-        """Callback which is called by twisted when the connection is lost.
+        """ Callback which is called by twisted when the connection is lost.
         """
         if reason.check(ConnectionDone):
-            self._deferred.callback(self._buff)
+            self._deferred.callback((self._uid, '\n'.join(self._buff), self._key))
         else:
             self._deferred.errback(reason.getErrorMessage())
 

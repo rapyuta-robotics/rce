@@ -66,12 +66,12 @@ class ServerManager(ManagerBase):
             
             @param ctx:     SSLContext which is used for the connections to
                             the other server nodes.
-            @type  ctx:     # TODO: Determine type of argument
+            @type  ctx:     Subclass of twisted::ssl.ContextFactory
         """
         super(ServerManager, self).__init__(commManager)
         
         # References used by the manager
-        #self._dbInterface = DBInterface(commManager)   # TODO: Atm not used!
+        #self._dbInterface = DBInterface(commManager)   # TODO: At the moment not used!
         self._loader = Loader()
         self._converter = Converter(self._loader)
         
@@ -240,9 +240,10 @@ class ServerManager(ManagerBase):
                                             ServerRoutingTrigger(self._commManager, self) )
         factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
                                           MsgTypes.ROS_MSG ])
-        #self.reactor.connectSSL(ip, port, factory, self._ctx)
-        self.reactor.connectTCP(ip, settings.PORT_SATELLITE_SATELLITE, factory)
-        # TODO: Switch to SSL
+        if settings.USE_SSL:
+            self.reactor.connectSSL(ip, settings.PORT_SERVER_SERVER, factory, self._ctx)
+        else:
+            self.reactor.connectTCP(ip, settings.PORT_SERVER_SERVER, factory)
     
     def connectToServers(self, servers):
         """ Callback for MessageProcessor to connect to specified servers.
@@ -286,7 +287,6 @@ class ServerManager(ManagerBase):
             to the master node/load balancer.
         """
         return # TODO: Until content is valid, keep this here
-        
         msg = Message()
         msg.msgType = MsgTypes.ROUTE_INFO
         msg.dest = settings.LOAD_INFO_UPDATE

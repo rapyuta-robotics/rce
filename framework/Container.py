@@ -24,10 +24,9 @@
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import DefaultOpenSSLContextFactory
 
 # Python specific imports
-import sys
+import os, sys
 
 # Custom imports
 import settings
@@ -37,13 +36,19 @@ from Comm.Factory import RCEServerFactory
 from Comm.CommManager import CommManager
 from Comm.CommUtil import validateSuffix
 from ContainerUtil.Manager import ContainerManager
+from SSLUtil import RCEServerContext
 
 def main(reactor, uid):
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
     commID = MsgDef.PREFIX_PRIV_ADDR + uid
-    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem') # TODO: Switch to SSL
+    
+    if settings.USE_SSL:
+        path = os.path.join(settings.SSL_DIR, 'container')
+        ctx = RCEServerContext( os.path.join(settings.SSL_DIR, 'Machine.cert'),
+                                os.path.join(path, 'toServer.cert'),
+                                os.path.join(path, 'toServer.key') )
     
     # Create Manager
     commManager = CommManager(reactor, commID)
@@ -57,8 +62,10 @@ def main(reactor, uid):
     factory.addApprovedMessageTypes([ # MsgTypes.ROUTE_INFO,
                                       MsgTypes.CONTAINER_START,
                                       MsgTypes.CONTAINER_STOP ])
-    #reactor.listenSSL(settings.PORT_CONTAINER_MNGR, factory, ctx)
-    reactor.listenTCP(settings.PORT_CONTAINER_MNGR, factory)
+    if settings.USE_SSL:
+        reactor.listenSSL(settings.PORT_CONTAINER_MNGR, factory, ctx)
+    else:
+        reactor.listenTCP(settings.PORT_CONTAINER_MNGR, factory)
 
     # Setup shutdown hooks
     reactor.addSystemEventTrigger('before', 'shutdown', containerManager.shutdown)

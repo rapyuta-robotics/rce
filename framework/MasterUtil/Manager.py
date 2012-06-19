@@ -34,11 +34,13 @@ import random
 
 # Custom imports
 import settings
+from Exceptions import InternalError
 from NodeManager import ManagerBase
 from Comm.Message import MsgDef
 from Interfaces import IUIDServer
 from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 from Processor import GetCommIDProcessor, DelCommIDProcessor
+from SSLUtil import parseCertReqStr, createCert, dumpCert
 
 class MasterManager(ManagerBase):
     """ Manager which is used for master node who is responsible for the management
@@ -46,11 +48,18 @@ class MasterManager(ManagerBase):
     """
     implements(IUIDServer)
     
-    def __init__(self, commManager):
+    def __init__(self, commManager, cert, key):
         """ Initialize the necessary variables for the MasterManager.
             
             @param commManager:     CommManager which should be used to communicate.
             @type  commManager:     CommManager
+            
+            @param cert:    Certificate which should be used to sign the new
+                            certificates (only used for SSL communication).
+            @type  cert:    crypto.X509
+            
+            @param key:     Key for certificate (only used for SSL communication).
+            @type  key:     crypto.PKey
         """
         super(MasterManager, self).__init__(commManager)
         
@@ -76,6 +85,10 @@ class MasterManager(ManagerBase):
         # Register Message Processors
         self._commManager.registerMessageProcessors([ GetCommIDProcessor(self, commManager),
                                                       DelCommIDProcessor(self, commManager) ])
+        
+        if settings.USE_SSL:
+            self._cert = cert
+            self._key = key
     
     def getUID(self):
         """ Callback method which provides a new UID for a machine.
@@ -94,6 +107,20 @@ class MasterManager(ManagerBase):
         self._tmpUIDs[uid] = datetime.now()
         
         return uid
+    
+    def getCertificate(self, req):
+        """ Callback method which provides a new certificate for a machine.
+            
+            @param req:     X509Req object as a string.
+            @type  req:     str
+            
+            @return:        Resulting X509 object as a string.
+            @rtype:         str
+        """
+        try:
+            return dumpCert(createCert(parseCertReqStr(req), self._cert, self._key))
+        except AttributeError:
+            raise InternalError('Tried to get a new SSL certificate, but configuration does not support SSL.')
     
     def checkUID(self, uid):
         """ Check if the given UID is in the list of not yet confirmed UIDs.

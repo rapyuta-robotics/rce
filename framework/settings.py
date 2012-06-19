@@ -58,6 +58,9 @@ UID_TIMEOUT = 60
 ###                                 ###
 #######################################
 
+# Absolute path to directory where SSL files are stored
+SSL_DIR = '/home/rce-user/rce'
+
 # Absolute path to root file system for container
 ROOTFS = '/opt/rce/container/rootfs'
 
@@ -91,6 +94,9 @@ RESULT_TIMEOUT = 600
 ###                                 ###
 #######################################
 
+# Bool which indicated whether SSL should be used for internal communication
+USE_SSL = True
+
 # Character pool which is used to build base addresses
 import string
 ADDR_BASE = string.ascii_uppercase
@@ -102,7 +108,7 @@ ADDRESS_LENGTH = 6
 IP_MASTER = 'localhost'
 
 # IP address of server for containers
-IP_SATELLITE = '10.0.3.1'
+IP_SERVER = '10.0.3.1'
 
 # Port of Master
 PORT_MASTER = 10011
@@ -117,10 +123,10 @@ PORT_DB = 10015
 PORT_CONTAINER_MNGR = 10020
 
 # Port of Server for other Servers
-PORT_SATELLITE_SATELLITE = 10025
+PORT_SERVER_SERVER = 10025
 
 # Port of Server for Environment Nodes
-PORT_SATELLITE_ENVIRONMENT = 11010
+PORT_SERVER_ENVIRONMENT = 11010
 
 # Port of Launcher
 PORT_LAUNCHER = 11011

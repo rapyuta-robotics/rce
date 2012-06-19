@@ -27,11 +27,10 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.ssl import DefaultOpenSSLContextFactory
 from twisted.internet.task import LoopingCall
 
 # Python specific imports
-import sys
+import os, sys
 
 # Custom imports
 import settings
@@ -43,6 +42,7 @@ from Comm.CommManager import CommManager
 from Comm.Interfaces import IPostInitTrigger
 from MasterUtil.Manager import MasterManager
 from MasterUtil.UIDServer import UIDServerFactory
+from SSLUtil import createKeyCertPair, writeCertToFile, RCEServerContext
 
 class MasterTrigger(object):
     """ PostInitTrigger which is used to send the available server as connection directive.
@@ -100,17 +100,37 @@ def main(reactor):
     log.startLogging(sys.stdout)
     
     log.msg('Start initialization...')
-    #ctx = DefaultOpenSSLContextFactory('Comm/key.pem', 'Comm/cert.pem')
+    
+    if settings.USE_SSL:
+        nodeName = 'Master'
+        caFile = os.path.join(settings.SSL_DIR, 'RCE.cert')
+        
+        (caCert, caKey) = createKeyCertPair('RCE')
+        writeCertToFile(caCert, caFile)
+        
+        (cert, key) = createKeyCertPair(nodeName, caCert, caKey)
+        
+        # SSL ContextFactory for connections from initServer script
+        uidContext = RCEServerContext(caFile, cert, key)
+        
+        # SSL ContextFactory for connections from server nodes
+        serverContext = RCEServerContext(caFile, cert, key)
+    else:
+        caCert = None
+        caKey = None
 
     # Create Manager
     commManager = CommManager(reactor, MsgDef.MASTER_ADDR)
-    masterManager = MasterManager(commManager)
+    masterManager = MasterManager(commManager, caCert, caKey)
     
     # Initialize twisted
     log.msg('Initialize twisted')
     
     # Server for UID distribution
-    reactor.listenTCP(settings.PORT_UID, UIDServerFactory(masterManager))
+    if settings.USE_SSL:
+        reactor.listenSSL(settings.PORT_UID, UIDServerFactory(masterManager), uidContext)
+    else:
+        reactor.listenTCP(settings.PORT_UID, UIDServerFactory(masterManager))
     
     # Server for connections from the servers
     factory = MasterServerFactory( commManager,
@@ -119,8 +139,10 @@ def main(reactor):
                                       MsgTypes.LOAD_INFO,
                                       MsgTypes.ID_REQUEST,
                                       MsgTypes.ID_DEL ])
-    #reactor.listenSSL(settings.PORT_MASTER, factory, ctx)
-    reactor.listenTCP(settings.PORT_MASTER, factory)
+    if settings.USE_SSL:
+        reactor.listenSSL(settings.PORT_MASTER, factory, serverContext)
+    else:
+        reactor.listenTCP(settings.PORT_MASTER, factory)
     
     # Server for initial outside connections
     ### 
@@ -141,6 +163,18 @@ def main(reactor):
     reactor.run()
     log.msg('Leaving Master')
 
+def _get_argparse():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(prog='Environment',
+                            description='Communication interface of ROS Apps and the Server node of the framework.')
+
+    return parser
+
 if __name__ == '__main__':
     from twisted.internet import reactor
+    
+    parser = _get_argparse()
+    args = parser.parse_args()
+    
     main(reactor)
