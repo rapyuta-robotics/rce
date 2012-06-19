@@ -36,7 +36,9 @@ from Comm.Message import MsgTypes
 from Comm.Factory import RCEClientFactory
 from Comm.CommManager import CommManager
 from EnvironmentUtil.Manager import ROSManager
-from SSLUtil import RCEClientContext
+
+if settings.USE_SSL:
+    from SSLUtil import RCEClientContext
 
 def main(reactor, commID, serverID):
     # Start logger

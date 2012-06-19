@@ -36,7 +36,9 @@ from Comm.Factory import RCEServerFactory
 from Comm.CommManager import CommManager
 from Comm.CommUtil import validateSuffix
 from ContainerUtil.Manager import ContainerManager
-from SSLUtil import RCEServerContext
+
+if settings.USE_SSL:
+    from SSLUtil import RCEServerContext
 
 def main(reactor, uid):
     log.startLogging(sys.stdout)

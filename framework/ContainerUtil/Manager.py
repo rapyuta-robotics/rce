@@ -37,9 +37,8 @@ from NodeManager import ManagerBase
 from Comm.Message import MsgDef
 from Type import StartContainerMessage, StopContainerMessage
 from Processor import StartContainerProcessor, StopContainerProcessor
-from SSLUtil import writeKeyToFile
 
-if settings.SSL_DIR:
+if settings.USE_SSL:
     from SSLUtil import createKeyCertPair, loadCertFile, loadKeyFile, writeCertToFile, writeKeyToFile
 
 class LXCProtocol(ProcessProtocol):
@@ -287,7 +286,7 @@ class ContainerManager(ManagerBase):
             os.mkdir(rceDir)
             os.mkdir(rosDir)
             
-            if settings.SSL_DIR:
+            if settings.USE_SSL:
                 # Create a new certificate and key for environment node
                 caCertPath = os.path.join(settings.SSL_DIR, 'Container.cert')
                 caCert = loadCertFile(caCertPath)

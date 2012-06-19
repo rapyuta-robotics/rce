@@ -40,7 +40,9 @@ from Comm.Message import MsgDef
 from Interfaces import IUIDServer
 from Type import ConnectDirectiveMessage, GetCommIDRequestMessage, GetCommIDResponseMessage, DelCommIDRequestMessage
 from Processor import GetCommIDProcessor, DelCommIDProcessor
-from SSLUtil import parseCertReqStr, createCert, dumpCert
+
+if settings.USE_SSL:
+    from SSLUtil import parseCertReqStr, createCert, dumpCert
 
 class MasterManager(ManagerBase):
     """ Manager which is used for master node who is responsible for the management

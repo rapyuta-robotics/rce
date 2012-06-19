@@ -42,7 +42,9 @@ from Comm.CommManager import CommManager
 from Comm.Interfaces import IPostInitTrigger
 from MasterUtil.Manager import MasterManager
 from MasterUtil.UIDServer import UIDServerFactory
-from SSLUtil import createKeyCertPair, writeCertToFile, RCEServerContext
+
+if settings.USE_SSL:
+    from SSLUtil import createKeyCertPair, writeCertToFile, RCEServerContext
 
 class MasterTrigger(object):
     """ PostInitTrigger which is used to send the available server as connection directive.

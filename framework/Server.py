@@ -41,7 +41,9 @@ from Comm.CommUtil import validateSuffix
 from ServerUtil.Manager import ServerManager
 from ServerUtil.Triggers import BaseRoutingTrigger, ServerRoutingTrigger, EnvironmentRoutingTrigger
 from ServerUtil.ClientServer import WebSocketCloudEngineFactory
-from SSLUtil import RCEClientContext, RCEServerContext
+
+if settings.USE_SSL:
+    from SSLUtil import RCEClientContext, RCEServerContext
 
 class EnvironmentServerFactory(RCEServerFactory):
     """ RCEServerFactory which is used in the server node for the connections
