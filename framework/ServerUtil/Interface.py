@@ -188,7 +188,7 @@ class Interface(object):
         try:
             rosMsg = self._converter.decode(self._toMsgCls, clientMsg['msg'])
         except (TypeError, ValueError) as e:
-            raise #InvalidRequest(str(e))
+            raise InvalidRequest(str(e))
         
         fifo = MessageFIFO()
         rosMsg.serialize(fifo)
@@ -214,7 +214,7 @@ class Interface(object):
         try:
             jsonMsg = self._converter.encode(rosMsg)
         except (TypeError, ValueError) as e:
-            raise #InvalidRequest(str(e))
+            raise InvalidRequest(str(e))
         
         self._container.receivedFromInterface( msg['user'],
                                                { 'type'         : self._msgType, 

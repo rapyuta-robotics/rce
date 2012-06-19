@@ -377,7 +377,7 @@ class Container(object):
             raise InternalError('Can not deactivate an interface which does not exist.')
     
     def send(self, msg):
-        """ Send a message to the container.
+        """ Send a message to the container. (Called by Interface)
             
             @param msg:     Message which should be sent to the container. The message
                             has to be a Message instance which contains all data
@@ -388,10 +388,10 @@ class Container(object):
             raise InternalError('Can not send an object which is not of type "Message".')
         
         msg.dest = self._commID
-        self._commManager.reactor.callInThread(self._commManager.sendMessage, msg)
+        self._commManager.sendMessage(msg)
     
     def receive(self, msg):
-        """ Process a received ROS message.
+        """ Process a received ROS message. (Called by Manager)
             
             @param msg:     Received message.
             @type  msg:     Message
@@ -407,7 +407,7 @@ class Container(object):
             raise InternalError('Can not process received message. Interface does not exist.')
     
     def sendToInterface(self, robotID, msg):
-        """ Send a message to the interface matching the given tag. (Called by the User)
+        """ Send a message to the interface matching the given tag. (Called by User)
             
             @param robotID:     ID which is used to identify the sender of the message.
             @type  robotID:     str
@@ -427,7 +427,7 @@ class Container(object):
     
     def receivedFromInterface(self, robotID, msg):
         """ Received a message from an interface and should now be processed.
-            (Called by the Interface)
+            (Called by Interface)
             
             @param robotID:     ID which is used to identify the receiving robot.
             @type  robotID:     str
