@@ -74,7 +74,7 @@ class Robot(object):
             return
         
         self._activeInterfaces.remove(interface)
-        self._user._deactivateInterface(containerTag, interfaceTag, self._robotID)
+        self._user.deactivateInterface(containerTag, interfaceTag, self._robotID)
     
     def sendROSMsgToContainer(self, containerTag, msg):
         """ Method is called when a complete message has been received by the robot
