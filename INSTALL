@@ -1,52 +1,52 @@
-1. 	Deploy on a local virtual machine:
-	Load Ubutnu 12.04 serveubuntu-12.04-server ISO into you virtual machine
-	http://releases.ubuntu.com/12.04/ubuntu-12.04-server-amd64.iso
-	tested on: VMware Fusion 4.0 
-	
-	Deploy on an IaaS platform
-	Lauch the Image provided by your IaaS perovider
-	tested on: Rackspace	
+1.  Deploy on a local virtual machine:
+    Load Ubutnu 12.04 serveubuntu-12.04-server ISO into you virtual machine
+    http://releases.ubuntu.com/12.04/ubuntu-12.04-server-amd64.iso
+    tested on: VMware Fusion 4.0
+    
+    Deploy on an IaaS platform
+    Lauch the Image provided by your IaaS perovider
+    tested on: Rackspace
 
-2.	Ping google.com to check your internet connectivity and DNS.
+2.  Ping google.com to check your internet connectivity and DNS.
 
 3.  Install the ssh deamons
-	sudo apt-get install openssh-client openssh-server
-    	n.b. Installing starts them automatically
+    sudo apt-get install openssh-client openssh-server
+        n.b. Installing starts them automatically
 
-4.	sudo apt-get install git-core
-	git config --global user.name "<your name>"
-	git config --global user.email "<your email>"
-	visit https://help.github.com/articles/set-up-git for more info
+4.  sudo apt-get install git-core
+    git config --global user.name "<your name>"
+    git config --global user.email "<your email>"
+    visit https://help.github.com/articles/set-up-git for more info
 
-	cd .ssh 
-	ssh-keygen -t rsa -C "gajan@ethz.ch"
-	(Generate authentication keys)
-	
-6.	Clone the rce repository (switch branches if necessary)
-	cd /opt
-	sudo git clone https://github.com/IDSCETHZurich/rce.git rce 
-	
+    cd .ssh
+    ssh-keygen -t rsa -C "gajan@ethz.ch"
+    (Generate authentication keys)
+    
+6.  Clone the rce repository (switch branches if necessary)
+    cd /opt
+    sudo git clone https://github.com/IDSCETHZurich/rce.git rce
+    
 7.  Open setup/setupHost.sh and follow instructions
 
-8.	Install the linux-container requirements
-	sudo apt-get install lxc bridge-utils dnsmasq debootstrap
+8.  Install the linux-container requirements
+    sudo apt-get install lxc bridge-utils dnsmasq debootstrap
 
-9.	Run setupContainer.bash to generate a 12.04 container for LXC
-	cd /opt/rce/setup
-	sudo bash setupContainer.bash --path=/opt/rce/container
-	n.b. You may set the ubuntu mirror to the one near you
+9.  Run setupContainer.bash to generate a 12.04 container for LXC
+    cd /opt/rce/setup
+    sudo bash setupContainer.bash --path=/opt/rce/container
+    n.b. You may set the ubuntu mirror to the one near you
     
 10. Start the container and perform initial setups:
     
     Enter container (user: root; password: root)
-        
-    sudo lxc-start -n ros -f /opt/rce/setup/stdConfig 
+    
+    sudo lxc-start -n ros -f /opt/rce/setup/stdConfig
     
     Inside the container do the following steps:
     
     1.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
         sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-		wget http://packages.ros.org/ros.key -O - | apt-key add -
+        wget http://packages.ros.org/ros.key -O - | apt-key add -
         apt-get update
         
         Minimal installation:
@@ -55,32 +55,32 @@
             apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
     2.  Test the ROS installation
-        . /opt/ros/fuerte/setup.sh 
-		export ROS_HOSTNAME=localhost
-		roscore 
+        . /opt/ros/fuerte/setup.sh
+        export ROS_HOSTNAME=localhost
+        roscore
 
     3.  Add users
         adduser ros
-		adduser --disabled-password --disabled-login --home /opt/rce/data rce
+        adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
     4.  Add files and directories
-		mkdir -p /opt/rce/packages
-		mkdir -p /opt/rce/src
-		touch /etc/init/rceComm.conf
-		touch /etc/init/rceLauncher.conf
+        mkdir -p /opt/rce/packages
+        mkdir -p /opt/rce/src
+        touch /etc/init/rceComm.conf
+        touch /etc/init/rceLauncher.conf
     
     5.  Leave the container (make sure you are in the container when running in a cloud)
         poweroff
 
-11.	Install ROS in the container host
-	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-	wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-	sudo apt-get update
+11. Install ROS in the container host
+    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+    wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+    sudo apt-get update
     sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
 
 12. Install the websockets related library
     sudo apt-get install python-twisted-core
-	sudo easy_install AutoBahn
+    sudo easy_install AutoBahn
 
 13. Install libraries needed for Custom Converters
     sudo apt-get install python-imaging
