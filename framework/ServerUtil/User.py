@@ -46,6 +46,7 @@ class User(object):
         self._serverManager = serverMngr
         self._userID = userID
         
+        self._reservedTags = set()
         self._containers = {}
         self._robots = {}
     
@@ -87,6 +88,14 @@ class User(object):
                                     which should be created.
             @type  containerTag:    str
         """
+        if containerTag in self._containers:
+            raise InvalidRequest('There exists already a container with the same tag.')
+        
+        if containerTag in self._reservedTags:
+            raise InvalidRequest('There is already a pending request with the same tag.')
+        
+        self._reservedTags.add(containerTag)
+        
         def _createContainer(commID):
             container = Container( self._commManager,
                                    self._serverManager,
@@ -99,6 +108,7 @@ class User(object):
             
             # Register container in this robot instance
             self._containers[containerTag] = container
+            self._reservedTags.remove(containerTag)
             
             # Register container in the manager
             self._serverManager.registerContainer(container)
