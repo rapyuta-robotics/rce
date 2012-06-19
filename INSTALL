@@ -65,8 +65,8 @@
         adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
     4.  Add files and directories
-        mkdir -p /opt/rce/packages
-        mkdir -p /opt/rce/src
+        mkdir /opt/rce/packages
+        mkdir /opt/rce/src
         touch /etc/init/rceComm.conf
         touch /etc/init/rceLauncher.conf
     
@@ -76,7 +76,7 @@
         For disabling the root login:
             Edit file /etc/passwd and replace root:x:... with root:!:...
             (Can also be done from the host machine;
-            To activte the login again replace root:!:... with root:x:...)
+            To activate the login again replace root:!:... with root:x:...)
     
     6.  Leave the container (make sure you are in the container when running in a cloud)
         poweroff
@@ -91,7 +91,7 @@
     For debug nodes:
         apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
-12. Install the websockets related library
+12. Install the websockets related libraries
     sudo apt-get install python-twisted-core
     sudo easy_install AutoBahn
 
@@ -99,8 +99,8 @@
     sudo apt-get install python-imaging
 
 14. Create necessary folders holding temporary data of containers
-    sudo mkdir -p /opt/rce/container/data
-    sudo mkdir -p /opt/rce/container/config
+    sudo mkdir /opt/rce/container/data
+    sudo mkdir /opt/rce/container/config
 
 15. Copy upstart script to container
     sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
