@@ -132,6 +132,8 @@ def main(reactor, user, caFileName):
         print('File "Server.py" in root source directory is not executable.')
         exit(1)
     
+    user = getpwnam(user)
+    
     deferred = Deferred()
     
     containerDeferred = Deferred()
@@ -207,7 +209,6 @@ def main(reactor, user, caFileName):
             cmd = [containerExe, suffix]
             reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
             
-            user = getpwnam(user)
             cmd = [serverExe, suffix, settings.IP_MASTER]
             reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=user.pw_uid, gid=user.pw_gid)
         except Exception as e:
