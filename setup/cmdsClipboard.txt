@@ -1,103 +1,52 @@
-Rackspace IP
-198.101.199.174
-
 === Create Container ===
 
-{"type":"CC","dest":"$$$$$$","orig":"robotUniqueID","data":{"containerTag":"containerTag01"}}
-
+{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CC", "orig": "robotUniqueID"}
 
 === Destroy Container ===
 
-{"type":"DC","dest":"$$$$$$","orig":"robotUniqueID","data":{"containerTag":"containerTag01"}}
+{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "DC", "orig": "robotUniqueID"}
 
+=== Start Nodes ===
 
-=== Start Node ===
+{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}]}}
+=== Remove Nodes ===
 
-
-=== Remove Node ===
-
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"removeNodes":["nodeTag"]}}
-
+{"dest": "containerTag01", "data": {"removeNodes": ["nodeTag"]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Add Interface ===
 
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
-
+{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Remove Interface ===
 
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"removeInterfaces":["Test/getSum"]}}
+{"dest": "containerTag01", "data": {"removeInterfaces": ["Test/getSum"]}, "type": "CN", "orig": "robotUniqueID"}
 
+=== Add Parameters ===
 
-=== Add Parameter ===
+{"dest": "containerTag01", "data": {"setParam": [{"paramValue": 3.0, "paramType": "float", "paramName": "test"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"setParam":[{"paramName":"test","paramValue":3.0,"paramType":"float"}]}}
+=== Remove Parameters ===
 
-
-=== Remove Parameter ===
-
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"deleteParam":["test"]}}
-
+{"dest": "containerTag01", "data": {"deleteParam": ["test"]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Start Node/Add Interface together ===
 
-{"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"TopicTest.py","nodeTag":"nodeTag","namespace":"Test"}],"addInterfaces":[{"name":"Test/getSum","interfaceType":"service","className":"Test/TopicService"},{"name":"Test/addInt","interfaceType":"publisher","className":"std_msgs/Int32"}]}}
-
+{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}], "addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Register Interface ===
 
-{"type":"IR","dest":"containerTag01","orig":"robotUniqueID","data":{"Test/addInt":true,"Test/getSum":true}}
+{"dest": "containerTag01", "data": {"Test/addInt": true, "Test/getSum": true}, "type": "IR", "orig": "robotUniqueID"}
 
+=== Send Service Request - I ===
 
-=== Send Service Request ===
+{"dest": "containerTag01", "data": {"msg": {"data": 3}, "msgID": "msgID_0", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
 
-{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"std_msgs/Int32","msgID":"msgID_0","interfaceTag":"Test/addInt","msg":{"data":3}}}
+=== Send Service Request - II ===
 
-{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"std_msgs/Int32","msgID":"msgID_1","interfaceTag":"Test/addInt","msg":{"data":7}}}
+{"dest": "containerTag01", "data": {"msg": {"data": 7}, "msgID": "msgID_1", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
 
-{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/TopicService","msgID":"msgID_2","interfaceTag":"Test/getSum","msg":{}}}
+=== Send Service Request - III ===
 
-
-=== Binary Test ===
-
-Nodes and Interfaces:
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageGenerator.py","nodeTag":"imgGen","namespace":"binary"}]}}
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"binary/circle","interfaceType":"subscriber","className":"sensor_msgs/Image"},{"name":"binary/ccPos","interfaceType":"publisher","className":"geometry_msgs/Pose2D"}]}}
-together:
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageGenerator.py","nodeTag":"imgGen","namespace":"binary"}],"addInterfaces":[{"name":"binary/circle","interfaceType":"subscriber","className":"sensor_msgs/Image"},{"name":"binary/ccPos","interfaceType":"publisher","className":"geometry_msgs/Pose2D"}]}}
-
-
-Register Interface:
-    {"type":"IR","dest":"containerTag01","orig":"robotUniqueID","data":{"binary/circle":true,"binary/ccPos":true}}
-
-SendPose:
-    {"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"geometry_msgs/Pose2D","msgID":"msgID_0","interfaceTag":"binary/ccPos","msg":{"x":0.2,"y":0.6,"theta":0.0}}}
-
-
-=== Binary Test 2 ===
-
-Nodes and Interfaces:
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageAnalyzer.py","nodeTag":"imgAnalyzer","namespace":"binary"}]}}
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"binary/circle","interfaceType":"publisher","className":"sensor_msgs/Image"},{"name":"binary/est_ccPos","interfaceType":"subscriber","className":"geometry_msgs/Pose2D"}]}}
-together:
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"rceBinaryMsgDebug","exe":"imageAnalyzer.py","nodeTag":"imgAnalyzer","namespace":"binary"}],"addInterfaces":[{"name":"binary/circle","interfaceType":"publisher","className":"sensor_msgs/Image"},{"name":"binary/est_ccPos","interfaceType":"subscriber","className":"geometry_msgs/Pose2D"}]}}
-
-Register Interface:
-    {"type":"IR","dest":"containerTag01","orig":"robotUniqueID","data":{"binary/circle":true,"binary/est_ccPos":true}}
-
-
-=== Binary Test 3 ===
-Nodes and Interface:
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"testNode","namespace":"TestBin"}]}}
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addInterfaces":[{"name":"TestBin/test","interfaceType":"service","className":"Test/QueryTest"}]}}
-together:
-    {"type":"CN","dest":"containerTag01","orig":"robotUniqueID","data":{"addNodes":[{"pkg":"Test","exe":"Test.py","nodeTag":"testNode","namespace":"TestBin"}],"addInterfaces":[{"name":"TestBin/test","interfaceType":"service","className":"Test/QueryTest"}]}}
-
-Register Interface:
-    {"type":"IR","dest":"containerTag01","orig":"robotUniqueID","data":{"TestBin/test":true}}
-
-Send sum:
-    {"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"Test/QueryTest","msgID":"msgID_0","interfaceTag":"TestBin/test","msg":{"a":3,"b":5}}}
+{"dest": "containerTag01", "data": {"msg": {}, "msgID": "msgID_2", "type": "Test/TopicService", "interfaceTag": "Test/getSum"}, "type": "DM", "orig": "robotUniqueID"}
 
