@@ -150,29 +150,190 @@ cmd_IR_registerAtDebugInterface = debugCmd({"type":ClientMsgTypes.INTERFACE_REGI
                             "data":{"Test/addInt":True,"Test/getSum":True}
                             },'cmd_IR_registerAtDebugInterface','Register Interface')
 
-cmd_DM_debugServiceRequest_1 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
+cmd_DM_debugJSONServiceRequest_1 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"std_msgs/Int32",
                                     "msgID":"msgID_0",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":3}}
-                            },'cmd_DM_debugServiceRequest_1','Send Service Request - I')
+                            },'cmd_DM_debugServiceRequest_1','Send addInt - topic I')
                             
-cmd_DM_debugServiceRequest_2 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
+cmd_DM_debugJSONServiceRequest_2 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"std_msgs/Int32",
                                     "msgID":"msgID_1",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":7}}
-                            },'cmd_DM_debugServiceRequest_2','Send Service Request - II')
+                            },'cmd_DM_debugServiceRequest_2','Send addInt - topic II')
 
-cmd_DM_debugServiceRequest_3 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
+cmd_DM_debugJSONServiceRequest_3 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"type":"Test/TopicService",
                                 "msgID":"msgID_2",
                                 "interfaceTag":
                                 "Test/getSum","msg":{}}
-                            },'cmd_DM_debugServiceRequest_3','Send Service Request - III')
+                            },'cmd_DM_debugServiceRequest_3','Send addInt Service Request')
+
+
+cmd_CN_binaryReceiving_N = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT, 							"dest":"containerTag01",
+							"orig":"robotUniqueID",
+							"data":{"addNodes":	
+								[{	"pkg":"rceBinaryMsgDebug",
+									"exe":"imageGenerator.py",
+									"nodeTag":"imgGen",
+									"namespace":"binary"}]
+								}},
+							'cmd_CN_binaryReceiving_N', 'Binary Receiving - Config Nodes')
+
+cmd_CN_binaryReceiving_I = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT, 							"dest":"containerTag01",
+							"orig":"robotUniqueID",
+							"data":{"addInterfaces":[
+									{	"name":"binary/circle",
+										"interfaceType":"subscriber",
+										"className":"sensor_msgs/Image"},
+									{	"name":"binary/ccPos",
+										"interfaceType":"publisher",
+										"className":"geometry_msgs/Pose2D"}
+							]}},
+							'cmd_CN_binaryReceiving_I', 'Binary Receiving - Config Interfaces')
+							
+cmd_CN_binaryReceiving_NI = debugCmd({	"type":ClientMsgTypes.CONFIGURE_COMPONENT, 							    										"dest":"containerTag01",
+									"orig":"robotUniqueID",
+									"data":{"addNodes":[{
+												"pkg":"rceBinaryMsgDebug",
+												"exe":"imageGenerator.py",
+												"nodeTag":"imgGen",
+												"namespace":"binary"}],
+											"addInterfaces":[{
+												"name":"binary/circle",
+												"interfaceType":"subscriber",
+												"className":"sensor_msgs/Image"},
+												{"name":"binary/ccPos",
+												"interfaceType":"publisher",
+												"className":"geometry_msgs/Pose2D"}]}},
+							'cmd_CN_binaryReceiving_NI', 'Binary Receiving - Config Nodes & Interfaces')
+					
+
+cmd_IR_binaryReceiving = debugCmd({	"type":ClientMsgTypes.INTERFACE_REGISTRATION,
+									"dest":"containerTag01",
+									"orig":"robotUniqueID",
+									"data":{"binary/circle":True,"binary/ccPos":True}}
+									,'cmd_IR_binaryReceiving','Binary Receiving IR')
+
+
+cmd_DM_binaryReceiving = debugCmd({	"type":ClientMsgTypes.DATA_MESSAGE,
+									"dest":"containerTag01",
+									"orig":"robotUniqueID",
+									"data":{"type":"geometry_msgs/Pose2D",
+											"msgID":"msgID_0",
+											"interfaceTag":"binary/ccPos",
+											"msg":{"x":0.2,"y":0.6,"theta":0.0}
+											}
+									},'cmd_DM_binaryReceiving','Binary Receiving - Data Message')
+
+
+
+cmd_DM_binarySending_N = debugCmd({	"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+									"dest":"containerTag01",
+									"orig":"robotUniqueID",
+									"data":{"addNodes":[
+											{	"pkg":"rceBinaryMsgDebug",
+												"exe":"imageAnalyzer.py",
+												"nodeTag":"imgAnalyzer",
+												"namespace":"binary"
+											}]
+										}
+									},'cmd_DM_binarySending_N','Binary Sending - Config Nodes')
+
+
+cmd_DM_binarySending_I = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+									"dest":"containerTag01",
+									"orig":"robotUniqueID",
+									"data":{"addInterfaces":[{
+										"name":"binary/circle",
+										"interfaceType":"publisher",
+										"className":"sensor_msgs/Image"},
+										{"name":"binary/est_ccPos",
+										"interfaceType":"subscriber",
+										"className":"geometry_msgs/Pose2D"}]
+										}
+									},'cmd_DM_binarySending_I','Binary Sending - Config Interfaces')
+
+cmd_DM_binarySending_NI = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+									"dest":"containerTag01",
+									"orig":"robotUniqueID",
+									"data":{"addNodes":[
+												{"pkg":"rceBinaryMsgDebug",
+												"exe":"imageAnalyzer.py",
+												"nodeTag":"imgAnalyzer",
+												"namespace":"binary"}],
+											"addInterfaces":[{
+												"name":"binary/circle",
+												"interfaceType":"publisher",
+												"className":"sensor_msgs/Image"},
+												{"name":"binary/est_ccPos",
+												"interfaceType":"subscriber",
+												"className":"geometry_msgs/Pose2D"}]
+									}
+									},'cmd_DM_binarySending_NI','Binary Sending - Config Nodes and Interfaces')
+
+cmd_IR_binarySending = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
+								"dest":"containerTag01",
+								"orig":"robotUniqueID",
+								"data":{"binary/circle":True,"binary/est_ccPos":True}
+								},'cmd_IR_binarySending','Binary Sending - Config Interface')
+
+                      
+cmd_DM_binaryComplexReceiving_N = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+											"dest":"containerTag01",
+											"orig":"robotUniqueID",
+											"data":{"addNodes":[{
+												"pkg":"Test",
+												"exe":"Test.py",
+												"nodeTag":"testNode",
+												"namespace":"TestBin"}]}},
+								'cmd_DM_binaryComplexReceiving_N', 'Binary Complex Receiving - Config Nodes')
+
+                      
+cmd_DM_binaryComplexReceiving_I = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+											"dest":"containerTag01",
+											"orig":"robotUniqueID",
+											"data":{"addInterfaces":[
+														{"name":"TestBin/test",
+														"interfaceType":"service",
+														"className":"Test/QueryTest"}]}},
+								'cmd_DM_binaryComplexReceiving_I', 'Binary Complex Receiving - Config Interfaces')
+
+
+cmd_DM_binaryComplexReceiving_NI = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+											"dest":"containerTag01",
+											"orig":"robotUniqueID",
+											"data":{"addNodes":[{
+														"pkg":"Test",
+														"exe":"Test.py",
+														"nodeTag":"testNode",
+														"namespace":"TestBin"}],
+													"addInterfaces":[
+														{"name":"TestBin/test",
+														"interfaceType":"service",
+														"className":"Test/QueryTest"}]}},
+								'cmd_DM_binaryComplexReceiving_NI', 'Binary Complex Receiving -  Config Nodes and Interfaces')
+
+cmd_IR_binaryComplexReceiving = debugCmd({	"type":ClientMsgTypes.INTERFACE_REGISTRATION,
+											"dest":"containerTag01",
+											"orig":"robotUniqueID",
+											"data":{"TestBin/test":True}},
+										'cmd_IR_binaryComplexReceiving','Binary Complex Receiving - Register Interface')
+
+cmd_DM_binaryComplexReceiving = debugCmd({"	type":ClientMsgTypes.DATA_MESSAGE,
+											"dest":"containerTag01",
+											"orig":"robotUniqueID",
+											"data":{"type":"Test/QueryTest",
+													"msgID":"msgID_0",
+													"interfaceTag":"TestBin/test",
+													"msg":{"a":3,"b":5}}},
+											'cmd_DM_binaryComplexReceiving','Binary Complex Receiving - Data Message')
+
