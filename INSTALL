@@ -9,7 +9,7 @@
 
 2.	Ping google.com to check your internet connectivity and DNS.
 
-3.  	Install the ssh deamons
+3.  Install the ssh deamons
 	sudo apt-get install openssh-client openssh-server
     	n.b. Installing starts them automatically
 
@@ -24,66 +24,66 @@
 	
 6.	Clone the rce repository (switch branches if necessary)
 	cd /opt
-	sudo git clone https://github.com/IDSCETHZurich/reappengine.git rce 
+	sudo git clone https://github.com/IDSCETHZurich/rce.git rce 
 	
+7.  Open setup/setupHost.sh and follow instructions
 
-7.	Install the linux-container requirements
+8.	Install the linux-container requirements
 	sudo apt-get install lxc bridge-utils dnsmasq debootstrap
-	n.b. after installing you should see new network interfce [lxcbr0])
 
-8.	Run setupContainer.bash to generate a 12.04 container for LXC
+9.	Run setupContainer.bash to generate a 12.04 container for LXC
 	cd /opt/rce/setup
 	sudo bash setupContainer.bash --path=/opt/rce/container
 	n.b. You may set the ubuntu mirror to the one near you
-	
-9.	Install ROS inside the container
-	chroot into the container
-	sudo chroot /opt/rce/container/rootfs
-	
-	apt-get install wget 
-	
-	sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-	wget http://packages.ros.org/ros.key -O - | apt-key add -
-	apt-get update
-	apt-get install ros-fuerte-ros-comm
-	apt-get install ros-fuerte-navigation
-	
-	- and get out of container using [exit] 
-
-10.	Install ROS in the container host
-	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-	wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-	sudo apt-get update
-	sudo apt-get install ros-fuerte-ros-comm
-	sudo apt-get install ros-fuerte-navigation
-	
-11. 	Install the websockets related libraries
-	sudo apt-get install python-twisted-core
-	sudo easy_install AutoBahn
-
-12.	Open setup/setupHost.sh and follow instructions
-
-13. 	Start the container and perform initial setups:
-		lxc-start -n ros -f ../setup/stdConfig 
-
-		. /opt/ros/fuerte/setup.sh 
+    
+10. Start the container and perform initial setups:
+    
+    Enter container (user: root; password: root)
+        
+    sudo lxc-start -n ros -f /opt/rce/setup/stdConfig 
+    
+    Inside the container do the following steps:
+    
+    1.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
+        sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+		wget http://packages.ros.org/ros.key -O - | apt-key add -
+        apt-get update
+        
+        Minimal installation:
+            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+        For debug nodes:
+            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+        
+    2.  Test the ROS installation
+        . /opt/ros/fuerte/setup.sh 
 		export ROS_HOSTNAME=localhost
 		roscore 
 
-		mkdir -p /opt/rce/packages 
-		mkdir -p /opt/rce/src 
-		
-		adduser ros 
-		adduser --no-create-home --disabled-password --disabled-login rce
-		
+    3.  Add users
+        adduser ros
+		adduser --disabled-password --disabled-login --home /opt/rce/data rce
+    
+    4.  Add files and directories
+		mkdir -p /opt/rce/packages
+		mkdir -p /opt/rce/src
 		touch /etc/init/rceComm.conf
 		touch /etc/init/rceLauncher.conf
-		 
-		cd /opt/rce/
-		mkdir data
-		chown rce:rce data 
-		poweroff
+    
+    5.  Leave the container (make sure you are in the container when running in a cloud)
+        poweroff
 
-14.	Start RCE
-	. /opt/ros/fuerte/setup.sh 
-	python Master.py &
+11.	Install ROS in the container host
+	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+	wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+	sudo apt-get update
+    sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+
+12. Install the websockets related library
+    sudo apt-get install python-twisted-core
+	sudo easy_install AutoBahn
+
+13. Install libraries needed for Custom Converters
+    sudo apt-get install python-imaging
+
+14. Copy upstart script to container
+    sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/

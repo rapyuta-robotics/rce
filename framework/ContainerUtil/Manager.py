@@ -71,8 +71,14 @@ class ContainerManager(ManagerBase):
         if not os.path.isabs(self._confDir):
             raise ValueError('Configuration directory is not an absolute path.')
         
+        if not os.path.isdir(self._confDir):
+            raise OSError('Configuration directory does not exist: {0}'.format(self._confDir))
+        
         if not os.path.isabs(self._dataDir):
             raise ValueError('Data directory is not an absolute path.')
+        
+        if not os.path.isdir(self._dataDir):
+            raise OSError('Data directory does not exist: {0}'.format(self._dataDir))
         
         if not os.path.isabs(self._rootfs):
             raise ValueError('Root file system directory is not an absolute path.')
@@ -82,6 +88,9 @@ class ContainerManager(ManagerBase):
         
         if not os.path.isabs(self._pkgRoot):
             raise ValueError('Root package directory is not an absolute path.')
+        
+        if not os.path.isdir(self._pkgRoot):
+            raise OSError('Root package directory does not exist: {0}'.format(self._pkgRoot))
         
         # Validate the executables used in the container
         environmentExe = os.path.join(self._srcRoot, 'Environment.py')

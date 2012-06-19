@@ -1,29 +1,46 @@
 ### Setup machine for lxc containers
-### http://www.activestate.com/blog/2011/10/virtualization-ec2-cloud-using-lxc
+### Based on: http://www.activestate.com/blog/2011/10/virtualization-ec2-cloud-using-lxc
 
-## Setup iptables
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-sysctl -w net.ipv4.ip_forward=1
+0.  All commands have to be run as super user
 
-## Setup DNS
-# Edit file /etc/dnsmasq.conf
-	# Add/Uncomment the following:
-	domain-needed
-	bogus-priv
-	interface = br0
-	listen-address = 127.0.0.1
-	listen-address = 10.0.3.1
-	expand-hosts
-	domain = containers
-	dhcp-range = 10.0.3.50,10.0.3.150,1h
+1.  Add bridge network interface
+    Remark:  Sometimes this is automatically done by the installation of lxc
+    
+    brctl addbr lxcbr0
+    brctl setfd lxcbr0 0
+    ifconfig lxcbr0 10.0.3.1 up
 
-# Edit file /etc/dhcp/dhclient.conf
-	# Add at the beginning of the file
-	prepend domain-name-servers 127.0.0.1;
-	prepend domain-search "containers.";
+1.  Setup iptables
+    
+    iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    sysctl -w net.ipv4.ip_forward=1
 
-# Renew DHCP lease
-dhclient3 -e IF_METRIC=100 -pf /var/run/dhclient.eth0.pid -lf /var/lib/dhcp3/dhclient.eth0.leases eth0
+2.  Setup DNS
+    Edit file /etc/dnsmasq.conf
+	Add/Uncomment the following (appears in this order):
+        domain-needed
+        bogus-priv
+        interface = br0
+        listen-address = 127.0.0.1
+        listen-address = 10.0.3.1
+        expand-hosts
+        domain = containers
+        dhcp-range = 10.0.3.50,10.0.3.150,1h
 
-# Restart dnsmasq
-service dnsmasq restart
+    Edit file /etc/dhcp/dhclient.conf
+	Add at the beginning of the file
+        prepend domain-name-servers 127.0.0.1;
+        prepend domain-search "containers.";
+
+3.  Renew DHCP lease
+    Remark:  This call will take long (use & to run in background)
+    
+    dhclient3 -e IF_METRIC=100 -pf /var/run/dhclient.eth0.pid -lf /var/lib/dhcp3/dhclient.eth0.leases eth0
+
+4.  Restart dnsmasq
+    Remark:  If the error "resolvconf: Error: /etc/resolv.conf isn't a symlink, not doing anything." is returned,
+             add the following to the file /etc/resolv.conf
+             
+             nameserver 127.0.0.1
+    
+    service dnsmasq restart
