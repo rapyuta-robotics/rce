@@ -38,11 +38,12 @@
     
 10. Start the container and perform initial setups:
     
-    Enter container (user: root; password: root)
+    Enter container (First login: user: root; password: root)
     
     sudo lxc-start -n ros -f /opt/rce/setup/stdConfig
     
     Inside the container do the following steps:
+    (all commands require super user privileges)
     
     1.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
         sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -69,14 +70,26 @@
         touch /etc/init/rceComm.conf
         touch /etc/init/rceLauncher.conf
     
-    5.  Leave the container (make sure you are in the container when running in a cloud)
+    5.  Either change root password or disable root login
+        For changing the passwd:
+            passwd
+        For disabling the root login:
+            Edit file /etc/passwd and replace root:x:... with root:!:...
+            (Can also be done from the host machine;
+            To activte the login again replace root:!:... with root:x:...)
+    
+    6.  Leave the container (make sure you are in the container when running in a cloud)
         poweroff
 
 11. Install ROS in the container host
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
-    sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+    
+    Minimal installation:
+        apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+    For debug nodes:
+        apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
 12. Install the websockets related library
     sudo apt-get install python-twisted-core
@@ -87,3 +100,4 @@
 
 14. Copy upstart script to container
     sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
+

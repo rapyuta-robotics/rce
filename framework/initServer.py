@@ -22,14 +22,31 @@
 #       
 #       
 
+# Before we start to import everything check if the
+# script can be executed
+import os
+
+if os.getuid() != 0:
+    print('initServer has to be run as super user.')
+    exit(1)
+
+try:
+    if os.environ['ROS_DISTRO'] != 'fuerte':
+        print('ROS distribution has to be fuerte.')
+        exit(1)
+except KeyError:
+    print('ROS environment is not properly set up.')
+    exit(1)
+
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.protocol import ProcessProtocol
 from twisted.internet.defer import Deferred, DeferredList
 
 # Python specific imports
-import os, sys
+import sys
 import shutil
+from pwd import getpwnam
 
 # Custom imports
 import settings
@@ -124,9 +141,6 @@ def main(reactor, caFileName):
     termDeferreds = DeferredList([containerDeferred, serverDeferred])
     
     def callback((suffix, cert, key)):
-        containerCmd = [containerExe, suffix]
-        serverCmd = [serverExe, suffix, settings.IP_MASTER]
-        
         if settings.USE_SSL:
             # Create necessary directories
             serverPath = os.path.join(settings.SSL_DIR, 'server')
@@ -189,8 +203,12 @@ def main(reactor, caFileName):
             writeCertToFile(cert, os.path.join(serverPath, 'toEnv.cert'))
             writeKeyToFile(key, os.path.join(serverPath, 'toEnv.key'))
         
-        reactor.spawnProcess(containerProtocol, containerCmd[0], containerCmd, env=os.environ) # uid=0, gid=0
-        reactor.spawnProcess(serverProtocol, serverCmd[0], serverCmd, env=os.environ, uid=1000, gid=1000)
+        cmd = [containerExe, suffix]
+        reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
+        
+        user = getpwnam(settings.SERVER_USER)
+        cmd = [serverExe, suffix, settings.IP_MASTER]
+        reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=user.pw_uid, gid=user.pw_gid)
     
     def errback(errMsg):
         log.msg(errMsg)

@@ -24,7 +24,7 @@
 
 #######################################
 ###                                 ###
-###         Master settings         ###
+###          RCE settings           ###
 ###                                 ###
 #######################################
 
@@ -33,30 +33,23 @@ CONVERTER_CLASSES = (
     'ServerUtil.Converter._ImageConverter.ImageConverter',
 )
 
-# Definition of django database
-DJANGO_DB = {   'DATABASE_ENGINE': 'django.db.backends.sqlite3',
-                'DATABASE_NAME': '/var/django/reappengine/data/users.db',
-                'TIME_ZONE' : 'Europe/Zurich' }
-
-DJANGO_ROOT_DIR = '/home/dominique/reappengine/framework/django'
-
-# Time in seconds after which inactive entries in the databases are removed.
-TIMEOUT = 600
-
 # Time in seconds after which unresponsive services are treated as dead.
 WAIT_FOR_SERVICE_TIMEOUT = 5
 
-# Path to directory where temporary files to store the results should be kept
-TMP_RESULT_DIR = '/var/www/tmp'
-
 # Time in seconds after which unused UIDs are freed up again.
 UID_TIMEOUT = 60
+
+# Time interval in which the newest load information are sent to the master node/load balancer
+LOAD_INFO_UPDATE = 5
 
 #######################################
 ###                                 ###
 ###        Machine settings         ###
 ###                                 ###
 #######################################
+
+# User for Server node
+SERVER_USER = 'rce-user'
 
 # Absolute path to directory where SSL files are stored
 SSL_DIR = '/home/rce-user/rce'
@@ -76,9 +69,6 @@ ROOT_SRC_DIR = '/opt/rce/framework'
 # Absolute path to source package directory
 ROOT_PKG_DIR = '/opt/rce/test'
 
-# Time interval in which the newest load information are sent to the master node/load balancer
-LOAD_INFO_UPDATE = 5
-
 #######################################
 ###                                 ###
 ###      Environment settings       ###
@@ -94,7 +84,7 @@ RESULT_TIMEOUT = 600
 ###                                 ###
 #######################################
 
-# Bool which indicated whether SSL should be used for internal communication
+# Bool whether SSL should be used for internal communication or not
 USE_SSL = True
 
 # Character pool which is used to build base addresses
@@ -115,9 +105,6 @@ PORT_MASTER = 10011
 
 # Port of Master for UID Server
 PORT_UID = 10013
-
-# Port of Database
-PORT_DB = 10015
 
 # Port of Container Manager
 PORT_CONTAINER_MNGR = 10020
