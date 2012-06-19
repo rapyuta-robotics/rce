@@ -48,9 +48,6 @@ LOAD_INFO_UPDATE = 5
 ###                                 ###
 #######################################
 
-# User for Server node
-SERVER_USER = 'rce-user'
-
 # Absolute path to directory where SSL files are stored
 SSL_DIR = '/home/rce-user/rce'
 

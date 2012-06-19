@@ -104,6 +104,15 @@ def main(reactor):
     log.msg('Start initialization...')
     
     if settings.USE_SSL:
+        # First check if the path is valid
+        if not os.path.exists(settings.SSL_DIR):
+            log.msg('SSL directory does not exist.')
+            exit(1)
+        
+        if not os.path.isdir(settings.SSL_DIR):
+            log.msg('Path to SSL directory is not a directory.')
+            exit(1)
+        
         nodeName = 'Master'
         caFile = os.path.join(settings.SSL_DIR, 'RCE.cert')
         

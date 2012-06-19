@@ -106,7 +106,7 @@ class LoggerProtocol(ProcessProtocol):
                 self._escalation += 1
                 self._stopCall = reactor.callLater(escalation[1], self.terminate, reactor)
 
-def main(reactor, caFileName):
+def main(reactor, user, caFileName):
     log.startLogging(sys.stdout)
     
     if not os.path.isdir(settings.ROOT_SRC_DIR):
@@ -207,7 +207,7 @@ def main(reactor, caFileName):
             cmd = [containerExe, suffix]
             reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ) # uid=0, gid=0
             
-            user = getpwnam(settings.SERVER_USER)
+            user = getpwnam(user)
             cmd = [serverExe, suffix, settings.IP_MASTER]
             reactor.spawnProcess(serverProtocol, cmd[0], cmd, env=os.environ, uid=user.pw_uid, gid=user.pw_gid)
         except Exception as e:
@@ -243,6 +243,7 @@ def _get_argparse():
     parser = ArgumentParser(prog='initServer',
                             description='Script which is used to set up a machine for the ReCloudEngine.')
 
+    parser.add_argument('user', help='User which should be used to run the Server.')
     parser.add_argument('--cert', help='Path to the certificate file which is used to connect with the Master.', default='')
     
     return parser
@@ -256,4 +257,4 @@ if __name__ == '__main__':
     if settings.USE_SSL and not os.path.isfile(args.cert):
         raise ValueError('Certificate path is not a valid file.')
     
-    main(reactor, args.cert)
+    main(reactor, args.user, args.cert)
