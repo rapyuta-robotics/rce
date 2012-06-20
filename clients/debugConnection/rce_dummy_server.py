@@ -11,7 +11,7 @@ class CloudEngineProtocol(WebSocketServerProtocol):
             print 'UUID -> '+ msg[:32]
             tmpUUID = uuid.uuid4().hex
             print 'UUID <- '+ tmpUUID
-            JSONImageMsg = "{'type':'CM','dest':'robotUniqueID','orig':'containerTag01','data':{'type':'sensor_msgs/Image','msgID':'msgID_0','interfaceTag':'Test/modifyImage','msg':{'data':'+tmpUUID+'}}}"
+            JSONImageMsg = "{'type':'DM','dest':'robotUniqueID','orig':'containerTag01','data':{'type':'sensor_msgs/Image','msgID':'msgID_0','interfaceTag':'Test/modifyImage','msg':{'data':'+tmpUUID+'}}}"
             self.sendMessage(JSONImageMsg)
             self.sendMessage(tmpUUID+msg[32:], binary=True)
 
@@ -21,16 +21,16 @@ class CloudEngineProtocol(WebSocketServerProtocol):
             print msg
             data = json.loads(msg);
             
-            if data['type'] == 'CS':
-                cmd_CSR = {
-                    'type':'CSR',
+            if data['type'] == 'CC':
+                cmd_CS = {
+                    'type':'CS',
                     'dest':'robotUniqueID',
                     'orig':'$$$$$$',
                     'data':{data['data']['containerTag']:True} 
                     #'data':{'tag04':True} #Send wring tag 
                     }
-                cmd_CSR_js = json.dumps(cmd_CSR)
-                self.sendMessage(cmd_CSR_js)
+                cmd_CS_js = json.dumps(cmd_CS)
+                self.sendMessage(cmd_CS_js)
                 print 'dummy container created'
 
     def onOpen(self):

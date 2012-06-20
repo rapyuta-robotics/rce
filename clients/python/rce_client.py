@@ -6,36 +6,39 @@ from autobahn.websocket import WebSocketClientFactory, WebSocketClientProtocol, 
 import json
 import time
 
+import ClientDebugMsgs
+
 class RCEClient(object):
     def processMessage(self, msg):
         data = json.loads(msg)
         
-        if data['type'] == 'CSR':
-            (cTag, status) = data['data'].items()[0]
-            if cTag in self.container.keys():
-                if status:
-                    self.container[cTag] = 'running'
+        if data['type'] == 'CS':
+            for cTag, status in data['data'].items():
+                if cTag in self.containers:
+                    if status:
+                        self.containers[cTag] = 'running'
+                    else:
+                        self.containers[cTag] = 'failedBooting'
+                    print '== Container Status Update =='
+                    for k,v in self.containers.items():
+                        print k + ' - ' + v
                 else:
-                    self.container[cTag] = 'failedBooting'
-                print '== Container Status =='
-                for k,v in self.container.items():
-                    print k + ' - ' + v
-            else:
-                print 'Error: [processMessage] received CSR with tag ['+cTag\
-                    +']. But a container with this tag does not exist.'
+                    print 'Error: [processMessage] received CS with tag ['+cTag\
+                        +']. But a container with this tag does not exist.'
+                    print 'Existing containers are '+str(self.containers.keys())
         else:
             pass
     
     def processBinary(self, msg):
         pass
     
-    def __init__(self, id, reactor, main, wsURL='ws://localhost:9000'):
+    def __init__(self, id, reactor, main, wsURL):
         self.uniqueID = id
         self.reactor = reactor
         self.main = main
         self.wsURL = wsURL
         self.connection = None
-        self.container = {}
+        self.containers = {}
     
     def sendConfigMsg(self, data):
         self.send(json.dumps(data))
@@ -47,35 +50,25 @@ class RCEClient(object):
         # Should not be called directly
         # self.reactor.callFromThread(self.connection.sendMessage, msg)
         if self.connection:
-            #self.connection.send(msg)
+            # self.connection.send(msg)
             self.reactor.callFromThread(self.connection.send, msg)
         else:
             raise RuntimeError()
     
     def createContainer(self, tag): 
-        cmd_CS = {
-            'type':'CS',
-            'dest':'$$$$$$',
-            'orig':'robotUniqueID',
-            'data':{'containerTag':tag}
-            }
-        cmd_CS_js = json.dumps(cmd_CS)
-        self.container[tag] = 'booting';
-        self.send(cmd_CS_js)
+        cmd_CC = ClientDebugMsgs.cmd_CC_debug.cmd;
+        cmd_CC["data"]["containerTag"] = tag
+        cmd_CC_js = json.dumps(cmd_CC)
+        self.containers[tag] = 'booting';
+        self.send(cmd_CC_js)
         
     def removeContainer(self, tag): 
         print 'Info: [removeContainer] container remove request'
-        if tag in self.container.keys():
-            if self.container[tag]=='running':
-                del self.container[tag]
-                cmd_CH = {
-                    'type':'CH',
-                    'dest':'$$$$$$',
-                    'orig':'robotUniqueID',
-                    'data':{'containerTag':tag}
-                }
-                cmd_CH_js = json.dumps(cmd_CH)
-                self.send(cmd_CH_js)
+        if tag in self.containers.keys():
+            if self.containers[tag]=='running':
+                del self.containers[tag]
+                cmd_DC_js = json.dumps(ClientDebugMsgs.cmd_DC_debug.cmd)
+                self.send(cmd_DC_js)
             else:
                 print 'Warn: [removeContainer] Container with tag:['+tag\
                 +'] is [booting] status. Can not be removed.'
@@ -132,9 +125,6 @@ class RCEClientProtocol(WebSocketClientProtocol):
     print 'received message from server!'
 
 def main():
-    print 'I was here'
-    print(client)
-        
     while not client.connection:
         time.sleep(1)
         print 'waiting for connection'
@@ -144,14 +134,12 @@ def main():
     client.createContainer('tag02')
     
     time.sleep(2)
-    
     client.removeContainer('tag01')
     
     time.sleep(2)
-    
     client.createContainer('tag03')
 
 if __name__ == '__main__':
     from twisted.internet import reactor
-    client = RCEClient(reactor, main)
+    client = RCEClient('robotUniqueID', reactor, main, 'ws://localhost:9000')
     client.spin()
