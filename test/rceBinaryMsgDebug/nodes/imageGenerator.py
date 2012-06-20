@@ -11,7 +11,7 @@ class imageGenerator(object):
 
     def __init__(self):
         self.bridge = CvBridge()
-        self.image_pub = rospy.Publisher("circle",Image)
+        self.image_pub = rospy.Publisher("circleOut",Image)
         
         self.imgDim = (500,500)
         self.img = cv.CreateImage(self.imgDim,cv.IPL_DEPTH_8U,1)
