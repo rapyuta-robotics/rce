@@ -1,3 +1,4 @@
 *~
 *.pyc
 *.so
+framework/settings.py
