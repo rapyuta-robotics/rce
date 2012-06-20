@@ -108,5 +108,5 @@
 
 === Binary Complex Receiving - Data Message ===
 
-{"dest": "containerTag01", "data": {"msg": {"a": 3, "b": 5}, "msgID": "msgID_0", "type": "Test/QueryTest", "interfaceTag": "TestBin/test"}, "\ttype": "DM", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"msg": {"a": 3, "b": 5}, "msgID": "msgID_0", "type": "Test/QueryTest", "interfaceTag": "TestBin/test"}, "type": "DM", "orig": "robotUniqueID"}
 
