@@ -40,6 +40,6 @@ if __name__ == "__main__":
     rospy.init_node('image_converter')
     
     ia = imageAnalyzer()
-    rospy.Subscriber('circle', Image, ia.callback)
+    rospy.Subscriber('circleIn', Image, ia.callback)
 
     rospy.spin()
