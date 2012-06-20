@@ -52,7 +52,7 @@ class rceCmdEncoder(json.JSONEncoder):
         else:
             return {}
 
-f = open('rce_cmds.js','w')
+f = open('../../clients/html/rce_cmds.js','w')
 ##for cmd in cmds:
 ##    #print cmd
 ##    f.write(cmd.name+' = '+json.dumps(cmd.cmd)+';\n')

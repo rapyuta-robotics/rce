@@ -334,7 +334,7 @@ cmd_IR_binaryComplexReceiving = debugCmd({	"type":ClientMsgTypes.INTERFACE_REGIS
 											"data":{"TestBin/test":True}},
 										'cmd_IR_binaryComplexReceiving','Binary Complex Receiving - Register Interface')
 
-cmd_DM_binaryComplexReceiving = debugCmd({"	type":ClientMsgTypes.DATA_MESSAGE,
+cmd_DM_binaryComplexReceiving = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
 											"dest":"containerTag01",
 											"orig":"robotUniqueID",
 											"data":{"type":"Test/QueryTest",
