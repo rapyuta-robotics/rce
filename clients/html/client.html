@@ -154,7 +154,7 @@ function onmessage(event) {
 		
 		document.getElementById('receiverConsole').value = ('== Message from RCE ==\r\n' + event.data + '\r\n---\r\n\r\n') + document.getElementById('receiverConsole').value;
 		//if message is a CSR update container ID
-		var msg = jQuery.parseJSON(e.data)
+		var msg = jQuery.parseJSON(event.data)
 		if(msg.type == "CSR"){
 			 containerID = msg.data.containerID;
 			 updateRobotStatus("Container Assigned");
