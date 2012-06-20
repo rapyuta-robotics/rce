@@ -38,6 +38,10 @@
 
 {"dest": "containerTag01", "data": {"Test/addInt": true, "Test/getSum": true}, "type": "IR", "orig": "robotUniqueID"}
 
+=== Unregister Interface ===
+
+{"dest": "containerTag01", "data": {"Test/addInt": false, "Test/getSum": false}, "type": "IR", "orig": "robotUniqueID"}
+
 === Send addInt - topic I ===
 
 {"dest": "containerTag01", "data": {"msg": {"data": 3}, "msgID": "msgID_0", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
@@ -68,7 +72,7 @@
 
 === Binary Receiving - Data Message ===
 
-{"dest": "containerTag01", "data": {"msg": {"y": 0.59999999999999998, "x": 0.20000000000000001, "theta": 0.0}, "msgID": "msgID_0", "type": "geometry_msgs/Pose2D", "interfaceTag": "binary/ccPos"}, "type": "DM", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"msg": {"y": 0.6, "x": 0.2, "theta": 0.0}, "msgID": "msgID_0", "type": "geometry_msgs/Pose2D", "interfaceTag": "binary/ccPos"}, "type": "DM", "orig": "robotUniqueID"}
 
 === Binary Sending - Config Nodes ===
 

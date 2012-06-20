@@ -3,7 +3,7 @@ lxc.utsname = ros
 lxc.tty = 4
 lxc.pts = 1024
 lxc.rootfs = /opt/rce/container/rootfs
-lxc.mount = /opt/rce/setup/stdFstab
+lxc.mount = /opt/rce/setup/src/stdFstab
 
 lxc.network.type = veth
 lxc.network.flags = up

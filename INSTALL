@@ -1,3 +1,6 @@
+Comments pre install
+====================
+
 1.  Deploy on a local virtual machine:
     Load Ubutnu 12.04 serveubuntu-12.04-server ISO into you virtual machine
     http://releases.ubuntu.com/12.04/ubuntu-12.04-server-amd64.iso
@@ -19,28 +22,33 @@
     visit https://help.github.com/articles/set-up-git for more info
 
     cd .ssh
-    ssh-keygen -t rsa -C "gajan@ethz.ch"
+    ssh-keygen -t rsa -C "<your email>"
     (Generate authentication keys)
-    
-6.  Clone the rce repository (switch branches if necessary)
+
+Installation
+============
+
+1.  Clone the rce repository (switch branches if necessary)
     cd /opt
     sudo git clone https://github.com/IDSCETHZurich/rce.git rce
     
-7.  Open setup/setupHost.sh and follow instructions
+2.  Open setup/setupHost.sh and follow instructions
 
-8.  Install the linux-container requirements
+3.  Install the linux-container requirements
     sudo apt-get install lxc bridge-utils dnsmasq debootstrap
 
-9.  Run setupContainer.bash to generate a 12.04 container for LXC
+4.  Run setupContainer.bash to generate a 12.04 container for LXC
     cd /opt/rce/setup
     sudo bash setupContainer.bash --path=/opt/rce/container
     n.b. You may set the ubuntu mirror to the one near you
     
-10. Start the container and perform initial setups:
+5.  Start the container and perform initial setups:
     
     Enter container (First login: user: root; password: root)
     
-    sudo lxc-start -n ros -f /opt/rce/setup/stdConfig
+    sudo lxc-start -n ros -f /opt/rce/setup/src/stdConfig
+    Note:   The file stdConfig contains absolute paths.
+            (has to be modified in case of non default installation)
     
     Inside the container do the following steps:
     (all commands require super user privileges)
@@ -55,22 +63,17 @@
         For debug nodes:
             apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
-    2.  Test the ROS installation
-        . /opt/ros/fuerte/setup.sh
-        export ROS_HOSTNAME=localhost
-        roscore
-
-    3.  Add users
+    2.  Add users
         adduser ros
         adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
-    4.  Add files and directories
+    3.  Add files and directories
         mkdir /opt/rce/packages
         mkdir /opt/rce/src
         touch /etc/init/rceComm.conf
         touch /etc/init/rceLauncher.conf
     
-    5.  Either change root password or disable root login
+    4.  Either change root password or disable root login
         For changing the passwd:
             passwd
         For disabling the root login:
@@ -78,10 +81,10 @@
             (Can also be done from the host machine;
             To activate the login again replace root:!:... with root:x:...)
     
-    6.  Leave the container (make sure you are in the container when running in a cloud)
+    5.  Leave the container (make sure you are in the container when running in a cloud)
         poweroff
 
-11. Install ROS in the container host
+6.  Install ROS in the container host
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update
@@ -91,17 +94,17 @@
     For debug nodes:
         apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
-12. Install the websockets related libraries
+7.  Install the websockets related libraries
     sudo apt-get install python-twisted-core
     sudo easy_install AutoBahn
 
-13. Install libraries needed for Custom Converters
+8.  Install libraries needed for Custom Converters
     sudo apt-get install python-imaging
 
-14. Create necessary folders holding temporary data of containers
+9.  Create necessary folders holding temporary data of containers
     sudo mkdir /opt/rce/container/data
     sudo mkdir /opt/rce/container/config
 
-15. Copy upstart script to container
-    sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
-
+10. Copy setup and upstart script to container
+    sudo cp /opt/rce/setup/src/setup.sh /opt/rce/container/rootfs/opt/rce/
+    sudo cp /opt/rce/setup/src/rce.conf /opt/rce/container/rootfs/etc/init/

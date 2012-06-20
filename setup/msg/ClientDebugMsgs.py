@@ -149,6 +149,12 @@ cmd_IR_registerAtDebugInterface = debugCmd({"type":ClientMsgTypes.INTERFACE_REGI
                             "orig":"robotUniqueID",
                             "data":{"Test/addInt":True,"Test/getSum":True}
                             },'cmd_IR_registerAtDebugInterface','Register Interface')
+                            
+cmd_IR_unregisterAtDebugInterface = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
+                            "dest":"containerTag01",
+                            "orig":"robotUniqueID",
+                            "data":{"Test/addInt":False,"Test/getSum":False}
+                            },'cmd_IR_unregisterAtDebugInterface','Unregister Interface')
 
 cmd_DM_debugJSONServiceRequest_1 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
