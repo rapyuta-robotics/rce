@@ -197,7 +197,7 @@ cmd_CN_binaryReceiving_N = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT, 
 cmd_CN_binaryReceiving_I = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT, 							"dest":"containerTag01",
 							"orig":"robotUniqueID",
 							"data":{"addInterfaces":[
-									{	"name":"binary/circle",
+									{	"name":"binary/circle_sub",
 										"interfaceType":"subscriber",
 										"className":"sensor_msgs/Image"},
 									{	"name":"binary/ccPos",
@@ -214,7 +214,7 @@ cmd_CN_binaryReceiving_NI = debugCmd({	"type":ClientMsgTypes.CONFIGURE_COMPONENT
 												"nodeTag":"imgGen",
 												"namespace":"binary"}],
 											"addInterfaces":[{
-												"name":"binary/circle",
+												"name":"binary/circle_sub",
 												"interfaceType":"subscriber",
 												"className":"sensor_msgs/Image"},
 												{"name":"binary/ccPos",
@@ -226,7 +226,7 @@ cmd_CN_binaryReceiving_NI = debugCmd({	"type":ClientMsgTypes.CONFIGURE_COMPONENT
 cmd_IR_binaryReceiving = debugCmd({	"type":ClientMsgTypes.INTERFACE_REGISTRATION,
 									"dest":"containerTag01",
 									"orig":"robotUniqueID",
-									"data":{"binary/circle":True,"binary/ccPos":True}}
+									"data":{"binary/circle_sub":True,"binary/ccPos":True}}
 									,'cmd_IR_binaryReceiving','Binary Receiving IR')
 
 
@@ -259,7 +259,7 @@ cmd_DM_binarySending_I = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
 									"dest":"containerTag01",
 									"orig":"robotUniqueID",
 									"data":{"addInterfaces":[{
-										"name":"binary/circle",
+										"name":"binary/circle_pub",
 										"interfaceType":"publisher",
 										"className":"sensor_msgs/Image"},
 										{"name":"binary/est_ccPos",
@@ -277,7 +277,7 @@ cmd_DM_binarySending_NI = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
 												"nodeTag":"imgAnalyzer",
 												"namespace":"binary"}],
 											"addInterfaces":[{
-												"name":"binary/circle",
+												"name":"binary/circle_pub",
 												"interfaceType":"publisher",
 												"className":"sensor_msgs/Image"},
 												{"name":"binary/est_ccPos",
@@ -289,7 +289,7 @@ cmd_DM_binarySending_NI = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
 cmd_IR_binarySending = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
 								"dest":"containerTag01",
 								"orig":"robotUniqueID",
-								"data":{"binary/circle":True,"binary/est_ccPos":True}
+								"data":{"binary/circle_pub":True,"binary/est_ccPos":True}
 								},'cmd_IR_binarySending','Binary Sending - Config Interface')
 
                       

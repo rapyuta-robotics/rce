@@ -60,15 +60,15 @@
 
 === Binary Receiving - Config Interfaces ===
 
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circle"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circle_sub"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Binary Receiving - Config Nodes & Interfaces ===
 
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageGenerator.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgGen"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circle"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageGenerator.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgGen"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circle_sub"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Binary Receiving IR ===
 
-{"dest": "containerTag01", "data": {"binary/ccPos": true, "binary/circle": true}, "type": "IR", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"binary/circle_sub": true, "binary/ccPos": true}, "type": "IR", "orig": "robotUniqueID"}
 
 === Binary Receiving - Data Message ===
 
@@ -80,15 +80,15 @@
 
 === Binary Sending - Config Interfaces ===
 
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circle"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circle_pub"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Binary Sending - Config Nodes and Interfaces ===
 
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageAnalyzer.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgAnalyzer"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circle"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageAnalyzer.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgAnalyzer"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circle_pub"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
 
 === Binary Sending - Config Interface ===
 
-{"dest": "containerTag01", "data": {"binary/est_ccPos": true, "binary/circle": true}, "type": "IR", "orig": "robotUniqueID"}
+{"dest": "containerTag01", "data": {"binary/est_ccPos": true, "binary/circle_pub": true}, "type": "IR", "orig": "robotUniqueID"}
 
 === Binary Complex Receiving - Config Nodes ===
 

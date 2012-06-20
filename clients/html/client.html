@@ -291,7 +291,7 @@ function handleFileSelect(evt) {
 			uuidStr = uuid();
 
 			//load JSON with UUID into text box
-			txtJSON = '{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"Test/modifyImage","msg":{"data":'+uuidStr+'}}}';	
+			txtJSON = '{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"binary/circle","msg*":"'+uuidStr+'"}}';	
 			document.getElementById('JSONImageMsg').value = txtJSON;		
 			
 			blobToSend = Blob([uuidStr, localFileReader.result]); //this fails in chromium
