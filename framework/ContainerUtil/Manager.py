@@ -23,7 +23,7 @@
 #       See the License for the specific language governing permissions and
 #       limitations under the License.
 #       
-#       \author/s: 
+#       \author/s: Dominique Hunziker <dominique.hunziker@gmail.com> 
 #       
 #       
 
@@ -206,7 +206,7 @@ class ContainerManager(ManagerBase):
         """ Create an upstart script based on the given parameters.
         """
         content = '\n'.join([ '# description',
-                              'author "Dominique Hunziker"',
+                              'author "Dominique Hunziker <dominique.hunziker@gmail.com>"',
                               'description "ReCloudEngine Comm - Framework for managing and using ROS Apps"',
                               '',
                               '# start/stop conditions',
@@ -237,7 +237,7 @@ class ContainerManager(ManagerBase):
             f.write(content)
         
         content = '\n'.join([ '# description',
-                              'author "Dominique Hunziker"',
+                              'author "Dominique Hunziker <dominique.hunziker@gmail.com>"',
                               'description "ReCloudEngine Launcher - Framework for managing and using ROS Apps"',
                               '',
                               '# start/stop conditions',
