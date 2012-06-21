@@ -109,7 +109,7 @@ function connectToRCE() {
 	webSocket.onmessage = onmessage;
 	
 	webSocket.onopen = function() {
-		updateRobotStatus("WebSockets connection estabilised. But no container assigned.");
+		updateRobotStatus("WebSockets connection estabilised.");
 		console.log('connection open.')
 	};
 }
@@ -153,12 +153,12 @@ function onmessage(event) {
 		console.log('Info: received a non-blob');
 		
 		document.getElementById('receiverConsole').value = ('== Message from RCE ==\r\n' + event.data + '\r\n---\r\n\r\n') + document.getElementById('receiverConsole').value;
-		//if message is a CSR update container ID
+		//if message is a CS update container ID
 		var msg = jQuery.parseJSON(event.data)
-		if(msg.type == "CSR"){
-			 containerID = msg.data.containerID;
-			 updateRobotStatus("Container Assigned");
-			 updateContainerID(msg.data.containerID);
+		if(msg.type == "CS"){
+			 //containerID = msg.data.containerID;
+			 //updateRobotStatus("Container Assigned");
+			 //updateContainerID(msg.data.containerID);
 		}
 	}
 }
@@ -211,13 +211,14 @@ function sendCommand() {
 
 
 function raiseError(error){
-	document.getElementById('errorMsg').innerText = error;
+	document.getElementById('errorMsg').textContent = error;
 	console.log(error)
 }
 
 function updateRobotStatus(status){
-	document.getElementById('errorMsg').innerText = status;
-	robotStatus = status;
+	document.getElementById('robotStatus').textContent = status;
+	console.log('Robot Status: '+status);
+	//robotStatus = status;
 }
 
 function clearCommandConsole(){
@@ -291,7 +292,7 @@ function handleFileSelect(evt) {
 			uuidStr = uuid();
 
 			//load JSON with UUID into text box
-			txtJSON = '{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"binary/circle","msg*":"'+uuidStr+'"}}';	
+			txtJSON = '{"type":"DM","dest":"containerTag01","orig":"robotUniqueID","data":{"type":"sensor_msgs/Image","msgID":"msgID_0","interfaceTag":"binary/circleIn","msg*":"'+uuidStr+'"}}';	
 			document.getElementById('JSONImageMsg').value = txtJSON;		
 			
 			blobToSend = Blob([uuidStr, localFileReader.result]); //this fails in chromium

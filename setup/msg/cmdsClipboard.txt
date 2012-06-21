@@ -6,19 +6,19 @@
 
 {"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "DC", "orig": "robotUniqueID"}
 
-=== Start Nodes ===
+=== Simple Test - Start Nodes ===
 
 {"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Remove Nodes ===
+=== Simple Test - Remove Nodes ===
 
 {"dest": "containerTag01", "data": {"removeNodes": ["nodeTag"]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Add Interface ===
+=== Simple Test - Add Interface ===
 
 {"dest": "containerTag01", "data": {"addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Remove Interface ===
+=== Simple Test - Remove Interface ===
 
 {"dest": "containerTag01", "data": {"removeInterfaces": ["Test/getSum"]}, "type": "CN", "orig": "robotUniqueID"}
 
@@ -30,27 +30,27 @@
 
 {"dest": "containerTag01", "data": {"deleteParam": ["test"]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Start Node/Add Interface together ===
+=== Simple Test - Start Node/Add Interface together ===
 
 {"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}], "addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Register Interface ===
+=== Simple Test - Register Interface ===
 
 {"dest": "containerTag01", "data": {"Test/addInt": true, "Test/getSum": true}, "type": "IR", "orig": "robotUniqueID"}
 
-=== Unregister Interface ===
+=== Simple Test - Unregister Interface ===
 
 {"dest": "containerTag01", "data": {"Test/addInt": false, "Test/getSum": false}, "type": "IR", "orig": "robotUniqueID"}
 
-=== Send addInt - topic I ===
+=== Simple Test - Send addInt - topic I ===
 
 {"dest": "containerTag01", "data": {"msg": {"data": 3}, "msgID": "msgID_0", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
 
-=== Send addInt - topic II ===
+=== Simple Test - Send addInt - topic II ===
 
 {"dest": "containerTag01", "data": {"msg": {"data": 7}, "msgID": "msgID_1", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
 
-=== Send addInt Service Request ===
+=== Simple Test - Send addInt Service Request ===
 
 {"dest": "containerTag01", "data": {"msg": {}, "msgID": "msgID_2", "type": "Test/TopicService", "interfaceTag": "Test/getSum"}, "type": "DM", "orig": "robotUniqueID"}
 
@@ -66,7 +66,7 @@
 
 {"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageGenerator.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgGen"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circleOut"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Binary Receiving IR ===
+=== Binary Receiving - - Register Interface ===
 
 {"dest": "containerTag01", "data": {"binary/ccPos": true, "binary/circleOut": true}, "type": "IR", "orig": "robotUniqueID"}
 
