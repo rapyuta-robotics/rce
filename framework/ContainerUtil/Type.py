@@ -23,7 +23,7 @@
 #       See the License for the specific language governing permissions and
 #       limitations under the License.
 #       
-#       \author/s: 
+#       \author/s: Dominique Hunziker <dominique.hunziker@gmail.com> 
 #              
 
 # zope specific imports

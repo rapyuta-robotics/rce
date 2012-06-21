@@ -23,7 +23,7 @@
 #       See the License for the specific language governing permissions and
 #       limitations under the License.
 #       
-#       \author/s: 
+#       \author/s: Dominique Hunziker <dominique.hunziker@gmail.com> 
 #       
 #       
 
@@ -189,6 +189,9 @@ class Loader(object):
             
             @param exe:     Name of the node/executable which should be localized.
             @type  exe:     str
+            
+            @return:        Path to the executable in package.
+            @rtype:         str
             
             @raise:         ResourceNotFound
         """
