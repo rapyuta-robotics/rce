@@ -290,7 +290,7 @@ cmd_IR_binarySending = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
 								"dest":"containerTag01",
 								"orig":"robotUniqueID",
 								"data":{"binary/circleIn":True,"binary/est_ccPos":True}
-								},'cmd_IR_binarySending','Binary Sending - Config Interface')
+								},'cmd_IR_binarySending','Binary Sending - Register Interface')
 
                       
 cmd_DM_binaryComplexReceiving_N = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,

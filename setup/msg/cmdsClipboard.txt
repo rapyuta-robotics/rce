@@ -86,7 +86,7 @@
 
 {"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageAnalyzer.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgAnalyzer"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circleIn"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
 
-=== Binary Sending - Config Interface ===
+=== Binary Sending - Register Interface ===
 
 {"dest": "containerTag01", "data": {"binary/circleIn": true, "binary/est_ccPos": true}, "type": "IR", "orig": "robotUniqueID"}
 
