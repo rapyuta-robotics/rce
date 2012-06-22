@@ -5,9 +5,12 @@
 #       
 #       This file is part of the RoboEarth Cloud Engine framework.
 #       
-#       This file was originally created for RoboEearth - http://www.roboearth.org/
-#       The research leading to these results has received funding from the European Union 
-#       Seventh Framework Programme FP7/2007-2013 under grant agreement no248942 RoboEarth.
+#       This file was originally created for RoboEearth
+#       http://www.roboearth.org/
+#       
+#       The research leading to these results has received funding from
+#       the European Union Seventh Framework Programme FP7/2007-2013 under
+#       grant agreement no248942 RoboEarth.
 #       
 #       Copyright 2012 RoboEarth
 #       
@@ -23,7 +26,7 @@
 #       See the License for the specific language governing permissions and
 #       limitations under the License.
 #       
-#       \author/s: Dominique Hunziker <dominique.hunziker@gmail.com> 
+#       \author/s: Dominique Hunziker 
 #       
 #       
 
@@ -206,7 +209,7 @@ class ContainerManager(ManagerBase):
         """ Create an upstart script based on the given parameters.
         """
         content = '\n'.join([ '# description',
-                              'author "Dominique Hunziker <dominique.hunziker@gmail.com>"',
+                              'author "Dominique Hunziker"',
                               'description "ReCloudEngine Comm - Framework for managing and using ROS Apps"',
                               '',
                               '# start/stop conditions',
@@ -237,7 +240,7 @@ class ContainerManager(ManagerBase):
             f.write(content)
         
         content = '\n'.join([ '# description',
-                              'author "Dominique Hunziker <dominique.hunziker@gmail.com>"',
+                              'author "Dominique Hunziker"',
                               'description "ReCloudEngine Launcher - Framework for managing and using ROS Apps"',
                               '',
                               '# start/stop conditions',
