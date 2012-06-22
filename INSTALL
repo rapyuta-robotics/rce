@@ -90,9 +90,9 @@ Installation
     sudo apt-get update
     
     Minimal installation:
-        apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+        sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
     For debug nodes:
-        apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+        sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
 7.  Install the websockets related libraries
     sudo apt-get install python-twisted-core
