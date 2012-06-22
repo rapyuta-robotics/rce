@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>The RoboEarth Cloud Engine - HTML Client</title>
+<title>The RoboEarth Cloud Engine - Browser Client</title>
 <style type='text/css'>
 .mask{
   position: relative;
@@ -103,7 +103,7 @@ function connectToRCE() {
 	if ("WebSocket" in window) {
 		webSocket = new WebSocket(wsuri);
 	}else {
-		//Firefox currently prefixes the WebSocket object
+		//Browser currently prefixes the WebSocket object
 		webSocket = new MozWebSocket(wsuri);
 	}
 	webSocket.onmessage = onmessage;
@@ -322,7 +322,7 @@ function uuid() {
 <body>
 <div class="mask">
 	<div class="header">
-		<h3>RoboEarth Cloud Engine - HTML Client</h3>
+		<h3>RoboEarth Cloud Engine - Browser Client</h3>
 	</div>
 	<div class="colleft">
 		<div class="col1">
@@ -359,7 +359,7 @@ function uuid() {
 		</div> 
 	</div> 
 	<div class="footer">
-		RoboEarth: Building an Internet for robots. <br> Part of the Cognitive Systems and Robotics Initiative from the European Union Seventh Framework Programme FP7/2007-2013.
+		RoboEarth: Building an Internet for robots. <br> Part of the Cognitive Systems and Robotics Initiative from the European Union Seventh Framework Programme FP7/2007-2013.<br> The browser client was <font color="red">tested only on Firefox (13.0.1)</font>, not guranteed to work on other browsers.
 	</div>
 </div>
 </body>

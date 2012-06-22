@@ -1,0 +1,18 @@
+TROUBLESHOOTING file of the RoboEarth Cloud Engine
+--------------------------------------
+
+TS1.	Launching initServer.py fails (Process communication failure, Never ending communication tries). What to do about it ? 
+	
+	Kill the process and start it again. It is a race condition we still have not figured out. Soon to be fixed.
+
+TS2.	Where do I find the logs ?
+	The framework logs can be found inside:
+		
+		
+	Container level logs can be found inside: 
+		/opt/rce/container/data/<container-name>/ros
+		/opt/rce/container/data/<container-name>/rce	
+
+TS3.	How do find more information on running containers ?
+	The command [lxc-ls] lists all the running containers.
+	 

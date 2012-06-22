@@ -6,12 +6,14 @@ It is assumed that you have isntalled the RoboEarth Cloud Engine according to th
 1. 	Modify rce/framework/settings.py appropriately
 	SSL_DIR : An existing directroy where the certificates will be stored
 
+1.1.	If you have restarted your server make you you have re-applied the network settings mentioned in the rce/setup/setupHost
+
 2. 	python /opt/rce/framework/Master.py
 
 3. 	su
 	. /opt/ros/furte/setup.sh
 	ROS_PACKAGE_PATH=<INSERT ROOT_PKG_DIR>:$ROS_PACKAGE_PATH
-	python /opt/rce/framework/initServer.py --cert=<INSERT SSL_DIR>/RCE.cert
+	python /opt/rce/framework/initServer.py --cert=<INSERT SSL_DIR>/RCE.cert <USER_NAME> #USER_NAME:process owner
 
 
 

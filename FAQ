@@ -1,0 +1,5 @@
+FAQ file of the RoboEarth Cloud Engine
+--------------------------------------
+Q1.    Launching initServer.py fails (Process communication failure, Never ending communication tries). What to do about it ?
+
+        Kill the process and start it again. It is a race condition and we still have not figured out :( . Soon to be fixed.
