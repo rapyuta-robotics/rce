@@ -59,9 +59,9 @@ Installation
         apt-get update
         
         Minimal installation:
-            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+            sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
         For debug nodes:
-            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+            sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
     2.  Add users
         adduser ros
