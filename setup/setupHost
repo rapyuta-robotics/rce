@@ -10,7 +10,7 @@
     brctl setfd lxcbr0 0
     ifconfig lxcbr0 10.0.3.1 up
 
-1.  Setup iptables
+    Setup iptables
     
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     sysctl -w net.ipv4.ip_forward=1
