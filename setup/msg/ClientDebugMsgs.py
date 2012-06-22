@@ -129,14 +129,14 @@ cmd_CN_startDebugNodes = debugCmd({  "type":ClientMsgTypes.CONFIGURE_COMPONENT,
                                                 "exe":"TopicTest.py",
                                                 "nodeTag":"nodeTag",
                                                 "namespace":"Test"}]}
-                        },'cmd_CN_startDebugNodes','Start Nodes')
+                        },'cmd_CN_startDebugNodes','Simple Test - Start Nodes')
                         
  
 cmd_CN_removeDebugNodes = debugCmd({ "type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"removeNodes":["nodeTag"]}
-                        },'cmd_CN_removeDebugNodes','Remove Nodes')
+                        },'cmd_CN_removeDebugNodes','Simple Test - Remove Nodes')
                         
 cmd_CN_addDebugInterface = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
@@ -148,13 +148,13 @@ cmd_CN_addDebugInterface = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                                                     "interfaceType":"publisher",
                                                     "className":"std_msgs/Int32"}]
                                     }
-                            },'cmd_CN_removeDebugNodes','Add Interface')
+                            },'cmd_CN_removeDebugNodes','Simple Test - Add Interface')
                             
 cmd_CN_removeDebugInterface = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"removeInterfaces":["Test/getSum"]}},
-                            'cmd_CN_removeDebugInterface','Remove Interface')
+                            'cmd_CN_removeDebugInterface','Simple Test - Remove Interface')
                             
 cmd_CN_addDebugParameters = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
                             "dest":"containerTag01",
@@ -173,19 +173,19 @@ cmd_CN_startNodeaddInterfaceDebug = debugCmd({"type":ClientMsgTypes.CONFIGURE_CO
                             "orig":"robotUniqueID",
                             "data":{"addNodes":cmd_CN_startDebugNodes.cmd['data']['addNodes'],
                                     "addInterfaces":cmd_CN_addDebugInterface.cmd['data']['addInterfaces']}
-                            },'cmd_CN_startNodeaddInterfaceDebug','Start Node/Add Interface together')
+                            },'cmd_CN_startNodeaddInterfaceDebug','Simple Test - Start Node/Add Interface together')
                             
 cmd_IR_registerAtDebugInterface = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"Test/addInt":True,"Test/getSum":True}
-                            },'cmd_IR_registerAtDebugInterface','Register Interface')
+                            },'cmd_IR_registerAtDebugInterface','Simple Test - Register Interface')
                             
 cmd_IR_unregisterAtDebugInterface = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
                             "dest":"containerTag01",
                             "orig":"robotUniqueID",
                             "data":{"Test/addInt":False,"Test/getSum":False}
-                            },'cmd_IR_unregisterAtDebugInterface','Unregister Interface')
+                            },'cmd_IR_unregisterAtDebugInterface','Simple Test - Unregister Interface')
 
 cmd_DM_debugJSONServiceRequest_1 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
@@ -194,7 +194,7 @@ cmd_DM_debugJSONServiceRequest_1 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                                     "msgID":"msgID_0",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":3}}
-                            },'cmd_DM_debugServiceRequest_1','Send addInt - topic I')
+                            },'cmd_DM_debugServiceRequest_1','Simple Test - Send addInt - topic I')
                             
 cmd_DM_debugJSONServiceRequest_2 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
@@ -203,7 +203,7 @@ cmd_DM_debugJSONServiceRequest_2 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                                     "msgID":"msgID_1",
                                     "interfaceTag":"Test/addInt",
                                     "msg":{"data":7}}
-                            },'cmd_DM_debugServiceRequest_2','Send addInt - topic II')
+                            },'cmd_DM_debugServiceRequest_2','Simple Test - Send addInt - topic II')
 
 cmd_DM_debugJSONServiceRequest_3 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                             "dest":"containerTag01",
@@ -212,7 +212,7 @@ cmd_DM_debugJSONServiceRequest_3 = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
                                 "msgID":"msgID_2",
                                 "interfaceTag":
                                 "Test/getSum","msg":{}}
-                            },'cmd_DM_debugServiceRequest_3','Send addInt Service Request')
+                            },'cmd_DM_debugServiceRequest_3','Simple Test - Send addInt Service Request')
 
 
 cmd_CN_binaryReceiving_N = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT, 							"dest":"containerTag01",
@@ -258,7 +258,7 @@ cmd_IR_binaryReceiving = debugCmd({	"type":ClientMsgTypes.INTERFACE_REGISTRATION
 									"dest":"containerTag01",
 									"orig":"robotUniqueID",
 									"data":{"binary/circleOut":True,"binary/ccPos":True}}
-									,'cmd_IR_binaryReceiving','Binary Receiving IR')
+									,'cmd_IR_binaryReceiving','Binary Receiving - - Register Interface')
 
 
 cmd_DM_binaryReceiving = debugCmd({	"type":ClientMsgTypes.DATA_MESSAGE,
@@ -321,7 +321,7 @@ cmd_IR_binarySending = debugCmd({"type":ClientMsgTypes.INTERFACE_REGISTRATION,
 								"dest":"containerTag01",
 								"orig":"robotUniqueID",
 								"data":{"binary/circleIn":True,"binary/est_ccPos":True}
-								},'cmd_IR_binarySending','Binary Sending - Config Interface')
+								},'cmd_IR_binarySending','Binary Sending - Register Interface')
 
                       
 cmd_DM_binaryComplexReceiving_N = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
