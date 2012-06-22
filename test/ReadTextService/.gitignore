@@ -1,7 +1,0 @@
-*.pyc
-*.so
-bin/
-build/
-msg_gen/
-srv_gen/
-src/ReadTextService

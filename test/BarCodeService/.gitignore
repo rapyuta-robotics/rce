@@ -1,8 +1,0 @@
-*.pyc
-*.so
-bin/
-build/
-msg_gen/
-srv_gen/
-additional.conf
-src/BarCodeService
