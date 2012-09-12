@@ -32,11 +32,16 @@
 
 import ClientMsgTypes
 
+# Initialization Message
+cmd_IN = {
+            "type":ClientMsgTypes.INIT,
+            "data":{"userID":"userID",
+                    "robotID":"robotID"}
+            }
+
 # Configuration Message - Create Container
 cmd_CC = {
             "type":ClientMsgTypes.CREATE_CONTAINER,
-            "dest":"$$$$$$",
-            "orig":"robotUniqueID", 
             "data":{"containerTag":"containerTag01"} #This tag will be used as a reference in the future
             }
            
@@ -44,8 +49,6 @@ cmd_CC = {
 # Configuration Message - Container Status
 cmd_CS = {
             "type":ClientMsgTypes.CONTAINER_STATUS,
-            "dest":"robotUniqueID",
-            "orig":"$$$$$$",
             "data":{"cTag":"bool: True <-> Connected; False <-> not Connected"} #cTag - tag of the created container
             }
     
@@ -53,59 +56,65 @@ cmd_CS = {
 # Configuration Message - Destroy Container
 cmd_DC = {
             "type":ClientMsgTypes.DESTROY_CONTAINER,
-            "dest":"$$$$$$",
-            "orig":"robotUniqueID",  
             "data":{"containerTag":"containerTag01"}
             }
             
-            
+
 # Configuration Message - Configure Components - For a specific container 
 nodeConfigs = [{
+                "containerTag":"containerTag01",
+                "nodeTag":"nn",
                 "pkg":"name of package",
                 "exe":"name of executable",
-                "nodeTag":"nn",
                 "namespace":"ns",
+    }]
+interfaceConfigs = [{
+                     "endpoint":"containerTag01",
+                     "interfaceTag":"ii",
+                     "interfaceType":"type",
+                     "className":"className", # msgType for Publisher/Subscriber | srvType for Service
+                     "addr":"rosAddr", # only used for ROS interfaces
+    }]
+paramConfigs = [{
+                 "containerTag":"containerTag01",
+                 "name":"parameterName/rosAddr",
+                 "value":"pValue",
+                 "paramType":"pType", # int/str/float/bool/file
     }]
 cmd_CN_general = {
             "type":ClientMsgTypes.CONFIGURE_COMPONENT,
-            "dest":"containerTag",
-            "orig":"robotUniqueID",
             "data":{
                     "addNodes":nodeConfigs,
-                    "removeNodes":["namespace/exe"],
-                    "addInterfaces":[{"name":"inm",
-                                    "interfaceType":"type", # Options: Publisher/Subscriber/Service 
-                                    "className":"className"} # msgType for Publisher/Subscriber | srvType for Service
-                                    ],
-                    "removeInterfaces":["inm"],
-                    "setParam":[{"paramName":"pname",
-                    			"paramValue":"pvalue", 
-                    			"paramType":"pType"
-                    			}],
-                    "deleteParam" : ["paramName"]
+                    "removeNodes":[{"containerTag":"containerTag01",
+                                    "nodeTag":"nn"}],
+                    "addInterfaces":interfaceConfigs,
+                    "removeInterfaces":["interfaceTags"],
+                    "setParam":paramConfigs,
+                    "deleteParam":[{"containerTag":"containerTag01",
+                                    "name":"parameterName"}]
                     }
             }
 
-# register/unregister from an Interface
-cmd_IR_general = {
-            "type":ClientMsgTypes.INTERFACE_REGISTRATION,
-            "dest":"containerTag",
-            "orig":"robotUniqueID",
+cmd_CX_general = {
+            "type":ClientMsgTypes.CONFIGURE_CONNECTION,
             "data":{
-                    "itag":"bool: True <-> Actiavte Imterface; False <-> Deactiavate Interface",
+                    "connect":[{"tagA":"interfaceTag01",
+                                "tagB":"interfaceTag02"}],
+                    "disconnect":[{"tagA":"interfaceTag01",
+                                   "tagB":"interfaceTag02"}]
                     }
-}
+            }
+
 
 # Data Messages
 msg = {"linear":{"x":0,"y":0,"z":0},"angular":{"x":0,"y":0,"z":0}};
 cmd_DM_general_twist = {
     "type":ClientMsgTypes.DATA_MESSAGE,
-    "dest":"destination_container/robot",
-    "orig":"origin_container/robot",
     "data":{
+        "dest":"destination_interfaceTag/robot",
+        "orig":"origin_interfaceTag/robot",
         "type":"geometry_msgs/Twist", # Service/Msg type # This is actually redundant: Interface has all details
         "msgID":"mid",  # Applicable only to services. Only if you want to maintain correspondence between request and response.
-        "interfaceName":'inm', # self explanatory
         "msg":msg} # In case of srv call: _request_class of the srv class
     }
     
