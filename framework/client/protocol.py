@@ -129,7 +129,7 @@ class _WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             if the received binary data completes the cached message.
             
             @param msg:     Received binary message.
-            @type  uri:     str
+            @type  msg:     str
         """
         uri = msg[:32]
         binaryData = StringIO()

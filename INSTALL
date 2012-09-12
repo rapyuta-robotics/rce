@@ -31,11 +31,11 @@ Installation
 1.  Clone the rce repository (switch branches if necessary)
     cd /opt
     sudo git clone https://github.com/IDSCETHZurich/rce.git rce
-    
-2.  Open setup/setupHost.sh and follow instructions
 
-3.  Install the linux-container requirements
+2.  Install the linux-container requirements
     sudo apt-get install lxc bridge-utils dnsmasq debootstrap
+    
+3.  Open setup/setupHost and follow instructions
 
 4.  Run setupContainer.bash to generate a 12.04 container for LXC
     cd /opt/rce/setup
@@ -59,9 +59,9 @@ Installation
         apt-get update
         
         Minimal installation:
-            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+            apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs
         For debug nodes:
-            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+            apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
     2.  Add users
         adduser ros

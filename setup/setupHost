@@ -20,7 +20,7 @@
 	Add/Uncomment the following (appears in this order):
         domain-needed
         bogus-priv
-        interface = br0
+        interface = lxcbr0
         listen-address = 127.0.0.1
         listen-address = 10.0.3.1
         expand-hosts

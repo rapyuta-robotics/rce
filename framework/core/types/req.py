@@ -35,9 +35,6 @@
         CC    Create Container
         DC    Destroy Container
         
-        CR    Create Robot
-        DR    Destroy Robot
-        
         AN    Add Node
         RN    Remove Node
         AP    Add Parameter
@@ -51,9 +48,6 @@
 
 CREATE_CONTAINER = 'CC'
 DESTROY_CONTAINER = 'DC'
-
-CREATE_ROBOT = 'CR'
-DESTROY_ROBOT = 'DR'
 
 ADD_NODE = 'AN'
 REMOVE_NODE = 'RN'

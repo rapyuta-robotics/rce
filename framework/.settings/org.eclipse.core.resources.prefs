@@ -1,4 +1,4 @@
-#Wed Sep 12 17:23:29 CEST 2012
+#Wed Sep 12 20:10:44 CEST 2012
 eclipse.preferences.version=1
 encoding//client/handler.py=utf-8
 encoding//client/interfaces.py=utf-8
@@ -82,9 +82,6 @@ encoding//util/ssl.py=utf-8
 encoding//util/template.py=utf-8
 encoding/Container.py=utf-8
 encoding/Dummy.py=utf-8
-encoding/Environment.py=utf-8
-encoding/Master.py=utf-8
-encoding/Server.py=utf-8
 encoding/container.py=utf-8
 encoding/environment.py=utf-8
 encoding/errors.py=utf-8

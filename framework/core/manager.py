@@ -808,7 +808,7 @@ class RelayManager(_ManagerBase):
         """ This method is called regularly and is used to send the newest load
             info to the master manager/load balancer.
         """
-        # TODO: Add code here for load info upate
+        # TODO: Add code here for load info update
     
     def shutdown(self):
         # self._updater.stop()
@@ -1134,10 +1134,6 @@ class MasterManager(_ManagerBase):
             lambda user, args: user.createContainer(*args),
         req.DESTROY_CONTAINER :
             lambda user, args: user.destroyContainer(*args),
-        req.CREATE_ROBOT :
-            lambda user, args: user.createRobot(*args),
-        req.DESTROY_ROBOT :
-            lambda user, args: user.destroyRobot(*args),
         req.ADD_NODE :
             lambda user, args: user.addNode(*args),
         req.REMOVE_NODE :
