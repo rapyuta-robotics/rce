@@ -57,6 +57,8 @@ class User(object):
 
 ContainerManager._USER_CLS = User
 
+ContainerManager._USE_SSL = False
+
 ContainerManager._CONF_DIR = CONF_DIR
 ContainerManager._DATA_DIR = DATA_DIR
 ContainerManager._ROOTFS = ROOTFS

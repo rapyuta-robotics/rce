@@ -838,54 +838,54 @@ class ContainerManager(_UserManagerBase):
         self._srcRoot = self._ROOT_SRC_DIR
         self._pkgRoot = self._ROOT_PKG_DIR
         
-#        if not os.path.isabs(self._confDir):
-#            raise ValueError('Configuration directory is not an '
-#                             'absolute path.')
-#        
-#        if not os.path.isdir(self._confDir):
-#            raise ValueError('Configuration directory does not exist: '
-#                             '{0}'.format(self._confDir))
-#        
-#        if not os.path.isabs(self._dataDir):
-#            raise ValueError('Data directory is not an absolute path.')
-#        
-#        if not os.path.isdir(self._dataDir):
-#            raise ValueError('Data directory does not exist: {0}'.format(
-#                                 self._dataDir))
-#        
-#        if not os.path.isabs(self._rootfs):
-#            raise ValueError('Root file system directory is not an '
-#                             'absolute path.')
-#        
-#        if not os.path.isabs(self._srcRoot):
-#            raise ValueError('Root source directory is not an absolute path.')
-#        
-#        if not os.path.isabs(self._pkgRoot):
-#            raise ValueError('Root package directory is not an absolute path.')
-#        
-#        if not os.path.isdir(self._pkgRoot):
-#            raise ValueError('Root package directory does not exist: '
-#                             '{0}'.format(self._pkgRoot))
-#        
-#        # Validate the executables used in the container
-#        environmentExe = os.path.join(self._srcRoot, 'Environment.py')
-#        launcherExe = os.path.join(self._srcRoot, 'Launcher.py')
-#        
-#        if not os.path.isfile(environmentExe):
-#            raise ValueError('Root source directory does not contain the '
-#                             'file "Environment.py".')
-#        
-#        if not os.access(environmentExe, os.X_OK):
-#            raise ValueError('File "Environment.py" in root source directory '
-#                             'is not executable.')
-#        
-#        if not os.path.isfile(launcherExe):
-#            raise ValueError('Root source directory does not contain the '
-#                             'file "Launcher.py".')
-#        
-#        if not os.access(launcherExe, os.X_OK):
-#            raise ValueError('File "Launcher.py" in root source directory '
-#                             'is not executable.')
+        if not os.path.isabs(self._confDir):
+            raise ValueError('Configuration directory is not an '
+                             'absolute path.')
+        
+        if not os.path.isdir(self._confDir):
+            raise ValueError('Configuration directory does not exist: '
+                             '{0}'.format(self._confDir))
+        
+        if not os.path.isabs(self._dataDir):
+            raise ValueError('Data directory is not an absolute path.')
+        
+        if not os.path.isdir(self._dataDir):
+            raise ValueError('Data directory does not exist: {0}'.format(
+                                 self._dataDir))
+        
+        if not os.path.isabs(self._rootfs):
+            raise ValueError('Root file system directory is not an '
+                             'absolute path.')
+        
+        if not os.path.isabs(self._srcRoot):
+            raise ValueError('Root source directory is not an absolute path.')
+        
+        if not os.path.isabs(self._pkgRoot):
+            raise ValueError('Root package directory is not an absolute path.')
+        
+        if not os.path.isdir(self._pkgRoot):
+            raise ValueError('Root package directory does not exist: '
+                             '{0}'.format(self._pkgRoot))
+        
+        # Validate the executables used in the container
+        environmentExe = os.path.join(self._srcRoot, 'environment.py')
+        launcherExe = os.path.join(self._srcRoot, 'launcher.py')
+        
+        if not os.path.isfile(environmentExe):
+            raise ValueError('Root source directory does not contain the '
+                             'file "environment.py".')
+        
+        if not os.access(environmentExe, os.X_OK):
+            raise ValueError('File "environment.py" in root source directory '
+                             'is not executable.')
+        
+        if not os.path.isfile(launcherExe):
+            raise ValueError('Root source directory does not contain the '
+                             'file "launcher.py".')
+        
+        if not os.access(launcherExe, os.X_OK):
+            raise ValueError('File "launcher.py" in root source directory '
+                             'is not executable.')
     
     def _createConfigFile(self, confDir):
         """ Create a config file based on the given parameters.

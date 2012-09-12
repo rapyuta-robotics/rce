@@ -245,7 +245,7 @@ class UIDServer(ServerFactory):
         limit = datetime.now() - timedelta(seconds=self._timeout)
         
         for uid in [uid for uid, timestamp in self._reservedUID.iteritems()
-                    if timestamp > limit]:
+                    if timestamp < limit]:
             del self._reservedUID[uid]
 
 
