@@ -152,7 +152,7 @@ def main(reactor, user, masterIP):
     
     def callback(suffix):
         try:
-            cmd = [containerExe, suffix]
+            cmd = [containerExe, suffix, masterIP]
             reactor.spawnProcess(containerProtocol, cmd[0], cmd, env=os.environ)
             
             cmd = [relayExe, suffix, masterIP]
