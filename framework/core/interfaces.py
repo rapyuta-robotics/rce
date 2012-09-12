@@ -447,7 +447,12 @@ class ILoadBalancer(Interface):
             @type  ip:      str
         """
     
-    def getNextContainerLocation(): #@NoSelf
-        """ Returns the CommID of the Container node where the next container
+    def getNextRobotLocation(): #@NoSelf
+        """ Returns the CommID of the robot manager where the next robot
             should be created.
+        """
+    
+    def getNextContainerLocation(): #@NoSelf
+        """ Returns the CommID of the container manager where the next
+            container should be created.
         """

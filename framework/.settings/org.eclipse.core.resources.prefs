@@ -1,4 +1,4 @@
-#Wed Sep 12 20:10:44 CEST 2012
+#Wed Sep 12 20:47:56 CEST 2012
 eclipse.preferences.version=1
 encoding//client/handler.py=utf-8
 encoding//client/interfaces.py=utf-8
@@ -63,6 +63,7 @@ encoding//trash/ParameterMonitor.py=utf-8
 encoding//trash/ROSComponents/ROSControlProxy.py=utf-8
 encoding//trash/ROSManager.py=utf-8
 encoding//trash/SSLUtil.py=utf-8
+encoding//trash/Server.py=utf-8
 encoding//trash/ServerUtil/Container.py=utf-8
 encoding//trash/ServerUtil/Interface.py=utf-8
 encoding//trash/ServerUtil/Manager.py=utf-8

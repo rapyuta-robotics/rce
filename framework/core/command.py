@@ -191,18 +191,28 @@ class RobotCommand(object):
     
     IDENTIFIER = types.ROBOT
     
-    def __init__(self, robotID):
+    def __init__(self, robotID, key):
         """ Initialize the robot command.
             
             @param robotID:     Tag which is used to identify the robot.
             @type  robotID:     str
+            
+            @param key:         32 byte string which is used to verify the
+                                connection from the robot.
+            @type  key:         str
         """
         self._robotID = robotID
+        self._key = key
     
     @property
     def robotID(self):
         """ Robot ID. """
         return self._robotID
+    
+    @property
+    def key(self):
+        """ Key to verify connection. """
+        return self._key
     
     def serialize(self, s):
         """ Serialize the robot command.
@@ -214,6 +224,7 @@ class RobotCommand(object):
             @raise:     errors.SerializationError
         """
         s.addElement(self._robotID)
+        s.addElement(self._key)
     
     @classmethod
     def deserialize(cls, s):
@@ -225,7 +236,7 @@ class RobotCommand(object):
             
             @raise:     errors.SerializationError
         """
-        return cls(s.getElement())
+        return cls(s.getElement(), s.getElement())
 
 
 class NodeCommand(object):

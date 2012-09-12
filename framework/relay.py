@@ -35,6 +35,7 @@ import sys
 
 # twisted specific imports
 from twisted.python import log
+from autobahn.websocket import listenWS
 
 # Custom imports
 from core.types import cmd as types
@@ -51,6 +52,7 @@ from remote.message import CommandSerializer, TagSerializer, \
     CommandProcessor, TagProcessor, ROSMsgSerializer, Messenger
 from remote.control import RemoteRequestSender
 from remote.callback import RelayCallbackFromEndpoint, RelayCallbackFromRelay
+from client.protocol import RobotWebSocketProtocol, CloudEngineWebSocketFactory
 
 from settings import MASTER_RELAY_PORT, RELAY_ROS_PORT, RELAY_RELAY_PORT, \
     CONVERTER_CLASSES
@@ -65,6 +67,7 @@ class User(object):
 class Manager(RelayManager, RobotManager):
     _USER_CLS = User
     _CUSTOM_CONVERTERS = CONVERTER_CLASSES
+    _ROBOT_TIMEOUT = 60
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)
@@ -118,6 +121,10 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     factory = RCEServerFactory(commManager, [cb], [cb])
     factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
     reactor.listenTCP(rosPort, factory)
+    
+    factory = CloudEngineWebSocketFactory(RobotWebSocketProtocol, manager,
+                                          'ws://localhost:9050')
+    listenWS(factory)
     
     reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)

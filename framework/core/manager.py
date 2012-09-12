@@ -33,6 +33,8 @@
 # Python specific imports
 import os
 import shutil
+from datetime import datetime, timedelta
+from uuid import uuid4
 from functools import wraps
 
 # zope specific imports
@@ -544,6 +546,14 @@ class ROSInterfaceOnlyManager(_InterfaceManager):
 class RobotManager(_InterfaceManager):
     """ Manager which handles the management of robots and converters.
     """
+    class _Robot(object):
+        """ Class which represents a robot before he actually connects.
+        """
+        def __init__(self, key):
+            self.key = key
+            self.timestamp = datetime.now()
+            self.conn = None
+    
     def __init__(self, reactor):
         super(RobotManager, self).__init__(reactor)
         
@@ -560,6 +570,9 @@ class RobotManager(_InterfaceManager):
             # Load the converter
             mod = __import__(module, fromlist=[className])
             self._converter.addCustomConverter(getattr(mod, className))
+        
+        self.__cleaner = LoopingCall(self.__clean)
+        self.__cleaner.start(self._ROBOT_TIMEOUT/2)
     
     @property
     def converter(self):
@@ -590,7 +603,7 @@ class RobotManager(_InterfaceManager):
             raise InternalError('There already exists a robot with the robot '
                                 'ID "{0}".'.format(robotID))
         
-        robots[robotID] = None
+        robots[robotID] = RobotManager._Robot(robot.key)
     
     @verifyUser
     def removeRobot(self, userID, tag):
@@ -602,34 +615,43 @@ class RobotManager(_InterfaceManager):
             raise InternalError('Tried to remove a robot which does not '
                                 'exist.')
         
-        if robots[tag]:
+        if robots[tag].conn:
             raise InternalError('Connection to robot is not closed yet.')
         
         del robots[tag]
     
     @verifyUser
-    def robotConnected(self, userID, robotID, conn):
+    def robotConnected(self, userID, robotID, key, conn):
         """ # TODO: Add description
-                (Called by client.protocol._WebSocketCloudEngineProtocol
+                (Called by client.protocol.RobotWebSocketProtocol
                  during initialization/verification of the connection)
         """
         robots = self._users[userID].robots
         
-        if robotID not in robots or robots[robotID]:
+        if robotID not in robots:
             return False
         
-        robots[robotID] = conn
+        robot = robots[robotID]
+        
+        if not isinstance(robot, RobotManager._Robot):
+            return False
+        
+        if not key == robot.key:
+            return False
+        
+        robot.timestamp = None
+        robot.conn = conn
     
     @verifyUser
-    def robotClosed(self, userID, robotID, conn):
+    def robotClosed(self, userID, robotID):
         """ # TODO: Add description
-                (Called by client.protocol._WebSocketCloudEngineProtocol
+                (Called by client.protocol.RobotWebSocketProtocol
                  in onClose)
         """
         robots = self._users[userID].robots
         
         if robotID in robots and robots[robotID]:
-            robots[robotID] = None
+            robots[robotID].conn = None
     
     @verifyUser
     def sendRequest(self, request):
@@ -690,7 +712,7 @@ class RobotManager(_InterfaceManager):
             @type  msg:         dict
         """
         try:
-            self._users[userID].robots[robotID].sendMessage(msg)
+            self._users[userID].robots[robotID].conn.sendMessage(msg)
         except KeyError:
             log.msg('Message could not be sent: The robot "{0}" is no longer '
                     'connected.'.format(robotID))
@@ -699,12 +721,25 @@ class RobotManager(_InterfaceManager):
                                 'robot.')
     
     def shutdown(self):
+        self.__cleaner.stop()
+        
         for user in self._users.iteritems():
             user.robots = {}
         
         super(RobotManager, self).shutdown()
         
         self._reqSender = None
+    
+    def __clean(self):
+        """ Internally used method to remove unclaimed robot connections.
+        """
+        limit = datetime.now() - timedelta(seconds=self._ROBOT_TIMEOUT)
+        
+        for user in self._users.iteritems():
+            for robotID in [
+                robotID for robotID, robot in user.robots.iteritems()
+                    if robot.timestamp and robot.timestamp < limit]:
+                del user.robots[robotID]
     
     @verifySingleUser
     def addInterface(self, userID, interface):
@@ -1178,7 +1213,7 @@ class MasterManager(_ManagerBase):
         verifyObject(IControlFactory, ctrlFactory)
         self._ctrlFactory = ctrlFactory
     
-    def createUser(self, userID):
+    def _createUser(self, userID):
         """ Create a new user.
             
             @param userID:      Associate the user ID with the newly created
@@ -1193,7 +1228,8 @@ class MasterManager(_ManagerBase):
         self.__users[userID] = User(self._ctrlFactory, self._commManager,
                                    userID)
     
-    def destroyUser(self, userID):
+    # TODO: Not called from anywhere
+    def _destroyUser(self, userID):
         """ Destroy a user.
             
             @param userID:      Destroy the user matching the userID.
@@ -1205,6 +1241,21 @@ class MasterManager(_ManagerBase):
             raise InvalidRequest('User does not exist.')
         
         self.__users.pop(userID).delete()
+    
+    def newConnection(self, userID, robotID):
+        """ # TODO: Add description
+        """
+        # TODO: Here would probably be the place to authenticate the user
+        if userID not in self.__users:
+            self._createUser(userID)
+        
+        user = self.__users[userID]
+        key = uuid4().hex
+        commID, ip = self._manager.getNextRobotLocation()
+        
+        user.createRobot(robotID, key, commID)
+        
+        return { 'key' : key, 'ip' : ip }
     
     def processRequest(self, request):
         """ Process a request received from a robot.
@@ -1258,8 +1309,18 @@ class MasterManager(_ManagerBase):
         else:
             log.msg('Destroyed CommID "{0}".'.format(commID))
     
+    def getNextRobotLocation(self):
+        """ Get the CommID of the robot manager where the next robot should
+            be created.
+            
+            @return:    CommID of the robot manager where the next robot
+                        should be created.
+            @rtpye:     str
+        """
+        return self._loadBalancer.getNextRobotLocation()
+    
     def getNextContainerLocation(self):
-        """ Get the CommID of the container node where the next container
+        """ Get the CommID of the container manager where the next container
             should be created.
             
             @return:    CommID of the container manager where the next

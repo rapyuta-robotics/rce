@@ -128,7 +128,7 @@ class _EndpointProxy(object):
 class RobotProxy(_EndpointProxy):
     """ Class which is used to keep track of the status of a Robot.
     """
-    def __init__(self, user, robotID, control):
+    def __init__(self, user, robotID, key, control):
         """ Initialize the Robot proxy.
             
             @param user:        User to which this robot belongs.
@@ -136,6 +136,10 @@ class RobotProxy(_EndpointProxy):
             
             @param robotID:     RobotID which is used to identify the robot.
             @type  robotID:     str
+            
+            @param key:         Key which should be used to verify connection
+                                from represented robot.
+            @type  key:         str
                                     
             @param control:     Control which is used to communicate with the
                                 robot.
@@ -145,9 +149,7 @@ class RobotProxy(_EndpointProxy):
         
         super(RobotProxy, self).__init__(user, robotID, control)
         
-        self._robotID = robotID
-        
-        control.createRobot(RobotCommand(robotID))
+        control.createRobot(RobotCommand(robotID, key))
     
     def delete(self):
         """ Removes the proxy, i.e. the represented robot.
@@ -157,7 +159,7 @@ class RobotProxy(_EndpointProxy):
             
             Once this method is called this monitor can no longer be used.
         """
-        self._control.destroyRobot(self._robotID)
+        self._control.destroyRobot(self._uid)
         
         super(RobotProxy, self).delete()
 
@@ -353,8 +355,7 @@ class ContainerProxy(ROSEnvProxy):
         
         super(ContainerProxy, self).__init__(user, cTag, control, commID)
         
-        self._tag = cTag
-        self._connected = False
+        self._connected = False   # TODO: At the moment not used
         
         log.msg('Start container "{0}".'.format(commID))
         control.createContainer(ContainerCommand(cTag, commID))
@@ -382,10 +383,10 @@ class ContainerProxy(ROSEnvProxy):
                                      'connected.')
             
             self._connected = True
-            self._user.sendContainerUpdate(self._tag, True)
+            self._user.sendContainerUpdate(self._uid, True)
         else:
             self._connected = False
-            self._user.sendContainerUpdate(self._tag, False)
+            self._user.sendContainerUpdate(self._uid, False)
     
     def delete(self):
         """ Removes the monitor, i.e. the represented container.
@@ -396,6 +397,6 @@ class ContainerProxy(ROSEnvProxy):
             Once this method is called this monitor can no longer be used.
         """
         log.msg('Stop container "{0}".'.format(self._commID))
-        self._control.destroyContainer(self._tag)
+        self._control.destroyContainer(self._uid)
         
         super(ContainerProxy, self).delete()

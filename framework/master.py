@@ -38,6 +38,7 @@ from zope.interface import classImplements
 
 # twisted specific imports
 from twisted.python import log
+from autobahn.websocket import listenWS
 
 # Custom imports
 from core.interfaces import IControlFactory, IContainerControl, INodeControl, \
@@ -60,6 +61,8 @@ from remote.control import RemoteRobotControl, RemoteNodeControl, \
     RemoteParameterControl, RemoteEndpointControl, RemoteContainerControl
 from remote.message import CommandSerializer, TagSerializer, \
     RequestSerializer, RequestProcessor
+from client.protocol import MasterWebSocketProtocol, \
+    CloudEngineWebSocketFactory
 
 from settings import MASTER_CONTAINER_PORT, MASTER_RELAY_PORT, MASTER_UID_PORT
 
@@ -151,6 +154,10 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     factory = RCEServerFactory(commManager, [cb], [cb])
     factory.addApprovedMessageTypes([types.REQUEST])
     reactor.listenTCP(relayPort, factory)
+    
+    factory = CloudEngineWebSocketFactory(MasterWebSocketProtocol, manager,
+                                          'ws://localhost:9000')
+    listenWS(factory)
     
     reactor.addSystemEventTrigger('before', 'shutdown', uidServer.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)

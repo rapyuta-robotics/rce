@@ -62,9 +62,47 @@ from util.interfaces import verifyObject
 from comm import definition
 
 
-class _WebSocketCloudEngineProtocol(WebSocketServerProtocol):
+class MasterWebSocketProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the
-        reCloudEngine.
+        master manager.
+    """
+    def __init__(self, manager):
+        """ Initialize the Protocol.
+        """
+        self._manager = manager
+    
+    def onMessage(self, msg, binary):
+        """ Method is called by the Autobahn engine when a message has been '
+            received from the client.
+        """
+        log.msg('WebSocket: Received new message from client. '
+                '(binary={0})'.format(binary))
+        
+        if binary:
+            self.dropConnection()
+            return
+        
+        msg = json.loads(msg)
+        
+        try:
+            userID = msg['userID']
+            robotID = msg['robotID']
+        except KeyError:
+            self.dropConnection()
+            return
+            
+        response = self._manager.newConnection(userID, robotID)
+        
+        if not response:
+            self.dropConnection()
+            return
+        
+        self.sendMessage(json.dumps(response))
+
+
+class RobotWebSocketProtocol(WebSocketServerProtocol):
+    """ Protocol which is used for the connections from the robots to the
+        robot manager.
     """
     def __init__(self, manager):
         """ Initialize the Protocol.
@@ -89,9 +127,11 @@ class _WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             @type  msg:     dict
         """
         if msg['type'] == types.INIT:
-            userID = msg['data']['userID']
-            robotID = msg['data']['userID']
-            if not self._manager.robotConnected(self._userID, robotID,
+            data = msg['data']
+            userID = data['userID']
+            robotID = data['robotID']
+            key = data['key']
+            if not self._manager.robotConnected(self._userID, robotID, key,
                                                 self):
                 raise InvalidRequest('UserID/RobotID could not be verified.')
         else:
@@ -167,7 +207,7 @@ class _WebSocketCloudEngineProtocol(WebSocketServerProtocol):
             
             raise InvalidRequest('This message type is not supported.')
     
-    def onMessage(self, msg, binary):    
+    def onMessage(self, msg, binary):
         """ Method is called by the Autobahn engine when a message has been '
             received from the client.
         """
@@ -264,21 +304,22 @@ class _WebSocketCloudEngineProtocol(WebSocketServerProtocol):
                 break
 
 
-class WebSocketCloudEngineFactory(WebSocketServerFactory):
+class CloudEngineWebSocketFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the
-        reCloudEngine.
+        RoboEarth Cloud Engine.
     """
-    def __init__(self, manager, url):
+    def __init__(self, protocolCls, manager, url):
         """ Initialize the Factory.
         """
         WebSocketServerFactory.__init__(self, url)
         
+        self._protocolCls = protocolCls
         self._manager = manager
     
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection
             attempt is made.
         """
-        p = _WebSocketCloudEngineProtocol(self._manager)
+        p = self._protocolCls(self._manager)
         p.factory = self
         return p

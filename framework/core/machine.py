@@ -435,7 +435,8 @@ class LoadBalancer(object):
         """ # TODO: Add description
         """
         self._machines = set()
-        self._iter = self._machines.__iter__()
+        self._relayIter = self._machines.__iter__()
+        self._containerIter = self._machines.__iter__()
     
     def registerMachine(self, machine):
         """ Register a new machine in which containers can be started.
@@ -463,17 +464,32 @@ class LoadBalancer(object):
         
         self._machines.remove(machine)
     
-    def getNextContainerLocation(self, repeat=False):
-        """ Returns the CommID of the Container node where the next container
-            should be started.
+    def getNextRobotLocation(self, repeat=False):
+        """ Returns the CommID of the robot manager where the next robot
+            should be created.
         """
         try:
-            machine = self._iter.next()
+            machine = self._relayIter.next()
+        except (StopIteration, RuntimeError):
+            if repeat:
+                raise InternalError('Can not get next robot location.')
+            
+            self._relayIter = self._machines.__iter__()
+            machine = self.getNextRobotLocation(True)
+        
+        return machine._relay
+    
+    def getNextContainerLocation(self, repeat=False):
+        """ Returns the CommID of the container manager where the next
+            container should be created.
+        """
+        try:
+            machine = self._containerIter.next()
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next container location.')
             
-            self._iter = self._machines.__iter__()
+            self._containerIter = self._machines.__iter__()
             machine = self.getNextContainerLocation(True)
         
         return machine._container

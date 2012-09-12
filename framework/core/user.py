@@ -68,12 +68,16 @@ class User(object):
         """ UserID """
         return self._userID
     
-    def createRobot(self, robotID, commID):
+    def createRobot(self, robotID, key, commID):
         """ Create a new robot with the given robotID of this user.
             
             @param robotID:     RobotID which is used to identify the robot
                                 which should be created.
             @type  robotID:     str
+            
+            @param key:         Key which should be used to verify connection
+                                from represented robot.
+            @type  key:         str
             
             @param commID:      CommID where the robot should be created.
             @type  commID:      str
@@ -86,7 +90,7 @@ class User(object):
                                 'has already been registered.')
         
         control = self._controlFactory.createRobotControl(self._userID, commID)
-        self._robots[robotID] = RobotProxy(self, robotID, control)
+        self._robots[robotID] = RobotProxy(self, robotID, key, control)
     
     def destroyRobot(self, robotID):
         """ Destroy the robot with the given robotID of this user.

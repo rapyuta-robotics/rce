@@ -36,7 +36,8 @@ import ClientMsgTypes
 cmd_IN = {
             "type":ClientMsgTypes.INIT,
             "data":{"userID":"userID",
-                    "robotID":"robotID"}
+                    "robotID":"robotID",
+                    "key":"32 byte key from master manager"}
             }
 
 # Configuration Message - Create Container
