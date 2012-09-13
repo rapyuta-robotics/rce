@@ -147,6 +147,36 @@ cmd_CC_debug = debugCmd(cmd_CC,'cmd_CC_debug','Create Container')
 
 cmd_DC_debug = debugCmd(cmd_DC,'cmd_CC_debug','Destroy Container')
 
+cmd_CN_srvTest = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
+                           "data":{"addNodes":[{"containerTag":"testRobot",
+                                                "nodeTag":"srvTestNode",
+                                                "pkg":"Test",
+                                                "exe":"Test.py",
+                                                "namespace":"/testNode"}],
+                                   "addInterfaces":[{"endpointTag":"testRobot",
+                                                     "interfaceTag":"srvTestConverter",
+                                                     "interfaceType":"ServiceProviderConverter",
+                                                     "className":"Test/QueryTest",
+                                                     "addr":""},
+                                                    {"endpointTag":"containerTag01",
+                                                     "interfaceTag":"srvTestInterface",
+                                                     "interfaceType":"ServiceInterface",
+                                                     "className":"Test/QueryTest",
+                                                     "addr":"/test"}]}},
+                        'cmd_CN_srvTest', "Service Test - Configure Components")
+
+cmd_CX_srvTest = debugCmd({"type":ClientMsgTypes.CONFIGURE_CONNECTION,
+                           "data":{"connect":[{"tagA":"srvTestConverter",
+                                               "tagB":"srvTestInterface"}]}},
+                        'cmd_CN_srvTest', "Service Test - Configure Connection")
+
+cmd_DM_srvTest = debugCmd({"type":ClientMsgTypes.DATA_MESSAGE,
+                           "data":{"dest":"srvTestConverter",
+                                   "orig":"testRobot",
+                                   "type":"Test/QueryTest",
+                                   "msgID":"srvTest_01",
+                                   "msg":{"a":5,"b":-3}}},
+                        'cmd_DM_srvTest', "Service Test - Data Message")
 
 
 

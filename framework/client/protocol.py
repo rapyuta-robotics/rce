@@ -102,8 +102,8 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         except Exception:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
-            #WebSocketServerProtocol.sendMessage(self, '\n'.join(
-            #    traceback.format_exception_only(etype, value)))
+            #self.sendMessage('\n'.join(traceback.format_exception_only(etype,
+            #                                                           value)))
             
             # Full debug message
             import traceback
@@ -168,6 +168,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             verifyObject(IClientMsgHandler, handler)
             self._msgHandler[handler.TYPE] = handler
         
+        WebSocketServerProtocol.sendMessage(self, 'Connection successfully '
+                                                  'initialized.')
+    
     def _recursiveURISearch(self, multidict):
         """ Internally used method to find binary data in incoming messages.
         """
@@ -245,6 +248,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                 # Check if the connection has be initialized
                 if not (self._robotID and self._userID):
                     self._initConnection(msg)
+                    return
                 
                 # Check if there is a reference to a binary part
                 uris = self._recursiveURISearch(msg)

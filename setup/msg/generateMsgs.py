@@ -36,7 +36,10 @@ import json
 cmds = [cmd_AU_debug,
         cmd_IN_debug,
         cmd_CC_debug,
-        cmd_DC_debug ]
+        cmd_DC_debug,
+        cmd_CN_srvTest,
+        cmd_CX_srvTest,
+        cmd_DM_srvTest ]
 
 
 # .txt clipboard

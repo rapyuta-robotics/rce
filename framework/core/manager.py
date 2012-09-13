@@ -640,6 +640,7 @@ class RobotManager(_InterfaceManager):
                                       'robotID registered.')
         
         if not key == robot.key:
+            # TODO: Temporary error message!
             raise AuthenticationError('The key is not correct. '+key+" - "+robot.key)
         
         robot.timestamp = None
