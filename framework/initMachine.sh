@@ -2,5 +2,5 @@
 
 . /opt/ros/fuerte/setup.sh
 ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:"/opt/rce/test"
-/home/dominique/rce/framework/initMachine.py $*
+/opt/rce/framework/initMachine.py $*
 

@@ -71,7 +71,7 @@ class RequestSerializer(object):
     
     def deserialize(self, s):
         return { 'user' : s.getElement(),
-                 'tag'  : s.getElement(),
+                 'type' : s.getElement(),
                  'args' : tuple(s.getList()) }
 
 

@@ -56,7 +56,7 @@ class _ClientHandlerBase(object):
             @type  userID:      str
         """
         self._manager = manager
-        self._user = userID
+        self._userID = userID
     
     
 class CreateContainerHandler(_ClientHandlerBase):

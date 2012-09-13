@@ -659,7 +659,6 @@ class RobotManager(_InterfaceManager):
             robot.timestamp = datetime.now()
             robot.conn = None
     
-    @_UserManagerBase.verifyUser
     def sendRequest(self, request):
         """ Send a request received from the robot to the master manager for
             processing.

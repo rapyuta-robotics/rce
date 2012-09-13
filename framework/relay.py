@@ -49,7 +49,8 @@ from comm import types as msgTypes
 from comm.manager import CommManager
 from comm.protocol import RCEClientFactory, RCEServerFactory
 from remote.message import CommandSerializer, TagSerializer, \
-    CommandProcessor, TagProcessor, ROSMsgSerializer, Messenger
+    RequestSerializer, CommandProcessor, TagProcessor, \
+    ROSMsgSerializer, Messenger
 from remote.control import RemoteRequestSender
 from remote.callback import RelayCallbackFromEndpoint, RelayCallbackFromRelay
 from client.protocol import RobotWebSocketProtocol, CloudEngineWebSocketFactory
@@ -91,6 +92,7 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
         ConnectionCommand])
     commManager.registerContentSerializers([cmdSerializer,
                                             TagSerializer(),
+                                            RequestSerializer(),
                                             ROSMsgSerializer()])
     
     distributor = ControlDistributor()
