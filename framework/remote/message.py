@@ -88,7 +88,7 @@ class CommandSerializer(object):
     IDENTIFIER = types.COMMAND
     
     def __init__(self):
-        """ Initialize AddCommandSerializer.
+        """ Initialize CommandSerializer.
         """
         self._cmdCls = {}
     
@@ -128,13 +128,13 @@ class CommandSerializer(object):
             cmd = msg['cmd']
         except KeyError as e:
             raise SerializationError('Could not serialize content of '
-                                     'AddCommand Message. Missing key: '
+                                     'Command Message. Missing key: '
                                      '{0}'.format(e))
         
         try:
-            verifyObject(ISerializable, msg)
+            verifyObject(ISerializable, cmd)
         except InterfaceError as e:
-            raise SerializationError('Content of AddCommand Message can not '
+            raise SerializationError('Content of Command Message can not '
                                      'be serialized: {0}'.format(e))
         
         try:

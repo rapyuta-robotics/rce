@@ -1,1 +1,1 @@
-../../framework/ServerUtil/ClientMsgTypes.py
+../../framework/client/types.py

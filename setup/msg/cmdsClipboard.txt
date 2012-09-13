@@ -1,112 +1,16 @@
+=== Authentication Message ===
+
+{"robotID": "testRobot", "userID": "testUser"}
+
+=== Initialization Message ===
+
+{"data": {"robotID": "testRobot", "userID": "testUser", "key": "addKeyHere"}, "type": "IN"}
+
 === Create Container ===
 
-{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "CC", "orig": "robotUniqueID"}
+{"data": {"containerTag": "containerTag01"}, "type": "CC"}
 
 === Destroy Container ===
 
-{"dest": "$$$$$$", "data": {"containerTag": "containerTag01"}, "type": "DC", "orig": "robotUniqueID"}
-
-=== Simple Test - Start Nodes ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Simple Test - Remove Nodes ===
-
-{"dest": "containerTag01", "data": {"removeNodes": ["nodeTag"]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Simple Test - Add Interface ===
-
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Simple Test - Remove Interface ===
-
-{"dest": "containerTag01", "data": {"removeInterfaces": ["Test/getSum"]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Add Parameters ===
-
-{"dest": "containerTag01", "data": {"setParam": [{"paramValue": 3.0, "paramType": "float", "paramName": "test"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Remove Parameters ===
-
-{"dest": "containerTag01", "data": {"deleteParam": ["test"]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Simple Test - Start Node/Add Interface together ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "TopicTest.py", "namespace": "Test", "pkg": "Test", "nodeTag": "nodeTag"}], "addInterfaces": [{"className": "Test/TopicService", "interfaceType": "service", "name": "Test/getSum"}, {"className": "std_msgs/Int32", "interfaceType": "publisher", "name": "Test/addInt"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Simple Test - Register Interface ===
-
-{"dest": "containerTag01", "data": {"Test/addInt": true, "Test/getSum": true}, "type": "IR", "orig": "robotUniqueID"}
-
-=== Simple Test - Unregister Interface ===
-
-{"dest": "containerTag01", "data": {"Test/addInt": false, "Test/getSum": false}, "type": "IR", "orig": "robotUniqueID"}
-
-=== Simple Test - Send addInt - topic I ===
-
-{"dest": "containerTag01", "data": {"msg": {"data": 3}, "msgID": "msgID_0", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
-
-=== Simple Test - Send addInt - topic II ===
-
-{"dest": "containerTag01", "data": {"msg": {"data": 7}, "msgID": "msgID_1", "type": "std_msgs/Int32", "interfaceTag": "Test/addInt"}, "type": "DM", "orig": "robotUniqueID"}
-
-=== Simple Test - Send addInt Service Request ===
-
-{"dest": "containerTag01", "data": {"msg": {}, "msgID": "msgID_2", "type": "Test/TopicService", "interfaceTag": "Test/getSum"}, "type": "DM", "orig": "robotUniqueID"}
-
-=== Binary Receiving - Config Nodes ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageGenerator.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgGen"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Receiving - Config Interfaces ===
-
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circleOut"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Receiving - Config Nodes & Interfaces ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageGenerator.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgGen"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "subscriber", "name": "binary/circleOut"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "publisher", "name": "binary/ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Receiving - - Register Interface ===
-
-{"dest": "containerTag01", "data": {"binary/ccPos": true, "binary/circleOut": true}, "type": "IR", "orig": "robotUniqueID"}
-
-=== Binary Receiving - Data Message ===
-
-{"dest": "containerTag01", "data": {"msg": {"y": 0.6, "x": 0.2, "theta": 0.0}, "msgID": "msgID_0", "type": "geometry_msgs/Pose2D", "interfaceTag": "binary/ccPos"}, "type": "DM", "orig": "robotUniqueID"}
-
-=== Binary Sending - Config Nodes ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageAnalyzer.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgAnalyzer"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Sending - Config Interfaces ===
-
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circleIn"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Sending - Config Nodes and Interfaces ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "imageAnalyzer.py", "namespace": "binary", "pkg": "rceBinaryMsgDebug", "nodeTag": "imgAnalyzer"}], "addInterfaces": [{"className": "sensor_msgs/Image", "interfaceType": "publisher", "name": "binary/circleIn"}, {"className": "geometry_msgs/Pose2D", "interfaceType": "subscriber", "name": "binary/est_ccPos"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Sending - Register Interface ===
-
-{"dest": "containerTag01", "data": {"binary/circleIn": true, "binary/est_ccPos": true}, "type": "IR", "orig": "robotUniqueID"}
-
-=== Binary Complex Receiving - Config Nodes ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "Test.py", "namespace": "TestBin", "pkg": "Test", "nodeTag": "testNode"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Complex Receiving - Config Interfaces ===
-
-{"dest": "containerTag01", "data": {"addInterfaces": [{"className": "Test/QueryTest", "interfaceType": "service", "name": "TestBin/test"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Complex Receiving -  Config Nodes and Interfaces ===
-
-{"dest": "containerTag01", "data": {"addNodes": [{"exe": "Test.py", "namespace": "TestBin", "pkg": "Test", "nodeTag": "testNode"}], "addInterfaces": [{"className": "Test/QueryTest", "interfaceType": "service", "name": "TestBin/test"}]}, "type": "CN", "orig": "robotUniqueID"}
-
-=== Binary Complex Receiving - Register Interface ===
-
-{"dest": "containerTag01", "data": {"TestBin/test": true}, "type": "IR", "orig": "robotUniqueID"}
-
-=== Binary Complex Receiving - Data Message ===
-
-{"dest": "containerTag01", "data": {"msg": {"a": 3, "b": 5}, "msgID": "msgID_0", "type": "Test/QueryTest", "interfaceTag": "TestBin/test"}, "type": "DM", "orig": "robotUniqueID"}
+{"data": {"containerTag": "containerTag01"}, "type": "DC"}
 
