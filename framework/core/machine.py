@@ -469,27 +469,23 @@ class LoadBalancer(object):
             should be created.
         """
         try:
-            machine = self._relayIter.next()
+            return self._relayIter.next()._relay
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next robot location.')
             
             self._relayIter = self._machines.__iter__()
-            machine = self.getNextRobotLocation(True)
-        
-        return machine._relay
+            return self.getNextRobotLocation(True)
     
     def getNextContainerLocation(self, repeat=False):
         """ Returns the CommID of the container manager where the next
             container should be created.
         """
         try:
-            machine = self._containerIter.next()
+            return self._containerIter.next()._container
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next container location.')
             
             self._containerIter = self._machines.__iter__()
-            machine = self.getNextContainerLocation(True)
-        
-        return machine._container
+            return self.getNextContainerLocation(True)
