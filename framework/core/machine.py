@@ -46,6 +46,8 @@ from twisted.internet.task import LoopingCall
 from errors import InternalError, InvalidRequest
 from core.interfaces import ILoadBalancer
 from comm import definition
+from comm import types as msgTypes
+from comm.message import Message
 from util.ssl import createKey, createCertReq, dumpCertReq, parseCertReqStr, \
     createCert, dumpCert
 
@@ -446,6 +448,16 @@ class LoadBalancer(object):
         """
         if machine in self._machines:
             raise InternalError('Tried to register the same machine twice.')
+        
+        # Order the new machine to connect to all the other existing machines.
+        order = [(machine._relay, machine._ip) for machine in self._machines]
+        
+        if order:
+            msg = Message()
+            msg.msgType = msgTypes.ROUTE_INFO
+            msg.dest = machine._relay
+            msg.content = order
+            self._commManager.sendMessage(msg)
         
         self._machines.add(machine)
     

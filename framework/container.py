@@ -71,7 +71,6 @@ def main(reactor, commID, masterIP, masterPort, masterID):
     
     commManager = CommManager(reactor, commID)
     manager = ContainerManager(reactor)
-    manager.registerCommManager(commManager)
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand([ContainerCommand])
     commManager.registerContentSerializers([cmdSerializer,

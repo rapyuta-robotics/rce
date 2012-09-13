@@ -60,7 +60,7 @@ from remote.callback import MasterCallbackFromRelay, \
 from remote.control import RemoteRobotControl, RemoteNodeControl, \
     RemoteParameterControl, RemoteEndpointControl, RemoteContainerControl
 from remote.message import CommandSerializer, TagSerializer, \
-    RequestSerializer, RequestProcessor
+    RequestSerializer, RequestProcessor, ConnectDirectiveSerializer
 from client.protocol import MasterWebSocketProtocol, \
     CloudEngineWebSocketFactory
 
@@ -121,7 +121,6 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     
     commManager = CommManager(reactor, commID)
     manager = MasterManager(reactor)
-    manager.registerCommManager(commManager)
     loadBalancer = LoadBalancer()
     uidServer = UIDServer(loadBalancer, 30)
     manager.registerLoadBalancer(loadBalancer)
@@ -137,7 +136,8 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
          PublisherInterfaceCommand, PublisherConverterCommand,
          SubscriberInterfaceCommand, SubscriberConverterCommand,
          ConnectionCommand])
-    commManager.registerContentSerializers([cmdSerializer,
+    commManager.registerContentSerializers([ConnectDirectiveSerializer(),
+                                            cmdSerializer,
                                             TagSerializer(),
                                             RequestSerializer()])
     

@@ -48,9 +48,9 @@ from comm import definition
 from comm import types as msgTypes
 from comm.manager import CommManager
 from comm.protocol import RCEClientFactory, RCEServerFactory
-from remote.message import CommandSerializer, TagSerializer, \
-    RequestSerializer, CommandProcessor, TagProcessor, \
-    ROSMsgSerializer, Messenger
+from remote.message import ROSMsgSerializer, Messenger, RequestSerializer, \
+    CommandSerializer, TagSerializer, CommandProcessor, TagProcessor, \
+    ConnectDirectiveSerializer, ConnectDirectiveProcessor
 from remote.control import RemoteRequestSender
 from remote.callback import RelayCallbackFromEndpoint, RelayCallbackFromRelay
 from client.protocol import RobotWebSocketProtocol, CloudEngineWebSocketFactory
@@ -69,6 +69,7 @@ class Manager(RelayManager, RobotManager):
     _USER_CLS = User
     _CUSTOM_CONVERTERS = CONVERTER_CLASSES
     _ROBOT_TIMEOUT = 60
+    _RELAY_PORT = RELAY_RELAY_PORT
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)
@@ -90,7 +91,8 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
         ServiceConverterCommand, ServiceProviderConverterCommand,
         PublisherConverterCommand, SubscriberConverterCommand,
         ConnectionCommand])
-    commManager.registerContentSerializers([cmdSerializer,
+    commManager.registerContentSerializers([ConnectDirectiveSerializer(),
+                                            cmdSerializer,
                                             TagSerializer(),
                                             RequestSerializer(),
                                             ROSMsgSerializer()])
@@ -105,7 +107,8 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     distributor.addHandler(types.RM_INTERFACE, manager.removeInterface)
     distributor.addHandler(types.CONNECTION, manager.modifyConnection)
     
-    commManager.registerMessageProcessors([CommandProcessor(distributor),
+    commManager.registerMessageProcessors([ConnectDirectiveProcessor(manager),
+                                           CommandProcessor(distributor),
                                            TagProcessor(distributor),
                                            messenger])
     
@@ -113,7 +116,7 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     factory.addApprovedMessageTypes([msgTypes.COMMAND, msgTypes.TAG])
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    cb = RelayCallbackFromRelay(manager)
+    cb = RelayCallbackFromRelay(manager, commManager)
     factory = RCEServerFactory(commManager, [cb], [cb])
     factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
     reactor.listenTCP(relayPort, factory)

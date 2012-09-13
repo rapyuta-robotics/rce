@@ -36,12 +36,6 @@
         AI  Routing information
         AC  Connection directives
         
-        SC  Container Status
-        
-        IR  CommID request
-        IB  CommID response
-        ID  CommID delete
-        
         LI  Load Information
         
         RQ  Request message
@@ -53,13 +47,7 @@
 
 INIT_REQUEST = 'AR'
 ROUTE_INFO = 'AI'
-CONNECT = 'AC'      # TODO: Used?
-
-CONTAINER_STATUS = 'SC'      # TODO: Used?
-
-ID_REQUEST = 'IR'      # TODO: Used?
-ID_RESPONSE = 'IB'      # TODO: Used?
-ID_DEL = 'ID'      # TODO: Used?
+CONNECT = 'AC'
 
 LOAD_INFO = 'LI'
 

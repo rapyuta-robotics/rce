@@ -62,7 +62,6 @@ def main(reactor, commID, port):
     
     commManager = CommManager(reactor, commID)
     manager = NodeManager(reactor)
-    manager.registerCommManager(commManager)
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand([NodeCommand])
     commManager.registerContentSerializers([cmdSerializer,

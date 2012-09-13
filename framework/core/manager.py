@@ -59,7 +59,11 @@ from core.interfaces import IRequestSender, IControlFactory, IMessenger, \
 from core.user import User
 from core.monitor import NodeMonitor
 from comm import definition
+from comm import types as msgTypes
+from comm.protocol import RCEClientFactory
+from comm.message import Message
 from remote.control import RemoteNodeControl
+from remote.callback import RelayCallbackFromRelay
 
 from util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
     writeCertToFile, writeKeyToFile
@@ -91,7 +95,7 @@ class _ManagerBase(object):
     @property
     def reactor(self):
         """ Reference to twisted reactor of this node. """
-        return self.reactor
+        return self._reactor
     
     def shutdown(self):
         pass
@@ -372,8 +376,10 @@ class _InterfaceManager(_ROSManagerBase):
         interfaces = self._users[userID].interfaces
         
         try:
-            interface = self._INTERFACES[interface.IDENTIFIER](
-                            self, self._commManager.reactor, userID, interface)
+            interface = self._INTERFACES[interface.IDENTIFIER](self,
+                                                               self._reactor,
+                                                               userID,
+                                                               interface)
         except KeyError:
             raise InvalidRequest('InterfaceManager can not manage '
                                  'requested component.')
@@ -786,9 +792,27 @@ class RelayManager(_ManagerBase):
     def __init__(self, reactor):
         super(RelayManager, self).__init__(reactor)
         
-        self._satellite = set()
+        self._satellites = set()
+        self._relays = set()
+        
         self._updater = LoopingCall(self._updateLoadInfo)
         # self._updater.start(self.__LOAD_INFO_UPDATE)
+    
+    def _informRelays(self, info):
+        """ Send a routing info/update to the registered relays.
+            
+            @param info:    Information which should be distributed. Tuple
+                            consisting commID of endpoint which changed and
+                            a bool indicated whether the endpoint is added
+                            (True) or removed (False).
+            @type  info:    ( str, bool )
+        """
+        for relayID, _ in self._relays:
+            msg = Message()
+            msg.msgType = msgTypes.ROUTE_INFO
+            msg.dest = relayID
+            msg.content = [info]
+            self._commManager.sendMessage(msg)
     
     def registerEndpoint(self, commID):
         """ Register a new endpoint with this manager.
@@ -796,11 +820,12 @@ class RelayManager(_ManagerBase):
             @param commID:      CommID of new endpoint.
             @type  commID:      str
         """
-        if commID in self._satellite:
+        if commID in self._satellites:
             raise InternalError('Tried to register an endpoint, but '
                                 'communication ID is already registered.')
         
-        self._satellite.add(commID)
+        self._satellites.add(commID)
+        self._informRelays((commID, True))
     
     def unregisterEndpoint(self, commID):
         """ Unregister an endpoint from this manager.
@@ -808,11 +833,34 @@ class RelayManager(_ManagerBase):
             @param commID:      CommID of endpoint.
             @type  commID:      str
         """
-        if commID not in self._satellite:
+        if commID not in self._satellites:
             raise InternalError('Tried to unregister a satellite, but '
                                 'communication ID is not registered.')
         
-        self._satellite.remove(commID)
+        self._satellites.remove(commID)
+        self._informRelays((commID, False))
+    
+    def registerRelay(self, commID, ip):
+        """ Method is called by post initialization callback of relay-relay
+            connections.
+        """
+        conn = (commID, ip)
+        
+        if conn in self._relays:
+            raise InternalError('Tried to register same connection twice.')
+        
+        self._relays.add(conn)
+    
+    def unregisterRelay(self, commID, ip):
+        """ Method is called by post close callback of relay-relay connections.
+        """
+        conn = (commID, ip)
+        
+        if conn not in self._relays:
+            raise InternalError('Tried to unregister a non-existent '
+                                'connection.')
+        
+        self._relays.remove(conn)
     
     def getServerRouting(self):
         """ Returns the routing information for all nodes which should be
@@ -821,30 +869,24 @@ class RelayManager(_ManagerBase):
             
             @rtype:     [ str ]
         """
-        return tuple(self._satellite)
+        return tuple(self._satellites)
     
-    def _connectToRelay(self, commID, ip):
-        """ Connect to another relay manager.
-        """
-        factory = RCEClientFactory( self._commManager, commID,
-                                            '',
-                                            ServerRoutingTrigger(self._commManager, self) )
-        factory.addApprovedMessageTypes([ MsgTypes.ROUTE_INFO,
-                                          MsgTypes.ROS_MSG ])
-        if self._USE_SSL:
-            self.reactor.connectSSL(ip, settings.PORT_SERVER_SERVER, factory, self._ctx)
-        else:
-            self.reactor.connectTCP(ip, settings.PORT_SERVER_SERVER, factory)
-    
-    def connectToRelays(self, servers):
-        """ Callback for MessageProcessor to connect to specified servers.
+    def connectToRelays(self, relays):
+        """ Callback for remote.message.ConnectDirectiveProcessor to connect
+            to the specified relays.
             
-            @param servers:  List of dictionaries containing the necessary
-                                information of each server (ip, port, commID).
-            @type  servers:  [ { str : str } ]
+            @param relays:  List of (commID, IP address) tuples describing the
+                            relays to which connections should be established.
+            @type  relay:  [ ( str, str ) ]
         """
-        for server in servers:
-            self._connectToRelays(server['commID'], server['ip'])
+        for relay in relays:
+            if relay in self._relays:
+                continue  # We are already connected to this relay.
+            
+            cb = RelayCallbackFromRelay(self, self._commManager)
+            factory = RCEClientFactory(self._commManager, relay[0], [cb], [cb])
+            factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
+            self._reactor.connectTCP(relay[1], self._RELAY_PORT, factory)
     
     def _updateLoadInfo(self):
         """ This method is called regularly and is used to send the newest load
@@ -856,8 +898,6 @@ class RelayManager(_ManagerBase):
         # self._updater.stop()
         
         super(RelayManager, self).shutdown()
-        
-        self._satellite = set()
 
 class ContainerManager(_UserManagerBase):
     """ Manager which handles the management of containers.
@@ -1234,8 +1274,7 @@ class MasterManager(_ManagerBase):
         if userID in self.__users:
             raise InvalidRequest('User does already exist.')
         
-        self.__users[userID] = User(self._ctrlFactory, self._commManager,
-                                   userID)
+        self.__users[userID] = User(self._ctrlFactory, self, userID)
     
     # TODO: Not called from anywhere
     def _destroyUser(self, userID):

@@ -348,7 +348,7 @@ def receive(factory, msgType, msgLen, origin, dest, init):
     
     # Message is not for this node; therefore, forward it, but first
     # check if the forwarding is allowed.
-    if dest[:definition.PREFIX_LENGTH_ADDR] == definition.PREFIX_PRIV_ADDR:
+    if dest[:definition.PREFIX_LENGTH] == definition.PREFIX_PRIV_ADDR:
         # Tried to send a message to Container Manager via this node
         # which is not allowed for security reasons.
         log.msg('Received a private message via this node. '

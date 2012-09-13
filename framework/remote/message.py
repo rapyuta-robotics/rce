@@ -43,6 +43,51 @@ from comm.interfaces import IContentSerializer, IMessageProcessor
 from core.interfaces import ISerializable, IMessenger
 
 
+class ConnectDirectiveSerializer(object):
+    """ Message content type to send an order to connect to other relay
+        managers to a relay manager.
+        
+        The message is a list of (commID, IP address) tuples.
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = types.CONNECT
+    
+    def serialize(self, s, data):
+        s.addInt(len(data))
+        
+        for element in data:
+            try:
+                s.addElement(element[0])
+                s.addElement(element[1])
+            except KeyError as e:
+                raise SerializationError('Could not serialize content '
+                                         'ConnectDirective. Missing key: '
+                                         '{0}'.format(e))
+    
+    def deserialize(self, s):
+        return [(s.getElement(), s.getElement()) for _ in xrange(s.getInt())]
+
+
+class ConnectDirectiveProcessor(object):
+    """ Message processor for ConnectDirective messages. It is responsible for
+        forwarding the message to the correct handler.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.CONNECT
+    
+    def __init__(self, manager):
+        """ Initialize the connect directive processor.
+        """
+        super(RequestProcessor, self).__init__()
+        
+        self._manager = manager
+    
+    def processMessage(self, msg):
+        self._manager.processRequest(msg.content)
+
+
 class RequestSerializer(object):
     """ Message content type to send a request.
         
@@ -88,7 +133,7 @@ class CommandSerializer(object):
     IDENTIFIER = types.COMMAND
     
     def __init__(self):
-        """ Initialize CommandSerializer.
+        """ Initialize the command serializer.
         """
         self._cmdCls = {}
     
@@ -199,7 +244,7 @@ class RequestProcessor(object):
     IDENTIFIER = types.REQUEST
     
     def __init__(self, manager):
-        """ Initialize the RequestProcessor
+        """ Initialize the request processor.
         """
         super(RequestProcessor, self).__init__()
         

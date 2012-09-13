@@ -34,17 +34,47 @@
 from zope.interface import implements
 
 # Custom imports
+from comm import types as msgTypes
 from comm.interfaces import IPostInit, IPostClose
+from comm.message import Message
 
 
-class RelayCallbackFromEndpoint(object):
+class _RoutingCallbackBase(object):
+    """ Base class for all callbacks which include sending routing info in
+        post initialization.
+    """
+    def __init__(self, commMngr):
+        """ Initialize the relay callback base.
+            
+            @param commMngr:    CommManager used in this process.
+            @type  commMngr:    comm.manager.CommManager
+        """
+        self._commManager = commMngr
+    
+    def sendRoutingInfo(self, dest, info):
+        """ Internally used method to send routing info "info" to "dest".
+        """
+        if not info:
+            # Only send a message if there is information to send
+            return
+        
+        msg = Message()
+        msg.msgType = msgTypes.ROUTE_INFO
+        msg.dest = dest
+        msg.content = info
+        self._commManager.sendMessage(msg)
+        
+
+class RelayCallbackFromEndpoint(_RoutingCallbackBase):
     """ # TODO: Add description
     """
     implements(IPostInit, IPostClose)
     
-    def __init__(self, manager):
+    def __init__(self, manager, commMngr):
         """ # TODO: Add description
         """
+        super(RelayCallbackFromEndpoint, self).__init__(commMngr)
+        
         self._manager = manager
     
     def postInit(self, origin, ip):
@@ -57,6 +87,7 @@ class RelayCallbackFromEndpoint(object):
             @type  ip:      str
         """
         self._manager.registerEndpoint(origin)
+        self.sendRoutingInfo(origin, [(None, True)])
     
     def postClose(self, origin, ip):
         """ This method is called when the connection has been initialized.
@@ -70,14 +101,16 @@ class RelayCallbackFromEndpoint(object):
         self._manager.unregisterEndpoint(origin)
 
 
-class RelayCallbackFromRelay(object):
+class RelayCallbackFromRelay(_RoutingCallbackBase):
     """ # TODO: Add description
     """
     implements(IPostInit, IPostClose)
     
-    def __init__(self, manager):
+    def __init__(self, manager, commMngr):
         """ # TODO: Add description
         """
+        super(RelayCallbackFromRelay, self).__init__(commMngr)
+        
         self._manager = manager
     
     def postInit(self, origin, ip):
@@ -89,7 +122,8 @@ class RelayCallbackFromRelay(object):
             @param ip:      IP address of initialized connection.
             @type  ip:      str
         """
-        # TODO: Add code
+        self._manager.registerRelay(origin, ip)
+        self.sendRoutingInfo(origin, self._manager.getServerRouting())
     
     def postClose(self, origin, ip):
         """ This method is called when the connection has been initialized.
@@ -100,7 +134,7 @@ class RelayCallbackFromRelay(object):
             @param ip:      IP address of closed connection.
             @type  ip:      str
         """
-        # TODO: Add code
+        self._manager.unregisterRelay(origin, ip)
 
 
 class MasterCallbackFromRelay(object):

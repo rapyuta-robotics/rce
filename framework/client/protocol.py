@@ -53,7 +53,7 @@ from twisted.internet.task import LoopingCall
 from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol
 
 # Custom imports
-from errors import InvalidRequest
+from errors import InvalidRequest, AuthenticationError
 from client import types
 from client.interfaces import IClientMsgHandler
 from client.handler import CreateContainerHandler, DestroyContainerHandler, \
@@ -258,6 +258,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                     self._incompleteMsgs.append((msg, uris, datetime.now()))
                 else:
                     self._processReceivedMessage(msg)
+        except AuthenticationError as e:
+            WebSocketServerProtocol.sendMessage(self, 'Authentication Error: '
+                                                      '{0}'.format(e))
         except InvalidRequest as e:
             WebSocketServerProtocol.sendMessage(self, 'Error: {0}'.format(e))
         except:   # TODO: Refine Error handling
