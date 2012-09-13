@@ -120,9 +120,8 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     log.startLogging(sys.stdout)
     
     commManager = CommManager(reactor, commID)
-    
     manager = MasterManager(reactor)
-    
+    manager.registerCommManager(commManager)
     loadBalancer = LoadBalancer()
     uidServer = UIDServer(loadBalancer, 30)
     manager.registerLoadBalancer(loadBalancer)

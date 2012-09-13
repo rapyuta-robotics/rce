@@ -73,9 +73,8 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     log.startLogging(sys.stdout)
     
     commManager = CommManager(reactor, commID)
-    
     manager = Manager(reactor)
-    
+    manager.registerCommManager(commManager)
     messenger = Messenger(manager, commManager)
     manager.registerMessenger(messenger)
     
