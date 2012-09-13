@@ -738,7 +738,9 @@ class RobotManager(_InterfaceManager):
             for robotID in [
                 robotID for robotID, robot in user.robots.iteritems()
                     if robot.timestamp and robot.timestamp < limit]:
-                del user.robots[robotID]
+                # TODO: Send request to delete the robot to master manager
+                # user.robots[robotID]
+                pass
     
     @_UserManagerBase.verifyUser
     def addInterface(self, userID, interface):

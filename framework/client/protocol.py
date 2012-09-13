@@ -90,8 +90,23 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         except KeyError:
             self.dropConnection()
             return
+        
+        try:
+            response = self._manager.newConnection(userID, robotID)
+        except InvalidRequest as e:
+            self.sendMessage('Error: {0}'.format(e))
+            self.dropConnection()
+            return
+        except Exception:   # TODO: Refine Error handling
+            #import sys, traceback
+            #etype, value, _ = sys.exc_info()
+            #WebSocketServerProtocol.sendMessage(self, '\n'.join(
+            #    traceback.format_exception_only(etype, value)))
             
-        response = self._manager.newConnection(userID, robotID)
+            # Full debug message
+            import traceback
+            self.sendMessage(traceback.format_exc())
+            return
         
         if not response:
             self.dropConnection()
@@ -236,7 +251,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                     self._incompleteMsgs.append((msg, uris, datetime.now()))
                 else:
                     self._processReceivedMessage(msg)
-        except Exception:   # TODO: Refine Error handling
+        except InvalidRequest as e:
+            self.sendMessage('Error: {0}'.format(e))
+        except:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
             #WebSocketServerProtocol.sendMessage(self, '\n'.join(

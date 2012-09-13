@@ -86,8 +86,8 @@ class User(object):
             return
         
         if robotID in self._robots:
-            raise InternalError('A robot with the same robotID '
-                                'has already been registered.')
+            raise InvalidRequest('A robot with the same robotID '
+                                 'has already been registered.')
         
         control = self._controlFactory.createRobotControl(self._userID, commID)
         self._robots[robotID] = RobotProxy(self, robotID, key, control)
@@ -100,7 +100,7 @@ class User(object):
             @type  robotID: str
         """
         if robotID not in self._robots:
-            raise InternalError('The robot has never been registered.')
+            raise InvalidRequest('The robot has never been registered.')
         
         robot = self._robots.pop(robotID)
         robot.delete()
