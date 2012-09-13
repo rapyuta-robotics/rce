@@ -655,7 +655,9 @@ class RobotManager(_InterfaceManager):
         robots = self._users[userID].robots
         
         if robotID in robots and robots[robotID]:
-            robots[robotID].conn = None
+            robot = robots[robotID]
+            robot.timestamp = datetime.now()
+            robot.conn = None
     
     @_UserManagerBase.verifyUser
     def sendRequest(self, request):
@@ -739,13 +741,13 @@ class RobotManager(_InterfaceManager):
         """
         limit = datetime.now() - timedelta(seconds=self._ROBOT_TIMEOUT)
         
-        for user in self._users.itervalues():
+        for userID, user in self._users.iteritems():
             for robotID in [
                 robotID for robotID, robot in user.robots.iteritems()
                     if robot.timestamp and robot.timestamp < limit]:
-                # TODO: Send request to delete the robot to master manager
-                # user.robots[robotID]
-                pass
+                self._reqSender.processRequest({'user' : userID,
+                                                'type' : req.DESTROY_ROBOT,
+                                                'args' : (robotID,) })
     
     @_UserManagerBase.verifyUser
     def addInterface(self, userID, interface):
@@ -1175,6 +1177,8 @@ class MasterManager(_ManagerBase):
             lambda user, args: user.createContainer(*args),
         req.DESTROY_CONTAINER :
             lambda user, args: user.destroyContainer(*args),
+        req.DESTROY_ROBOT :
+            lambda user, args: user.destroyRobot(*args),
         req.ADD_NODE :
             lambda user, args: user.addNode(*args),
         req.REMOVE_NODE :
