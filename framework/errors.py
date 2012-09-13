@@ -54,3 +54,10 @@ class UserConstraintError(Exception):
         manager.
     """
     pass
+
+
+class AuthenticationError(Exception):
+    """ Error is raised when the robot/user could not be authenticated.
+    """
+    pass
+

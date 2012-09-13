@@ -79,6 +79,7 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
                 '(binary={0})'.format(binary))
         
         if binary:
+            self.sendMessage('Error: No binary messages allowed.')
             self.dropConnection()
             return
         
@@ -87,7 +88,8 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         try:
             userID = msg['userID']
             robotID = msg['robotID']
-        except KeyError:
+        except KeyError as e:
+            self.sendMessage('Error: Missing key: {0}'.format(e))
             self.dropConnection()
             return
         
@@ -106,13 +108,16 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
             # Full debug message
             import traceback
             self.sendMessage(traceback.format_exc())
+            self.dropConnection()
             return
         
         if not response:
+            self.sendMessage('Error: Could not authenticate user.')
             self.dropConnection()
             return
         
         self.sendMessage(json.dumps(response))
+        self.dropConnection()
 
 
 class RobotWebSocketProtocol(WebSocketServerProtocol):
@@ -143,12 +148,13 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         if msg['type'] == types.INIT:
             data = msg['data']
-            userID = data['userID']
-            robotID = data['robotID']
-            key = data['key']
-            if not self._manager.robotConnected(self._userID, robotID, key,
-                                                self):
-                raise InvalidRequest('UserID/RobotID could not be verified.')
+            userID = str(data['userID'])
+            robotID = str(data['robotID'])
+            key = str(data['key'])
+            
+            self._manager.robotConnected(userID, robotID, key, self)
+            self._robotID = robotID
+            self._userID = userID
         else:
             raise InvalidRequest('First message has to be an INIT message.')
         
@@ -162,9 +168,6 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             verifyObject(IClientMsgHandler, handler)
             self._msgHandler[handler.TYPE] = handler
         
-        self._robotID = robotID
-        self._userID = userID
-    
     def _recursiveURISearch(self, multidict):
         """ Internally used method to find binary data in incoming messages.
         """
@@ -252,7 +255,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                 else:
                     self._processReceivedMessage(msg)
         except InvalidRequest as e:
-            self.sendMessage('Error: {0}'.format(e))
+            WebSocketServerProtocol.sendMessage(self, 'Error: {0}'.format(e))
         except:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
@@ -303,7 +306,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Method is called by the Autobahn engine when the connection has
             been lost.
         """
-        self._manager.robotClosed(self._userID, self._robotID)
+        if self._userID and self._robotID:
+            self._manager.robotClosed(self._userID, self._robotID)
+        
         self._cleaner.stop()
     
     def _cleanUp(self):

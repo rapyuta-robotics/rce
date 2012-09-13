@@ -465,11 +465,12 @@ class LoadBalancer(object):
         self._machines.remove(machine)
     
     def getNextRobotLocation(self, repeat=False):
-        """ Returns the CommID of the robot manager where the next robot
-            should be created.
+        """ Returns the CommID and IP address of the robot manager where the
+            next robot should be created.
         """
         try:
-            return self._relayIter.next()._relay
+            machine = self._relayIter.next()
+            return (machine._relay, machine._ip)
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next robot location.')

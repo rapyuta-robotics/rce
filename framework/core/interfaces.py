@@ -448,8 +448,8 @@ class ILoadBalancer(Interface):
         """
     
     def getNextRobotLocation(): #@NoSelf
-        """ Returns the CommID of the robot manager where the next robot
-            should be created.
+        """ Returns the CommID and IP address of the robot manager where the
+            next robot should be created.
         """
     
     def getNextContainerLocation(): #@NoSelf

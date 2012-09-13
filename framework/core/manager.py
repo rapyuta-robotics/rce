@@ -47,7 +47,8 @@ from twisted.internet.protocol import ProcessProtocol
 from twisted.internet.task import LoopingCall
 
 # Custom imports
-from errors import InternalError, InvalidRequest, UserConstraintError
+from errors import InternalError, InvalidRequest, UserConstraintError, \
+    AuthenticationError
 from util.interfaces import verifyObject
 from util.loader import Loader
 from util.converter import Converter
@@ -131,7 +132,7 @@ class _UserManagerBase(_ManagerBase):
                 
                 self._users[userID] = self._USER_CLS()
             
-            self.f(userID, *args, **kw)
+            return f(self, userID, *args, **kw)
         
         return handler
     
@@ -152,7 +153,7 @@ class _UserManagerBase(_ManagerBase):
             if userID not in self._users:
                 self._users[userID] = self._USER_CLS()
             
-            self.f(userID, *args, **kw)
+            return f(self, userID, *args, **kw)
         
         return handler
 
@@ -228,8 +229,8 @@ class NodeManager(_ROSManagerBase):
     def shutdown(self):
         """ Method is called when the manager is stopped.
         """
-        for user in self._users.iteritems():
-            for node in user.nodes.iteritems():
+        for user in self._users.itervalues():
+            for node in user.nodes.itervalues():
                 node.stop()
         
         super(NodeManager, self).shutdown()
@@ -329,8 +330,8 @@ class ParameterManager(_ROSManagerBase):
             pass
 
     def shutdown(self):
-        for user in self._users.iteritems():
-            for parameter in user.parameters.iteritems():
+        for user in self._users.itervalues():
+            for parameter in user.parameters.itervalues():
                 parameter.remove()
             
             user.parameters = {}
@@ -495,8 +496,8 @@ class _InterfaceManager(_ROSManagerBase):
         self._getInterface(userID, tag).send(msg, msgID, commID, senderTag)
 
     def shutdown(self):
-        for user in self._users.iteritems():
-            for interface in user.interfaces.iteritems():
+        for user in self._users.itervalues():
+            for interface in user.interfaces.itervalues():
                 interface.stop()
             
             user.interfaces = {}
@@ -628,15 +629,18 @@ class RobotManager(_InterfaceManager):
         robots = self._users[userID].robots
         
         if robotID not in robots:
-            return False
+            raise AuthenticationError('There is no connection expected from '
+                                      'a robot with robotID '
+                                      '"{0}".'.format(robotID))
         
         robot = robots[robotID]
         
-        if not isinstance(robot, RobotManager._Robot):
-            return False
+        if robot.conn:
+            raise AuthenticationError('There is already a robot with the same '
+                                      'robotID registered.')
         
         if not key == robot.key:
-            return False
+            raise AuthenticationError('The key is not correct. '+key+" - "+robot.key)
         
         robot.timestamp = None
         robot.conn = conn
@@ -722,7 +726,7 @@ class RobotManager(_InterfaceManager):
     def shutdown(self):
         self.__cleaner.stop()
         
-        for user in self._users.iteritems():
+        for user in self._users.itervalues():
             user.robots = {}
         
         super(RobotManager, self).shutdown()
@@ -734,7 +738,7 @@ class RobotManager(_InterfaceManager):
         """
         limit = datetime.now() - timedelta(seconds=self._ROBOT_TIMEOUT)
         
-        for user in self._users.iteritems():
+        for user in self._users.itervalues():
             for robotID in [
                 robotID for robotID, robot in user.robots.iteritems()
                     if robot.timestamp and robot.timestamp < limit]:
@@ -1147,8 +1151,8 @@ class ContainerManager(_UserManagerBase):
     
     def shutdown(self):
         deferreds = []
-        for user in self._users.iteritems():
-            for commID in user.containers.iteritems:
+        for user in self._users.itervalues():
+            for commID in user.containers.itervalues():
                 deferred = Deferred()
                 deferreds.append(deferred)
                 self._stopContainer(deferred, commID)
@@ -1252,7 +1256,7 @@ class MasterManager(_ManagerBase):
         
         user = self.__users[userID]
         key = uuid4().hex
-        commID, ip = self._manager.getNextRobotLocation()
+        commID, ip = self._loadBalancer.getNextRobotLocation()
         
         user.createRobot(robotID, key, commID)
         
@@ -1309,16 +1313,6 @@ class MasterManager(_ManagerBase):
                                                                     commID))
         else:
             log.msg('Destroyed CommID "{0}".'.format(commID))
-    
-    def getNextRobotLocation(self):
-        """ Get the CommID of the robot manager where the next robot should
-            be created.
-            
-            @return:    CommID of the robot manager where the next robot
-                        should be created.
-            @rtpye:     str
-        """
-        return self._loadBalancer.getNextRobotLocation()
     
     def getNextContainerLocation(self):
         """ Get the CommID of the container manager where the next container

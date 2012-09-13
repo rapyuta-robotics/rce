@@ -399,8 +399,9 @@ class _RCEFactory(object):
         """
         self._commManager.router.unregisterConnection(conn)
         
-        for cb in self._postClose:
-            cb.postClose(conn.dest, conn.ip)
+        if conn.dest:
+            for cb in self._postClose:
+                cb.postClose(conn.dest, conn.ip)
 
 
 class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):

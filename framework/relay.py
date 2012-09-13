@@ -123,7 +123,7 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     reactor.listenTCP(rosPort, factory)
     
     factory = CloudEngineWebSocketFactory(RobotWebSocketProtocol, manager,
-                                          'ws://localhost:9050')
+                                          'ws://localhost:9010')
     listenWS(factory)
     
     reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)
