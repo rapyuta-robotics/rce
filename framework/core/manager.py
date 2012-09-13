@@ -73,7 +73,6 @@ class _ManagerBase(object):
             @param reactor:     twisted::reactor which should be used with this
                                 manager.
         """
-        self._users = {}
         self._reactor = reactor
         self._commManager = None
     
@@ -97,52 +96,6 @@ class _ManagerBase(object):
         pass
 
 
-@wraps
-def verifySingleUser(f):
-    """ Decorator which checks that there is at most one active user in the
-        manager. Additionally, if the user does not exist he will be
-        created.
-        
-        This decorator requires a reference to the class which is used to
-        represent a user in the manager in the class attribute _USER_CLS.
-        
-        @param f:       Method which should be decorated. It has to be a
-                        handler method which has the following arguments:
-                            self, userID, *args, **kw
-    """
-    def handler(self, userID, *args, **kw):
-        if userID not in self._users:
-            if self._users:
-                raise UserConstraintError('More than one user active.')
-            
-            self._users[userID] = self._USER_CLS()
-        
-        self.f(userID, *args, **kw)
-    
-    return handler
-
-
-@wraps
-def verifyUser(f):
-    """ Decorator which checks that the user does exist, otherwise he will
-        be created.
-        
-        This decorator requires a reference to the class which is used to
-        represent a user in the manager in the class attribute _USER_CLS.
-        
-        @param f:       Method which should be decorated. It has to be a
-                        handler method which has the following arguments:
-                            self, userID, *args, **kw
-    """
-    def handler(self, userID, *args, **kw):
-        if userID not in self._users:
-            self._users[userID] = self._USER_CLS()
-        
-        self.f(userID, *args, **kw)
-    
-    return handler
-
-
 class _UserManagerBase(_ManagerBase):
     """ Base class for all node managers which need a user struct.
     """
@@ -156,6 +109,52 @@ class _UserManagerBase(_ManagerBase):
         self._users = {}
         
         super(_UserManagerBase, self).shutdown()
+    
+    @staticmethod
+    def verifySingleUser(f):
+        """ Decorator which checks that there is at most one active user in the
+            manager. Additionally, if the user does not exist he will be
+            created.
+            
+            This decorator requires a reference to the class which is used to
+            represent a user in the manager in the class attribute _USER_CLS.
+            
+            @param f:       Method which should be decorated. It has to be a
+                            handler method which has the following arguments:
+                                self, userID, *args, **kw
+        """
+        @wraps(f)
+        def handler(self, userID, *args, **kw):
+            if userID not in self._users:
+                if self._users:
+                    raise UserConstraintError('More than one user active.')
+                
+                self._users[userID] = self._USER_CLS()
+            
+            self.f(userID, *args, **kw)
+        
+        return handler
+    
+    @staticmethod
+    def verifyUser(f):
+        """ Decorator which checks that the user does exist, otherwise he will
+            be created.
+            
+            This decorator requires a reference to the class which is used to
+            represent a user in the manager in the class attribute _USER_CLS.
+            
+            @param f:       Method which should be decorated. It has to be a
+                            handler method which has the following arguments:
+                                self, userID, *args, **kw
+        """
+        @wraps(f)
+        def handler(self, userID, *args, **kw):
+            if userID not in self._users:
+                self._users[userID] = self._USER_CLS()
+            
+            self.f(userID, *args, **kw)
+        
+        return handler
 
 
 class _ROSManagerBase(_UserManagerBase):
@@ -179,7 +178,7 @@ class NodeManager(_ROSManagerBase):
     def __init__(self, reactor):
         super(NodeManager, self).__init__(reactor)
         
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def addNode(self, userID, node):
         """ Add a Node to the ROS environment.
             
@@ -193,7 +192,7 @@ class NodeManager(_ROSManagerBase):
         nodeMonitor = NodeMonitor(self, node)
         nodeMonitor.start()
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def removeNode(self, userID, tag):
         """ Remove a Node from the ROS environment.
             
@@ -206,7 +205,7 @@ class NodeManager(_ROSManagerBase):
         except KeyError:
             raise InvalidRequest('Node does not exist.')
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def registerNode(self, userID, node):
         """ Callback for NodeMonitor to register the node.
         """
@@ -217,7 +216,7 @@ class NodeManager(_ROSManagerBase):
         
         nodes[node.tag] = node
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def unregisterNode(self, userID, node):
         """ Callback for NodeMonitor to unregister the node.
         """
@@ -248,13 +247,13 @@ class NodeManager(_ROSManagerBase):
 #            return deferredList
 
 
-class NodeFwdManager(_ManagerBase):
+class NodeFwdManager(_UserManagerBase):
     """ Manager which handles the management of nodes.
     """
     def __init__(self, reactor):
         super(NodeFwdManager, self).__init__(reactor)
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def addNode(self, userID, node):
         """ Add a Node to the ROS environment.
             
@@ -270,7 +269,7 @@ class NodeFwdManager(_ManagerBase):
         
         user.nodes.addNode(node)
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def removeNode(self, userID, tag):
         """ Remove a Node from the ROS environment.
             
@@ -290,7 +289,7 @@ class NodeFwdManager(_ManagerBase):
 class ParameterManager(_ROSManagerBase):
     """ Manager which handles the management of parameters.
     """
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def addParameter(self, userID, parameter):
         """ Add a parameter. If the parameter already exists, the old will be
             removed and the new one kept.
@@ -314,7 +313,7 @@ class ParameterManager(_ROSManagerBase):
         
         parameters[name] = parameter
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def removeParameter(self, userID, name):
         """ Remove a parameter.
             
@@ -511,7 +510,7 @@ class ROSInterfaceOnlyManager(_InterfaceManager):
     """ Manager which handles the management of ROS interfaces. It should be
         used if only ROS interfaces are occurring in the manager.
     """
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def addInterface(self, userID, interface):
         """ Add an interface.
 
@@ -523,7 +522,7 @@ class ROSInterfaceOnlyManager(_InterfaceManager):
         """
         super(ROSInterfaceOnlyManager, self).addInterface(userID, interface)
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def removeInterface(self, userID, tag):
         """ Remove an interface.
             
@@ -533,7 +532,7 @@ class ROSInterfaceOnlyManager(_InterfaceManager):
         """
         super(ROSInterfaceOnlyManager, self).removeInterface(userID, tag)
     
-    @verifySingleUser
+    @_UserManagerBase.verifySingleUser
     def _getInterface(self, userID, tag):
         """ Internally used method to get an interface safely.
             
@@ -592,7 +591,7 @@ class RobotManager(_InterfaceManager):
         
         self._reqSender = sender
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def addRobot(self, userID, robot):
         """ # TODO: Add description
         """
@@ -605,7 +604,7 @@ class RobotManager(_InterfaceManager):
         
         robots[robotID] = RobotManager._Robot(robot.key)
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def removeRobot(self, userID, tag):
         """ # TODO: Add description
         """
@@ -620,7 +619,7 @@ class RobotManager(_InterfaceManager):
         
         del robots[tag]
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def robotConnected(self, userID, robotID, key, conn):
         """ # TODO: Add description
                 (Called by client.protocol.RobotWebSocketProtocol
@@ -642,7 +641,7 @@ class RobotManager(_InterfaceManager):
         robot.timestamp = None
         robot.conn = conn
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def robotClosed(self, userID, robotID):
         """ # TODO: Add description
                 (Called by client.protocol.RobotWebSocketProtocol
@@ -653,7 +652,7 @@ class RobotManager(_InterfaceManager):
         if robotID in robots and robots[robotID]:
             robots[robotID].conn = None
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def sendRequest(self, request):
         """ Send a request received from the robot to the master manager for
             processing.
@@ -665,7 +664,7 @@ class RobotManager(_InterfaceManager):
         """
         self._reqSender.processRequest(request)
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def receivedFromClient(self, userID, robotID, iTag, msgType, msgID, msg):
         """ Received a message from a client and should now be processed.
                 (Called by client.handler.DataMessageHandler)
@@ -695,7 +694,7 @@ class RobotManager(_InterfaceManager):
         # TODO: robotID at the moment not used...
         self._getInterface(userID, iTag).receive(msgType, msgID, msg)
     
-    @verifyUser
+    @_UserManagerBase.verifyUser
     def sendToClient(self, userID, robotID, msg):
         """ Send a message to a client.
                 (Called by core.monitor._ConverterMonitor)
@@ -741,7 +740,7 @@ class RobotManager(_InterfaceManager):
                     if robot.timestamp and robot.timestamp < limit]:
                 del user.robots[robotID]
     
-    @verifySingleUser
+    @_UserManagerBase.verifyUser
     def addInterface(self, userID, interface):
         """ Add an interface.
 
@@ -753,7 +752,7 @@ class RobotManager(_InterfaceManager):
         """
         super(RobotManager, self).addInterface(userID, interface)
     
-    @verifySingleUser
+    @_UserManagerBase.verifyUser
     def removeInterface(self, userID, tag):
         """ Remove an interface.
             
@@ -763,7 +762,7 @@ class RobotManager(_InterfaceManager):
         """
         super(RobotManager, self).removeInterface(userID, tag)
     
-    @verifySingleUser
+    @_UserManagerBase.verifyUser
     def _getInterface(self, userID, tag):
         """ Internally used method to get an interface safely.
             
@@ -1050,7 +1049,7 @@ class ContainerManager(_UserManagerBase):
                                                                        value)))
             return
     
-    @verifySingleUser
+    @_UserManagerBase.verifyUser
     def createContainer(self, userID, container):
         """ Callback for message processor to stop a container.
         """
@@ -1120,7 +1119,7 @@ class ContainerManager(_UserManagerBase):
             deferred.errback(msg)
             return
     
-    @verifySingleUser
+    @_UserManagerBase.verifyUser
     def destroyContainer(self, userID, tag):
         """ Callback for message processor to stop a container.
         """
