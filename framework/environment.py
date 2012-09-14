@@ -82,7 +82,9 @@ class User(object):
 
 class Manager(NodeFwdManager, ParameterManager, ROSInterfaceOnlyManager):
     _USER_CLS = User
-    _INTERFACES = dict(map(lambda k, _, v: (k, v), _INTERFACE))
+    _NODE_FWD_ID = definition.NEIGHBOR_ADDR
+    _PARAMETERS = dict(map(lambda (k, _, v): (k, v), _PARAMETER))
+    _INTERFACES = dict(map(lambda (k, _, v): (k, v), _INTERFACE))
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)

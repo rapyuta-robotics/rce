@@ -54,7 +54,7 @@ class _EndpointProxy(object):
     """
     implements(IEndpointProxy)
     
-    def __init__(self, user, uid, control):
+    def __init__(self, user, uid, commID, control):
         """ Initialize the endpoint monitor.
             
             @param user:        User to which this endpoint belongs.
@@ -62,6 +62,9 @@ class _EndpointProxy(object):
             
             @param uid:         Identifier of this endpoint.
             @type  uid:         str
+            
+            @param commID:      Communication ID of this endpoint.
+            @type  commID:      str
             
             @param control:     Control which is used to send the commands to
                                 the endpoint.
@@ -71,6 +74,7 @@ class _EndpointProxy(object):
         
         self._user = user
         self._uid = uid
+        self._commID = commID
         self._control = control
         self._interfaces = set()
     
@@ -83,6 +87,11 @@ class _EndpointProxy(object):
     def uid(self):
         """ Identifier of this endpoint. """
         return self._uid
+    
+    @property
+    def commID(self):
+        """ Communication ID of this endpoint. """
+        return self._commID
     
     def registerInterface(self, interface):
         """ Register a new interface with this endpoint.
@@ -128,7 +137,7 @@ class _EndpointProxy(object):
 class RobotProxy(_EndpointProxy):
     """ Class which is used to keep track of the status of a Robot.
     """
-    def __init__(self, user, robotID, key, control):
+    def __init__(self, user, robotID, commID, key, control):
         """ Initialize the Robot proxy.
             
             @param user:        User to which this robot belongs.
@@ -136,6 +145,9 @@ class RobotProxy(_EndpointProxy):
             
             @param robotID:     RobotID which is used to identify the robot.
             @type  robotID:     str
+            
+            @param commID:      Communication ID of this robot.
+            @type  commID:      str
             
             @param key:         Key which should be used to verify connection
                                 from represented robot.
@@ -147,7 +159,7 @@ class RobotProxy(_EndpointProxy):
         """
         verifyObject(IRobotControl, control)
         
-        super(RobotProxy, self).__init__(user, robotID, control)
+        super(RobotProxy, self).__init__(user, robotID, commID, control)
         
         control.createRobot(RobotCommand(robotID, key))
     
@@ -167,7 +179,7 @@ class RobotProxy(_EndpointProxy):
 class ROSEnvProxy(_EndpointProxy):
     """ Class which is used to keep track of the status of a ROS environment.
     """
-    def __init__(self, user, tag, control, commID):
+    def __init__(self, user, tag, commID, control):
         """ Initialize the ROS environment proxy.
             
             @param user:        User instance to which this ROS environment
@@ -176,26 +188,20 @@ class ROSEnvProxy(_EndpointProxy):
             
             @param tag:         Tag of this environment.
             @type  tag:         str
-                                    
-            @param control:     Control which is used to communicate with the
-                                ROS environment.
-            @type  control:     core.interfaces.IROSEnvControl
             
             @param commID:      CommID of the ROS environment.
             @type  commID:      str
+             
+            @param control:     Control which is used to communicate with the
+                                ROS environment.
+            @type  control:     core.interfaces.IROSEnvControl
         """
         verifyObject(INodeControl, control)
         verifyObject(IParameterControl, control)
         
-        super(ROSEnvProxy, self).__init__(user, tag, control)
+        super(ROSEnvProxy, self).__init__(user, tag, commID, control)
         
-        self._commID = commID
         self._rosAddrs = set()
-    
-    @property
-    def commID(self):
-        """ Communication ID of the container. """
-        return self._commID
     
     def addNode(self, tag, pkg, exe, namespace):
         """ Add a node to the monitored ROS environment.
@@ -333,7 +339,7 @@ class ContainerProxy(ROSEnvProxy):
     """ Class which is used to keep track of the status of a container
         (containing a ROS environment).
     """
-    def __init__(self, user, cTag, control, commID):
+    def __init__(self, user, cTag, commID, control):
         """ Initialize the Container proxy.
             
             @param user:        User instance to which this Container belongs.
@@ -353,7 +359,7 @@ class ContainerProxy(ROSEnvProxy):
         """
         verifyObject(IContainerControl, control)
         
-        super(ContainerProxy, self).__init__(user, cTag, control, commID)
+        super(ContainerProxy, self).__init__(user, cTag, commID, control)
         
         self._connected = False   # TODO: At the moment not used
         

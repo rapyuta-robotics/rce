@@ -225,6 +225,9 @@ class _Router(object):
         
         while 1:
             for dest in dests:
+                if dest not in self._fifos:
+                    continue
+                
                 fifo = self._fifos[dest]
                 
                 if not len(fifo):

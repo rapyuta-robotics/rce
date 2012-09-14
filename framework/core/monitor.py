@@ -307,6 +307,7 @@ class _EndpointInterfaceMonitor(object):
         self._userID = userID
         self._tag = tag
         self._conn = set() # All connections: tuple (commID, interfaceTag)
+        self._ready = False
     
     @property
     def tag(self):
@@ -524,13 +525,13 @@ class ServiceMonitor(_InterfaceMonitor):
                 self._msg = response._buff
             
             commID, sender = self._dest
-            self._srv._manager.send(self._userID, sender, commID,
+            self._srv._manager.send(self._srv._userID, sender, commID,
                                     self._srv._tag, self._msg, self._msgID)
 
     def __init__(self, manager, userID, interface):
         super(ServiceMonitor, self).__init__(manager, userID, interface)
         
-        args = interface.srvCls.split('/')
+        args = interface.msgType.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('Service type is not valid. Has to be of the '
@@ -555,7 +556,7 @@ class ServiceProviderMonitor(_InterfaceMonitor):
     def __init__(self, manager, userID, interface):
         super(ServiceMonitor, self).__init__(manager, userID, interface)
         
-        args = interface.srvCls.split('/')
+        args = interface.msgType.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('Service type is not valid. Has to be of the '
@@ -634,7 +635,7 @@ class PublisherMonitor(_InterfaceMonitor):
     def __init__(self, manager, userID, interface):
         super(PublisherMonitor, self).__init__(manager, userID, interface)
         
-        args = interface.msgCls.split('/')
+        args = interface.msgType.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('Message type is not valid. Has to be of the '
@@ -751,7 +752,7 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
                             erors.InvalidRequest if the message can not be
                             converted the message due to an invalid format
         """
-        if not self._toMsgCls:
+        if not self._inputMsgCls:
             raise InternalError('This converter can not convert '
                                 'incoming messages.')
         
@@ -760,7 +761,7 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
                                  'message type for this interface.')
         
         try:
-            rosMsg = self._converter.decode(self._toMsgCls, msg)
+            rosMsg = self._converter.decode(self._inputMsgCls, msg)
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
@@ -785,11 +786,11 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
                             erors.InvalidRequest if the message can not be
                             converted the message due to an invalid format
         """
-        if not self._fromMsgCls:
+        if not self._outputMsgCls:
             raise InternalError('This converter can not convert '
                                 'outgoing messages.')
         
-        rosMsg = self._fromMsgCls()
+        rosMsg = self._outputMsgCls()
         rosMsg.deserialize(msg)
         
         try:

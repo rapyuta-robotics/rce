@@ -81,8 +81,9 @@ class Manager(RelayManager, RobotManager):
     _USER_CLS = User
     _CUSTOM_CONVERTERS = CONVERTER_CLASSES
     _ROBOT_TIMEOUT = 60
+    _MASTER_ID = definition.MASTER_ADDR
     _RELAY_PORT = RELAY_RELAY_PORT
-    _INTERFACES = dict(map(lambda k, _, v: (k, v), _CONVERTER))
+    _INTERFACES = dict(map(lambda (k, _, v): (k, v), _CONVERTER))
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)

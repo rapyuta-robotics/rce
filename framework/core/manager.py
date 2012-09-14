@@ -194,7 +194,7 @@ class NodeManager(_ROSManagerBase):
         if node.tag in self._users[userID].nodes:
             raise InvalidRequest('Node already exists.')
         
-        nodeMonitor = NodeMonitor(self, node)
+        nodeMonitor = NodeMonitor(self, userID, node)
         nodeMonitor.start()
     
     @_UserManagerBase.verifySingleUser
@@ -269,7 +269,7 @@ class NodeFwdManager(_UserManagerBase):
         user = self._users[userID]
         
         if not user.nodes:
-            user.nodes = RemoteNodeControl(userID, self._NODE_FWD_PORT,
+            user.nodes = RemoteNodeControl(userID, self._NODE_FWD_ID,
                                            self._commManager)
         
         user.nodes.addNode(node)
@@ -285,7 +285,7 @@ class NodeFwdManager(_UserManagerBase):
         user = self._users[userID]
         
         if not user.nodes:
-            user.nodes = RemoteNodeControl(userID, self._NODE_FWD_PORT,
+            user.nodes = RemoteNodeControl(userID, self._NODE_FWD_ID,
                                            self._commManager)
         
         user.nodes.removeNode(tag)
@@ -376,23 +376,21 @@ class _InterfaceManager(_ROSManagerBase):
         interfaces = self._users[userID].interfaces
         
         try:
-            interface = self._INTERFACES[interface.IDENTIFIER](self,
-                                                               self._reactor,
-                                                               userID,
-                                                               interface)
+            monitor = self._INTERFACES[interface.IDENTIFIER](self, userID,
+                                                             interface)
         except KeyError:
             raise InvalidRequest('InterfaceManager can not manage '
                                  'requested component.')
         
-        tag = interface.tag
+        tag = monitor.tag
 
         if tag in interfaces:
             raise InternalError('There is already an interface with '
                                 'the same tag.')
         
         log.msg('Register new interface "{0}".'.format(tag))
-        interface.start()
-        interfaces[tag] = interface
+        monitor.start()
+        interfaces[tag] = monitor
     
     def removeInterface(self, userID, tag):
         """ Remove an interface.
@@ -517,36 +515,12 @@ class ROSInterfaceOnlyManager(_InterfaceManager):
     """ Manager which handles the management of ROS interfaces. It should be
         used if only ROS interfaces are occurring in the manager.
     """
-    @_UserManagerBase.verifySingleUser
-    def addInterface(self, userID, interface):
-        """ Add an interface.
-
-            @param interface:   Interface which should be added.
-            @type  interface:   core.command._EndpointInterfaceCommand
-
-            @raise:     errors.InternalError if there is already an interface
-                        with the same tag registered.
-        """
-        super(ROSInterfaceOnlyManager, self).addInterface(userID, interface)
-    
-    @_UserManagerBase.verifySingleUser
-    def removeInterface(self, userID, tag):
-        """ Remove an interface.
-            
-            @param tag:     Tag which is used to identify the interface which
-                            should be removed.
-            @type  tag:     str
-        """
-        super(ROSInterfaceOnlyManager, self).removeInterface(userID, tag)
-    
-    @_UserManagerBase.verifySingleUser
-    def _getInterface(self, userID, tag):
-        """ Internally used method to get an interface safely.
-            
-            @raise:     errors.InternalError if there is no interface matching
-                        the given tag.
-        """
-        super(ROSInterfaceOnlyManager, self)._getInterface(userID, tag)
+    addInterface = _UserManagerBase.verifySingleUser(
+        _InterfaceManager.addInterface)
+    removeInterface = _UserManagerBase.verifySingleUser(
+        _InterfaceManager.removeInterface)
+    _getInterface = _UserManagerBase.verifySingleUser(
+        _InterfaceManager._getInterface)
 
 
 class RobotManager(_InterfaceManager):
@@ -753,36 +727,12 @@ class RobotManager(_InterfaceManager):
                                                 'type' : req.DESTROY_ROBOT,
                                                 'args' : (robotID,) })
     
-    @_UserManagerBase.verifyUser
-    def addInterface(self, userID, interface):
-        """ Add an interface.
-
-            @param interface:   Interface which should be added.
-            @type  interface:   core.command._EndpointInterfaceCommand
-
-            @raise:     errors.InternalError if there is already an interface
-                        with the same tag registered.
-        """
-        super(RobotManager, self).addInterface(userID, interface)
-    
-    @_UserManagerBase.verifyUser
-    def removeInterface(self, userID, tag):
-        """ Remove an interface.
-            
-            @param tag:     Tag which is used to identify the interface which
-                            should be removed.
-            @type  tag:     str
-        """
-        super(RobotManager, self).removeInterface(userID, tag)
-    
-    @_UserManagerBase.verifyUser
-    def _getInterface(self, userID, tag):
-        """ Internally used method to get an interface safely.
-            
-            @raise:     errors.InternalError if there is no interface matching
-                        the given tag.
-        """
-        super(RobotManager, self)._getInterface(userID, tag)
+    addInterface = _UserManagerBase.verifyUser(
+        _InterfaceManager.addInterface)
+    removeInterface = _UserManagerBase.verifyUser(
+        _InterfaceManager.removeInterface)
+    _getInterface = _UserManagerBase.verifyUser(
+        _InterfaceManager._getInterface)
 
 
 class RelayManager(_ManagerBase):
@@ -797,8 +747,9 @@ class RelayManager(_ManagerBase):
         self._updater = LoopingCall(self._updateLoadInfo)
         # self._updater.start(self.__LOAD_INFO_UPDATE)
     
-    def _informRelays(self, info):
-        """ Send a routing info/update to the registered relays.
+    def _publishEndpointChange(self, info):
+        """ Send a routing info/update to the registered relays and the master
+            manager.
             
             @param info:    Information which should be distributed. Tuple
                             consisting commID of endpoint which changed and
@@ -806,6 +757,12 @@ class RelayManager(_ManagerBase):
                             (True) or removed (False).
             @type  info:    ( str, bool )
         """
+        msg = Message()
+        msg.msgType = msgTypes.ROUTE_INFO
+        msg.dest = self._MASTER_ID
+        msg.content = [info]
+        self._commManager.sendMessage(msg)
+        
         for relayID, _ in self._relays:
             msg = Message()
             msg.msgType = msgTypes.ROUTE_INFO
@@ -824,7 +781,7 @@ class RelayManager(_ManagerBase):
                                 'communication ID is already registered.')
         
         self._satellites.add(commID)
-        self._informRelays((commID, True))
+        self._publishEndpointChange((commID, True))
     
     def unregisterEndpoint(self, commID):
         """ Unregister an endpoint from this manager.
@@ -837,7 +794,7 @@ class RelayManager(_ManagerBase):
                                 'communication ID is not registered.')
         
         self._satellites.remove(commID)
-        self._informRelays((commID, False))
+        self._publishEndpointChange((commID, False))
     
     def registerRelay(self, commID, ip):
         """ Method is called by post initialization callback of relay-relay
@@ -1147,11 +1104,9 @@ class ContainerManager(_UserManagerBase):
             self.reactor.callInThread(self._startContainer, deferred,
                                       tag, commID)
     
-    def _stopContainer(self, deferred, containers, tag):
+    def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.
         """
-        commID = containers[tag]
-        
         _deferred = Deferred()
         
         def callback(reason):
@@ -1164,8 +1119,6 @@ class ContainerManager(_UserManagerBase):
             try:
                 shutil.rmtree(os.path.join(self._confDir, commID))
                 shutil.rmtree(os.path.join(self._dataDir, commID))
-                self.reactor.callFromThread(
-                    lambda: containers.__delitem__(tag))
             except:
                 import sys, traceback
                 etype, value, _ = sys.exc_info()
@@ -1213,15 +1166,16 @@ class ContainerManager(_UserManagerBase):
             return
         else:
             self.reactor.callInThread(self._stopContainer, deferred,
-                                      containers, tag)
+                                      containers[tag])
+            del containers[tag]
     
     def shutdown(self):
         deferreds = []
         for user in self._users.itervalues():
-            for tag in user.containers.itervalues():
+            for commID in user.containers.itervalues():
                 deferred = Deferred()
                 deferreds.append(deferred)
-                self._stopContainer(deferred, tag)
+                self._stopContainer(deferred, commID)
         
         super(ContainerManager, self).shutdown()
         

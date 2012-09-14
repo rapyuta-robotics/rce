@@ -131,11 +131,15 @@ class IEndpointProxy(Interface):
         proxies have to implement.
     """
     owner = Attribute("""
-    Owner (type: User) of this endpoint.
+    Owner (type: core.uer.User) of this endpoint.
     """)
     
-    comm = Attribute("""
-    CommProxy which is used to send commands to the endpoint.
+    uid = Attribute("""
+    Identifier of this endpoint.
+    """)
+    
+    commID = Attribute("""
+    Communication ID of this endpoint.
     """)
     
     def registerInterface(interface): #@NoSelf

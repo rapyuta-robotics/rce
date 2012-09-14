@@ -334,7 +334,7 @@ class _RCEFactory(object):
             verifyObject(IPostClose, cb)
         
         self._commManager = commMngr
-        self._filter = set([types.INIT_REQUEST])
+        self._filter = set([types.INIT_REQUEST, types.ROUTE_INFO])
         self._postInit = postInit
         self._postClose = postClose
     

@@ -384,7 +384,7 @@ class Messenger(object):
         self._commManager = commManager
         self._commID = commManager.commID
     
-    def send(self, userID, tag, commID, senderTag, msg, msgID):
+    def send(self, userID, tag, commID, senderTag, rosMsg, msgID):
         """ Send a message which was received from an endpoint to another
             interface.
             
@@ -401,9 +401,9 @@ class Messenger(object):
                                 message.
             @type  senderTag:   str
             
-            @param msg:         ROS message in serialized form which should be
+            @param rosMsg:      ROS message in serialized form which should be
                                 sent.
-            @type  msg:         str
+            @type  rosMsg:      str
             
             @param msgID:       Identifier which is used to match a request to
                                 a response.
@@ -411,13 +411,14 @@ class Messenger(object):
         """
         # First check if the message is for an interface in this endpoint
         if commID == self._commID:
-            self._manager.received(userID, tag, commID, senderTag, msg, msgID)
+            self._manager.received(userID, tag, commID, senderTag, rosMsg,
+                                   msgID)
             return
         
         msg = Message()
         msg.msgType = msgTypes.ROS_MSG
         msg.dest = commID
-        msg.content = { 'msg'     : msg,
+        msg.content = { 'msg'     : rosMsg,
                         'destTag' : tag,
                         'srcTag'  : senderTag,
                         'msgID'   : msgID,
@@ -428,5 +429,5 @@ class Messenger(object):
         srcCommID = msg.origin
         msg = msg.content
         
-        self._commManager.received(msg['user'], msg['destTag'], srcCommID,
-                                   msg['srcTag'], msg['msg'], msg['msgID'])
+        self._manager.received(msg['user'], msg['destTag'], srcCommID,
+                               msg['srcTag'], msg['msg'], msg['msgID'])

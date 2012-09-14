@@ -583,13 +583,8 @@ class _EndpointInterfaceCommand(object):
         return self._tag
     
     @property
-    def msgCls(self):
-        """ Message class of the interface (equal to srvCls). """
-        return self._interfaceClass
-    
-    @property
-    def srvCls(self):
-        """ Message class of the interface (equal to msgCls). """
+    def msgType(self):
+        """ Message class of the interface. """
         return self._interfaceClass
     
     @property
@@ -718,11 +713,37 @@ class ConnectionCommand(object):
                                 which is the other endpoint of the connection
                                 which should be manipulated.
             @type  target:      str
+            
+            @param add:         Flag which indicates whether connection should
+                                be created (True) or destroyed (False).
+            @type  add:         bool
         """
         self._tag = tag
         self._commID = commID
         self._target = target
         self._add = add
+    
+    @property
+    def tag(self):
+        """ Tag of interface who is the receiver of the command. """
+        return self._tag
+    
+    @property
+    def commID(self):
+        """ Communication ID of the connected interface.. """
+        return self._commID
+    
+    @property
+    def target(self):
+        """ Tag of the connected interface. """
+        return self._target
+    
+    @property
+    def add(self):
+        """ Flag to indicate whether connection should be created (True) or
+            destroyed (False).
+        """
+        return self._add
     
     def serialize(self, s):
         """ Serialize the connection command.

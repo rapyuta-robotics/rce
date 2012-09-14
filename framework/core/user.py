@@ -91,7 +91,7 @@ class User(object):
                                  'has already been registered.')
         
         control = self._controlFactory.createRobotControl(self._userID, commID)
-        self._robots[robotID] = RobotProxy(self, robotID, key, control)
+        self._robots[robotID] = RobotProxy(self, robotID, commID, key, control)
     
     def destroyRobot(self, robotID):
         """ Destroy the robot with the given robotID of this user.
@@ -124,7 +124,7 @@ class User(object):
         ctrlID = self._manager.getNextContainerLocation()
         control = self._controlFactory.createContainerControl(self._userID,
                                                               commID, ctrlID)
-        self._containers[cTag] = ContainerProxy(self, cTag, control, commID)
+        self._containers[cTag] = ContainerProxy(self, cTag, commID, control)
     
     def destroyContainer(self, cTag):
         """ Destroy the container with the given container tag of this user.
@@ -288,7 +288,7 @@ class User(object):
             except KeyError:
                 raise InvalidRequest('RobotID is invalid.')
             
-            msg = 'Add interface "{0}" (type: "{1}") to container "{3}".'
+            msg = 'Add interface "{0}" (type: "{1}") to robot "{3}".'
             
             # Set to None to make sure that core.interface.Interface does not
             # interpret the Interface as a ROS interface.
@@ -302,7 +302,7 @@ class User(object):
             msg = ('Add interface "{0}" (type: "{1}"; address: "{2}") '
                    'to container "{3}".')
         
-        log.msg(msg.format(iTag, iType, addr, self._commID))
+        log.msg(msg.format(iTag, iType, addr, destTag))
         Interface(endpoint, iTag, iType, className, addr)
     
     def removeInterface(self, iTag):
@@ -377,8 +377,8 @@ class User(object):
         interface2.registerConnection(interface1)
         
         log.msg('Create connection from "({0}, {1})" to "({2}, {3})".'.format(
-                    interface1._commID, interface1.tag,
-                    interface2._commID, interface2.tag))
+                    interface1.commID, interface1.tag,
+                    interface2.commID, interface2.tag))
     
     def destroyConnection(self, iTag1, iTag2):
         """ Destroy a connection between two interfaces.
@@ -400,8 +400,8 @@ class User(object):
         interface2.unregisterConnection(interface1)
         
         log.msg('Destroy connection from "({0}, {1})" to "({2}, {3})".'.format(
-                    interface1._commID, interface1.tag,
-                    interface2._commID, interface2.tag))
+                    interface1.commID, interface1.tag,
+                    interface2.commID, interface2.tag))
     
     def delete(self):
         """ Removes the user.

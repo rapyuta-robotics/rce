@@ -149,14 +149,14 @@ class _SubscriberConverter(object):
 class Interface(object):
     """ Class which represents an interface. It is associated with an endpoint.
     """
-    _MAP = { 'serviceInterface'         : _ServiceInterface,
-             'serviceProviderInterface' : _ServiceProviderInterface,
-             'publisherInterface'       : _PublisherInterface,
-             'subscriberInterface'      : _SubscriberInterface,
-             'serviceConverter'         : _ServiceConverter,
-             'serviceProviderConverter' : _ServiceProviderConverter,
-             'publisherConverter'       : _PublisherConverter,
-             'subscriberConverter'      : _SubscriberConverter }
+    _MAP = { 'ServiceInterface'         : _ServiceInterface,
+             'ServiceProviderInterface' : _ServiceProviderInterface,
+             'PublisherInterface'       : _PublisherInterface,
+             'SubscriberInterface'      : _SubscriberInterface,
+             'ServiceConverter'         : _ServiceConverter,
+             'ServiceProviderConverter' : _ServiceProviderConverter,
+             'PublisherConverter'       : _PublisherConverter,
+             'SubscriberConverter'      : _SubscriberConverter }
     
     def __init__(self, endpoint, tag, iType, msgType, rosAddr=None):
         """ Initialize the Interface.
@@ -185,6 +185,9 @@ class Interface(object):
         """
         verifyObject(IEndpointProxy, endpoint)
         
+        if iType not in Interface._MAP:
+            raise InvalidRequest('"{0}" is not a valid interface type.')
+        
         self._endpoint = endpoint
         self._control = None
         self._tag = tag
@@ -210,7 +213,7 @@ class Interface(object):
         return self._tag
     
     @property
-    def _commID(self):
+    def commID(self):
         """ CommID of endpoint to which this interface belongs. """
         return self._endpoint.commID
     
@@ -254,7 +257,7 @@ class Interface(object):
             raise InvalidRequest('Can not create the same connection twice.')
         
         if (self._iType.NUMBER_OF_CONNECTIONS and
-                not self._iType.NUMBER_OF_CONNECTIONS < len(self._conn)):
+                self._iType.NUMBER_OF_CONNECTIONS <= len(self._conn)):
             raise InvalidRequest('Can not add more than {0} connections to '
                                  'this interface.'.format(
                                      self._iType.NUMBER_OF_CONNECTIONS))
@@ -264,7 +267,7 @@ class Interface(object):
             self._control.addInterface(self._iType.createContainer(
                 self._tag, self._msgType, self._endpoint.uid, self._rosAddr))
         
-        self._control.registerConnection(self._tag, interface._commID,
+        self._control.registerConnection(self._tag, interface.commID,
                                          interface.tag)
         self._conn.add(interface)
     
@@ -287,7 +290,7 @@ class Interface(object):
             self._control.removeInterface(self._tag)
         else:
             self._control.unregisterConnection(
-                self._tag, interface._commID, interface.tag)
+                self._tag, interface.commID, interface.tag)
     
     def delete(self):
         """ Removes the interface.
