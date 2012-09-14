@@ -87,8 +87,7 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         if not response:
             raise AuthenticationError('Error: Could not authenticate user.')
         
-        self.sendMessage(json.dumps(response))
-        self.dropConnection()
+        return json.dumps(response)
     
     def onMessage(self, msg, binary):
         """ Method is called by the Autobahn engine when a message has been '
@@ -103,23 +102,22 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
             return
         
         try:
-            self._handleMessage(msg)
+            resp = self._handleMessage(msg)
         except InvalidRequest as e:
-            self.sendMessage('Invalid Request: {0}'.format(e))
-            self.dropConnection()
+            resp = 'Invalid Request: {0}'.format(e)
         except AuthenticationError as e:
-            self.sendMessage('Authentication Error: {0}'.format(e))
-            self.dropConnection()
+            resp = 'Authentication Error: {0}'.format(e)
         except Exception:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
-            #self.sendMessage('\n'.join(traceback.format_exception_only(etype,
-            #                                                           value)))
+            #resp = '\n'.join(traceback.format_exception_only(etype, value)))
             
             # Full debug message
             import traceback
-            self.sendMessage(traceback.format_exc())
-            self.dropConnection()
+            resp = traceback.format_exc()
+        
+        self.sendMessage(resp)
+        self.dropConnection()
 
 
 class RobotWebSocketProtocol(WebSocketServerProtocol):

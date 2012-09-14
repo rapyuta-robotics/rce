@@ -44,6 +44,9 @@ from core.command import ControlDistributor, NodeForwarderCommand, \
     IntCommand, StrCommand, FloatCommand, BoolCommand, FileCommand, \
     ServiceInterfaceCommand, ServiceProviderInterfaceCommand, \
     PublisherInterfaceCommand, SubscriberInterfaceCommand, ConnectionCommand
+from core.monitor import IntMonitor, StrMonitor, FloatMonitor, \
+    BoolMonitor, FileMonitor, ServiceMonitor, ServiceProviderMonitor, \
+    PublisherMonitor, SubscriberMonitor
 from comm import definition
 from comm import types as msgTypes
 from comm.manager import CommManager
@@ -52,6 +55,22 @@ from remote.message import CommandSerializer, TagSerializer, \
     CommandProcessor, TagProcessor, ROSMsgSerializer, Messenger
 
 from settings import RELAY_ROS_PORT, ROS_NODE_PORT
+
+
+_PARAMETER = ((types.PARAM_INT, IntCommand, IntMonitor),
+              (types.PARAM_STR, StrCommand, StrMonitor),
+              (types.PARAM_FLOAT, FloatCommand, FloatMonitor),
+              (types.PARAM_BOOL, BoolCommand, BoolMonitor),
+              (types.PARAM_FILE, FileCommand, FileMonitor))
+
+_INTERFACE = ((types.INTERFACE_SRV, ServiceInterfaceCommand,
+               ServiceMonitor),
+              (types.INTERFACE_PRO, ServiceProviderInterfaceCommand,
+               ServiceProviderMonitor),
+              (types.INTERFACE_PUB, PublisherInterfaceCommand,
+               PublisherMonitor),
+              (types.INTERFACE_SUB, SubscriberInterfaceCommand,
+               SubscriberMonitor))
 
 
 class User(object):
@@ -63,6 +82,7 @@ class User(object):
 
 class Manager(NodeFwdManager, ParameterManager, ROSInterfaceOnlyManager):
     _USER_CLS = User
+    _INTERFACES = dict(map(lambda k, _, v: (k, v), _INTERFACE))
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)
@@ -80,11 +100,10 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     manager.registerMessenger(messenger)
     
     cmdSerializer = CommandSerializer()
-    cmdSerializer.registerCommand([NodeForwarderCommand,
-        IntCommand, StrCommand, FloatCommand, BoolCommand, FileCommand,
-        ServiceInterfaceCommand, ServiceProviderInterfaceCommand,
-        PublisherInterfaceCommand, SubscriberInterfaceCommand,
-        ConnectionCommand])
+    cmdSerializer.registerCommand([NodeForwarderCommand, ConnectionCommand])
+    cmdSerializer.registerCommand(map(lambda x: x[1], _PARAMETER))
+    cmdSerializer.registerCommand(map(lambda x: x[1], _INTERFACE))
+    
     commManager.registerContentSerializers([cmdSerializer,
                                             TagSerializer(),
                                             ROSMsgSerializer()])
@@ -92,18 +111,15 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     distributor = ControlDistributor()
     distributor.addHandler(types.NODE, manager.addNode)
     distributor.addHandler(types.RM_NODE, manager.removeNode)
-    distributor.addHandler(types.PARAM_INT, manager.addParameter)
-    distributor.addHandler(types.PARAM_STR, manager.addParameter)
-    distributor.addHandler(types.PARAM_FLOAT, manager.addParameter)
-    distributor.addHandler(types.PARAM_BOOL, manager.addParameter)
-    distributor.addHandler(types.PARAM_FILE, manager.addParameter)
     distributor.addHandler(types.RM_PARAMETER, manager.removeParameter)
-    distributor.addHandler(types.INTERFACE_SRV, manager.addInterface)
-    distributor.addHandler(types.INTERFACE_PRO, manager.addInterface)
-    distributor.addHandler(types.INTERFACE_PUB, manager.addInterface)
-    distributor.addHandler(types.INTERFACE_SUB, manager.addInterface)
     distributor.addHandler(types.RM_INTERFACE, manager.removeInterface)
     distributor.addHandler(types.CONNECTION, manager.modifyConnection)
+    
+    for conv in _PARAMETER:
+        distributor.addHandler(conv[0], manager.addParameter)
+    
+    for conv in _INTERFACE:
+        distributor.addHandler(conv[0], manager.addInterface)
     
     commManager.registerMessageProcessors([CommandProcessor(distributor),
                                            TagProcessor(distributor),

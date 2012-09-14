@@ -44,6 +44,8 @@ from core.command import ControlDistributor, RobotCommand, \
     ServiceConverterCommand, ServiceProviderConverterCommand, \
     PublisherConverterCommand, SubscriberConverterCommand, \
     ConnectionCommand
+from core.monitor import ServiceConverter, ServiceProviderConverter, \
+    PublisherConverter, SubscriberConverter
 from comm import definition
 from comm import types as msgTypes
 from comm.manager import CommManager
@@ -59,6 +61,16 @@ from settings import MASTER_RELAY_PORT, RELAY_ROS_PORT, RELAY_RELAY_PORT, \
     CONVERTER_CLASSES
 
 
+_CONVERTER = ((types.CONVERTER_SRV, ServiceConverterCommand,
+               ServiceConverter),
+              (types.CONVERTER_PRO, ServiceProviderConverterCommand,
+               ServiceProviderConverter),
+              (types.CONVERTER_PUB, PublisherConverterCommand,
+               PublisherConverter),
+              (types.CONVERTER_SUB, SubscriberConverterCommand,
+               SubscriberConverter))
+
+
 class User(object):
     def __init__(self):
         self.robots = {}
@@ -70,6 +82,7 @@ class Manager(RelayManager, RobotManager):
     _CUSTOM_CONVERTERS = CONVERTER_CLASSES
     _ROBOT_TIMEOUT = 60
     _RELAY_PORT = RELAY_RELAY_PORT
+    _INTERFACES = dict(map(lambda k, _, v: (k, v), _CONVERTER))
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)
@@ -87,10 +100,9 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     manager.registerMessenger(messenger)
     
     cmdSerializer = CommandSerializer()
-    cmdSerializer.registerCommand([RobotCommand,
-        ServiceConverterCommand, ServiceProviderConverterCommand,
-        PublisherConverterCommand, SubscriberConverterCommand,
-        ConnectionCommand])
+    cmdSerializer.registerCommand([RobotCommand, ConnectionCommand])
+    cmdSerializer.registerCommand(map(lambda x: x[1], _CONVERTER))
+        
     commManager.registerContentSerializers([ConnectDirectiveSerializer(),
                                             cmdSerializer,
                                             TagSerializer(),
@@ -100,12 +112,11 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     distributor = ControlDistributor()
     distributor.addHandler(types.ROBOT, manager.addRobot)
     distributor.addHandler(types.RM_ROBOT, manager.removeRobot)
-    distributor.addHandler(types.INTERFACE_SRV, manager.addInterface)
-    distributor.addHandler(types.INTERFACE_PRO, manager.addInterface)
-    distributor.addHandler(types.INTERFACE_PUB, manager.addInterface)
-    distributor.addHandler(types.INTERFACE_SUB, manager.addInterface)
     distributor.addHandler(types.RM_INTERFACE, manager.removeInterface)
     distributor.addHandler(types.CONNECTION, manager.modifyConnection)
+    
+    for conv in _CONVERTER:
+        distributor.addHandler(conv[0], manager.addInterface)
     
     commManager.registerMessageProcessors([ConnectDirectiveProcessor(manager),
                                            CommandProcessor(distributor),
