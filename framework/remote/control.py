@@ -275,6 +275,7 @@ class RemoteRobotControl(RemoteEndpointControl):
                         'tag'  : robotID }
         self._commManager.sendMessage(msg)
 
+
 class RemoteContainerControl(_RemoteControlBase):
     """ Remote control for container.
     """

@@ -70,7 +70,8 @@ class Manager(NodeFwdManager, ParameterManager, ROSInterfaceOnlyManager):
 
 def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
          nodeID):
-    log.startLogging(sys.stdout)
+    f = open('/opt/rce/data/env.log', 'w')
+    log.startLogging(f)
     
     commManager = CommManager(reactor, commID)
     manager = Manager(reactor)
@@ -120,6 +121,8 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     reactor.run()
+    
+    f.close()
 
 
 def _get_argparse():

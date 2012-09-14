@@ -433,9 +433,11 @@ class LoadBalancer(object):
     """
     implements(ILoadBalancer)
     
-    def __init__(self):
+    def __init__(self, commMngr):
         """ # TODO: Add description
         """
+        self._commManager = commMngr
+        
         self._machines = set()
         self._relayIter = self._machines.__iter__()
         self._containerIter = self._machines.__iter__()

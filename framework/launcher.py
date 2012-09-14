@@ -58,7 +58,8 @@ NodeManager._USER_CLS = User
 
 
 def main(reactor, commID, port):
-    log.startLogging(sys.stdout)
+    f = open('/home/ros/launcher.log', 'w')
+    log.startLogging(f)
     
     commManager = CommManager(reactor, commID)
     manager = NodeManager(reactor)
@@ -81,6 +82,8 @@ def main(reactor, commID, port):
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     reactor.run()
+    
+    f.close()
 
 
 if __name__ == '__main__':

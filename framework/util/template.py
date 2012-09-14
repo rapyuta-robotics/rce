@@ -84,10 +84,10 @@ kill timeout 5
 
 script
     # setup environment
-    /opt/rce/setup.sh
+    . /opt/rce/setup.sh
     
     # start environment node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/Environment.py -- {commID} {serverID}
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {commID} 10.0.3.1 {serverID}
 end script
 """
 
@@ -105,9 +105,9 @@ kill timeout 30
 
 script
     # setup environment
-    /opt/rce/setup.sh
+    . /opt/rce/setup.sh
     
     # start launcher
-    start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/Launcher.py
+    start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
 end script
 """

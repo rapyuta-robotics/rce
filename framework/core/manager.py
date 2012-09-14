@@ -982,7 +982,8 @@ class ContainerManager(_UserManagerBase):
                 raise InternalError('There is already a relay ID registered.')
         
         if not definition.validateAddress(relayID):
-            raise InvalidRequest('Relay ID is not valid.')
+            raise InvalidRequest('Relay ID "{0}" is not '
+                                 'valid.'.format(relayID))
         
         self._relayID = relayID
     
@@ -1147,9 +1148,11 @@ class ContainerManager(_UserManagerBase):
             self.reactor.callInThread(self._startContainer, deferred,
                                       tag, commID)
     
-    def _stopContainer(self, deferred, commID):
+    def _stopContainer(self, deferred, containers, tag):
         """ Internally used method to stop a container.
         """
+        commID = containers[tag]
+        
         _deferred = Deferred()
         
         def callback(reason):
@@ -1162,7 +1165,8 @@ class ContainerManager(_UserManagerBase):
             try:
                 shutil.rmtree(os.path.join(self._confDir, commID))
                 shutil.rmtree(os.path.join(self._dataDir, commID))
-                self.reactor.callFromThread(self._commIDs.remove, commID)
+                self.reactor.callFromThread(
+                    lambda: containers.__delitem__(tag))
             except:
                 import sys, traceback
                 etype, value, _ = sys.exc_info()
@@ -1210,7 +1214,7 @@ class ContainerManager(_UserManagerBase):
             return
         else:
             self.reactor.callInThread(self._stopContainer, deferred,
-                                      containers[tag])
+                                      containers, tag)
     
     def shutdown(self):
         deferreds = []

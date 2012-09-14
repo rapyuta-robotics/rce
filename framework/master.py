@@ -150,10 +150,18 @@ def _createControlFactory(commManager):
                      RemoteEndpointControl)
     _setupForwarding(clsDictCont, INodeControl, '_node', RemoteNodeControl)
     
-    clsDictCont['__init__'] = (lambda self_, userID, commID, ctrlID:
-        map(lambda f: f(self_, userID, commID, ctrlID), initCont))
+    def __init__(self, userID, commID, ctrlID):
+        for f in initCont:
+            f(self, userID, commID, ctrlID)
+    
+    clsDictCont['__init__'] = __init__
     
     containerCls = type('ContainerControl', (object,), clsDictCont)
+    
+    classImplements(containerCls, IContainerControl)
+    classImplements(containerCls, INodeControl)
+    classImplements(containerCls, IParameterControl)
+    classImplements(containerCls, IEndpointControl)
     
     clsDict = {}
     clsDict['createRobotControl'] = createRobot
@@ -171,7 +179,7 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     
     commManager = CommManager(reactor, commID)
     manager = MasterManager(reactor)
-    loadBalancer = LoadBalancer()
+    loadBalancer = LoadBalancer(commManager)
     uidServer = UIDServer(loadBalancer, 30)
     manager.registerLoadBalancer(loadBalancer)
     
