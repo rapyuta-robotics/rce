@@ -68,11 +68,61 @@ from client.protocol import MasterWebSocketProtocol, \
 from settings import MASTER_CONTAINER_PORT, MASTER_RELAY_PORT, MASTER_UID_PORT
 
 
-def _setupForwarding(clsDict, interface, obj):
-    for name in interface.names():
-        clsDict[name] = (lambda self_, *args:
-            getattr(getattr(self_, obj), name)(*args))
 
+from functools import wraps
+from types import UnboundMethodType
+
+from util.interfaces import verifyClass
+
+def _createForwardingMethod(attribute, target):
+    """ Create a method which forwards the given method call to the saved
+        instance.
+        
+        @param attribute:   Name of the attribute which contains the instance
+                            matching the class of the target method.
+        @type  attribute:   str
+        
+        @param target:      Target method to which this call should be
+                            forwarded.
+        @type  target:      UnboundMethod
+    """
+    if type(target) is not UnboundMethodType:
+        raise TypeError('target has to be of type "UnboundMethod".')
+    
+    @wraps(target)
+    def forwarder(self, *args):
+        return target(getattr(self, attribute), *args)
+    
+    return forwarder
+
+def _setupForwarding(clsDict, interface, attr, attrCls):
+    """ Define all methods declared by the interface. All defined methods will
+        forward the call to an instance attribute using the same method
+        signature as the target methods.
+                        
+        @param clsDict:     Class dictionary where the created methods are
+                            stored and which can then be used to create the
+                            class. (Modifies the given reference)
+        @type  clsDict:     dict
+        
+        @param interface:   Interface which is used to get the names of all the
+                            methods which should be forwarded. The class
+                            created using @param clsDict implements this
+                            interface.
+        @type  interface:   zope.interface.Interface
+        
+        @param attr:        The name of the attribute to which the calls will
+                            be forwarded.
+        @type  attr:        str
+        
+        @param attrCls:     The class of the attribute to which the calls will
+                            be forwarded. It also has to implement the
+                            interface @param interface.
+    """
+    verifyClass(interface, attrCls)
+    
+    for name in interface.names():
+        clsDict[name] = _createForwardingMethod(attr, getattr(attrCls, name))
 
 def _createControlFactory(commManager):
     createRobot = (lambda self, userID, commID:
@@ -83,23 +133,22 @@ def _createControlFactory(commManager):
     initCont.append(lambda self_, user, commID, ctrlID:
         setattr(self_, '_container', RemoteContainerControl(user, ctrlID, 
                                                             commManager)))
-    
-    _setupForwarding(clsDictCont, IContainerControl, '_container')
-    
-    initCont.append(lambda self_, user, commID, ctrlID:
-        setattr(self_, '_node', RemoteNodeControl(user, commID, commManager)))
-    
-    initCont.append(lambda self_, user, commID, ctrlID:
-        setattr(self_, '_parameter', RemoteParameterControl(user, commID,
-                                                            commManager)))
-    
     initCont.append(lambda self_, user, commID, ctrlID:
         setattr(self_, '_endpoint', RemoteEndpointControl(user, commID,
                                                           commManager)))
+    initCont.append(lambda self_, user, commID, ctrlID:
+        setattr(self_, '_parameter', RemoteParameterControl(user, commID,
+                                                            commManager)))
+    initCont.append(lambda self_, user, commID, ctrlID:
+        setattr(self_, '_node', RemoteNodeControl(user, commID, commManager)))
     
-    _setupForwarding(clsDictCont, INodeControl, '_node')
-    _setupForwarding(clsDictCont, IParameterControl, '_parameter')
-    _setupForwarding(clsDictCont, IEndpointControl, '_endpoint')
+    _setupForwarding(clsDictCont, IContainerControl, '_container',
+                     RemoteContainerControl)
+    _setupForwarding(clsDictCont, IParameterControl, '_parameter',
+                     RemoteParameterControl)
+    _setupForwarding(clsDictCont, IEndpointControl, '_endpoint',
+                     RemoteEndpointControl)
+    _setupForwarding(clsDictCont, INodeControl, '_node', RemoteNodeControl)
     
     clsDictCont['__init__'] = (lambda self_, userID, commID, ctrlID:
         map(lambda f: f(self_, userID, commID, ctrlID), initCont))
