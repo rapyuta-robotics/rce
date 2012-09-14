@@ -768,8 +768,8 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
         buf = StringIO()
         rosMsg.serialize(buf)
         
-        for commID, sender in self._conn:
-            self._manager.send(self._userID, sender, commID, self._tag,
+        for commID, target in self._conn:
+            self._manager.send(self._userID, target, commID, self._tag,
                                buf.getvalue(), msgID)
     
     def _send(self, msg, msgID, _):

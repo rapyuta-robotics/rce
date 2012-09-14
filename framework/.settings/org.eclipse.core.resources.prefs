@@ -1,4 +1,4 @@
-#Wed Sep 12 20:47:56 CEST 2012
+#Sat Sep 15 00:14:02 CEST 2012
 eclipse.preferences.version=1
 encoding//client/handler.py=utf-8
 encoding//client/interfaces.py=utf-8
@@ -42,11 +42,13 @@ encoding//trash/DBUtil/DBBase.py=utf-8
 encoding//trash/DBUtil/DBInterface.py=utf-8
 encoding//trash/DBUtil/Type.py=utf-8
 encoding//trash/EndpointInterface.py=utf-8
+encoding//trash/Environment.py=utf-8
 encoding//trash/EnvironmentUtil/Manager.py=utf-8
 encoding//trash/EnvironmentUtil/Processor.py=utf-8
 encoding//trash/EnvironmentUtil/Type.py=utf-8
 encoding//trash/InterfaceMonitor.py=utf-8
 encoding//trash/Interfaces.py=utf-8
+encoding//trash/Launcher.py=utf-8
 encoding//trash/LauncherUtil/Manager.py=utf-8
 encoding//trash/LauncherUtil/Processor.py=utf-8
 encoding//trash/MasterUtil/Manager.py=utf-8
@@ -82,7 +84,6 @@ encoding//util/loader.py=utf-8
 encoding//util/ssl.py=utf-8
 encoding//util/template.py=utf-8
 encoding/Container.py=utf-8
-encoding/Dummy.py=utf-8
 encoding/container.py=utf-8
 encoding/environment.py=utf-8
 encoding/errors.py=utf-8

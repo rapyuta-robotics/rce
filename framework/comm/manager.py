@@ -223,7 +223,7 @@ class _Router(object):
         else:
             dests = self._dest[route]
         
-        while 1:
+        while 1:  # This while loop is necessary for: route == producer.origin
             for dest in dests:
                 if dest not in self._fifos:
                     continue
