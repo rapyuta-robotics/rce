@@ -79,7 +79,8 @@ class User(object):
                                 from represented robot.
             @type  key:         str
             
-            @param commID:      CommID where the robot should be created.
+            @param commID:      CommID of robot manager where the robot should
+                                be created.
             @type  commID:      str
         """
         if not self._active:

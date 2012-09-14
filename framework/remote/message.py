@@ -53,10 +53,10 @@ class ConnectDirectiveSerializer(object):
     
     IDENTIFIER = types.CONNECT
     
-    def serialize(self, s, data):
-        s.addInt(len(data))
+    def serialize(self, s, msg):
+        s.addInt(len(msg))
         
-        for element in data:
+        for element in msg:
             try:
                 s.addElement(element[0])
                 s.addElement(element[1])
@@ -80,12 +80,44 @@ class ConnectDirectiveProcessor(object):
     def __init__(self, manager):
         """ Initialize the connect directive processor.
         """
-        super(ConnectDirectiveProcessor, self).__init__()
-        
         self._manager = manager
     
     def processMessage(self, msg):
         self._manager.processRequest(msg.content)
+
+
+class CommInfoSerializer(object):
+    """ Message content type to send the communication ID of the relay manager
+        to the container manager.
+        
+        The message content is the communication ID of the relay manager.
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = types.COMM_INFO
+    
+    def serialize(self, s, msg):
+        s.addElement(msg)
+    
+    def deserialize(self, s):
+        return s.getElement()
+
+
+class CommInfoProcessor(object):
+    """ Message processor for CommInfo messages. It is responsible for
+        forwarding the message to the correct handler.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.COMM_INFO
+    
+    def __init__(self, manager):
+        """ Initialize the communication information processor.
+        """
+        self._manager = manager
+    
+    def processMessage(self, msg):
+        self._manager.registerRelayID(msg.content)
 
 
 class RequestSerializer(object):

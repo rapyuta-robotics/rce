@@ -449,6 +449,13 @@ class LoadBalancer(object):
         if machine in self._machines:
             raise InternalError('Tried to register the same machine twice.')
         
+        # Inform container manager about the CommID of the relay manager.
+        msg = Message()
+        msg.msgType = msgTypes.COMM_INFO
+        msg.dest = machine._container
+        msg.content = machine._relay
+        self._commManager.sendMessage(msg)
+        
         # Order the new machine to connect to all the other existing machines.
         order = [(machine._relay, machine._ip) for machine in self._machines]
         

@@ -60,7 +60,8 @@ from remote.callback import MasterCallbackFromRelay, \
 from remote.control import RemoteRobotControl, RemoteNodeControl, \
     RemoteParameterControl, RemoteEndpointControl, RemoteContainerControl
 from remote.message import CommandSerializer, TagSerializer, \
-    RequestSerializer, RequestProcessor, ConnectDirectiveSerializer
+    RequestSerializer, RequestProcessor, ConnectDirectiveSerializer, \
+    CommInfoSerializer
 from client.protocol import MasterWebSocketProtocol, \
     CloudEngineWebSocketFactory
 
@@ -137,6 +138,7 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
          SubscriberInterfaceCommand, SubscriberConverterCommand,
          ConnectionCommand])
     commManager.registerContentSerializers([ConnectDirectiveSerializer(),
+                                            CommInfoSerializer(),
                                             cmdSerializer,
                                             TagSerializer(),
                                             RequestSerializer()])

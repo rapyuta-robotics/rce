@@ -45,7 +45,7 @@ from comm import types as msgTypes
 from comm.manager import CommManager
 from comm.protocol import RCEClientFactory
 from remote.message import CommandSerializer, TagSerializer, \
-    CommandProcessor, TagProcessor
+    CommandProcessor, TagProcessor, CommInfoSerializer, CommInfoProcessor
 
 from settings import MASTER_CONTAINER_PORT, CONF_DIR, DATA_DIR, ROOTFS, \
     ROOT_SRC_DIR, ROOT_PKG_DIR
@@ -73,17 +73,20 @@ def main(reactor, commID, masterIP, masterPort, masterID):
     manager = ContainerManager(reactor)
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand([ContainerCommand])
-    commManager.registerContentSerializers([cmdSerializer,
+    commManager.registerContentSerializers([CommInfoSerializer(),
+                                            cmdSerializer,
                                             TagSerializer()])
     
     distributor = ControlDistributor()
     distributor.addHandler(types.CONTAINER, manager.createContainer)
     distributor.addHandler(types.RM_CONTAINER, manager.destroyContainer)
-    commManager.registerMessageProcessors([CommandProcessor(distributor),
+    commManager.registerMessageProcessors([CommInfoProcessor(manager),
+                                           CommandProcessor(distributor),
                                            TagProcessor(distributor)])
     
     factory = RCEClientFactory(commManager, masterID)
-    factory.addApprovedMessageTypes([msgTypes.COMMAND, msgTypes.TAG])
+    factory.addApprovedMessageTypes([msgTypes.COMM_INFO, msgTypes.COMMAND,
+                                     msgTypes.TAG])
     reactor.connectTCP(masterIP, masterPort, factory)
     
     reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)

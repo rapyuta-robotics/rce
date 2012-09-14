@@ -914,6 +914,8 @@ class ContainerManager(_UserManagerBase):
     def __init__(self, reactor):
         super(ContainerManager, self).__init__(reactor)
         
+        self._relayID = None
+        
         self._confDir = self._CONF_DIR
         self._dataDir = self._DATA_DIR
         self._rootfs = self._ROOTFS
@@ -969,6 +971,21 @@ class ContainerManager(_UserManagerBase):
             raise ValueError('File "launcher.py" in root source directory '
                              'is not executable.')
     
+    def registerRelayID(self, relayID):
+        """ Register the communication ID of the relay manager which is used
+            in this machine.
+        """
+        if self._relayID:
+            if self._relayID == relayID:
+                return
+            else:
+                raise InternalError('There is already a relay ID registered.')
+        
+        if not definition.validateAddress(relayID):
+            raise InvalidRequest('Relay ID is not valid.')
+        
+        self._relayID = relayID
+    
     def _createConfigFile(self, confDir):
         """ Create a config file based on the given parameters.
         """
@@ -1002,17 +1019,17 @@ class ContainerManager(_UserManagerBase):
                         fsLauncher=os.path.join(self._rootfs,
                                                 'etc/init/rceLauncher.conf')))
     
-    def _createUpstartScripts(self, commID, relayID, confDir):
+    def _createUpstartScripts(self, commID, confDir):
         """ Create an upstart script based on the given parameters.
         """
         with open(os.path.join(confDir, 'upstartComm'), 'w') as f:
             f.write(template.UPSTART_COMM.format(commID=commID,
-                                                 serverID=relayID))
+                                                 serverID=self._relayID))
         
         with open(os.path.join(confDir, 'upstartLauncher'), 'w') as f:
             f.write(template.UPSTART_LAUNCHER)
     
-    def _startContainer(self, deferred, tag, commID, relayID):
+    def _startContainer(self, deferred, tag, commID):
         """ Internally used method to start a container.
         """
         # Assemble path for config and fstab file
@@ -1058,7 +1075,7 @@ class ContainerManager(_UserManagerBase):
             
             self._createConfigFile(confDir)
             self._createFstabFile(confDir, dataDir)
-            self._createUpstartScripts(commID, relayID, confDir)
+            self._createUpstartScripts(commID, confDir)
         except:
             log.msg('Caught and exception when trying to create the '
                     'files for the container.')
@@ -1101,11 +1118,15 @@ class ContainerManager(_UserManagerBase):
     def createContainer(self, userID, container):
         """ Callback for message processor to stop a container.
         """
+        if not self._relayID:
+            raise InternalError('Can not use the container manager before the '
+                                'communication ID of the relay manager is '
+                                'registered.')
+        
         containers = self._users[userID].containers
         
         tag = container.tag
         commID = container.commID
-        relayID = container.relayID
         
         deferred = Deferred()
         
@@ -1124,7 +1145,7 @@ class ContainerManager(_UserManagerBase):
                              'the same tag.')
         else:
             self.reactor.callInThread(self._startContainer, deferred,
-                                      tag, commID, relayID)
+                                      tag, commID)
     
     def _stopContainer(self, deferred, commID):
         """ Internally used method to stop a container.

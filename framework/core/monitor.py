@@ -497,7 +497,7 @@ class ServiceMonitor(_InterfaceMonitor):
                                 to which communication node this result
                                 should be sent and a unique ID to identify
                                 the request/response.
-                @type  dest:    ( str, str )
+                @type  dest:    (str, str)
             """
             self._srv = srv
             self._msg = msg

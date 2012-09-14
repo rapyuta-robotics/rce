@@ -35,6 +35,7 @@
         AR  Initialization request
         AI  Routing information
         AC  Connection directives
+        AX  Communication information
         
         LI  Load Information
         
@@ -48,6 +49,7 @@
 INIT_REQUEST = 'AR'
 ROUTE_INFO = 'AI'
 CONNECT = 'AC'
+COMM_INFO = 'AX'
 
 LOAD_INFO = 'LI'
 
