@@ -646,8 +646,7 @@ class RobotManager(_InterfaceManager):
                                       'robotID registered.')
         
         if not key == robot.key:
-            # TODO: Temporary error message!
-            raise AuthenticationError('The key is not correct. '+key+" - "+robot.key)
+            raise AuthenticationError('The key is not correct.')
         
         robot.timestamp = None
         robot.conn = conn
@@ -1219,10 +1218,10 @@ class ContainerManager(_UserManagerBase):
     def shutdown(self):
         deferreds = []
         for user in self._users.itervalues():
-            for commID in user.containers.itervalues():
+            for tag in user.containers.itervalues():
                 deferred = Deferred()
                 deferreds.append(deferred)
-                self._stopContainer(deferred, commID)
+                self._stopContainer(deferred, tag)
         
         super(ContainerManager, self).shutdown()
         

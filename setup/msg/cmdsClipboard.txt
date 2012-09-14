@@ -16,7 +16,7 @@
 
 === Service Test - Configure Components ===
 
-{"data": {"addNodes": [{"containerTag": "testRobot", "namespace": "/testNode", "pkg": "Test", "nodeTag": "srvTestNode", "exe": "Test.py"}], "addInterfaces": [{"className": "Test/QueryTest", "interfaceType": "ServiceProviderConverter", "addr": "", "endpointTag": "testRobot", "interfaceTag": "srvTestConverter"}, {"className": "Test/QueryTest", "interfaceType": "ServiceInterface", "addr": "/test", "endpointTag": "containerTag01", "interfaceTag": "srvTestInterface"}]}, "type": "CN"}
+{"data": {"addNodes": [{"containerTag": "containerTag01", "namespace": "/testNode", "pkg": "Test", "nodeTag": "srvTestNode", "exe": "Test.py"}], "addInterfaces": [{"className": "Test/QueryTest", "interfaceType": "ServiceProviderConverter", "addr": "", "endpointTag": "testRobot", "interfaceTag": "srvTestConverter"}, {"className": "Test/QueryTest", "interfaceType": "ServiceInterface", "addr": "/test", "endpointTag": "containerTag01", "interfaceTag": "srvTestInterface"}]}, "type": "CN"}
 
 === Service Test - Configure Connection ===
 

@@ -148,7 +148,7 @@ cmd_CC_debug = debugCmd(cmd_CC,'cmd_CC_debug','Create Container')
 cmd_DC_debug = debugCmd(cmd_DC,'cmd_CC_debug','Destroy Container')
 
 cmd_CN_srvTest = debugCmd({"type":ClientMsgTypes.CONFIGURE_COMPONENT,
-                           "data":{"addNodes":[{"containerTag":"testRobot",
+                           "data":{"addNodes":[{"containerTag":"containerTag01",
                                                 "nodeTag":"srvTestNode",
                                                 "pkg":"Test",
                                                 "exe":"Test.py",

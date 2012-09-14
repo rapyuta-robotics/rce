@@ -71,6 +71,25 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         """
         self._manager = manager
     
+    def _handleMessage(self, msg):
+        """ Internally used method to handle a message.
+        """
+        msg = json.loads(msg)
+        
+        try:
+            userID = msg['userID']
+            robotID = msg['robotID']
+        except KeyError as e:
+            raise InvalidRequest('Error: Missing key: {0}'.format(e))
+        
+        response = self._manager.newConnection(userID, robotID)
+        
+        if not response:
+            raise AuthenticationError('Error: Could not authenticate user.')
+        
+        self.sendMessage(json.dumps(response))
+        self.dropConnection()
+    
     def onMessage(self, msg, binary):
         """ Method is called by the Autobahn engine when a message has been '
             received from the client.
@@ -83,22 +102,14 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
             self.dropConnection()
             return
         
-        msg = json.loads(msg)
-        
         try:
-            userID = msg['userID']
-            robotID = msg['robotID']
-        except KeyError as e:
-            self.sendMessage('Error: Missing key: {0}'.format(e))
-            self.dropConnection()
-            return
-        
-        try:
-            response = self._manager.newConnection(userID, robotID)
+            self._handleMessage(msg)
         except InvalidRequest as e:
-            self.sendMessage('Error: {0}'.format(e))
+            self.sendMessage('Invalid Request: {0}'.format(e))
             self.dropConnection()
-            return
+        except AuthenticationError as e:
+            self.sendMessage('Authentication Error: {0}'.format(e))
+            self.dropConnection()
         except Exception:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
@@ -109,15 +120,6 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
             import traceback
             self.sendMessage(traceback.format_exc())
             self.dropConnection()
-            return
-        
-        if not response:
-            self.sendMessage('Error: Could not authenticate user.')
-            self.dropConnection()
-            return
-        
-        self.sendMessage(json.dumps(response))
-        self.dropConnection()
 
 
 class RobotWebSocketProtocol(WebSocketServerProtocol):
@@ -258,11 +260,12 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                     self._incompleteMsgs.append((msg, uris, datetime.now()))
                 else:
                     self._processReceivedMessage(msg)
+        except InvalidRequest as e:
+            WebSocketServerProtocol.sendMessage(self, 'Invalid Request: '
+                                                      '{0}'.format(e))
         except AuthenticationError as e:
             WebSocketServerProtocol.sendMessage(self, 'Authentication Error: '
                                                       '{0}'.format(e))
-        except InvalidRequest as e:
-            WebSocketServerProtocol.sendMessage(self, 'Error: {0}'.format(e))
         except:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
