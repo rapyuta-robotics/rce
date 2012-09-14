@@ -80,7 +80,7 @@ class ConnectDirectiveProcessor(object):
     def __init__(self, manager):
         """ Initialize the connect directive processor.
         """
-        super(RequestProcessor, self).__init__()
+        super(ConnectDirectiveProcessor, self).__init__()
         
         self._manager = manager
     

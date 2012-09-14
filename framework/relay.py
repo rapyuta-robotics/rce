@@ -121,7 +121,7 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
     reactor.listenTCP(relayPort, factory)
     
-    cb = RelayCallbackFromEndpoint(manager)
+    cb = RelayCallbackFromEndpoint(manager, commManager)
     factory = RCEServerFactory(commManager, [cb], [cb])
     factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
     reactor.listenTCP(rosPort, factory)
