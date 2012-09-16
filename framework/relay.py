@@ -125,7 +125,8 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
                                            messenger])
     
     factory = RCEClientFactory(commManager, masterID)
-    factory.addApprovedMessageTypes([msgTypes.COMMAND, msgTypes.TAG])
+    factory.addApprovedMessageTypes([msgTypes.COMMAND, msgTypes.TAG,
+                                     msgTypes.CONNECT])
     reactor.connectTCP(masterIP, masterPort, factory)
     
     cb = RelayCallbackFromRelay(manager, commManager)

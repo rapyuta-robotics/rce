@@ -463,7 +463,7 @@ class LoadBalancer(object):
         
         if order:
             msg = Message()
-            msg.msgType = msgTypes.ROUTE_INFO
+            msg.msgType = msgTypes.CONNECT
             msg.dest = machine._relay
             msg.content = order
             self._commManager.sendMessage(msg)

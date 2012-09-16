@@ -833,7 +833,7 @@ class RelayManager(_ManagerBase):
             
             @param relays:  List of (commID, IP address) tuples describing the
                             relays to which connections should be established.
-            @type  relay:  [ ( str, str ) ]
+            @type  relay:  [ (str, str) ]
         """
         for relay in relays:
             if relay in self._relays:

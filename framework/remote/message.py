@@ -83,7 +83,7 @@ class ConnectDirectiveProcessor(object):
         self._manager = manager
     
     def processMessage(self, msg):
-        self._manager.processRequest(msg.content)
+        self._manager.connectToRelays(msg.content)
 
 
 class CommInfoSerializer(object):
