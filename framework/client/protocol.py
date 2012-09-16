@@ -247,11 +247,11 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             
             @param msg:     Message which should be sent
         """
-        URIBinary, msgURI = self._recursiveBinarySearch(msg)
+        uriBinary, msgURI = self._recursiveBinarySearch(msg)
         
         WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
         
-        for binData in URIBinary:
+        for binData in uriBinary:
             WebSocketServerProtocol.sendMessage(self,
                 binData[0] + binData[1].getvalue(), binary=True)
     

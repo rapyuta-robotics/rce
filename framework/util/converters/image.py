@@ -90,6 +90,9 @@ class ImageConverter(object):
         img.load()
         
         # Everything ok, convert PIL.Image to ROS and return it
+        if img.mode == 'P':
+            img = img.convert('RGB')
+        
         rosimage = sensor_msgs.msg.Image()
         rosimage.encoding = ImageConverter._ENCODINGMAP_PY_TO_ROS[img.mode]
         (rosimage.width, rosimage.height) = img.size
