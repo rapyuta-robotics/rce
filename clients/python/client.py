@@ -165,6 +165,7 @@ class Connection(object):
             return hash(self._msgType)^hash(self._cb)
     
     def __init__(self, userID, robotID, reactor):
+        self._init = False
         self._userID = userID
         self._robotID = robotID
         self._reactor = reactor
@@ -180,15 +181,14 @@ class Connection(object):
             raise AttributeError('There is already a connection registered.')
         
         self._conn = conn
-        self._conn._sendMessage({'type':types.INIT,
-                                 'data':{'userID':self._userID,
-                                         'robotID':self._robotID,
-                                         'key':self._key}})
-        
-        if self._connectedDeferred:
-            self._connectedDeferred.callback(self)
+        self._sendMessage({'type':types.INIT,
+                           'data':{'userID':self._userID,
+                                   'robotID':self._robotID,
+                                   'key':self._key}})
     
     def unregisterConnection(self, conn):
+        self._init = False
+        
         if not self._conn:
             raise AttributeError('There is no connection registered.')
         
@@ -386,7 +386,11 @@ class Connection(object):
             print('Received error message: {0}'.format(data))
         elif msgType == types.STATUS:
             print('Received status message: {0}'.format(data))
-        elif msgType == types.ROS_MSG:
+            self._init = True
+            
+            if self._connectedDeferred:
+                self._connectedDeferred.callback(self)
+        elif self._init and msgType == types.ROS_MSG:
             msg = data['msg']
             dest = msg['dest']
             orig = msg['orig']
