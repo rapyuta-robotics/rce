@@ -217,7 +217,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             msgType = types.ERROR
         
         if resp:
-            self.sendMessage(json.dumps({'data' : resp, 'type' : msgType}))
+            self.sendMessage({'data' : resp, 'type' : msgType})
     
     def _recursiveBinarySearch(self, multidict):
         """ Internally used method to find binary data in outgoing messages.
