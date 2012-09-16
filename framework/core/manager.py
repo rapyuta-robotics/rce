@@ -839,7 +839,7 @@ class RelayManager(_ManagerBase):
             if relay in self._relays:
                 continue  # We are already connected to this relay.
             
-            cb = RelayCallbackFromRelay(self, self._commManager)
+            cb = RelayCallbackFromRelay(self, self._commManager, False)
             factory = RCEClientFactory(self._commManager, relay[0], [cb], [cb])
             factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
             self._reactor.connectTCP(relay[1], self._RELAY_PORT, factory)

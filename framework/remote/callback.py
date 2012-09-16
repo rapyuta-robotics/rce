@@ -106,12 +106,13 @@ class RelayCallbackFromRelay(_RoutingCallbackBase):
     """
     implements(IPostInit, IPostClose)
     
-    def __init__(self, manager, commMngr):
+    def __init__(self, manager, commMngr, sendInfo):
         """ # TODO: Add description
         """
         super(RelayCallbackFromRelay, self).__init__(commMngr)
         
         self._manager = manager
+        self._sendInfo = sendInfo
     
     def postInit(self, origin, ip):
         """ This method is called when the connection has been initialized.
@@ -123,7 +124,9 @@ class RelayCallbackFromRelay(_RoutingCallbackBase):
             @type  ip:      str
         """
         self._manager.registerRelay(origin, ip)
-        self.sendRoutingInfo(origin, self._manager.getServerRouting())
+        
+        if self._sendInfo:
+            self.sendRoutingInfo(origin, self._manager.getServerRouting())
     
     def postClose(self, origin, ip):
         """ This method is called when the connection has been initialized.
