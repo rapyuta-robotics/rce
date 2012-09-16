@@ -818,12 +818,11 @@ class RelayManager(_ManagerBase):
         
         self._relays.remove(conn)
     
-    def getServerRouting(self):
+    def getEndpointRouting(self):
         """ Returns the routing information for all nodes which should be
-            routed through this node, i.e. all container nodes managed by this
-            server node.
+            routed through this node.
             
-            @rtype:     [ str ]
+            @rtype:     (str)
         """
         return tuple(self._satellites)
     
@@ -839,7 +838,7 @@ class RelayManager(_ManagerBase):
             if relay in self._relays:
                 continue  # We are already connected to this relay.
             
-            cb = RelayCallbackFromRelay(self, self._commManager, False)
+            cb = RelayCallbackFromRelay(self, self._commManager)
             factory = RCEClientFactory(self._commManager, relay[0], [cb], [cb])
             factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
             self._reactor.connectTCP(relay[1], self._RELAY_PORT, factory)
