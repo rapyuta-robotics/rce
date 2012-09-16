@@ -33,7 +33,6 @@
 # Python specific imports
 import json
 import uuid
-from datetime import datetime, timedelta
 
 try:
     from cStringIO import StringIO, InputType, OutputType
@@ -49,13 +48,13 @@ except ImportError:
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.task import LoopingCall
 from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol
 
 # Custom imports
 from errors import InvalidRequest, AuthenticationError
 from client import types
 from client.interfaces import IClientMsgHandler
+from client.assembler import MessageAssembler
 from client.handler import CreateContainerHandler, DestroyContainerHandler, \
     ConfigureContainerHandler, ConnectInterfacesHandler, DataMessageHandler
 from util.interfaces import verifyObject
@@ -87,7 +86,8 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         if not response:
             raise AuthenticationError('Error: Could not authenticate user.')
         
-        return json.dumps(response)
+        key, ip = response
+        return {'key' : key, 'url' : 'ws://{0}:9010/'.format(ip)}
     
     def onMessage(self, msg, binary):
         """ Method is called by the Autobahn engine when a message has been '
@@ -97,26 +97,29 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
                 '(binary={0})'.format(binary))
         
         if binary:
-            self.sendMessage('Error: No binary messages allowed.')
-            self.dropConnection()
-            return
+            resp = 'Error: No binary messages allowed.'
+            msgType = types.ERROR
+        else:
+            try:
+                resp = self._handleMessage(msg)
+                msgType = types.STATUS
+            except InvalidRequest as e:
+                resp = 'Invalid Request: {0}'.format(e)
+                msgType = types.ERROR
+            except AuthenticationError as e:
+                resp = 'Authentication Error: {0}'.format(e)
+                msgType = types.ERROR
+            except Exception:   # TODO: Refine Error handling
+                #import sys, traceback
+                #etype, value, _ = sys.exc_info()
+                #resp = '\n'.join(traceback.format_exception_only(etype, value)))
+                
+                # Full debug message
+                import traceback
+                resp = traceback.format_exc()
+                msgType = types.ERROR
         
-        try:
-            resp = self._handleMessage(msg)
-        except InvalidRequest as e:
-            resp = 'Invalid Request: {0}'.format(e)
-        except AuthenticationError as e:
-            resp = 'Authentication Error: {0}'.format(e)
-        except Exception:   # TODO: Refine Error handling
-            #import sys, traceback
-            #etype, value, _ = sys.exc_info()
-            #resp = '\n'.join(traceback.format_exception_only(etype, value)))
-            
-            # Full debug message
-            import traceback
-            resp = traceback.format_exc()
-        
-        self.sendMessage(resp)
+        self.sendMessage(json.dumps({'data' : resp, 'type' : msgType}))
         self.dropConnection()
 
 
@@ -131,13 +134,8 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         self._userID = None
         self._robotID = None
         self._msgHandler = {}
-        
-        # List of tuples (incompleteMsg, incompleteURIList, arrivalTime)
-        self._incompleteMsgs = []
-        
-        # Setup repeated calling of the clean up method
-        self._cleaner = LoopingCall(self._cleanUp)
-        self._cleaner.start(definition.MSG_QUEUE_TIMEOUT/4)
+        self._assembler = MessageAssembler(self,
+                                           definition.MSG_QUEUE_TIMEOUT/4)
     
     def _initConnection(self, msg):
         """ Internally used method to setup the necessary context to use this
@@ -168,57 +166,12 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             verifyObject(IClientMsgHandler, handler)
             self._msgHandler[handler.TYPE] = handler
         
-        WebSocketServerProtocol.sendMessage(self, 'Connection successfully '
-                                                  'initialized.')
+        self._assembler.start()
+        return 'Connection successfully initialized.'
     
-    def _recursiveURISearch(self, multidict):
-        """ Internally used method to find binary data in incoming messages.
-        """
-        valueList = []
-        
-        for k,v in multidict.iteritems():
-            if isinstance(v, dict):
-                valueList += self._recursiveURISearch(v)
-            elif k[-1] == '*':
-                valueList.append((v, multidict, k))
-        
-        return valueList
-    
-    def _handleBinary(self, msg):
-        """ Process a received binary message, i.e. store the binary data
-            with the matching incomplete the message and forward the message
-            if the received binary data completes the cached message.
-            
-            @param msg:     Received binary message.
-            @type  msg:     str
-        """
-        uri = msg[:32]
-        binaryData = StringIO()
-        binaryData.write(msg[32:])
-        
-        for incompleteMsg in self._incompleteMsgs:
-            msg, incompleteURIList, _ = incompleteMsg
-            
-            for incompleteUri in incompleteURIList:
-                missingUri, msgDict, key = incompleteUri
-                
-                if uri == missingUri:
-                    del msgDict[key]
-                    msgDict[key[:-1]] = binaryData
-                    incompleteURIList.remove(incompleteUri)
-                    
-                    if not incompleteURIList:
-                        self._incompleteMsgs.remove(incompleteMsg)
-                        self._processReceivedMessage(msg)
-                    
-                    return
-        else:
-            raise InvalidRequest('There was no message waiting for this '
-                                 'binary message.')
-    
-    def _processReceivedMessage(self, msg):
-        """ Internally used method to process complete messages by calling the
-            appropriate handler.
+    def processCompleteMessage(self, msg):
+        """ Process complete messages by calling the appropriate handler for
+            the manager. (Called by client.protocol.BinaryAssembler)
         """
         try:
             self._msgHandler[msg['type']].handle(msg['data'])
@@ -236,34 +189,22 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                 '(binary={0})'.format(binary))
         
         try:
-            if binary:
-                if not (self._robotID and self._userID):
+            if not self._robotID or not self._userID:
+                if binary:
                     raise InvalidRequest('First message has to be an '
                                          'INIT message.')
                 
-                self._handleBinary(msg)
+                resp = self._initConnection(json.loads(msg))
+                msgType = types.STATUS
             else:
-                msg = json.loads(msg)
-                
-                # Check if the connection has be initialized
-                if not (self._robotID and self._userID):
-                    self._initConnection(msg)
-                    return
-                
-                # Check if there is a reference to a binary part
-                uris = self._recursiveURISearch(msg)
-                
-                if uris:
-                    # The message is incomplete, i.e. missing binary part
-                    self._incompleteMsgs.append((msg, uris, datetime.now()))
-                else:
-                    self._processReceivedMessage(msg)
+                self._assembler.processMessage(msg, binary)
+                resp = None
         except InvalidRequest as e:
-            WebSocketServerProtocol.sendMessage(self, 'Invalid Request: '
-                                                      '{0}'.format(e))
+            resp = 'Invalid Request: {0}'.format(e)
+            msgType = types.ERROR
         except AuthenticationError as e:
-            WebSocketServerProtocol.sendMessage(self, 'Authentication Error: '
-                                                      '{0}'.format(e))
+            resp =  'Authentication Error: {0}'.format(e)
+            msgType = types.ERROR
         except:   # TODO: Refine Error handling
             #import sys, traceback
             #etype, value, _ = sys.exc_info()
@@ -272,7 +213,11 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             
             # Full debug message
             import traceback
-            WebSocketServerProtocol.sendMessage(self, traceback.format_exc())
+            resp = traceback.format_exc()
+            msgType = types.ERROR
+        
+        if resp:
+            self.sendMessage(json.dumps({'data' : resp, 'type' : msgType}))
     
     def _recursiveBinarySearch(self, multidict):
         """ Internally used method to find binary data in outgoing messages.
@@ -317,21 +262,8 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         if self._userID and self._robotID:
             self._manager.robotClosed(self._userID, self._robotID)
         
-        self._cleaner.stop()
-    
-    def _cleanUp(self):
-        """ Internally used method to remove old incomplete messages.
-        """
-        limit = datetime.now()-timedelta(seconds=definition.MSG_QUEUE_TIMEOUT)
-        
-        for i, incompleteMsg in enumerate(self._incompleteMsgs):
-            if incompleteMsg[2] > limit:
-                if i:
-                    self._incompleteMsgs = self._incompleteMsgs[i:]
-                    log.msg('{0} Incomplete message(s) have been dropped '
-                            'from cache.'.format(i))
-                
-                break
+        self._assembler.stop()
+        self._assembler = None
 
 
 class CloudEngineWebSocketFactory(WebSocketServerFactory):

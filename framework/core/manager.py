@@ -1281,7 +1281,7 @@ class MasterManager(_ManagerBase):
         
         user.createRobot(robotID, key, commID)
         
-        return { 'key' : key, 'ip' : ip }
+        return (key, ip)
     
     def processRequest(self, request):
         """ Process a request received from a robot.

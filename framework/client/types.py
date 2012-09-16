@@ -42,6 +42,9 @@
         CX      Change connections between Interfaces
         
         DM      ROS Message
+        
+        ST      Status message
+        ER      Error message
 """
 
 INIT = 'IN'
@@ -54,3 +57,6 @@ CONFIGURE_COMPONENT = 'CN'
 CONFIGURE_CONNECTION = 'CX'
 
 DATA_MESSAGE = 'DM'
+
+STATUS = 'ST'
+ERROR = 'ER'
