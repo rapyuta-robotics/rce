@@ -459,7 +459,7 @@ class LoadBalancer(object):
         self._commManager.sendMessage(msg)
         
         # Order the new machine to connect to all the other existing machines.
-        order = [(machine._relay, machine._ip) for machine in self._machines]
+        order = [(m._relay, m._ip) for m in self._machines]
         
         if order:
             msg = Message()
