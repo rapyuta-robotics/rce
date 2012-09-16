@@ -172,7 +172,7 @@ class Connection(object):
         self._connectedDeferred = None
         
         self._subscribers = {}
-        self._responses = {}
+        self._responses = {}
     
     def registerConnection(self, conn):
         if self._conn:
@@ -246,11 +246,11 @@ class Connection(object):
     
     def createContainer(self, cTag):
         self._sendMessage({'type':types.CREATE_CONTAINER,
-                           'data':{'containerTag':cTag}}))
+                           'data':{'containerTag':cTag}})
     
     def removeContainer(self, cTag):
         self._sendMessage({'type':types.DESTROY_CONTAINER,
-                           'data':{'containerTag':cTag}}))
+                           'data':{'containerTag':cTag}})
     
     def addNode(self, cTag, nTag, pkg, exe, namespace):
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
@@ -320,12 +320,12 @@ class Connection(object):
         if not callable(cb):
             raise TypeError('Callback has to be callable.')
         
-        subscriber = Connection._Subscriber(self, iTag, msgType, cb)
+        subscriber = Connection._Subscriber(self, iTag, msgType, cb)
         
         if iTag not in self._subscribers:
             self._subscribers[iTag] = set()
         
-        subscribers = self._subscribers[iTag]
+        subscribers = self._subscribers[iTag]
         
         if subscriber in subscribers:
             raise ValueError('Same subscription already registered.')
@@ -354,7 +354,7 @@ class Connection(object):
         if iTag not in self._subscribers:
             raise ValueError('No subscribers for interface tag.')
         
-        subscribers = self._subscribers[iTag]
+        subscribers = self._subscribers[iTag]
         subscribers.remove(subscriber)
         
         if not subscribers:
@@ -375,12 +375,12 @@ class Connection(object):
         elif msgType == types.ROS_MSG:
             msg = data['msg']
             dest = msg['dest']
-            orig = msg['orig']
+            orig = msg['orig']
             msgType = msg['type']
             msgID = msg['msgID']
-            msg = msg['msg']
+            msg = msg['msg']
             
-            if dest != self._robotID:
+            if dest != self._robotID:
                 print('Received message which was not for this connection.')
                 return
             
