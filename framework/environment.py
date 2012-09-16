@@ -95,8 +95,8 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
     
-    commManager = CommManager(reactor, commID)
     manager = Manager(reactor)
+    commManager = CommManager(reactor, commID)
     manager.registerCommManager(commManager)
     messenger = Messenger(manager, commManager)
     manager.registerMessenger(messenger)

@@ -61,8 +61,8 @@ def main(reactor, commID, port):
     f = open('/home/ros/launcher.log', 'w')
     log.startLogging(f)
     
-    commManager = CommManager(reactor, commID)
     manager = NodeManager(reactor)
+    commManager = CommManager(reactor, commID)
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand([NodeCommand])
     commManager.registerContentSerializers([cmdSerializer,

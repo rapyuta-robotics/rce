@@ -741,11 +741,18 @@ class RelayManager(_ManagerBase):
     def __init__(self, reactor):
         super(RelayManager, self).__init__(reactor)
         
+        self._masterIP = None
         self._satellites = set()
         self._relays = set()
         
         self._updater = LoopingCall(self._updateLoadInfo)
         # self._updater.start(self.__LOAD_INFO_UPDATE)
+    
+    def registerMasterIP(self, ip):
+        """ Register IP address of the machine where the master manager can
+            be found.
+        """
+        self._masterIP = ip
     
     def _publishEndpointChange(self, info):
         """ Send a routing info/update to the registered relays and the master
@@ -838,10 +845,16 @@ class RelayManager(_ManagerBase):
             if relay in self._relays:
                 continue  # We are already connected to this relay.
             
+            commID, ip = relay
+            
+            # TODO: Small hack to circumvent problem with localhost IP
+            if ip == '127.0.0.1':
+                ip = self._masterIP
+            
             cb = RelayCallbackFromRelay(self, self._commManager)
-            factory = RCEClientFactory(self._commManager, relay[0], [cb], [cb])
+            factory = RCEClientFactory(self._commManager, commID, [cb], [cb])
             factory.addApprovedMessageTypes([msgTypes.ROS_MSG])
-            self._reactor.connectTCP(relay[1], self._RELAY_PORT, factory)
+            self._reactor.connectTCP(ip, self._RELAY_PORT, factory)
     
     def _updateLoadInfo(self):
         """ This method is called regularly and is used to send the newest load

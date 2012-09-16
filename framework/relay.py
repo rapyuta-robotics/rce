@@ -94,8 +94,9 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     #log.startLogging(f)
     log.startLogging(sys.stdout)
     
-    commManager = CommManager(reactor, commID)
     manager = Manager(reactor)
+    manager.registerMasterIP(masterIP)
+    commManager = CommManager(reactor, commID)
     manager.registerCommManager(commManager)
     sender = RemoteRequestSender(commManager)
     manager.registerRequestSender(sender)

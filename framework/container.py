@@ -71,8 +71,8 @@ def main(reactor, commID, masterIP, masterPort, masterID):
     #log.startLogging(f)
     log.startLogging(sys.stdout)
     
-    commManager = CommManager(reactor, commID)
     manager = ContainerManager(reactor)
+    commManager = CommManager(reactor, commID)
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand([ContainerCommand])
     commManager.registerContentSerializers([CommInfoSerializer(),

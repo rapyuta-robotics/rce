@@ -474,7 +474,7 @@ class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):
             return
         
         if msg.content['remoteID'] != self._commManager.commID:
-            log.msg('Received remote ID does not match this node '
+            log.msg("Received remote ID does not match this node's "
                     'communication ID for initialization of protocol '
                     'instance.')
             conn.transport.loseConnection()
@@ -513,7 +513,7 @@ class RCEServerFactory(_RCEFactory, ServerFactory):
             return
         
         if msg.content['remoteID'] != self._commManager.commID:
-            log.msg('Received remote ID does not match this node for '
+            log.msg("Received remote ID does not match this node's for "
                     'initialization of protocol instance.')
             conn.transport.loseConnection()
             return

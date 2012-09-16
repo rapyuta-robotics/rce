@@ -179,8 +179,8 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     #log.startLogging(f)
     log.startLogging(sys.stdout)
     
-    commManager = CommManager(reactor, commID)
     manager = MasterManager(reactor)
+    commManager = CommManager(reactor, commID)
     loadBalancer = LoadBalancer(commManager)
     uidServer = UIDServer(loadBalancer, 30)
     manager.registerLoadBalancer(loadBalancer)

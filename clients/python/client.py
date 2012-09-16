@@ -164,9 +164,10 @@ class Connection(object):
         def __hash__(self):
             return hash(self._msgType)^hash(self._cb)
     
-    def __init__(self, userID, robotID):
+    def __init__(self, userID, robotID, reactor):
         self._userID = userID
         self._robotID = robotID
+        self._reactor = reactor
         
         self._conn = None
         self._connectedDeferred = None
@@ -179,6 +180,10 @@ class Connection(object):
             raise AttributeError('There is already a connection registered.')
         
         self._conn = conn
+        self._conn._sendMessage({'type':types.INIT,
+                                 'data':{'userID':self._userID,
+                                         'robotID':self._robotID,
+                                         'key':self._key}})
         
         if self._connectedDeferred:
             self._connectedDeferred.callback(self)
@@ -197,14 +202,23 @@ class Connection(object):
         deferred = Deferred()
         
         def authenticate(resp):
-            key, robotUrl = resp
-            factory = _RCERobotFactory(robotUrl, self)
-            connectWS(factory)
+            self._key, url = resp
+            
+            lb = 2+url.find('//')
+            rb = url.rfind(':')
+            
+            if url[lb:rb] == '127.0.0.1':
+                mlb = 2+masterUrl.find('//')
+                mrb = masterUrl.rfind(':')
+                url = '{0}{1}{2}'.format(url[:lb], masterUrl[mlb:mrb], url[rb:])
+            
+            factory = _RCERobotFactory(url, self)
+            self._reactor.callLater(1, connectWS, factory)
         
         deferred.addCallbacks(authenticate)
         
         factory = _RCEMasterFactory(masterUrl, self._userID, self._robotID,
-                                   deferred)
+                                    deferred)
         connectWS(factory)
     
     def close(self):
