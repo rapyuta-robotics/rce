@@ -90,7 +90,8 @@ class Manager(RelayManager, RobotManager):
 
 
 def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
-    log.startLogging(sys.stdout)
+    f = open('/home/rce-user/relay.log', 'w')
+    log.startLogging(f)
     
     commManager = CommManager(reactor, commID)
     manager = Manager(reactor)
@@ -147,6 +148,8 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     reactor.run()
+    
+    f.close()
 
 
 def _get_argparse():

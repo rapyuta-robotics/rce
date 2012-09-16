@@ -67,7 +67,8 @@ ContainerManager._ROOT_PKG_DIR = ROOT_PKG_DIR
 
 
 def main(reactor, commID, masterIP, masterPort, masterID):
-    log.startLogging(sys.stdout)
+    f = open('/home/rce-user/container.log', 'w')
+    log.startLogging(f)
     
     commManager = CommManager(reactor, commID)
     manager = ContainerManager(reactor)
@@ -93,6 +94,8 @@ def main(reactor, commID, masterIP, masterPort, masterID):
     reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
     reactor.run()
+    
+    f.close()
 
 
 def _get_argparse():
