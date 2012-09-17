@@ -50,7 +50,7 @@ from autobahn.websocket import WebSocketClientFactory, \
     WebSocketClientProtocol, connectWS
 
 import msgTypes as types
-from assembler import MessageAssembler
+from assembler import recursiveBinarySearch, MessageAssembler
 
 
 class _RCERobotProtocol(WebSocketClientProtocol):
@@ -210,7 +210,8 @@ class Connection(object):
             if url[lb:rb] == '127.0.0.1':
                 mlb = 2+masterUrl.find('//')
                 mrb = masterUrl.rfind(':')
-                url = '{0}{1}{2}'.format(url[:lb], masterUrl[mlb:mrb], url[rb:])
+                url = '{0}{1}{2}'.format(url[:lb], masterUrl[mlb:mrb],
+                                         url[rb:])
             
             factory = _RCERobotFactory(url, self)
             self._reactor.callLater(1, connectWS, factory)
@@ -227,31 +228,11 @@ class Connection(object):
         
         self._subscribers = {}
     
-    def _recursiveBinarySearch(self, multidict):
-        uriBinary = []
-        keys = []
-        
-        for k,v in multidict.iteritems():
-            if isinstance(v, dict):
-                uriBinaryPart, multidictPart = self._recursiveBinarySearch(v)
-                uriBinary += uriBinaryPart
-                multidict[k] = multidictPart 
-            elif _checkIsStringIO(v):
-                keys.append(k)
-        
-        for k in keys:
-            tmpURI = uuid4().hex
-            uriBinary.append((tmpURI, multidict[k]))
-            del multidict[k]
-            multidict['{0}*'.format(k)] = tmpURI
-        
-        return uriBinary, multidict
-    
     def _sendMessage(self, msg):
         if not self._conn:
             raise ValueError('No connection registered.')
         
-        uriBinary, msgURI = self._recursiveBinarySearch(msg)
+        uriBinary, msgURI = recursiveBinarySearch(msg)
         
         self._conn.sendMessage(json.dumps(msgURI))
         

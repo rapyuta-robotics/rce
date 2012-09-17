@@ -32,7 +32,6 @@
 
 # Python specific imports
 import json
-import uuid
 
 try:
     from cStringIO import StringIO, InputType, OutputType
@@ -54,7 +53,7 @@ from autobahn.websocket import WebSocketServerFactory, WebSocketServerProtocol
 from errors import InvalidRequest, AuthenticationError
 from client import types
 from client.interfaces import IClientMsgHandler
-from client.assembler import MessageAssembler
+from client.assembler import recursiveBinarySearch, MessageAssembler
 from client.handler import CreateContainerHandler, DestroyContainerHandler, \
     ConfigureContainerHandler, ConnectInterfacesHandler, DataMessageHandler
 from util.interfaces import verifyObject
@@ -219,35 +218,13 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         if resp:
             self.sendMessage({'data' : resp, 'type' : msgType})
     
-    def _recursiveBinarySearch(self, multidict):
-        """ Internally used method to find binary data in outgoing messages.
-        """
-        uriBinary = []
-        keys = []
-        
-        for k,v in multidict.iteritems():
-            if isinstance(v, dict):
-                uriBinaryPart, multidictPart = self._recursiveBinarySearch(v)
-                uriBinary += uriBinaryPart
-                multidict[k] = multidictPart 
-            elif _checkIsStringIO(v):
-                keys.append(k)
-        
-        for k in keys:
-            tmpURI = uuid.uuid4().hex
-            uriBinary.append((tmpURI, multidict[k]))
-            del multidict[k]
-            multidict['{0}*'.format(k)] = tmpURI
-        
-        return uriBinary, multidict
-    
     def sendMessage(self, msg):
         """ This method is called by the User instance to send a message to the
             robot.
             
             @param msg:     Message which should be sent
         """
-        uriBinary, msgURI = self._recursiveBinarySearch(msg)
+        uriBinary, msgURI = recursiveBinarySearch(msg)
         
         WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
         

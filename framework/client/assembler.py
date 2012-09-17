@@ -33,75 +33,148 @@
 # Python specific imports
 import json
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO, InputType, OutputType
+    from StringIO import StringIO as pyStringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, (InputType, OutputType, pyStringIO))
 except ImportError:
     from StringIO import StringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, StringIO)
 
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.task import LoopingCall
+
+# Custom imports
+from errors import InternalError
+
+
+def recursiveBinarySearch(multidict):
+    """ Search a JSON message for StringIO instances which should be replaced
+        with a reference to a binary message. Returns a list of all binary
+        messages and the modified JSON string message.
+        
+        @param multidict:   JSON message which might contain StringIO instances
+                            and which should be prepared for sending.
+        @type  multidict:   { str : ... }
+        
+        @return:        A list of tuples containing the URI and the matching
+                        StringIO instance. Also the modified JSON message where
+                        the StringIO instances have been replaced with the URIs
+                        is returned.
+        @rtpye:         ((str, StringIO), { str: ... })
+    """
+    uriBinary = []
+    keys = []
+    
+    for k,v in multidict.iteritems():
+        if isinstance(v, dict):
+            uriBinaryPart, multidictPart = recursiveBinarySearch(v)
+            uriBinary += uriBinaryPart
+            multidict[k] = multidictPart
+        elif isinstance(v, (list, tuple)):
+            if v and _checkIsStringIO(v[0]):
+                for e in v:
+                    if not _checkIsStringIO(e):
+                        raise ValueError('Can not mix binary and string '
+                                         'message in an array.')
+                
+                keys.append(k)
+        elif _checkIsStringIO(v):
+            keys.append(k)
+    
+    for k in keys:
+        ele = multidict.pop(k)
+        
+        if isinstance(ele, (list, tuple)):
+            uris = []
+            
+            for e in ele:
+                tmpURI = uuid4().hex
+                uris.append(tmpURI)
+                uriBinary.append((tmpURI, e))
+            
+            ele = uris
+        else:
+            tmpURI = uuid4().hex
+            uriBinary.append((tmpURI, ele))
+            ele = tmpURI
+         
+        multidict['{0}*'.format(k)] = ele
+    
+    return uriBinary, multidict      
+        
+
+class _IncompleteMsg(object):
+    """ Class which represents an incomplete class.
+    """
+    def __init__(self, assembler, msg, uris):
+        """ Initialize the incomplete message.
+            
+            @param assembler:   Assembler to which the this instance
+                                belongs.
+            @type  assembler:   client.assembler.MessageAssembler
+            
+            @param msg:     Incomplete message as a dictionary.
+            @type  msg:     dict
+            
+            @param uris:    Return value of _recursiveURISearch
+            @type  nr:      [ (str, dict, str) ]
+        """
+        self._assembler = assembler
+        self._msg = msg
+        self._uris = {}
+        
+        for uri, msgDict, key in uris:
+            self._uris[uri] = (msgDict, key)
+        
+        self._added = datetime.now()
+    
+    @property
+    def msg(self):
+        """ Get the represented message. """
+        if self._uris:
+            raise InternalError('Message still contains missing references.')
+        
+        return self._msg
+    
+    def older(self, timestamp):
+        """ Returns True if this incomplete message is older the the given
+            timestamp.
+        """
+        return self._added < timestamp
+    
+    def addBinary(self, uri, binaryData):
+        """ Add the binary data with the given uri.
+            
+            @return:    True if the binary was used; False otherwise.
+        """
+        ref = self._uris.pop(uri, None)
+        
+        if ref:
+            parent, key = ref
+            parent[key] = binaryData
+            
+            if self._uris:
+                self._added = datetime.now()
+            else:
+                self._assembler.forwardCompleteMessage(self)
+            
+            return True
+        else:
+            return False
 
 
 class MessageAssembler(object):
     """ Class which is used to store incomplete messages for a certain time
         and which is used to assemble them when possible.
     """
-    class _IncompleteMsg(object):
-        """ Internally used class which represents an incomplete class.
-        """
-        def __init__(self, assembler, msg, uris):
-            """ Initialize the incomplete message.
-                
-                @param assembler:   Assembler to which the this instance
-                                    belongs.
-                @type  assembler:   client.assembler.MessageAssembler
-                
-                @param msg:     Incomplete message as a dictionary.
-                @type  msg:     dict
-                
-                @param uris:    Return value of _recursiveURISearch
-                @type  nr:      [ (str, dict, str) ]
-            """
-            self._assembler = assembler
-            self._msg = msg
-            self._uris = {}
-            
-            for uri, msgDict, key in uris:
-                self._uris[uri] = (msgDict, key)
-            
-            self._added = datetime.now()
-        
-        def older(self, timestamp):
-            """ Returns True if this incomplete message is older the the given
-                timestamp.
-            """
-            return self._added < timestamp
-        
-        def addBinary(self, uri, binaryData):
-            """ Add the binary data with the given uri.
-                
-                @return:    True if the binary was used; False otherwise.
-            """
-            ref = self._uris.pop(uri, None)
-            
-            if ref:
-                msgDict, key = ref
-                
-                del msgDict[key]
-                msgDict[key[:-1]] = binaryData
-                
-                if self._uris:
-                    self._added = datetime.now()
-                else:
-                    self._assembler._removeIncompleteMsg(self)
-                    self._assembler._processCompleteMessage(self._msg)
-                
-                return True
-            else:
-                return False
-    
     def __init__(self, protocol, timeout):
         """ Initialize the binary assembler.
             
@@ -124,17 +197,12 @@ class MessageAssembler(object):
         # Setup repeated calling of the clean up method
         self._cleaner = LoopingCall(self._cleanUp)
     
-    def _removeIncompleteMsg(self, msg):
-        """ Callback for client.assembler.MessageAssembler._IncompleteMsg to
-            remove itself from the set of incomplete messages.
+    def forwardCompleteMessage(self, msgRepr):
+        """ Callback for client.assembler._IncompleteMsg to send a completed
+            message to the correct handler.
         """
-        self._incompleteMsgs.discard(msg)
-    
-    def _processCompleteMessage(self, msg):
-        """ Callback for client.assembler.MessageAssembler._IncompleteMsg to
-            send a completed message to the correct handler.
-        """
-        self._protocol.processCompleteMessage(msg)
+        self._incompleteMsgs.remove(msgRepr)
+        self._protocol.processCompleteMessage(msgRepr.msg)
     
     def _handleString(self, msg, uris):
         """ Try to process the received incomplete string message, i.e.
@@ -146,23 +214,21 @@ class MessageAssembler(object):
             @type  msg:     str
             
             @param uris:    Return value of _recursiveURISearch
-            @type  nr:      [ (str, dict, str) ]
+            @type  uris:    [ (str, dict, str) or (str, list, int) ]
         """
         missing = []
         
         for ref in uris:
-            uri, msgDict, key = ref
-            binaryData, _ = self._binaries.pop(uri, None)
+            uri, parent, key = ref
+            binaryData = self._binaries.pop(uri, None)
             
             if binaryData:
-                del msgDict[key]
-                msgDict[key[:-1]] = binaryData
+                parent[key] = binaryData[0]
             else:
                 missing.append(ref)
         
         if missing:
-            self._incompleteMsgs.add(
-                MessageAssembler._IncompleteMsg(self._protocol, msg, missing))
+            self._incompleteMsgs.add(_IncompleteMsg(self, msg, missing))
         else:
             self._protocol.processCompleteMessage(msg)
     
@@ -188,15 +254,29 @@ class MessageAssembler(object):
     def _recursiveURISearch(self, multidict):
         """ Internally used method to find binary data in incoming messages.
             
-            @return:    List of tuples of the form (uri, dict, key)
+            @return:    List of tuples of the forms (uri, dict, key) or
+                        (uri, list, index)
         """
         valueList = []
+        keys = []
         
         for k, v in multidict.iteritems():
             if isinstance(v, dict):
                 valueList += self._recursiveURISearch(v)
             elif k[-1] == '*':
-                valueList.append((v, multidict, k))
+                keys.append(k)
+        
+        for k in keys:
+            ele = multidict.pop(k)
+            
+            if isinstance(ele, list):
+                lst = [None]*len(ele)
+                multidict[k[:-1]] = lst
+                
+                for i, uri in enumerate(ele):
+                    valueList.append((uri, lst, i))
+            else:
+                valueList.append((ele, multidict, k[:-1]))
         
         return valueList
     
@@ -240,7 +320,7 @@ class MessageAssembler(object):
             for msg in toClean:
                 self._incompleteMsgs.remove(msg)
             
-            log.msg('{0} Incomplete messages have been dropped '
+            log.msg('{0} incomplete messages have been dropped '
                     'from assembler.'.format(len(toClean)))
         
         toClean = [uri for uri, (_, timestamp) in self._binaries.iteritems()
