@@ -59,7 +59,7 @@ from core.interfaces import IROSConverter
 class _DurationConverter(object):
     """ Convert ROS Duration type to JSON style and back.
     """
-    def decode(self, rosMsgType, data):
+    def decode(self, _, data):
         """ Generate a rospy.rostime.Duration instance based on the given data
             which should be a string representation of a float.
         """
@@ -77,7 +77,7 @@ class _DurationConverter(object):
 class _TimeConverter(object):
     """ Convert ROS Time type to JSON style and back.
     """
-    def decode(self, rosMsgType, data):
+    def decode(self, _, data):
         """ Generate a rospy.rostime.Time instance based on the given data of
             the form 'YYYY-MM-DDTHH:MM:SS.mmmmmm' (ISO 8601).
         """
@@ -176,10 +176,10 @@ class Converter(object):
         try:
             del self._customTypes[msgType]
         except KeyError:
-            InternalError('Tried to remove a cutom converter which was '
+            InternalError('Tried to remove a custom converter which was '
                           'never added.')
     
-    def _stringify(self, objType, obj):
+    def _stringify(self, _, obj):
         """ Internally used method to make sure that strings are of type str
             and not of type unicode.
         """
@@ -269,17 +269,21 @@ class Converter(object):
             
             if slotType in Converter._BASE_TYPES:
                 convFunc = self._stringify
+                slotCls = None
             elif slotType in Converter._SPECIAL_TYPES:
                 convFunc = Converter._SPECIAL_TYPES[slotType]().decode
+                slotCls = None
             elif slotType in self._customTypes and _checkIsStringIO(field):
                 convFunc = self._customTypes[slotType][0]().decode
+                slotCls = None
             else:
                 convFunc = self._decode
-
+                slotCls = self._loader.loadMsg(*slotType.split('/'))
+            
             if listBool:
-                msgData = map(lambda ele: convFunc(slotType, ele), field)
+                msgData = map(lambda ele: convFunc(slotCls, ele), field)
             else:
-                msgData = convFunc(slotType, field)
+                msgData = convFunc(slotCls, field)
             
             setattr(rosMsg, slotName, msgData)
 
