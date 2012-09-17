@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       StringPing.py
+#       StringEcho.py
 #       
 #       This file is part of the RoboEarth Cloud Engine tests.
 #       
@@ -32,17 +32,16 @@
 
 import roslib; roslib.load_manifest('Test')
 
-from std_msgs.msg import String
+from Test.srv import StringEcho
 import rospy
 
-def echo(msg, pub):
-    pub.publish(msg)
+def echo(msg):
+    return msg.data
 
 def string_echo_server():
     rospy.init_node('stringEchoNode')
     
-    pub = rospy.Publisher('stringOut', String, latch=True)
-    rospy.Subscriber('stringIn', String, lambda msg: echo(msg, pub))
+    rospy.Service('stringEcho', StringEcho, echo)
     rospy.spin()
 
 if __name__ == "__main__":
