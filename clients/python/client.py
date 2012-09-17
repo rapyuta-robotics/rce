@@ -355,6 +355,27 @@ class Connection(object):
         if not subscribers:
             del self._subscribers[iTag]
     
+    def _processDataMessage(self, dataMsg):
+        msgType = dataMsg['type']
+        msg = dataMsg['msg']
+        
+        if dataMsg['dest'] != self._robotID:
+            print('Received message which was not for this connection.')
+            return
+        
+        response = self._responses.pop(dataMsg['msgID'], None)
+        
+        if response:
+            deferred, responseMsgType = response
+            
+            if msgType != responseMsgType:
+                raise TypeError('Received unexpected message type.')
+            
+            deferred.callback(msg)
+        else:
+            for subscriber in self._subscribers.get(dataMsg['orig'], []):
+                subscriber.callback(msgType, msg)
+    
     def receivedMessage(self, msg):
         try:
             msgType = msg['type']
@@ -371,27 +392,5 @@ class Connection(object):
             
             if self._connectedDeferred:
                 self._connectedDeferred.callback(self)
-        elif self._init and msgType == types.ROS_MSG:
-            msg = data['msg']
-            dest = msg['dest']
-            orig = msg['orig']
-            msgType = msg['type']
-            msgID = msg['msgID']
-            msg = msg['msg']
-            
-            if dest != self._robotID:
-                print('Received message which was not for this connection.')
-                return
-            
-            response = self._responses.pop(msgID, None)
-            
-            if response:
-                deferred, repsonseMsgType = response
-                
-                if msgType != responseMsgType:
-                    raise TypeError('Received unexpected message type.')
-                
-                deferred.callback(msg)
-            else:
-                for subscriber in self._subscribers.get(orig, []):
-                    subscriber.callback(msgType, msg)
+        elif self._init and msgType == types.DATA_MESSAGE:
+            self._processDataMessage(data)
