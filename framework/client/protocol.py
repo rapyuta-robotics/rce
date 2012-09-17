@@ -199,10 +199,14 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                 self._assembler.processMessage(msg, binary)
                 resp = None
         except InvalidRequest as e:
-            resp = 'Invalid Request: {0}'.format(e)
+            #resp = 'Invalid Request: {0}'.format(e)
+            import traceback
+            resp = traceback.format_exc()
             msgType = types.ERROR
         except AuthenticationError as e:
-            resp =  'Authentication Error: {0}'.format(e)
+            #resp =  'Authentication Error: {0}'.format(e)
+            import traceback
+            resp = traceback.format_exc()
             msgType = types.ERROR
         except:   # TODO: Refine Error handling
             #import sys, traceback
