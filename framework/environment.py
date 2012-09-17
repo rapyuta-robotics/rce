@@ -30,8 +30,8 @@
 #     
 #     
 
-# Python specific imports
-import sys
+# ROS specific imports
+import rospy
 
 # twisted specific imports
 from twisted.python import log
@@ -95,6 +95,8 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
     
+    rospy.init_node('RCE_Master')
+    
     manager = Manager(reactor)
     commManager = CommManager(reactor, commID)
     manager.registerCommManager(commManager)
@@ -135,10 +137,14 @@ def main(reactor, commID, relayIP, relayPort, relayID, nodeIP, nodePort,
     factory = RCEClientFactory(commManager, nodeID)
     reactor.connectTCP(nodeIP, nodePort, factory)
     
-    reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)
-    reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
+    def terminate():
+        reactor.callFromThread(manager.shutdown)
+        reactor.callFromThread(commManager.shutdown)
+        reactor.callFromThread(reactor.stop)
+
+    rospy.on_shutdown(terminate)
     
-    reactor.run()
+    reactor.run(installSignalHandlers=False)
     
     f.close()
 

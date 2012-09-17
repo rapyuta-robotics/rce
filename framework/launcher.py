@@ -30,8 +30,8 @@
 #     
 #     
 
-# Python specific imports
-import sys
+# ROS specific imports
+import rospy
 
 # twisted specific imports
 from twisted.python import log
@@ -61,6 +61,8 @@ def main(reactor, commID, port):
     f = open('/home/ros/launcher.log', 'w')
     log.startLogging(f)
     
+    rospy.init_node('RCE-Launcher')
+    
     manager = NodeManager(reactor)
     commManager = CommManager(reactor, commID)
     cmdSerializer = CommandSerializer()
@@ -78,10 +80,14 @@ def main(reactor, commID, port):
     factory.addApprovedMessageTypes([msgTypes.COMMAND, msgTypes.TAG])
     reactor.listenTCP(port, factory)
     
-    reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)
-    reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
+    def terminate():
+        reactor.callFromThread(manager.shutdown)
+        reactor.callFromThread(commManager.shutdown)
+        reactor.callFromThread(reactor.stop)
+
+    rospy.on_shutdown(terminate)
     
-    reactor.run()
+    reactor.run(installSignalHandlers=False)
     
     f.close()
 
