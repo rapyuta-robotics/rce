@@ -33,9 +33,6 @@
 # Python specific imports
 import sys
 
-# ROS specific imports
-import rospy
-
 # twisted specific imports
 from twisted.python import log
 from autobahn.websocket import listenWS
@@ -97,8 +94,6 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     #log.startLogging(f)
     log.startLogging(sys.stdout)
     
-    rospy.init_node('RCE-Master')
-    
     manager = Manager(reactor)
     manager.registerMasterIP(masterIP)
     commManager = CommManager(reactor, commID)
@@ -151,14 +146,10 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
                                           'ws://localhost:9010')
     listenWS(factory)
     
-    def terminate():
-        reactor.callFromThread(manager.shutdown)
-        reactor.callFromThread(commManager.shutdown)
-        reactor.callFromThread(reactor.stop)
-
-    rospy.on_shutdown(terminate)
+    reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)
+    reactor.addSystemEventTrigger('before', 'shutdown', commManager.shutdown)
     
-    reactor.run(installSignalHandlers=False)
+    reactor.run()
     
     #f.close()
 
