@@ -61,7 +61,7 @@ def main(reactor, commID, port):
     f = open('/home/ros/launcher.log', 'w')
     log.startLogging(f)
     
-    rospy.init_node('RCE-Launcher')
+    rospy.init_node('RCE_Launcher')
     
     manager = NodeManager(reactor)
     commManager = CommManager(reactor, commID)

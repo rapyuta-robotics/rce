@@ -1,4 +1,4 @@
-#Mon Sep 17 11:15:53 CEST 2012
+#Mon Sep 17 16:35:26 CEST 2012
 eclipse.preferences.version=1
 encoding//client/assembler.py=utf-8
 encoding//client/handler.py=utf-8
@@ -80,6 +80,7 @@ encoding//trash/rosInterfaces.py=utf-8
 encoding//trash/rosbridge.py=utf-8
 encoding//util/converter.py=utf-8
 encoding//util/converters/image.py=utf-8
+encoding//util/converters/interfaces.py=utf-8
 encoding//util/interfaces.py=utf-8
 encoding//util/loader.py=utf-8
 encoding//util/ssl.py=utf-8

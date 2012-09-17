@@ -53,7 +53,7 @@ import rospy.rostime
 # Custom imports
 from errors import InternalError
 from util.interfaces import verifyClass
-from core.interfaces import IROSConverter
+from util.converters.interfaces import IROSConverter
 
 
 class _DurationConverter(object):

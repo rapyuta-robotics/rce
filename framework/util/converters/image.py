@@ -52,7 +52,7 @@ import sensor_msgs.msg
 from zope.interface import implements
 
 # Custom imports
-from core.interfaces import IROSConverter
+from util.converters.interfaces import IROSConverter
 
 
 class ImageConverter(object):
