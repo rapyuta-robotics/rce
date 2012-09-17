@@ -41,9 +41,7 @@ def echo(msg, pub):
 def string_echo_server():
     rospy.init_node('stringEchoNode')
     
-    testCenter = TestCenter()
-    
-    pub = rospy.Publisher('stringOut', String)
+    pub = rospy.Publisher('stringOut', String, latch=True)
     rospy.Subscriber('stringIn', String, lambda msg: echo(msg, pub))
     rospy.spin()
 
