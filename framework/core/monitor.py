@@ -554,7 +554,8 @@ class ServiceProviderMonitor(_InterfaceMonitor):
     IDENTIFIER = types.INTERFACE_PRO
     
     def __init__(self, manager, userID, interface):
-        super(ServiceMonitor, self).__init__(manager, userID, interface)
+        super(ServiceProviderMonitor, self).__init__(manager, userID,
+                                                     interface)
         
         args = interface.msgType.split('/')
         

@@ -343,7 +343,7 @@ class Connection(object):
                                    'orig':self._robotID,
                                    'type':srvType,
                                    'msgID':uid,
-                                   'msg':msg}})
+                                   'msg':req}})
     
     def _unsubscribe(self, iTag, subscriber):
         if iTag not in self._subscribers:
