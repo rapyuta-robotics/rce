@@ -361,7 +361,7 @@ class Connection(object):
             data = msg['data']
         except KeyError as e:
             raise ValueError('Received message from robot manager is missing '
-                             '"{0}".'.format(e))
+                             'the key {0}.'.format(e))
         
         if msgType == types.ERROR:
             print('Received error message: {0}'.format(data))

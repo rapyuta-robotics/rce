@@ -64,6 +64,7 @@ from comm.protocol import RCEClientFactory
 from comm.message import Message
 from remote.control import RemoteNodeControl
 from remote.callback import RelayCallbackFromRelay
+from client import types as clientTypes
 
 from util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
     writeCertToFile, writeKeyToFile
@@ -696,7 +697,8 @@ class RobotManager(_InterfaceManager):
             @type  msg:         dict
         """
         try:
-            self._users[userID].robots[robotID].conn.sendMessage(msg)
+            self._users[userID].robots[robotID].conn.sendMessage(
+                {'data' : msg, 'type' : clientTypes.DATA_MESSAGE})
         except KeyError:
             log.msg('Message could not be sent: The robot "{0}" is no longer '
                     'connected.'.format(robotID))

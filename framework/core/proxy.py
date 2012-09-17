@@ -127,7 +127,7 @@ class _EndpointProxy(object):
             
             Once this method is called this monitor can no longer be used.
         """
-        for interface in self._interfaces:
+        for interface in self._interfaces.copy():
             interface.delete()
         
         self._user = None
