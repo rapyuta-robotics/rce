@@ -119,11 +119,9 @@ class ForwarderFIFO(object):
         """
         start = 0
         
-        if self._buf[-1]:
+        if self._buf and self._buf[-1]:
             start = definition.CHUNK_SIZE - len(self._buf[-1])
             self._buf[-1] += data[:start]
-        else:
-            start = 0
         
         while len(data) < start:
             end = start + definition.CHUNK_SIZE

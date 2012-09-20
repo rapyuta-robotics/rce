@@ -98,7 +98,7 @@ class TestCenter(object):
         self._couner = 0
         self._event = Event()
         self._pub = rospy.Publisher('{0}Req'.format(name), String, latch=True)
-        rospy.Subscriber('{0}Resp'.format(name), String, self._resp)
+        rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
         self._req()
         self._event.wait()
     
