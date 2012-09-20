@@ -43,7 +43,7 @@ from errors import InternalError, SerializationError
 from comm import definition
 from comm.interfaces import IRCEProducer
 from comm.message import Message
-from comm.fifo import MessageFIFO
+from comm.fifo import MessageFIFO, ForwarderFIFO
 
 
 class _Sink(object):
@@ -230,7 +230,7 @@ class _Forwarder(_Receiver, _Sender):
             @param dest:    Communication ID of next destination.
             @type  dest:    str
         """
-        super(_Forwarder, self).__init__(msgLen, origin, dest, MessageFIFO())
+        super(_Forwarder, self).__init__(msgLen, origin, dest, ForwarderFIFO())
 
     def stopProducing(self):
         """ Method for the consumer to signal that the producer should stop

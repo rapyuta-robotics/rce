@@ -33,24 +33,32 @@
 import string
 import random
 import time
+from threading import Event
 
 import roslib; roslib.load_manifest('Test')
-
-from Test.srv import StringEcho, StringTest, StringTestResponse
-from Test.msg import StringData
 import rospy
+from std_msgs.msg import String
+
+from Test.srv import StringEcho, StringTest #, StringTestResponse
+from Test.msg import StringData
 
 
 class TestCenter(object):
     def __init__(self):
         self._data = []
+        self._times = []
+        
+        self._counter = 0
+        self._event = None
+        self._pub = None
+        self._str = None
+        self._time = None
     
     def registerData(self, data):
         self._data = data.size
     
-    def runTest(self, req):
-        name = req.testName
-        resp = StringTestResponse()
+    def _runService(self, name):
+        name = '{0}Service'.format(name)
         rospy.wait_for_service(name, timeout=5)
         
         serviceFunc = rospy.ServiceProxy(name, StringEcho)
@@ -62,13 +70,50 @@ class TestCenter(object):
             end = time.time()
             
             if response.data != s:
-                resp.times.append(-1)
+                self._times.append(-1)
             else:
-                 resp.times.append(end-start)
-            
-            resp.sizes.append(size)
+                 self._times.append((end-start)*1000)
+    
+    def _req(self):
+        if self._counter >= len(self._data):
+            self._event.set()
+        else:
+            self._str = ''.join(random.choice(string.lowercase)
+                                for _ in xrange(self._data[self._counter]))
+            self._time = time.time()
+            self._pub.publish(self._str)
+    
+    def _resp(self, msg):
+        end = time.time()
         
-        return resp
+        if self._str != msg.data:
+            self._times.append(-1)
+        else:
+            self._times.append((time.time()-self._time)*1000)
+        
+        self._counter += 1
+        self._req()
+    
+    def _runTopic(self, name):
+        self._couner = 0
+        self._event = Event()
+        self._pub = rospy.Publisher('{0}Req'.format(name), String, latch=True)
+        rospy.Subscriber('{0}Resp'.format(name), String, self._resp)
+        self._req()
+        self._event.wait()
+    
+    def runTest(self, req):
+        test = req.testType
+        name = req.testName
+        
+        self._times = []
+        
+        if test == 'srv':
+            self._runService(name)
+        elif test == 'topic':
+            self._runTopic(name)
+        
+        return self._data, self._times
 
 def string_tester_server():
     rospy.init_node('stringTesterNode')

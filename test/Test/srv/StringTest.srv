@@ -1,3 +1,4 @@
+string testType
 string testName
 ---
 int32[] sizes

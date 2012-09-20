@@ -31,17 +31,23 @@
 #       
 
 import roslib; roslib.load_manifest('Test')
+import rospy
+from std_msgs.msg import String
 
 from Test.srv import StringEcho
-import rospy
 
-def echo(msg):
+def echoTopic(msg, pub):
+    pub.publish(msg)
+
+def echoService(msg):
     return msg.data
 
 def string_echo_server():
     rospy.init_node('stringEchoNode')
     
-    rospy.Service('stringEcho', StringEcho, echo)
+    pub = rospy.Publisher('stringEchoResp', String, latch=True)
+    rospy.Subscriber('stringEchoReq', String, lambda msg: echoTopic(msg, pub))
+    rospy.Service('stringEchoService', StringEcho, echoService)
     rospy.spin()
 
 if __name__ == "__main__":

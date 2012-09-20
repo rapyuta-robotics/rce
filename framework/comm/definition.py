@@ -49,7 +49,8 @@ MSG_QUEUE_TIMEOUT = 30
 # Character for special addresses
 _PUB = '+'
 _PRIV = '-'
-_NEIGBOR = '$'
+_NEIGHBOR = '$'
+_FWD = '>'
 
 
 ####################
@@ -66,13 +67,25 @@ if  _PUB == _PRIV:
     raise ValueError('Special char for public addresses is the same as the '
                      'special char for private addresses.')
 
-if  _PUB == _NEIGBOR:
+if  _PUB == _NEIGHBOR:
     raise ValueError('Special char for public addresses is the same as the '
                      'special char for neighbor address.')
 
-if  _PRIV == _NEIGBOR:
+if _PUB == _FWD:
+    raise ValueError('Special char for public addresses is the same as the '
+                     'special char for forwarder address.')
+
+if  _PRIV == _NEIGHBOR:
     raise ValueError('Special char for private addresses is the same as the '
                      'special char for neighbor address.')
+
+if _PRIV == _FWD:
+    raise ValueError('Special char for private addresses is the same as the '
+                     'special char for forwarder address.')
+
+if _NEIGHBOR == _FWD:
+    raise ValueError('Special char for neighbor address is the same as the '
+                     'special char for forwarder address.')
 
 if _PUB in ADDR_BASE:
     raise ValueError('Special char for public addresses is already in chars '
@@ -82,8 +95,12 @@ if _PRIV in ADDR_BASE:
     raise ValueError('Special char for private addresses is already in chars '
                      'for base addresses.')
 
-if _NEIGBOR in ADDR_BASE:
+if _NEIGHBOR in ADDR_BASE:
     raise ValueError('Special char for neighbor address is already in chars '
+                     'for base addresses.')
+
+if _FWD in ADDR_BASE:
+    raise ValueError('Special char for forwarder address is already in chars '
                      'for base addresses.')
 
 
@@ -125,16 +142,20 @@ PREFIX_PUB_ADDR = _PUB * PREFIX_LENGTH
 PREFIX_PRIV_ADDR = _PRIV * PREFIX_LENGTH
 
 # Used to identify a message which is intended for direct neighbor
-NEIGHBOR_ADDR = PREFIX_PRIV_ADDR + _NEIGBOR * SUFFIX_LENGTH
+NEIGHBOR_ADDR = PREFIX_PRIV_ADDR + _NEIGHBOR * SUFFIX_LENGTH
 
 # Used for master/load balancer node
 MASTER_ADDR = _PUB * ADDRESS_LENGTH
 
 # Used for ROS node launcher
-LAUNCHER_ADDR = _PRIV * ADDRESS_LENGTH
+LAUNCHER_ADDR = PREFIX_PRIV_ADDR + _FWD * SUFFIX_LENGTH
 
 # List of all the special addresses
 SPECIAL_ADDRS = [ MASTER_ADDR, LAUNCHER_ADDR, NEIGHBOR_ADDR ]
+
+# List of all special addresses which should not be routed using the default
+# address
+DEFAULT_EXCEMPT_ADDRS = [ LAUNCHER_ADDR, NEIGHBOR_ADDR ]
 
 
 ####################

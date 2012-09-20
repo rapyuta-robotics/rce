@@ -148,6 +148,8 @@ class _Router(object):
         # Try to send the message
         if dest in self._routes:
             route = self._routes[dest]
+        elif dest in definition.DEFAULT_EXCEMPT_ADDRS:
+            return
         elif self._default:
             route = self._default
         else:
