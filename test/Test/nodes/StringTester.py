@@ -39,7 +39,7 @@ import roslib; roslib.load_manifest('Test')
 import rospy
 from std_msgs.msg import String
 
-from Test.srv import StringEcho, StringTest #, StringTestResponse
+from Test.srv import StringEcho, StringTest
 from Test.msg import StringData
 
 
@@ -72,7 +72,7 @@ class TestCenter(object):
             if response.data != s:
                 self._times.append(-1)
             else:
-                 self._times.append((end-start)*1000)
+                self._times.append((end-start)*1000)
     
     def _req(self):
         if self._counter >= len(self._data):
@@ -95,7 +95,7 @@ class TestCenter(object):
         self._req()
     
     def _runTopic(self, name):
-        self._couner = 0
+        self._counter = 0
         self._event = Event()
         self._pub = rospy.Publisher('{0}Req'.format(name), String, latch=True)
         rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
@@ -108,7 +108,7 @@ class TestCenter(object):
         
         self._times = []
         
-        if test == 'srv':
+        if test == 'service':
             self._runService(name)
         elif test == 'topic':
             self._runTopic(name)

@@ -147,7 +147,7 @@ class Connection(object):
             self._cb = cb
         
         def unsubscribe(self):
-            self._conn._unsubscribe(iTag, self)
+            self._conn._unsubscribe(self._iTag, self)
         
         def callback(self, msgType, msg):
             if not msgType == self._msgType:
@@ -243,7 +243,7 @@ class Connection(object):
         self._sendMessage({'type':types.CREATE_CONTAINER,
                            'data':{'containerTag':cTag}})
     
-    def removeContainer(self, cTag):
+    def destroyContainer(self, cTag):
         self._sendMessage({'type':types.DESTROY_CONTAINER,
                            'data':{'containerTag':cTag}})
     
@@ -373,7 +373,7 @@ class Connection(object):
             
             deferred.callback(msg)
         else:
-            for subscriber in self._subscribers.get(dataMsg['orig'], []):
+            for subscriber in self._subscribers.get(dataMsg['orig'], []).copy():
                 subscriber.callback(msgType, msg)
     
     def receivedMessage(self, msg):
