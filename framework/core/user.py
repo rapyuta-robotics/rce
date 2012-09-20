@@ -301,6 +301,9 @@ class User(object):
             
             msg = ('Add interface "{0}" (type: "{1}"; address: "{2}") '
                    'to container "{3}".')
+        else:
+            raise InvalidRequest('Interface type "{0}" is '
+                                 'invalid.'.format(iType))
         
         log.msg(msg.format(iTag, iType, addr, destTag))
         Interface(endpoint, iTag, iType, className, addr)

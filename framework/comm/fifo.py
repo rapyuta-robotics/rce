@@ -54,26 +54,27 @@ class MessageFIFO(object):
     def __len__(self):
         """ Built-in method to get the length of the buffer.
         """
-        return len(self._buf)
+        return reduce(lambda s, buf: s+len(buf), self._buf, 0)
     
     def __iadd__(self, fifo):
         """ Built-in method to add another FIFO to this one.
         """
+        if not isinstance(fifo, MessageFIFO):
+            raise TypeError('Can only add a MessageFIFO.')
+        
         self._buf += fifo._buf
         return self
     
     def push(self, data):
         """ Add data to the FIFO.
         """
-        for c in data:
-            self._buf.append(c)
+        self._buf.append(data)
     
     def pushFront(self, data):
         """ Add data to the front of the FIFO.
             (Should only be used for adding the header to the message!)
         """
-        for c in reversed(data):
-            self._buf.appendleft(c)
+        self._buf.appendleft(data)
     
     def pop(self, n):
         """ Try to get n characters from FIFO.
@@ -82,77 +83,24 @@ class MessageFIFO(object):
                         number of effectively returned characters.
             @rtype:     ( str, int )
         """
-        lenBuf = len(self._buf)
+        data = []
         
-        if lenBuf < n:
-            n = lenBuf
-        
-        return (''.join(self._buf.popleft() for _ in xrange(n)), n)
-    
-    def write(self, data):
-        """ Synonym for 'push'. Used for serialization of ROS messages.
-        """
-        self.push(data)
-
-
-class ForwarderFIFO(object):
-    """ FIFO which is used to store a message internally for processing.
-    """
-    def __init__(self):
-        """ Initialize the MessageFIFO.
-        """
-        self._buf = deque()
-    
-    def __len__(self):
-        """ Built-in method to get the length of the buffer.
-        """
-        return reduce(lambda s, buf: s+len(buf), self._buf, 0)
-    
-    def __iadd__(self, fifo):
-        """ Built-in method to add another FIFO to this one.
-        """
-        raise NotImplementedError('__iadd__ is not implemented for '
-                                  'ForwarderFIFO.')
-    
-    def push(self, data):
-        """ Add data to the FIFO.
-        """
-        start = 0
-        
-        if self._buf and self._buf[-1]:
-            start = definition.CHUNK_SIZE - len(self._buf[-1])
-            self._buf[-1] += data[:start]
-        
-        while len(data) < start:
-            end = start + definition.CHUNK_SIZE
-            self._buf.append(data[start:end])
-            start = end
-    
-    def pushFront(self, data):
-        """ Add data to the front of the FIFO.
-            (Should only be used for adding the header to the message!)
-        """
-        raise NotImplementedError('pushFront is not implemented for '
-                                  'ForwarderFIFO.')
-    
-    def pop(self, n):
-        """ Try to get n characters from FIFO.
-                        
-            @return:    Tuple with the returned string as first element and the
-                        number of effectively returned characters.
-            @rtype:     ( str, int )
-        """
-        if not self._buf[0]:
-            return ('', 0)
-        else:
+        while self._buf:
             ele = self._buf.popleft()
-            return (ele, len(ele))
+            length = len(ele)
+            
+            if length >= n:
+                data.append(ele[:n])
+                self._buf.appendleft(ele[n:])
+                break
+            else:
+                data.append(ele)
+                n -= length
+        
+        data = ''.join(data)
+        return (data, len(data))
     
-    def write(self, data):
-        """ Synonym for 'push'. Used for serialization of ROS messages.
-        """
-        raise NotImplementedError('write is not implemented for '
-                                  'ForwarderFIFO.')
+    write = push
     
 
 class ProducerFIFO(object):

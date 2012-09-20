@@ -167,9 +167,9 @@ class Interface(object):
             @param tag:         Tag which is used to identify this interface.
             @type  tag:         str
             
-            @param iType:   Interface type; valid values are:
-                                service, publisher, subscriber
-            @type  iType:   str
+            @param iType:       Interface type; valid values are:
+                                    service, publisher, subscriber
+            @type  iType:       str
             
             @param msgType:     Message type of the form package/messageClass,
                                 i.e. 'std_msgs/Int8'.
