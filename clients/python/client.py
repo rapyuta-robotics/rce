@@ -176,6 +176,10 @@ class Connection(object):
         self._subscribers = {}
         self._responses = {}
     
+    @property
+    def reactor(self):
+        return self._reactor
+    
     def registerConnection(self, conn):
         if self._conn:
             raise AttributeError('There is already a connection registered.')

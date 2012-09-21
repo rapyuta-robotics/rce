@@ -51,8 +51,7 @@ class TestCenter(object):
         self._counter = 0
         self._event = None
         self._pub = None
-        self._str = None
-        self._time = None
+        self._strs = {}
     
     def registerData(self, data):
         self._data = data.size
@@ -78,21 +77,22 @@ class TestCenter(object):
         if self._counter >= len(self._data):
             self._event.set()
         else:
-            self._str = ''.join(random.choice(string.lowercase)
-                                for _ in xrange(self._data[self._counter]))
-            self._time = time.time()
-            self._pub.publish(self._str)
+            s = ''.join(random.choice(string.lowercase)
+                        for _ in xrange(self._data[self._counter]))
+            start = time.time()
+            self._pub.publish(s)
+            self._strs[s] = start
     
     def _resp(self, msg):
-        end = time.time()
+        stop = time.time()
         
         if not self._pub:
             return
         
-        if self._str != msg.data:
+        if msg.data not in self._strs:
             self._times.append(-1)
         else:
-            self._times.append((time.time()-self._time)*1000)
+            self._times.append((stop-self._strs[msg.data])*1000)
         
         self._counter += 1
         self._req()
