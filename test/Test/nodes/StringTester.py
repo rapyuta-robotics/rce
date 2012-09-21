@@ -61,7 +61,13 @@ class TestCenter(object):
     
     def _runService(self, name):
         name = '{0}Service'.format(name)
-        rospy.wait_for_service(name, timeout=5)
+        
+        try:
+            rospy.wait_for_service(name, timeout=5)
+        except rospy.ROSException:
+            return [-1.0]*len(self._data)
+        
+        times = []
         
         serviceFunc = rospy.ServiceProxy(name, StringEcho)
         
@@ -72,9 +78,11 @@ class TestCenter(object):
             end = time.time()
             
             if response.data != s:
-                self._times.append(-1)
+                times.append(-1)
             else:
-                self._times.append((end-start)*1000)
+                times.append((end-start)*1000)
+        
+        return times
     
     def _req(self):
         if self._counter >= len(self._data):
@@ -83,7 +91,7 @@ class TestCenter(object):
             self._str = ''.join(random.choice(string.lowercase)
                                 for _ in xrange(self._data[self._counter]))
             self._time = time.time()
-            self._pub.publish(s)
+            self._pub.publish(self._str)
     
     def _resp(self, msg):
         stop = time.time()
@@ -99,28 +107,31 @@ class TestCenter(object):
     
     def _runTopic(self, name):
         self._counter = 0
+        self._times = []
         self._event = Event()
         self._pub = rospy.Publisher('{0}Req'.format(name), String, latch=True)
         rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
         self._req()
         
-        if not self._event.wait(self.TIMEOUT):
-            self._times = [-1.0]*len(self._sizes)
+        if (not self._event.wait(self.TIMEOUT) or
+                len(self._times) != len(self._data)):
+            times = [-1.0]*len(self._data)
+        else:
+            times = self._times[:]
         
         self._pub = None
+        return times
     
     def runTest(self, req):
         test = req.testType
         name = req.testName
         
-        self._times = []
-        
         if test == 'service':
-            self._runService(name)
+            times = self._runService(name)
         elif test == 'topic':
-            self._runTopic(name)
+            times = self._runTopic(name)
         
-        return self._data, self._times
+        return self._data, times
 
 def string_tester_server():
     rospy.init_node('stringTesterNode')
