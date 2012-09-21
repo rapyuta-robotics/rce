@@ -373,7 +373,8 @@ class Connection(object):
             
             deferred.callback(msg)
         else:
-            for subscriber in self._subscribers.get(dataMsg['orig'], []).copy():
+            for subscriber in self._subscribers.get(dataMsg['orig'],
+                                                    set()).copy():
                 subscriber.callback(msgType, msg)
     
     def receivedMessage(self, msg):

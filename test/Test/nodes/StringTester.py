@@ -86,6 +86,9 @@ class TestCenter(object):
     def _resp(self, msg):
         end = time.time()
         
+        if not self._pub:
+            return
+        
         if self._str != msg.data:
             self._times.append(-1)
         else:
@@ -101,6 +104,7 @@ class TestCenter(object):
         rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
         self._req()
         self._event.wait()
+        self._pub = None
     
     def runTest(self, req):
         test = req.testType
