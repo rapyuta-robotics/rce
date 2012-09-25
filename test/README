@@ -1,0 +1,16 @@
+Barcode
+=======
+
+Dependencies:
+  1) zbar library - http://zbar.sourceforge.net
+     with Python module - http://pypi.python.org/pypi/zbar
+	Options for zbar library:
+	  --disable-video
+	  --without-jpeg
+	  --without-imagemagick
+	  --without-python
+	  --without-gtk
+	  --without-qt
+  
+  2) Google API python client - http://code.google.com/p/google-api-python-client/
+
