@@ -1,4 +1,7 @@
 *~
 *.pyc
 *.so
-framework/settings.py
+*/.settings/
+*/.project
+*/.pydevproject
+*/.cproject
