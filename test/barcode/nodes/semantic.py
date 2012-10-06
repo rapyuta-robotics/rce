@@ -79,12 +79,6 @@ _WEIGHTS = { 'product' : 1,
 _ARTIFACT = wordnet.synset('artifact.n.01')
 
 
-class LSOError(Exception):
-    """ General Exception in connection with LSO.
-    """
-    pass
-
-
 class SynsetPair(object):
     """ This class is used for the Term Frequency analysis.
     """
