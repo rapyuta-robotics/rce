@@ -3,7 +3,7 @@
 #     
 #     benchmark.py
 #     
-#     This file is part of the RoboEarth Cloud Engine framework.
+#     This file is part of the RoboEarth Cloud Engine benchmark.
 #     
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
@@ -30,35 +30,155 @@
 #     
 #     
 
-import sys
-import os.path
 import time
-from StringIO import StringIO
-
-import sensor_msgs.msg
+import random
+import string
+import json
 
 from twisted.internet.defer import Deferred
 
-from client import Connection
-from util.loader import Loader
-from util.converter import Converter
-from util.converters.image import ImageConverter
+import sys
+sys.path.append('../pyrce')
 
+from connection import Connection
+
+
+class TestBase(object):
+    def __init__(self, conn, name, style, color):
+        self._conn = conn
+        self._name = name
+        self._style = style
+        self._color = color
+        
+        self._deferred = []
+        self._data = []
+    
+    def registerDeferred(self, d):
+        self._deferred.append(d)
+    
+    def run(self, _):
+        print('Run test: {0}'.format(self._name))
+        self._conn.reactor.callLater(2, self._run)
+    
+    def _run(self):
+        raise NotImplementedError('Test has to implement this method.')
+    
+    def __str__(self):
+        return json.dumps({'label' : self._name, 'linestyle' : self._style,
+                           'color' : self._color, 'data' : self._data})
+
+
+class RemoteTest(TestBase):
+    def __init__(self, conn, name, style, color, testType, testName):
+        super(RemoteTest, self).__init__(conn, name, style, color)
+        
+        self._testType = testType
+        self._testName = testName
+    
+    def _run(self):
+        self._conn.callService('testConv', 'Test/StringTest',
+                               {'testType' : self._testType,
+                                'testName' : self._testName},
+                               self._process)
+    
+    def _process(self, msg):
+        self._data.append(msg['times'])
+        self._deferred.pop(0).callback(None)
+
+
+class LocalTest(TestBase):
+    def __init__(self, conn, name, style, color, sizes):
+        super(LocalTest, self).__init__(conn, name, style, color)
+        
+        self._sizes = sizes
+    
+    def _run(self):
+        self._data.append([])
+        self._req()
+    
+    def _resp(self, resp):
+        stop = time.time()
+        
+        if self._str != resp['data']:
+            delta = -1
+        else:
+            delta = (stop-self._time)*1000
+        
+        self._data[-1].append(delta)
+        self._req()
+
+
+class LocalServiceTest(LocalTest):
+    def _req(self):
+        count = len(self._data[-1])
+        
+        if count >= len(self._sizes):
+            self._deferred.pop(0).callback(None)
+            return
+        
+        self._str = ''.join(random.choice(string.lowercase)
+                            for _ in xrange(self._sizes[count]))
+        
+        self._time = time.time()
+        self._conn.callService('testStringSrvConv', 'Test/StringEcho',
+                               {'data' : self._str}, self._resp)
+
+
+class LocalTopicTest(LocalTest):
+    def run(self, deferred):
+        self._sub = self._conn.subscribe('testStringTopicRespConv',
+                                         'std_msgs/String', self._resp)
+        
+        super(LocalTopicTest, self).run(deferred)
+    
+    def _req(self):
+        count = len(self._data[-1])
+        
+        if len(self._data[-1]) >= len(self._sizes):
+            self._sub.unsubscribe()
+            self._deferred.pop(0).callback(None)
+            return
+        
+        self._str = ''.join(random.choice(string.lowercase)
+                            for _ in xrange(self._sizes[count]))
+        
+        self._time = time.time()
+        self._conn.publish('testStringTopicReqConv', 'std_msgs/String',
+                           {'data' : self._str})
+    
 
 class Benchmark(object):
-    def __init__(self, conn, reactor):
+    TYPES = [('service', 'red'), ('topic', 'blue')]
+    REMOTE_TESTS = [('N-to-N', ':', 'stringEcho'), ('C-to-C-1', '--', 'local'),
+                    ('C-to-C-2', '-', 'remote')]
+    LOCAL_TEST = ('R-to-C', '-.', '')
+    
+    
+    def __init__(self, runs, conn, reactor):
+        self._runs = runs
+        self._sizes = [3, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000]
+        
         self._conn = conn
         self._reactor = reactor
         
-        self._imgNames = []
-        self._imgs = []
-        self._counter = 0
-        self._time = None
+        self._tests = []
         
-        self._state = 0
-        self._desc = ['inside container', 'inside machine', 'inside RCE',
-                      'outside']
-        self._testNames = ['imageEcho', 'local', 'remote']
+        for testType, color in self.TYPES:
+            for name, style, testName in self.REMOTE_TESTS:
+                self._tests.append(RemoteTest(conn,
+                                              '{0} {1}'.format(testType, name),
+                                              style, color, testType, testName))
+            
+            if testType == 'service':
+                cls = LocalServiceTest
+            elif testType == 'topic':
+                cls = LocalTopicTest
+            else:
+                raise ValueError('Test type is invalid.')
+            
+            self._tests.append(
+                cls(conn, '{0} {1}'.format(testType, self.LOCAL_TEST[0]),
+                    self.LOCAL_TEST[1], color, self._sizes))
     
     def run(self, _):
         print('Create containers...')
@@ -72,144 +192,161 @@ class Benchmark(object):
         print('Setup environments...')
         
         for cTag in ['m1c1', 'm2c1', 'm1c2']:
-            self._conn.addNode(cTag, 'imgEcho', 'Test', 'ImageTest.py', '')
+            self._conn.addNode(cTag, 'strEcho', 'Test', 'StringEcho.py', '')
         
-        self._conn.addNode('m1c1', 'imgTester', 'Test', 'ImageTester.py', '')
+        self._conn.addNode('m1c1', 'strTester', 'Test', 'StringTester.py', '')
         
-        self._conn.addInterface('testRobot', 'testrunConv',
-                                'ServiceProviderConverter', 'Test/Testrun', '')
-        self._conn.addInterface('m1c1', 'testrunInrfc', 'ServiceInterface',
-                                'Test/Testrun', 'imageTest')
-        self._conn.addConnection('testrunConv', 'testrunInrfc')
-        
-        self._conn.addInterface('m1c2', 'testLocalRecv', 'ServiceInterface',
-                                'Test/ImgEcho', 'imageEcho')
-        self._conn.addInterface('m1c1', 'testLocalSend',
-                                'ServiceProviderInterface', 'Test/ImgEcho',
-                                self._testNames[1])
-        self._conn.addConnection('testLocalRecv', 'testLocalSend')
-        
-        self._conn.addInterface('m2c1', 'testRemoteRecv', 'ServiceInterface',
-                                'Test/ImgEcho', 'imageEcho')
-        self._conn.addInterface('m1c1', 'testRemoteSend',
-                                'ServiceProviderInterface', 'Test/ImgEcho',
-                                self._testNames[2])
-        self._conn.addConnection('testRemoteRecv', 'testRemoteSend')
-        
-        self._conn.addInterface('testRobot', 'testImageConv',
-                                'ServiceProviderConverter', 'Test/ImgEcho', '')
-        self._conn.addInterface('m1c1', 'testImageInrfc', 'ServiceInterface',
-                                'Test/ImgEcho', 'imageEcho')
-        self._conn.addConnection('testImageConv', 'testImageInrfc')
+        # Connections Robot - StringTester
+        self._conn.addInterface('testRobot', 'testConv',
+                                'ServiceProviderConverter', 'Test/StringTest',
+                                '')
+        self._conn.addInterface('m1c1', 'testInrfc', 'ServiceInterface',
+                                'Test/StringTest', 'stringTest')
+        self._conn.addConnection('testConv', 'testInrfc')
         
         self._conn.addInterface('testRobot', 'testDataConv',
-                                'SubscriberConverter', 'Test/TestData', '')
+                                'SubscriberConverter', 'Test/StringData', '')
         self._conn.addInterface('m1c1', 'testDataInrfc', 'PublisherInterface',
-                                'Test/TestData', 'imageData')
+                                'Test/StringData', 'stringData')
         self._conn.addConnection('testDataConv', 'testDataInrfc')
         
-        self._reactor.callLater(2, self._load)
+        # Connections StringTester - StringEcho (service)
+        self._conn.addInterface('m1c2', 'testLocalSrvRecv', 'ServiceInterface',
+                                'Test/StringEcho', 'stringEchoService')
+        self._conn.addInterface('m1c1', 'testLocalSrvSend',
+                                'ServiceProviderInterface', 'Test/StringEcho',
+                                'localService')
+        self._conn.addConnection('testLocalSrvRecv', 'testLocalSrvSend')
+        
+        self._conn.addInterface('m2c1', 'testRemoteSrvRecv', 'ServiceInterface',
+                                'Test/StringEcho', 'stringEchoService')
+        self._conn.addInterface('m1c1', 'testRemoteSrvSend',
+                                'ServiceProviderInterface', 'Test/StringEcho',
+                                'remoteService')
+        self._conn.addConnection('testRemoteSrvRecv', 'testRemoteSrvSend')
+        
+        # Connections StringTester - StringEcho (topic)
+        self._conn.addInterface('m1c1', 'testLocalRespSend',
+                                'PublisherInterface', 'std_msgs/String',
+                                'stringEchoResp')
+        
+        self._conn.addInterface('m1c2', 'testLocalRespRecv',
+                                'SubscriberInterface', 'std_msgs/String',
+                                'stringEchoResp')
+        self._conn.addConnection('testLocalRespRecv', 'testLocalRespSend')
+        
+        self._conn.addInterface('m2c1', 'testRemoteRespRecv',
+                                'SubscriberInterface', 'std_msgs/String',
+                                'stringEchoResp')
+        self._conn.addConnection('testRemoteRespRecv', 'testLocalRespSend')
+        
+        self._conn.addInterface('m1c2', 'testLocalReqSend',
+                                'PublisherInterface', 'std_msgs/String',
+                                'stringEchoReq')
+        self._conn.addInterface('m1c1', 'testLocalReqRecv',
+                                'SubscriberInterface', 'std_msgs/String',
+                                'localReq')
+        self._conn.addConnection('testLocalReqRecv', 'testLocalReqSend')
+        
+        self._conn.addInterface('m2c1', 'testRemoteReqSend',
+                                'PublisherInterface', 'std_msgs/String',
+                                'stringEchoReq')
+        self._conn.addInterface('m1c1', 'testRemoteReqRecv',
+                                'SubscriberInterface', 'std_msgs/String',
+                                'remoteReq')
+        self._conn.addConnection('testRemoteReqRecv', 'testRemoteReqSend')
+        
+        # Connections Robot - StringEcho (service)
+        self._conn.addInterface('testRobot', 'testStringSrvConv',
+                                'ServiceProviderConverter', 'Test/StringEcho',
+                                '')
+        self._conn.addInterface('m1c1', 'testStringSrvInrfc',
+                                'ServiceInterface', 'Test/StringEcho',
+                                'stringEchoService')
+        self._conn.addConnection('testStringSrvConv', 'testStringSrvInrfc')
+        
+        # Connections Robot - StringEcho (topic)
+        self._conn.addInterface('testRobot', 'testStringTopicReqConv',
+                                'SubscriberConverter', 'std_msgs/String',
+                                '')
+        self._conn.addConnection('testLocalReqSend',
+                                 'testStringTopicReqConv')
+        
+        self._conn.addInterface('testRobot', 'testStringTopicRespConv',
+                                'PublisherConverter', 'std_msgs/String',
+                                '')
+        self._conn.addConnection('testLocalRespRecv',
+                                 'testStringTopicRespConv')
+        
+        self._reactor.callLater(5, self._load)
     
     def _load(self):
-        for nr in [10, 20, 30, 40, 50, 60, 70, 80, 90, 99]:
-            name = 'logo_{:03}.png'.format(nr)
-            img = StringIO()
+        self._conn.publish('testDataConv', 'Test/StringData',
+                           {'size' : self._sizes})
+        
+        if self._tests:
+            self._reactor.callLater(2, self._run)
+    
+    def _run(self):
+        if not self._tests:
+            return
+        
+        i = 0
+        d = Deferred()
+        
+        while i < self._runs:
+            for test in self._tests:
+                d.addCallback(test.run)
+                d = Deferred()
+                test.registerDeferred(d)
             
-            with open(name, 'r') as f:
-                img.write(f.read())
+            i += 1
             
-            self._imgNames.append(name)
-            self._imgs.append(img)
+            if i >= self._runs:
+                d.addCallback(self._processData)
         
-        self._conn.publish('testDataConv', 'Test/TestData',
-                           {'imgNames' : self._imgNames, 'imgs' : self._imgs})
-        
-        self._reactor.callLater(2, self._sendReq)
+        self._tests[0].run(None)
     
-    def _sendReq(self):
-        print('\nStart benchmark part {0} '
-              '({1}).'.format(self._state+1, self._desc[self._state]))
+    def _processData(self, _):
+        with open('benchmark.data', 'w') as f:
+            f.write(json.dumps(self._sizes))
+            f.write('\n')
+            f.write('\n'.join(str(test) for test in self._tests))
         
-        self._conn.callService('testrunConv', 'Test/Testrun',
-                               {'testName' : self._testNames[self._state]},
-                               self._gotResp)
-    
-    def _gotResp(self, resp):
-        print('Benchmark results part {0} '
-              '({1}):'.format(self._state+1, self._desc[self._state]))
+        for cTag in ['m1c1', 'm2c1', 'm1c2']:
+            self._conn.destroyContainer(cTag)
         
-        for name, time in zip(resp['imgNames'], resp['times']):
-            print('\t{0}: {1:>8.03f} [ms]'.format(name, time*1000))
-        
-        self._state += 1
-        
-        if self._state == len(self._testNames):
-            self._outsideReq()
-        else:
-            self._sendReq()
-    
-    def _outsideReq(self):
-        if not self._counter:
-            print('\nStart benchmark part {0} '
-                  '({1}).'.format(self._state+1, self._desc[self._state]))
-        
-        self._time = time.time()
-        self._conn.callService('testImageConv', 'Test/ImgEcho',
-                               {'img' : self._imgs[self._counter]},
-                               self._outsideResp)
-    
-    def _outsideResp(self, resp):
-        stop = time.time()
-        
-        if not self._counter:
-            print('Benchmark results part {0} '
-                  '({1}):'.format(self._state+1, self._desc[self._state]))
-        
-        print('\t{0}: {1:>8.03f} [ms]'.format(self._imgNames[self._counter],
-                                              (stop-self._time)*1000))
-        
-        self._counter += 1
-        
-        if self._counter < len(self._imgs):
-            self._outsideReq()
-        else:
-            self._conversion()
-    
-    def _conversion(self):
-        l = Loader()
-        c = Converter(l)
-        c.addCustomConverter(ImageConverter)
-        
-        print('\nBenchmark results part {0} '
-              '(PNG <-> ROS Message converter):'.format(self._state+1))
-        
-        for img, name in zip(self._imgs, self._imgNames):
-            start = time.time()
-            ros = c.decode(sensor_msgs.msg.Image, img)
-            im = c.encode(ros)
-            stop = time.time()
-            
-            print('\t{0}: {1:>8.03f} [ms]'.format(name, (stop-start)*1000))
-        
+        self._reactor.callLater(2, self._reactor.stop)
         print('\ndone')
 
 
-def main():
-    h = 'Usage: {0} [ipMaster]'.format(os.path.basename(sys.argv[0]))
+def _get_argparse():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(prog='benchmark',
+                            description='Run communication benchmark using a '
+                                        'string message for RCE.')
+
+    parser.add_argument('passes', help='Number of passes which should be made.',
+                        type=int)
+    parser.add_argument('ipMaster', help='IP address of master process.',
+                        type=str)
+
+    return parser
     
-    if len(sys.argv) != 2:
-        print(h)
-        return
+
+def main():
+    args = _get_argparse().parse_args()
     
     from twisted.internet import reactor
     
     connection = Connection('testUser', 'testRobot', reactor)
-    benchmark = Benchmark(connection, reactor)
+    benchmark = Benchmark(args.passes, connection, reactor)
     
     print('Connect...')
     deferred = Deferred()
     deferred.addCallback(benchmark.run)
-    connection.connect('ws://{0}:9000/'.format(sys.argv[1]), deferred)
+    connection.connect('ws://{0}:9000/'.format(args.ipMaster), deferred)
     
     reactor.run()
 

@@ -689,6 +689,38 @@ class SubscriberConverterCommand(_EndpointInterfaceCommand):
     IDENTIFIER = types.CONVERTER_SUB
 
 
+class ServiceForwarderCommand(_EndpointInterfaceCommand):
+    """ Class which represents a service forwarder command.
+    """
+    implements(IEndpointConverterCommand)
+    
+    IDENTIFIER = types.FORWARDER_SRV
+
+
+class ServiceProviderForwarderCommand(_EndpointInterfaceCommand):
+    """ Class which represents a service-provider forwarder command.
+    """
+    implements(IEndpointConverterCommand)
+    
+    IDENTIFIER = types.FORWARDER_PRO
+
+
+class PublisherForwarderCommand(_EndpointInterfaceCommand):
+    """ Class which represents a publisher forwarder command.
+    """
+    implements(IEndpointConverterCommand)
+    
+    IDENTIFIER = types.FORWARDER_PUB
+
+
+class SubscriberForwarderCommand(_EndpointInterfaceCommand):
+    """ Class which represents a subscriber forwarder command.
+    """
+    implements(IEndpointConverterCommand)
+    
+    IDENTIFIER = types.FORWARDER_SUB
+
+
 class ConnectionCommand(object):
     """ Class which represents a connection command.
     """

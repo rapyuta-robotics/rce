@@ -37,9 +37,16 @@ from threading import Event, Lock
 from uuid import uuid4
 
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO, InputType, OutputType
+    from StringIO import StringIO as pyStringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, (InputType, OutputType, pyStringIO))
 except ImportError:
     from StringIO import StringIO
+    
+    def _checkIsStringIO(obj):
+        return isinstance(obj, StringIO)
 
 # ROS specific imports
 import rospy
@@ -611,7 +618,7 @@ class ServiceProviderMonitor(_InterfaceMonitor):
         event.wait()
         
         with self._pendingLock:
-            response = self._pending.pop(msgID)
+            response = self._pending.pop(msgID, None)
         
         if not isinstance(response, genpy.message.Message):
             raise Exception('Interrupted.') # TODO: Change exception?
@@ -866,3 +873,100 @@ class SubscriberConverter(_ConverterMonitor):
                                  'from pkg/msg, i.e. std_msgs/Int8.')
         
         self._inputMsgCls = loader.loadMsg(*args)
+
+
+class _ForwarderMonitor(_EndpointInterfaceMonitor):
+    """ Base class which is used to handle and monitor a forwarder.
+    """
+    def __init__(self, manager, userID, converter):
+        """ Initialize the Forwarder monitor.
+            
+            @param manager:     Manager which is used in this node and
+                                implements necessary callback.
+            @type  manager:     core.manager._RobotManager
+            
+            @param userID:      User ID of the interface owner.
+            @type  userID:      str
+            
+            @param converter:   Converter instance which describes converter
+                                which should be monitored.
+            @type  converter:   core.interfaces.IEndpointConverterCommand
+            
+            @raise:     util.interfaces.InterfaceError
+        """
+        verifyObject(IEndpointConverterCommand, converter)
+        
+        super(_ConverterMonitor, self).__init__(userID, converter.tag)
+        
+        self._msgType = converter.msgType
+        self._robotID = converter.endpointID
+        self._converter = manager.converter
+        self._manager = manager
+    
+    def receive(self, msgType, msgID, msg):
+        """ Convert a JSON encoded message into a ROS message.
+            
+            @param msgType:     Message type of the received message.
+            @type  msgType:     str
+            
+            @param msgID:       Identifier which is used to match request /
+                                response message.
+            @type  msgID:       str
+            
+            @param msg:         JSON compatible message which should be
+                                processed.
+            @type  msg:         dict
+            
+            @raise:         erors.InvalidRequest if the message can not be
+                            forwarded the message due to an invalid format
+        """
+        if msgType != self._msgType:
+            raise InvalidRequest('Sent message type does not match the used '
+                                 'message type for this interface.')
+        
+        if not _checkIsStringIO(msg):
+            raise InvalidRequest('Sent message is not a binary message.')
+        
+        for commID, target in self._conn:
+            self._manager.send(self._userID, target, commID, self._tag,
+                               msg.getvalue(), msgID)
+    
+    def _send(self, msg, msgID, _):
+        """ Convert a ROS message into a JSON encoded message.
+            
+            @param msg:     Received ROS message in serialized form.
+            @type  msg:     str
+            
+            @param msgID:   Unique ID to identify the message.
+            @type  msgID:   str
+        """
+        buf = StringIO()
+        buf.write(msg)
+        
+        self._manager.sendToClient(self._userID, self._robotID,
+            { 'dest' : self._robotID, 'orig' : self._tag,
+              'type' : self._msgType, 'msgID' : msgID, 'msg' : buf })
+
+
+class ServiceForwarder(_ForwarderMonitor):
+    """ Class which is used to handle and monitor a Service Converter.
+    """
+    IDENTIFIER = types.FORWARDER_SRV
+
+
+class ServiceProviderForwarder(_ForwarderMonitor):
+    """ Class which is used to handle and monitor a Service-Provider Converter.
+    """
+    IDENTIFIER = types.FORWARDER_PRO
+
+
+class PublisherForwarder(_ForwarderMonitor):
+    """ Class which is used to handle and monitor a Publisher Converter.
+    """
+    IDENTIFIER = types.FORWARDER_PUB
+
+
+class SubscriberForwarder(_ForwarderMonitor):
+    """ Class which is used to handle and monitor a Subscriber Converter.
+    """
+    IDENTIFIER = types.FORWARDER_SUB

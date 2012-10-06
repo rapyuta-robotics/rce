@@ -38,113 +38,142 @@ from core.command import \
     ServiceInterfaceCommand, ServiceProviderInterfaceCommand, \
     PublisherInterfaceCommand, SubscriberInterfaceCommand, \
     ServiceConverterCommand, ServiceProviderConverterCommand, \
-    PublisherConverterCommand, SubscriberConverterCommand
+    PublisherConverterCommand, SubscriberConverterCommand, \
+    ServiceForwarderCommand, ServiceProviderForwarderCommand, \
+    PublisherForwarderCommand, SubscriberForwarderCommand
 
-class _ServiceInterface(object):
-    """ Contains interface specific stuff.
+
+class _Interface(object):
+    """ Contains interface type specific stuff.
+    """
+    COMMAND = None
+    
+    @classmethod
+    def createContainer(cls, tag, msgType, endpointID, addr):
+        return cls.COMMAND(tag, msgType, endpointID, addr)
+
+
+class _Converter(object):
+    """ Contains interface type specific stuff.
+    """
+    COMMAND = None
+    
+    @classmethod
+    def createContainer(cls, tag, msgType, endpointID, _):
+        return cls.COMMAND(tag, msgType, endpointID, '')
+    
+
+class _Service(object):
+    """ Contains interface type specific stuff.
     """
     NUMBER_OF_CONNECTIONS = 1
     
     @staticmethod
-    def createContainer(tag, msgType, endpointID, addr):
-        return ServiceInterfaceCommand(tag, msgType, endpointID, addr)
-    
-    @staticmethod
     def validConnection(otherCls):
-        return otherCls in [_ServiceProviderInterface,
-                            _ServiceProviderConverter]
+        return issubclass(otherCls, _ServiceProvider)
 
-class _ServiceProviderInterface(object):
-    """ Contains interface specific stuff.
+
+class _ServiceProvider(object):
+    """ Contains interface type specific stuff.
     """
     NUMBER_OF_CONNECTIONS = 1
     
     @staticmethod
-    def createContainer(tag, msgType, endpointID, addr):
-        return ServiceProviderInterfaceCommand(tag, msgType, endpointID, addr)
-    
-    @staticmethod
     def validConnection(otherCls):
-        return otherCls in [_ServiceInterface, _ServiceConverter]
+        return issubclass(otherCls, _Service)
 
-class _PublisherInterface(object):
-    """ Contains interface specific stuff.
+
+class _Publisher(object):
+    """ Contains interface type specific stuff.
     """
     NUMBER_OF_CONNECTIONS = None
     
     @staticmethod
-    def createContainer(tag, msgType, endpointID, addr):
-        return PublisherInterfaceCommand(tag, msgType, endpointID, addr)
-    
-    @staticmethod
     def validConnection(otherCls):
-        return otherCls in [_SubscriberInterface, _SubscriberConverter]
+        return issubclass(otherCls, _Subscriber)
 
-class _SubscriberInterface(object):
-    """ Contains interface specific stuff.
+
+class _Subscriber(object):
+    """ Contains interface type specific stuff.
     """
     NUMBER_OF_CONNECTIONS = None
     
     @staticmethod
-    def createContainer(tag, msgType, endpointID, addr):
-        return SubscriberInterfaceCommand(tag, msgType, endpointID, addr)
-    
-    @staticmethod
     def validConnection(otherCls):
-        return otherCls in [_PublisherInterface, _PublisherConverter]
+        return issubclass(otherCls, _Publisher)
 
-class _ServiceConverter(object):
+
+class _ServiceInterface(_Interface, _Service):
     """ Contains interface specific stuff.
     """
-    NUMBER_OF_CONNECTIONS = 1
-    
-    @staticmethod
-    def createContainer(tag, msgType, endpointID, _):
-        return ServiceConverterCommand(tag, msgType, endpointID, '')
-    
-    @staticmethod
-    def validConnection(otherCls):
-        return otherCls in [_ServiceProviderInterface,
-                            _ServiceProviderConverter]
+    COMMAND = ServiceInterfaceCommand
 
-class _ServiceProviderConverter(object):
+
+class _ServiceProviderInterface(_Interface, _ServiceProvider):
     """ Contains interface specific stuff.
     """
-    NUMBER_OF_CONNECTIONS = 1
+    COMMAND = ServiceProviderInterfaceCommand
     
-    @staticmethod
-    def createContainer(tag, msgType, endpointID, _):
-        return ServiceProviderConverterCommand(tag, msgType, endpointID, '')
-    
-    @staticmethod
-    def validConnection(otherCls):
-        return otherCls in [_ServiceInterface, _ServiceConverter]
 
-class _PublisherConverter(object):
+class _PublisherInterface(_Interface, _Publisher):
     """ Contains interface specific stuff.
     """
-    NUMBER_OF_CONNECTIONS = None
-    
-    @staticmethod
-    def createContainer(tag, msgType, endpointID, _):
-        return PublisherConverterCommand(tag, msgType, endpointID, '')
-    
-    @staticmethod
-    def validConnection(otherCls):
-        return otherCls in [_SubscriberInterface, _SubscriberConverter]
+    COMMAND = PublisherInterfaceCommand
 
-class _SubscriberConverter(object):
+
+class _SubscriberInterface(_Interface, _Subscriber):
     """ Contains interface specific stuff.
     """
-    NUMBER_OF_CONNECTIONS = None
-    
-    @staticmethod
-    def createContainer(tag, msgType, endpointID, _):
-        return SubscriberConverterCommand(tag, msgType, endpointID, '')
-    
-    @staticmethod
-    def validConnection(otherCls):
-        return otherCls in [_PublisherInterface, _PublisherConverter]
+    COMMAND = SubscriberInterfaceCommand
+
+
+class _ServiceConverter(_Converter, _Service):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceConverterCommand
+
+
+class _ServiceProviderConverter(_Converter, _ServiceProvider):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceProviderConverterCommand
+
+
+class _PublisherConverter(_Converter, _Publisher):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = PublisherConverterCommand
+
+
+class _SubscriberConverter(_Converter, _Subscriber):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = SubscriberConverterCommand
+
+
+class _ServiceForwarder(_Converter, _Service):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceForwarderCommand
+
+
+class _ServiceProviderForwarder(_Converter, _ServiceProvider):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceProviderForwarderCommand
+
+
+class _PublisherForwarder(_Converter, _Publisher):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = PublisherForwarderCommand
+
+
+class _SubscriberForwarder(_Converter, _Subscriber):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = SubscriberForwarderCommand
+
 
 class Interface(object):
     """ Class which represents an interface. It is associated with an endpoint.
@@ -156,7 +185,11 @@ class Interface(object):
              'ServiceConverter'         : _ServiceConverter,
              'ServiceProviderConverter' : _ServiceProviderConverter,
              'PublisherConverter'       : _PublisherConverter,
-             'SubscriberConverter'      : _SubscriberConverter }
+             'SubscriberConverter'      : _SubscriberConverter,
+             'ServiceForwarder'         : _ServiceForwarder,
+             'ServiceProviderForwarder' : _ServiceProviderForwarder,
+             'PublisherForwarder'       : _PublisherForwarder,
+             'SubscriberForwarder'      : _SubscriberForwarder }
     
     def __init__(self, endpoint, tag, iType, msgType, rosAddr=None):
         """ Initialize the Interface.
@@ -176,7 +209,7 @@ class Interface(object):
             @type  msgType:     str
             
             @param rosAddr:     Address which is used for the interface in the
-                                ROS environment, i.e. '/namespace/interace';
+                                ROS environment, i.e. '/namespace/interface';
                                 only necessary if it is a ROS environment
                                 interface.
             @type  rosAddr:     str / None

@@ -43,9 +43,12 @@ from core.manager import RelayManager, RobotManager
 from core.command import ControlDistributor, RobotCommand, \
     ServiceConverterCommand, ServiceProviderConverterCommand, \
     PublisherConverterCommand, SubscriberConverterCommand, \
+    ServiceForwarderCommand, ServiceProviderForwarderCommand, \
+    PublisherForwarderCommand, SubscriberForwarderCommand, \
     ConnectionCommand
 from core.monitor import ServiceConverter, ServiceProviderConverter, \
-    PublisherConverter, SubscriberConverter
+    PublisherConverter, SubscriberConverter, ServiceForwarder, \
+    ServiceProviderForwarder, PublisherForwarder, SubscriberForwarder
 from comm import definition
 from comm import types as msgTypes
 from comm.manager import CommManager
@@ -68,7 +71,15 @@ _CONVERTER = ((types.CONVERTER_SRV, ServiceConverterCommand,
               (types.CONVERTER_PUB, PublisherConverterCommand,
                PublisherConverter),
               (types.CONVERTER_SUB, SubscriberConverterCommand,
-               SubscriberConverter))
+               SubscriberConverter),
+              (types.FORWARDER_SRV, ServiceForwarderCommand,
+               ServiceForwarder),
+              (types.FORWARDER_PRO, ServiceProviderForwarderCommand,
+               ServiceProviderForwarder),
+              (types.FORWARDER_PUB, PublisherForwarderCommand,
+               PublisherForwarder),
+              (types.FORWARDER_SUB, SubscriberForwarderCommand,
+               SubscriberForwarder))
 
 
 class User(object):

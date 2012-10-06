@@ -1,0 +1,5 @@
+Dependency:
+    boost library >= 1.xx
+    
+    - successfully compiled and linked with 1.51
+    - default boost library 1.46 of ubuntu 11.10 is insufficient

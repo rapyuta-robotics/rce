@@ -60,6 +60,11 @@
         Q   PublisherConverter
         D   SubscriberConverter
         
+        U   ServiceForwarder
+        M   ServiceProviderForwarder
+        O   PublisherForwarder
+        E   SubscriberForwarder
+        
         Z   Connection
 """
 
@@ -89,5 +94,10 @@ CONVERTER_SRV = 'W'
 CONVERTER_PRO = 'L'
 CONVERTER_PUB = 'Q'
 CONVERTER_SUB = 'D'
+
+FORWARDER_SRV = 'U'
+FORWARDER_PRO = 'M'
+FORWARDER_PUB = 'O'
+FORWARDER_SUB = 'E'
 
 CONNECTION = 'Z'
