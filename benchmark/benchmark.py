@@ -56,12 +56,23 @@ class TestBase(object):
     def registerDeferred(self, d):
         self._deferred.append(d)
     
-    def run(self, _):
-        print('Run test: {0}'.format(self._name))
-        self._conn.reactor.callLater(2, self._run)
+    def _activate(self):
+        raise NotImplementedError('Test has to implement this method.')
+    
+    def _deactivate(self):
+        raise NotImplementedError('Test has to implement this method.')
     
     def _run(self):
         raise NotImplementedError('Test has to implement this method.')
+    
+    def run(self, _):
+        print('Run test: {0}'.format(self._name))
+        self._conn.reactor.callLater(1, self._activate)
+        self._conn.reactor.callLater(2, self._run)
+    
+    def _done(self):
+        self._deactivate()
+        self._deferred.pop(0).callback(None)
     
     def __str__(self):
         return json.dumps({'label' : self._name, 'linestyle' : self._style,
@@ -74,16 +85,23 @@ class RemoteTest(TestBase):
         
         self._testType = testType
         self._testName = testName
+        
+        self._srv = None
+    
+    def _activate(self):
+        self._srv = self._conn.service('testConv', 'Test/StringTest',
+                                       self._process)
+    
+    def _deactivate(self):
+        self._srv = None
     
     def _run(self):
-        self._conn.callService('testConv', 'Test/StringTest',
-                               {'testType' : self._testType,
-                                'testName' : self._testName},
-                               self._process)
+        self._srv.call({'testType' : self._testType,
+                        'testName' : self._testName})
     
     def _process(self, msg):
         self._data.append(msg['times'])
-        self._deferred.pop(0).callback(None)
+        self._done()
 
 
 class LocalTest(TestBase):
@@ -109,42 +127,62 @@ class LocalTest(TestBase):
 
 
 class LocalServiceTest(LocalTest):
+    def __init__(self, conn, name, style, color, sizes):
+        super(LocalServiceTest, self).__init__(conn, name, style, color, sizes)
+        
+        self._srv = None
+    
+    def _activate(self):
+        self._srv = self._conn.service('testStringSrvConv', 'Test/StringEcho',
+                                       self._resp)
+    
+    def _deactivate(self):
+        self._srv = None
+    
     def _req(self):
         count = len(self._data[-1])
         
         if count >= len(self._sizes):
-            self._deferred.pop(0).callback(None)
+            
             return
         
         self._str = ''.join(random.choice(string.lowercase)
                             for _ in xrange(self._sizes[count]))
         
         self._time = time.time()
-        self._conn.callService('testStringSrvConv', 'Test/StringEcho',
-                               {'data' : self._str}, self._resp)
+        self._srv.call({'data' : self._str})
 
 
 class LocalTopicTest(LocalTest):
-    def run(self, deferred):
-        self._sub = self._conn.subscribe('testStringTopicRespConv',
-                                         'std_msgs/String', self._resp)
+    def __init__(self, conn, name, style, color, sizes):
+        super(LocalTopicTest, self).__init__(conn, name, style, color, sizes)
         
-        super(LocalTopicTest, self).run(deferred)
+        self._pub = None
+        self._sub = None
+    
+    def _activate(self):
+        self._pub = self._conn.publisher('testStringTopicReqConv',
+                                         'std_msgs/String')
+        self._sub = self._conn.subscriber('testStringTopicRespConv',
+                                          'std_msgs/String', self._resp)
+    
+    def _deactivate(self):
+        self._pub = None
+        self._sub.unsubscribe()
+        self._sub = None
     
     def _req(self):
         count = len(self._data[-1])
         
         if len(self._data[-1]) >= len(self._sizes):
-            self._sub.unsubscribe()
-            self._deferred.pop(0).callback(None)
+            self._done()
             return
         
         self._str = ''.join(random.choice(string.lowercase)
                             for _ in xrange(self._sizes[count]))
         
         self._time = time.time()
-        self._conn.publish('testStringTopicReqConv', 'std_msgs/String',
-                           {'data' : self._str})
+        self._pub.publish({'data' : self._str})
     
 
 class Benchmark(object):
@@ -156,7 +194,8 @@ class Benchmark(object):
     
     def __init__(self, runs, conn, reactor):
         self._runs = runs
-        self._sizes = [3, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000]
+        self._sizes = [3, 10, 50, 100, 500, 1000, 5000,
+                       10000, 50000, 100000, 500000]
         
         self._conn = conn
         self._reactor = reactor
@@ -166,8 +205,8 @@ class Benchmark(object):
         for testType, color in self.TYPES:
             for name, style, testName in self.REMOTE_TESTS:
                 self._tests.append(RemoteTest(conn,
-                                              '{0} {1}'.format(testType, name),
-                                              style, color, testType, testName))
+                    '{0} {1}'.format(testType, name), style, color, testType,
+                    testName))
             
             if testType == 'service':
                 cls = LocalServiceTest
@@ -218,8 +257,9 @@ class Benchmark(object):
                                 'localService')
         self._conn.addConnection('testLocalSrvRecv', 'testLocalSrvSend')
         
-        self._conn.addInterface('m2c1', 'testRemoteSrvRecv', 'ServiceInterface',
-                                'Test/StringEcho', 'stringEchoService')
+        self._conn.addInterface('m2c1', 'testRemoteSrvRecv',
+                                'ServiceInterface', 'Test/StringEcho',
+                                'stringEchoService')
         self._conn.addInterface('m1c1', 'testRemoteSrvSend',
                                 'ServiceProviderInterface', 'Test/StringEcho',
                                 'remoteService')
@@ -327,7 +367,7 @@ def _get_argparse():
                             description='Run communication benchmark using a '
                                         'string message for RCE.')
 
-    parser.add_argument('passes', help='Number of passes which should be made.',
+    parser.add_argument('passes', help='Number of passes to do.',
                         type=int)
     parser.add_argument('ipMaster', help='IP address of master process.',
                         type=str)
@@ -335,21 +375,21 @@ def _get_argparse():
     return parser
     
 
-def main():
-    args = _get_argparse().parse_args()
-    
-    from twisted.internet import reactor
-    
+def main(reactor, passes, ip):
     connection = Connection('testUser', 'testRobot', reactor)
-    benchmark = Benchmark(args.passes, connection, reactor)
+    benchmark = Benchmark(passes, connection, reactor)
     
     print('Connect...')
     deferred = Deferred()
     deferred.addCallback(benchmark.run)
-    connection.connect('ws://{0}:9000/'.format(args.ipMaster), deferred)
+    connection.connect('ws://{0}:9000/'.format(ip), deferred)
     
     reactor.run()
 
 
 if __name__ == '__main__':
-    main()
+    from twisted.internet import reactor
+    
+    args = _get_argparse().parse_args()
+    
+    main(reactor, args.passes, args.ipMaster)
