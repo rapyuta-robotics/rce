@@ -878,7 +878,7 @@ class SubscriberConverter(_ConverterMonitor):
 class _ForwarderMonitor(_EndpointInterfaceMonitor):
     """ Base class which is used to handle and monitor a forwarder.
     """
-    def __init__(self, manager, userID, converter):
+    def __init__(self, manager, userID, forwarder):
         """ Initialize the Forwarder monitor.
             
             @param manager:     Manager which is used in this node and
@@ -888,19 +888,18 @@ class _ForwarderMonitor(_EndpointInterfaceMonitor):
             @param userID:      User ID of the interface owner.
             @type  userID:      str
             
-            @param converter:   Converter instance which describes converter
+            @param forwarder:   Forwarder instance which describes forwarder
                                 which should be monitored.
-            @type  converter:   core.interfaces.IEndpointConverterCommand
+            @type  forwarder:   core.interfaces.IEndpointConverterCommand
             
             @raise:     util.interfaces.InterfaceError
         """
-        verifyObject(IEndpointConverterCommand, converter)
+        verifyObject(IEndpointConverterCommand, forwarder)
         
-        super(_ConverterMonitor, self).__init__(userID, converter.tag)
+        super(_ForwarderMonitor, self).__init__(userID, forwarder.tag)
         
-        self._msgType = converter.msgType
-        self._robotID = converter.endpointID
-        self._converter = manager.converter
+        self._msgType = forwarder.msgType
+        self._robotID = forwarder.endpointID
         self._manager = manager
     
     def receive(self, msgType, msgID, msg):
