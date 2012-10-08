@@ -77,12 +77,15 @@ class _Subscriber(object):
         self._iTag = iTag
         self._msgType = msgType
         self._cb = cb
+        self._subscribed = True
     
     def unsubscribe(self):
         """ Unsubscribe from Interface. Afterwards no more messages are given
             to the registered callback.
         """
-        self._conn.unregisterInterface(self._iTag, self)
+        if self._subscribed:
+            self._conn.unregisterInterface(self._iTag, self)
+            self._subscribed = False
     
     def callback(self, msgType, msg, _):
         """ Callback for Connection.
@@ -110,10 +113,10 @@ class _Service(object):
         
         self._responses = {}
     
-    def callback(self, msgType, msg, msgID):
+    def callback(self, srvType, msg, msgID):
         """ Callback for Connection.
         """
-        if not msgType == self._msgType:
+        if not srvType == self._srvType:
             raise TypeError('Received unexpected message type.')
         
         deferred = self._responses.pop(msgID, None)

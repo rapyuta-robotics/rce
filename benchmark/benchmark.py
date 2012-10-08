@@ -143,7 +143,7 @@ class LocalServiceTest(LocalTest):
         count = len(self._data[-1])
         
         if count >= len(self._sizes):
-            
+            self._done()
             return
         
         self._str = ''.join(random.choice(string.lowercase)
@@ -231,9 +231,9 @@ class Benchmark(object):
         print('Setup environments...')
         
         for cTag in ['m1c1', 'm2c1', 'm1c2']:
-            self._conn.addNode(cTag, 'strEcho', 'Test', 'StringEcho.py', '')
+            self._conn.addNode(cTag, 'strEcho', 'Test', 'stringEcho.py', '')
         
-        self._conn.addNode('m1c1', 'strTester', 'Test', 'StringTester.py', '')
+        self._conn.addNode('m1c1', 'strTester', 'Test', 'stringTester.py', '')
         
         # Connections Robot - StringTester
         self._conn.addInterface('testRobot', 'testConv',
@@ -321,8 +321,8 @@ class Benchmark(object):
         self._reactor.callLater(5, self._load)
     
     def _load(self):
-        self._conn.publish('testDataConv', 'Test/StringData',
-                           {'size' : self._sizes})
+        self._conn.publisher('testDataConv', 'Test/StringData').publish(
+            {'size' : self._sizes})
         
         if self._tests:
             self._reactor.callLater(2, self._run)

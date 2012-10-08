@@ -299,7 +299,7 @@ class _Connection(object):
         interfaces.discard(interface)
         
         if not interfaces:
-            del self._subscribers[iTag]
+            del self._interfaces[iTag]
     
     def receivedMessage(self, msg):
         """ Callback from RCERobotProtocol.
@@ -334,10 +334,12 @@ class _Connection(object):
             return
         
         try:
-            for interface in self._interfaces[dataMsg['orig']].copy():
-                interface.callback(msgType, msg, msgID)
-        except weakref.ReferenceError:
-            pass
+            interfaces = self._interfaces[dataMsg['orig']].copy()
+        except (KeyError, weakref.ReferenceError):
+            interfaces = []
+        
+        for interface in interfaces:
+            interface.callback(msgType, msg, msgID)
 
 
 class Connection(_Connection):
