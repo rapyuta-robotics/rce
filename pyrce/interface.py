@@ -222,7 +222,7 @@ if HAS_ROS:
                 Publisher.
             """
             rosMsg = rospy.AnyMsg()
-            rosMsg._buff = msg
+            rosMsg._buff = msg.getvalue()
             
             self._pub.publish(rosMsg)
         
@@ -287,7 +287,7 @@ if HAS_ROS:
                 Service as response.
             """
             rosMsg = rospy.AnyMsg()
-            rosMsg._buff = msg
+            rosMsg._buff = msg.getvalue()
             
             with self._pendingLock:
                 self._pending[uid] = rosMsg

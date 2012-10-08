@@ -52,13 +52,52 @@ _MAP = {#'ServiceConverter' : '???',
         'PublisherConverter' : 'subscriber',
         'SubscriberConverter' : 'publisher'}
 
-global rosIF
+
+class Environment(object):
+    def __init__(self, reactor, conn, config):
+        self._reactor = reactor
+        self._conn = conn
+        
+        self._containers = config.get('containers', [])
+        self._nodes = config.get('nodes', [])
+        self._interfaces = config.get('interfaces', [])
+        self._connections = config.get('connections', [])
+        
+        self._ifs = []
+    
+    def run(self, _):
+        for container in self._containers:
+            self._conn.createContainer(**container)
+        
+        for node in self._nodes:
+            self._conn.addNode(**node)
+        
+        for interface in self._interfaces:
+            self._conn.addInterface(**interface)
+        
+        for connection in self._connections:
+            self._conn.addConnection(**connection)
+        
+        for ros in self._interfaces:
+            iType = ros['iType']
+            
+            if iType in _MAP:
+                self._ifs.append(getattr(self._conn, _MAP[iType])(ros['iTag'],
+                                                                  ros['iCls'],
+                                                                  ros['addr']))
+    
+    def terminate(self):
+        for container in self._containers:
+            self._conn.destroyContainer(**container)
+        
+        self._ifs = []
+        
+        self._reactor.callLater(1, self._reactor.callFromThread,
+                                self._reactor.stop)
+        
 
 def main(config, reactor):
-    global rosIF
     rospy.init_node('RCE_ROS_Client')
-    
-    rosIF = []
     
     try:
         userID = config['userID']
@@ -68,55 +107,15 @@ def main(config, reactor):
         print('Configuration is missing the key {0}.'.format(e))
         return 2
     
-    containers = config.get('containers', [])
-    nodes = config.get('nodes', [])
-    interfaces = config.get('interfaces', [])
-    connections = config.get('connections', [])
-    
-    def setup(conn):
-        print('Setup...')
-        global rosIF
-        print(rosIF)
-        for container in containers:
-            conn.createContainer(**container)
-        
-        for node in nodes:
-            conn.addNode(**node)
-        
-        for interface in interfaces:
-            conn.addInterface(**interface)
-        
-        for connection in connections:
-            conn.addConnection(**connection)
-        
-        for ros in interfaces:
-            iType = ros['iType']
-            
-            if iType in _MAP:
-                ifc = getattr(conn, _MAP[iType])(ros['iTag'],
-                                                        ros['iCls'],
-                                                        ros['addr'])
-                print(ifc)
-                rosIF.append(ifc)
-        
-        print(rosIF)
-        print('---')
+    conn = ROSConnection(userID, robotID, reactor)
+    env = Environment(reactor, conn, config)
     
     deferred = Deferred()
-    deferred.addCallback(setup)
+    deferred.addCallback(env.run)
     
-    conn = ROSConnection(userID, robotID, reactor)
     conn.connect(url, deferred)
     
-    def terminate():
-        for container in containers:
-            conn.destroyContainer(**container)
-        global rosIF
-        del rosIF
-        
-        reactor.callLater(1, reactor.callFromThread, reactor.stop)
-    
-    rospy.on_shutdown(terminate)
+    rospy.on_shutdown(env.terminate)
     
     reactor.run(installSignalHandlers=False)
     
