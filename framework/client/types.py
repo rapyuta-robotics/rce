@@ -35,7 +35,6 @@
         IN      Initialize the connection
         
         CC      Create a container
-        CS      Update on container status
         DC      Destroy a container
         
         CN      Change a (ROS) component (Node, Parameter, Interface)
