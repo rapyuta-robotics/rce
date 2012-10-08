@@ -112,7 +112,7 @@ def _get_argparse():
 if __name__ == '__main__':
     args = _get_argparse().parse_args()
     
-    files = ['benchmark.data', 'benchmark_1.data', 'benchmark_plot.data']
+    files = ['benchmark.data']
     
     if args.paper:
         files.append('paper.data')

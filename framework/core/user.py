@@ -282,7 +282,7 @@ class User(object):
             raise InvalidRequest('There exists already an interface '
                                  'with the same tag.')
         
-        if iType.endswith('Converter'):
+        if iType.endswith('Converter') or iType.endswith('Forwarder'):
             try:
                 endpoint = self._robots[destTag]
             except KeyError:

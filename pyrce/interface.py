@@ -83,6 +83,7 @@ class _Subscriber(object):
         """ Unsubscribe from Interface. Afterwards no more messages are given
             to the registered callback.
         """
+        #return
         if self._subscribed:
             self._conn.unregisterInterface(self._iTag, self)
             self._subscribed = False
@@ -203,7 +204,8 @@ if HAS_ROS:
         def __init__(self, conn, iTag, msgType, addr):
             """ Initialize the Subscriber.
             """
-            super().__init__(conn, iTag, msgType, self._callback)
+            super(ROSSubscriber, self).__init__(conn, iTag, msgType,
+                                                self._callback)
             
             args = msgType.split('/')
         
@@ -227,7 +229,8 @@ if HAS_ROS:
         def __del__(self):
             """ Finalize the Subscriber.
             """
-            self.unsubscribe()  # Is equal to super(_, self).__del__()
+            super(ROSSubscriber, self).__del__()
+            
             self._pub.unregister()
     
     
@@ -237,7 +240,7 @@ if HAS_ROS:
         def __init__(self, conn, iTag, srvType, addr):
             """ Initialize the Service.
             """
-            super(ROSService, self).__init__(conn, iTag, srvType, None)
+            super(ROSService, self).__init__(conn, iTag, srvType)
             
             args = srvType.split('/')
             

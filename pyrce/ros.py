@@ -47,13 +47,15 @@ from twisted.internet.defer import Deferred
 from connection import ROSConnection
 
 
-_MAP = {'ServiceConverter' : 'service',
-        # 'ServiceProviderConverter' : '???',
-        'PublisherConverter' : 'publisher',
-        'SubscriberConverter' : 'subscriber'}
+_MAP = {#'ServiceConverter' : '???',
+        'ServiceProviderConverter' : 'service',
+        'PublisherConverter' : 'subscriber',
+        'SubscriberConverter' : 'publisher'}
 
+global rosIF
 
 def main(config, reactor):
+    global rosIF
     rospy.init_node('RCE_ROS_Client')
     
     rosIF = []
@@ -71,7 +73,10 @@ def main(config, reactor):
     interfaces = config.get('interfaces', [])
     connections = config.get('connections', [])
     
-    def setup():
+    def setup(conn):
+        print('Setup...')
+        global rosIF
+        print(rosIF)
         for container in containers:
             conn.createContainer(**container)
         
@@ -86,10 +91,16 @@ def main(config, reactor):
         
         for ros in interfaces:
             iType = ros['iType']
+            
             if iType in _MAP:
-                rosIF.append(getattr(conn, _MAP[iType])(ros['iTag'],
+                ifc = getattr(conn, _MAP[iType])(ros['iTag'],
                                                         ros['iCls'],
-                                                        ros['addr']))
+                                                        ros['addr'])
+                print(ifc)
+                rosIF.append(ifc)
+        
+        print(rosIF)
+        print('---')
     
     deferred = Deferred()
     deferred.addCallback(setup)
@@ -100,9 +111,10 @@ def main(config, reactor):
     def terminate():
         for container in containers:
             conn.destroyContainer(**container)
-            del rosIF
+        global rosIF
+        del rosIF
         
-        reactor.callLater(1, reactor.stop)
+        reactor.callLater(1, reactor.callFromThread, reactor.stop)
     
     rospy.on_shutdown(terminate)
     
