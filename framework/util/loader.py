@@ -168,18 +168,30 @@ class Loader(object):
             raise ResourceNotFound('ROS package "{0}" does not have '
                                    'service class "{1}"'.format(pkg, cls))
     
+    def findPkgPath(self, pkg):
+        """ Find the path to the given package.
+            
+            @param pkg:     Package name in for which the path should be
+                            returned.
+            @type  pkg:     str
+            
+            @return:        Path to the package.
+            @rtype:         str
+            
+            @raise:         core.util.ResourceNotFound
+        """
+        try:
+            return self._rp.get_path(pkg)
+        except rospkg.ResourceNotFound:
+            raise ResourceNotFound('Can not find ROS package '
+                                   '"{0}".'.format(pkg))
+    
     def _findNodes(self, pkg):
         """ Internally used method to search for all nodes in the package.
         """
-        try:
-            pkgDir = self._rp.get_path(pkg)
-        except rospkg.ResourceNotFound:
-            raise ResourceNotFound('Can not find ROS package "{0}".'.format(
-                                                                         pkg))
-        
         nodes = {}
         
-        for path, dirs, files in os.walk(pkgDir):
+        for path, dirs, files in os.walk(self.findPkgPath(pkg)):
             for f in files:
                 p = os.path.join(path, f)
                 

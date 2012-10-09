@@ -52,7 +52,7 @@ from twisted.python import log
 from twisted.internet.task import LoopingCall
 
 # Custom imports
-from errors import InternalError
+from errors import InternalError, InvalidRequest
 
 
 def recursiveBinarySearch(multidict):
@@ -287,7 +287,11 @@ class MessageAssembler(object):
         if binary:
             self._handleBinary(msg)
         else:
-            msg = json.loads(msg)
+            try:
+                msg = json.loads(msg)
+            except ValueError:
+                raise InvalidRequest('Message is not in valid JSON format.')
+            
             uris = self._recursiveURISearch(msg)
             
             if uris:

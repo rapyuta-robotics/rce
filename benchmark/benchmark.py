@@ -231,20 +231,19 @@ class Benchmark(object):
         print('Setup environments...')
         
         for cTag in ['m1c1', 'm2c1', 'm1c2']:
-            self._conn.addNode(cTag, 'strEcho', 'Test', 'stringEcho.py', '')
+            self._conn.addNode(cTag, 'strEcho', 'Test', 'stringEcho.py')
         
-        self._conn.addNode('m1c1', 'strTester', 'Test', 'stringTester.py', '')
+        self._conn.addNode('m1c1', 'strTester', 'Test', 'stringTester.py')
         
         # Connections Robot - StringTester
         self._conn.addInterface('testRobot', 'testConv',
-                                'ServiceProviderConverter', 'Test/StringTest',
-                                '')
+                                'ServiceProviderConverter', 'Test/StringTest')
         self._conn.addInterface('m1c1', 'testInrfc', 'ServiceInterface',
                                 'Test/StringTest', 'stringTest')
         self._conn.addConnection('testConv', 'testInrfc')
         
         self._conn.addInterface('testRobot', 'testDataConv',
-                                'SubscriberConverter', 'Test/StringData', '')
+                                'SubscriberConverter', 'Test/StringData')
         self._conn.addInterface('m1c1', 'testDataInrfc', 'PublisherInterface',
                                 'Test/StringData', 'stringData')
         self._conn.addConnection('testDataConv', 'testDataInrfc')
@@ -298,8 +297,7 @@ class Benchmark(object):
         
         # Connections Robot - StringEcho (service)
         self._conn.addInterface('testRobot', 'testStringSrvConv',
-                                'ServiceProviderConverter', 'Test/StringEcho',
-                                '')
+                                'ServiceProviderConverter', 'Test/StringEcho')
         self._conn.addInterface('m1c1', 'testStringSrvInrfc',
                                 'ServiceInterface', 'Test/StringEcho',
                                 'stringEchoService')
@@ -307,14 +305,12 @@ class Benchmark(object):
         
         # Connections Robot - StringEcho (topic)
         self._conn.addInterface('testRobot', 'testStringTopicReqConv',
-                                'SubscriberConverter', 'std_msgs/String',
-                                '')
+                                'SubscriberConverter', 'std_msgs/String')
         self._conn.addConnection('testLocalReqSend',
                                  'testStringTopicReqConv')
         
         self._conn.addInterface('testRobot', 'testStringTopicRespConv',
-                                'PublisherConverter', 'std_msgs/String',
-                                '')
+                                'PublisherConverter', 'std_msgs/String')
         self._conn.addConnection('testLocalRespRecv',
                                  'testStringTopicRespConv')
         

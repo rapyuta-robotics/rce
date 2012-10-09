@@ -72,7 +72,10 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
     def _handleMessage(self, msg):
         """ Internally used method to handle a message.
         """
-        msg = json.loads(msg)
+        try:
+            msg = json.loads(msg)
+        except ValueError:
+            raise InvalidRequest('Message is not in valid JSON format.')
         
         try:
             userID = msg['userID']

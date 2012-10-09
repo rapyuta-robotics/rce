@@ -32,6 +32,7 @@
 
 # Python specific imports
 import os
+import re
 import tempfile
 from threading import Event, Lock
 from uuid import uuid4
@@ -84,6 +85,7 @@ class NodeMonitor(object):
             self._nodeMonitor.stopped()
     
     _STOP_ESCALATION = [ ('INT', 15), ('TERM', 2), ('KILL', None) ]
+    _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
     
     def __init__(self, manager, userID, node):
         """ Initialize the NodeMonitor instance.
@@ -113,6 +115,12 @@ class NodeMonitor(object):
         """ Node tag to identify the node. """
         return self._node.tag
     
+    def _replaceFind(self, match):
+        """ Internally used method to replace found matches of _RE_FIND regular
+            expression with corresponding package path.
+        """
+        return self._manager.loader.findPkgPath(match.group('pkg'))
+    
     def start(self):
         """ Launch the node.
 
@@ -130,16 +138,25 @@ class NodeMonitor(object):
             raise InvalidRequest('Could not identify which node to launch: '
                                  '{0}'.format(e))
         
-        # Process namespace argument
+        # Add arguments
+        for arg in node.args:
+            arg, _ = self._RE_FIND.subn(self._replaceFind, arg)
+            cmd.append(arg)
+        
+        # Process name and namespace argument
+        name = node.name
         namespace = node.namespace
+        
+        if name:
+            cmd.append('__name:={0}'.format(name))
         
         if namespace:
             cmd.append('__ns:={0}'.format(namespace))
         
         # Start node
         self._started = True
-        log.msg('Start Node {0}/{1} [pkg: {2}].'.format(node.namespace,
-                                                        node.exe, node.pkg))
+        log.msg('Start Node {0}/{1} [pkg: {2}, exe: '
+                '{3}].'.format(namespace, name, node.pkg, node.exe))
         self._manager.reactor.spawnProcess(
             NodeMonitor._ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
     

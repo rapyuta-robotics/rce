@@ -93,13 +93,13 @@ class ConfigureContainerHandler(_ClientHandlerBase):
     def handle(self, msg):
         if 'addNodes' in msg:
             for node in msg['addNodes']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.ADD_NODE,
-                                           'args' : (node['containerTag'],
-                                                     node['nodeTag'],
-                                                     node['pkg'],
-                                                     node['exe'],
-                                                     node['namespace'])})
+                self._manager.sendRequest({
+                    'user' : self._userID,
+                    'type' : req.ADD_NODE,
+                    'args' : (node['containerTag'], node['nodeTag'],
+                              node['pkg'], node['exe'], node.get('args', []),
+                              node.get('name', ''), node.get('namespace', ''))
+                })
         
         if 'removeNodes' in msg:
             for node in msg['removeNodes']:
@@ -110,13 +110,13 @@ class ConfigureContainerHandler(_ClientHandlerBase):
         
         if 'addInterfaces' in msg:
             for conf in msg['addInterfaces']:
+                args = (conf['interfaceType'], conf['endpointTag'],
+                        conf['interfaceTag'], conf['className'],
+                        conf.get('addr', ''))
+                
                 self._manager.sendRequest({'user' : self._userID,
                                            'type' : req.ADD_INTERFACE,
-                                           'args' : (conf['interfaceType'],
-                                                     conf['endpointTag'],
-                                                     conf['interfaceTag'],
-                                                     conf['className'],
-                                                     conf['addr'])})
+                                           'args' : args})
         
         if 'removeInterfaces' in msg:
             for interfaceTag in msg['removeInterfaces']:
@@ -126,12 +126,12 @@ class ConfigureContainerHandler(_ClientHandlerBase):
         
         if 'setParam' in msg:
             for param in  msg['setParam']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.ADD_PARAMETER,
-                                           'args' : (param['containerTag'],
-                                                     param['name'],
-                                                     param['value'],
-                                                     param['paramType'])})
+                self._manager.sendRequest({
+                    'user' : self._userID,
+                    'type' : req.ADD_PARAMETER,
+                    'args' : (param['containerTag'], param['name'],
+                              param['value'], param['paramType'])
+                })
         
         if 'deleteParam' in msg:
             for param in msg['deleteParam']:

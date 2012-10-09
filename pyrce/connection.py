@@ -200,15 +200,22 @@ class _Connection(object):
         self._sendMessage({'type':types.DESTROY_CONTAINER,
                            'data':{'containerTag':cTag}})
     
-    def addNode(self, cTag, nTag, pkg, exe, namespace):
+    def addNode(self, cTag, nTag, pkg, exe, args=[], name='', namespace=''):
         """ Add a node.
         """
+        node = {'containerTag':cTag, 'nodeTag':nTag, 'pkg':pkg, 'exe':exe}
+        
+        if args:
+            node['args'] = args
+        
+        if name:
+            node['name'] = name
+        
+        if namespace:
+            node['namespace'] = namespace
+        
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
-                           'data':{'addNodes':[{'containerTag':cTag,
-                                                'nodeTag':nTag,
-                                                'pkg':pkg,
-                                                'exe':exe,
-                                                'namespace':namespace}]}})
+                           'data':{'addNodes':[node]}})
     
     def removeNode(self, cTag, nTag):
         """ Remove a node.
@@ -236,7 +243,7 @@ class _Connection(object):
                            'data':{'deleteParam':[{'containerTag':cTag,
                                                    'name':name}]}})
     
-    def addInterface(self, eTag, iTag, iType, iCls, addr):
+    def addInterface(self, eTag, iTag, iType, iCls, addr=''):
         """ Add an interface.
         """
         if iType not in ['ServiceInterface', 'ServiceProviderInterface',
@@ -247,12 +254,14 @@ class _Connection(object):
         
         iType = self.INTERFACE_MAP.get(iType, iType)
         
+        interface = {'endpointTag':eTag, 'interfaceTag':iTag,
+                     'interfaceType':iType, 'className':iCls}
+        
+        if addr:
+            interface['addr'] = addr
+        
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
-                           'data':{'addInterfaces':[{'endpointTag':eTag,
-                                                     'interfaceTag':iTag,
-                                                     'interfaceType':iType,
-                                                     'className':iCls,
-                                                     'addr':addr}]}})
+                           'data':{'addInterfaces':[interface]}})
     
     def removeInterface(self, iTag):
         """ Remove an interface.

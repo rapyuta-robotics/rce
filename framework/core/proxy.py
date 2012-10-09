@@ -203,7 +203,7 @@ class ROSEnvProxy(_EndpointProxy):
         
         self._rosAddrs = set()
     
-    def addNode(self, tag, pkg, exe, namespace):
+    def addNode(self, tag, pkg, exe, args, name, namespace):
         """ Add a node to the monitored ROS environment.
             
             @param tag:     Tag which is used to identify the ROS node which
@@ -215,6 +215,12 @@ class ROSEnvProxy(_EndpointProxy):
 
             @param exe:     Name of executable which should be launched.
             @type  exe:     str
+            
+            @param args:    Arguments which should be used for the launch.
+            @type  args:    [str]
+            
+            @param name:    Name of the node under which it should be launched.
+            @type  name:    str
             
             @param namespace:   Namespace in which the node should use be
                                 launched.
@@ -228,8 +234,8 @@ class ROSEnvProxy(_EndpointProxy):
             try:
                 pkg = str(pkg)
             except UnicodeEncodeError:
-                raise InvalidRequest('The package "{0}" is not valid.'.format(
-                                        pkg))
+                raise InvalidRequest('The package "{0}" is not '
+                                     'valid.'.format(pkg))
         
         if isinstance(exe, unicode):
             try:
@@ -237,6 +243,13 @@ class ROSEnvProxy(_EndpointProxy):
             except UnicodeEncodeError:
                 raise InvalidRequest('The executable "{0}" is not '
                                      'valid.'.format(exe))
+        
+        if isinstance(name, unicode):
+            try:
+                name = str(name)
+            except UnicodeEncodeError:
+                raise InvalidRequest('The name "{0}" is not '
+                                     'valid.'.format(name))
         
         if isinstance(namespace, unicode):
             try:
@@ -251,7 +264,8 @@ class ROSEnvProxy(_EndpointProxy):
         
         log.msg('Start node "{0}/{1}" (tag: "{2}") in ROS environment '
                 '"{3}".'.format(pkg, exe, tag, self._commID))
-        self._control.addNode(NodeCommand(tag, pkg, exe, namespace))
+        self._control.addNode(NodeCommand(tag, pkg, exe, args, name,
+                                          namespace))
     
     def removeNode(self, tag):
         """ Remove a node from the monitored ROS environment.
@@ -260,8 +274,8 @@ class ROSEnvProxy(_EndpointProxy):
                             should be removed.
             @type  tag:     str
         """
-        log.msg('Remove node (tag: "{0}") from ROS environment "{1}".'.format(
-                    tag, self._commID))
+        log.msg('Remove node (tag: "{0}") from ROS environment '
+                '"{1}".'.format(tag, self._commID))
         self._control.removeNode(tag)
     
     def addParameter(self, name, value, paramType):

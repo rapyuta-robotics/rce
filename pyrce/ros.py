@@ -105,7 +105,7 @@ def main(config, reactor):
         url = config['url']
     except KeyError as e:
         print('Configuration is missing the key {0}.'.format(e))
-        return 2
+        return 1
     
     conn = ROSConnection(userID, robotID, reactor)
     env = Environment(reactor, conn, config)
@@ -143,6 +143,9 @@ if __name__ == '__main__':
     
     try:
         config = json.load(fh)
+    except ValueError:
+        print('Configuration file is not in proper JSON format.')
+        exit(1)
     finally:
         fh.close()
     

@@ -141,7 +141,7 @@ class User(object):
         container.delete()
         self._manager.delCommID(container.commID)
     
-    def addNode(self, cTag, nTag, pkg, exe, namespace):
+    def addNode(self, cTag, nTag, pkg, exe, args, name, namespace):
         """ Add a node to the ROS environment matching the given parameters.
             
             @param cTag:    Container tag which is used to identify the
@@ -158,6 +158,12 @@ class User(object):
             @param exe:     Name of executable which should be launched.
             @type  exe:     str
             
+            @param args:    Arguments which should be used for the launch.
+            @type  args:    [str]
+            
+            @param name:    Name of the node under which it should be launched.
+            @type  name:    str
+            
             @param namespace:   Namespace in which the node should be started
                                 in the environment.
             @type  namespace:   str
@@ -169,7 +175,8 @@ class User(object):
             return
         
         try:
-            self._containers[cTag].addNode(nTag, pkg, exe, namespace)
+            self._containers[cTag].addNode(nTag, pkg, exe, args, name,
+                                           namespace)
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     

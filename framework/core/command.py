@@ -246,7 +246,7 @@ class NodeCommand(object):
     
     IDENTIFIER = types.NODE
     
-    def __init__(self, tag, pkg, exe, namespace):
+    def __init__(self, tag, pkg, exe, args, name, namespace):
         """ Initialize the node command.
             
             @param tag:     Tag which is to identify the node.
@@ -258,12 +258,21 @@ class NodeCommand(object):
             @param exe:     Name of the executable which is used.
             @type  exe:     str
             
+            @param args:    List of arguments which should be used with the
+                            executable.
+            @type  args:    [str]
+            
+            @param name:    Name of the node under which it should be launched.
+            @type  name:    str
+            
             @param namespace:   Namespace in which the node should be launched.
             @type  namespace:   str
         """
         self._tag = tag
         self._pkg = pkg
         self._exe = exe
+        self._args = args
+        self._name = name
         self._namespace = namespace
     
     @property
@@ -282,6 +291,16 @@ class NodeCommand(object):
         return self._exe
     
     @property
+    def args(self):
+        """ Arguments which should be used with the executable. """
+        return self._args
+    
+    @property
+    def name(self):
+        """ Name of the node in the ROS environment. """
+        return self._name
+    
+    @property
     def namespace(self):
         """ Namespace of the node in the ROS environment. """
         return self._namespace
@@ -298,6 +317,8 @@ class NodeCommand(object):
         s.addElement(self._tag)
         s.addElement(self._pkg)
         s.addElement(self._exe)
+        s.addList(self._args)
+        s.addElement(self._name)
         s.addElement(self._namespace)
     
     @classmethod
@@ -310,8 +331,8 @@ class NodeCommand(object):
             
             @raise:     errors.SerializationError
         """
-        return cls(s.getElement(), s.getElement(),
-                   s.getElement(), s.getElement())
+        return cls(s.getElement(), s.getElement(), s.getElement(), 
+                   s.getList(), s.getElement(), s.getElement())
 
 
 class NodeForwarderCommand(object):
