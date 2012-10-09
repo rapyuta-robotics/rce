@@ -139,9 +139,7 @@ class NodeMonitor(object):
                                  '{0}'.format(e))
         
         # Add arguments
-        for arg in node.args:
-            arg, _ = self._RE_FIND.subn(self._replaceFind, arg)
-            cmd.append(arg)
+        cmd.append(self._RE_FIND.subn(self._replaceFind, node.args)[0])
         
         # Process name and namespace argument
         name = node.name

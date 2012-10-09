@@ -260,7 +260,7 @@ class NodeCommand(object):
             
             @param args:    List of arguments which should be used with the
                             executable.
-            @type  args:    [str]
+            @type  args:    str
             
             @param name:    Name of the node under which it should be launched.
             @type  name:    str
@@ -317,7 +317,7 @@ class NodeCommand(object):
         s.addElement(self._tag)
         s.addElement(self._pkg)
         s.addElement(self._exe)
-        s.addList(self._args)
+        s.addElement(self._args)
         s.addElement(self._name)
         s.addElement(self._namespace)
     
@@ -332,7 +332,7 @@ class NodeCommand(object):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getElement(), s.getElement(), 
-                   s.getList(), s.getElement(), s.getElement())
+                   s.getElement(), s.getElement(), s.getElement())
 
 
 class NodeForwarderCommand(object):

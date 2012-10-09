@@ -159,7 +159,7 @@ class User(object):
             @type  exe:     str
             
             @param args:    Arguments which should be used for the launch.
-            @type  args:    [str]
+            @type  args:    str
             
             @param name:    Name of the node under which it should be launched.
             @type  name:    str

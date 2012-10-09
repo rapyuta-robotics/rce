@@ -200,7 +200,7 @@ class _Connection(object):
         self._sendMessage({'type':types.DESTROY_CONTAINER,
                            'data':{'containerTag':cTag}})
     
-    def addNode(self, cTag, nTag, pkg, exe, args=[], name='', namespace=''):
+    def addNode(self, cTag, nTag, pkg, exe, args='', name='', namespace=''):
         """ Add a node.
         """
         node = {'containerTag':cTag, 'nodeTag':nTag, 'pkg':pkg, 'exe':exe}

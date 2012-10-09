@@ -97,7 +97,7 @@ class ConfigureContainerHandler(_ClientHandlerBase):
                     'user' : self._userID,
                     'type' : req.ADD_NODE,
                     'args' : (node['containerTag'], node['nodeTag'],
-                              node['pkg'], node['exe'], node.get('args', []),
+                              node['pkg'], node['exe'], node.get('args', ''),
                               node.get('name', ''), node.get('namespace', ''))
                 })
         
@@ -110,13 +110,13 @@ class ConfigureContainerHandler(_ClientHandlerBase):
         
         if 'addInterfaces' in msg:
             for conf in msg['addInterfaces']:
-                args = (conf['interfaceType'], conf['endpointTag'],
-                        conf['interfaceTag'], conf['className'],
-                        conf.get('addr', ''))
-                
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.ADD_INTERFACE,
-                                           'args' : args})
+                self._manager.sendRequest({
+                    'user' : self._userID,
+                    'type' : req.ADD_INTERFACE,
+                    'args' : (conf['interfaceType'], conf['endpointTag'],
+                              conf['interfaceTag'], conf['className'],
+                              conf.get('addr', ''))
+                })
         
         if 'removeInterfaces' in msg:
             for interfaceTag in msg['removeInterfaces']:
