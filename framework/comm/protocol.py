@@ -495,7 +495,7 @@ class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):
         
         # Trigger the post init method
         for cb in self._postInit:
-            cb.postInit(origin, conn.ip, msg['data'])
+            cb.postInit(origin, conn.ip, msg.content['data'])
 
 
 class RCEServerFactory(_RCEFactory, ServerFactory):
