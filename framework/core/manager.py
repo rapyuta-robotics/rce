@@ -1003,7 +1003,7 @@ class ContainerManager(_UserManagerBase):
             
             for srcPath, destPath in self._pkgRoot:
                 f.write(template.FSTAB_PKG.format(pkgDir=srcPath,
-                                                  fsDir=destPath))
+                                                  fsPkg=destPath))
     
     def _createUpstartScripts(self, commID, confDir):
         """ Create an upstart script based on the given parameters.
@@ -1198,7 +1198,7 @@ class ContainerManager(_UserManagerBase):
                                       containers[tag])
             del containers[tag]
     
-    def _cleanPackageDir(self, arg):
+    def _cleanPackageDir(self, arg=None):
         for _, path in self._pkgRoot:
             os.rmdir(path)
         
@@ -1218,6 +1218,8 @@ class ContainerManager(_UserManagerBase):
             deferredList = DeferredList(deferreds)
             deferredList.addCallback(self._cleanPackageDir)
             return deferredList
+        else:
+            self._cleanPackageDir()
 
 
 class MasterManager(_ManagerBase):
