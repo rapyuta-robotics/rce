@@ -487,17 +487,17 @@ class LoadBalancer(object):
         # Inform container manager about the CommID of the relay manager.
         msg = Message()
         msg.msgType = msgTypes.COMM_INFO
-        msg.dest = machine._container
-        msg.content = machine.relay
+        msg.dest = machine.containerID
+        msg.content = machine.relayID
         self._commManager.sendMessage(msg)
         
         # Order the new machine to connect to all the other existing machines.
-        order = [(m.relay, m.ip) for m in self._machines]
+        order = [(m.relayID, m.ip) for m in self._machines]
         
         if order:
             msg = Message()
             msg.msgType = msgTypes.CONNECT
-            msg.dest = machine.relay
+            msg.dest = machine.relayID
             msg.content = order
             self._commManager.sendMessage(msg)
         
@@ -524,7 +524,7 @@ class LoadBalancer(object):
         """
         try:
             machine = self._relayIter.next()
-            return (machine.relay, machine.extIP)
+            return (machine.relayID, machine.extIP)
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next robot location.')
@@ -537,7 +537,7 @@ class LoadBalancer(object):
             container should be created.
         """
         try:
-            return self._containerIter.next().container
+            return self._containerIter.next().containerID
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next container location.')
