@@ -265,22 +265,26 @@ class _InitMessage(object):
     """ Message content type to initialize the communication.
         
         The fields are:
-            dest    CommID of destination
-            origin  CommID of origin
+            data    Data which should be sent along with the request
     """
     implements(IContentSerializer)
     
     IDENTIFIER = types.INIT_REQUEST
     
-    def serialize(self, s, data):
+    def serialize(self, s, msg):
         try:
-            s.addElement(data['remoteID'])
-        except KeyError as e:
-            raise SerializationError('Could not serialize message of type '
-                                     'InitMessage: {0}'.format(e))
+            data = msg['data']
+        except KeyError:
+            raise SerializationError('Could not serialize content of '
+                                     "Init Message. Missing key: 'data'")
+        
+        if not isinstance(data, list):
+            raise SerializationError('Data of Init Message has to be a list.')
+        
+        s.addList(data)
     
     def deserialize(self, s):
-        return { 'remoteID' : s.getElement() }
+        return { 'data' : s.getList() }
 
 
 class _RouteMessage(object):
@@ -293,14 +297,14 @@ class _RouteMessage(object):
     
     IDENTIFIER = types.ROUTE_INFO
     
-    def serialize(self, s, data):
-        if not isinstance(data, list):
+    def serialize(self, s, msg):
+        if not isinstance(msg, list):
             raise SerializationError('Content of the message has to be '
                                      'a list.')
         
-        s.addInt(len(data))
+        s.addInt(len(msg))
         
-        for element in data:
+        for element in msg:
             if len(element) != 2:
                 raise SerializationError('List element is not a 2-tuple.')
             

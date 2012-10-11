@@ -116,7 +116,7 @@ class IPostInit(Interface):
         to implement which should be called after the connection has been
         successfully initialized.
     """
-    def postInit(origin, ip): #@NoSelf
+    def postInit(origin, ip, data): #@NoSelf
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of initialized connection.
@@ -124,6 +124,9 @@ class IPostInit(Interface):
             
             @param ip:      IP address of initialized connection.
             @type  ip:      str
+            
+            @param data:    Data which was sent with the INIT message.
+            @type  data:    str
         """
 
 

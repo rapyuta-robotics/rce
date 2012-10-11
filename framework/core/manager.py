@@ -775,7 +775,7 @@ class RelayManager(_ManagerBase):
         msg.content = [info]
         self._commManager.sendMessage(msg)
         
-        for relayID, _ in self._relays:
+        for relayID in self._relays:
             msg = Message()
             msg.msgType = msgTypes.ROUTE_INFO
             msg.dest = relayID
@@ -808,27 +808,23 @@ class RelayManager(_ManagerBase):
         self._satellites.remove(commID)
         self._publishEndpointChange((commID, False))
     
-    def registerRelay(self, commID, ip):
+    def registerRelay(self, commID):
         """ Method is called by post initialization callback of relay-relay
             connections.
         """
-        conn = (commID, ip)
-        
-        if conn in self._relays:
+        if commID in self._relays:
             raise InternalError('Tried to register same connection twice.')
         
-        self._relays.add(conn)
+        self._relays.add(commID)
     
-    def unregisterRelay(self, commID, ip):
+    def unregisterRelay(self, commID):
         """ Method is called by post close callback of relay-relay connections.
         """
-        conn = (commID, ip)
-        
-        if conn not in self._relays:
+        if commID not in self._relays:
             raise InternalError('Tried to unregister a non-existent '
                                 'connection.')
         
-        self._relays.remove(conn)
+        self._relays.remove(commID)
     
     def getEndpointRouting(self):
         """ Returns the routing information for all nodes which should be
@@ -847,10 +843,10 @@ class RelayManager(_ManagerBase):
             @type  relay:  [ (str, str) ]
         """
         for relay in relays:
-            if relay in self._relays:
-                continue  # We are already connected to this relay.
-            
             commID, ip = relay
+            
+            if commID in self._relays:
+                continue  # We are already connected to this relay.
             
             # TODO: Small hack to circumvent problem with localhost IP
             if ip == '127.0.0.1':

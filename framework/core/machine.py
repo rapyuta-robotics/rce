@@ -151,7 +151,7 @@ class UIDServer(ServerFactory):
         """
         return _UIDServerProtocol(self)
     
-    def addRelay(self, ip, commID):
+    def addRelay(self, ip, extIP, commID):
         """ # TODO: Add description
         """
         uid = commID[definition.PREFIX_LENGTH:]
@@ -167,11 +167,13 @@ class UIDServer(ServerFactory):
             self._usedUID.add(uid)
             del self._reservedUID[uid]
             
+            containerID = self._pendingContainer.pop(ip)
+            
             self._loadBalancer.registerMachine(
-                Machine(ip, self._pendingContainer[ip], commID))
+                Machine(ip, extIP, containerID, commID))
         else:
             self._reservedUID[uid] = datetime.now()
-            self._pendingRelay[ip] = commID
+            self._pendingRelay[ip] = (commID, extIP)
     
     def removeRelay(self, ip, commID):
         """ # TODO: Add description
@@ -199,8 +201,10 @@ class UIDServer(ServerFactory):
             self._usedUID.add(uid)
             del self._reservedUID[uid]
             
+            relayID, extIP = self._pendingRelay.pop(ip)
+            
             self._loadBalancer.registerMachine(
-                Machine(ip, commID, self._pendingRelay[ip]))
+                Machine(ip, extIP, commID, relayID))
         else:
             self._reservedUID[uid] = datetime.now()
             self._pendingContainer[ip] = commID
@@ -379,11 +383,15 @@ class SSLServer(UIDServer):
 class Machine(object):
     """ # TODO: Add description
     """
-    def __init__(self, ip, container, relay):
+    def __init__(self, ip, extIP, container, relay):
         """ Initialize the machine.
             
-            @param ip:          IP address of the machine.
+            @param ip:          RCE internal IP address of the machine.
             @type  ip:          str
+            
+            @param extIP:       External IP address of the machine (used for
+                                connections from robots to the RCE).
+            @type  extIP:       str
             
             @param container:   Communication ID of the container manager in
                                 the machine.
@@ -394,9 +402,34 @@ class Machine(object):
             @type  relay:       str
         """
         self._ip = ip
+        self._extIP = extIP
         self._container = container
         self._relay = relay
         self._loadInfo = None
+    
+    @property
+    def ip(self):
+        """ RCE internal IP address.
+        """
+        return self._ip
+    
+    @property
+    def extIP(self):
+        """ External IP address.
+        """
+        return self._extIP
+    
+    @property
+    def containerID(self):
+        """ Communication ID of Container Manager.
+        """
+        return self._container
+    
+    @property
+    def relayID(self):
+        """ Communication ID of Relay Manager.
+        """
+        return self._relay
     
     def matchIP(self, ip):
         """ Check if the given IP address matches the IP address of this
@@ -455,16 +488,16 @@ class LoadBalancer(object):
         msg = Message()
         msg.msgType = msgTypes.COMM_INFO
         msg.dest = machine._container
-        msg.content = machine._relay
+        msg.content = machine.relay
         self._commManager.sendMessage(msg)
         
         # Order the new machine to connect to all the other existing machines.
-        order = [(m._relay, m._ip) for m in self._machines]
+        order = [(m.relay, m.ip) for m in self._machines]
         
         if order:
             msg = Message()
             msg.msgType = msgTypes.CONNECT
-            msg.dest = machine._relay
+            msg.dest = machine.relay
             msg.content = order
             self._commManager.sendMessage(msg)
         
@@ -491,7 +524,7 @@ class LoadBalancer(object):
         """
         try:
             machine = self._relayIter.next()
-            return (machine._relay, machine._ip)
+            return (machine.relay, machine.extIP)
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next robot location.')
@@ -504,7 +537,7 @@ class LoadBalancer(object):
             container should be created.
         """
         try:
-            return self._containerIter.next()._container
+            return self._containerIter.next().container
         except (StopIteration, RuntimeError):
             if repeat:
                 raise InternalError('Can not get next container location.')

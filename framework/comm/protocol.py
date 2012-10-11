@@ -377,6 +377,15 @@ class _RCEFactory(object):
             @type  conn:    comm.factory_RCEProtocol
         """
     
+    def getInitData(self):
+        """ Generate the data which should be sent with the INIT message to
+            the client.
+            
+            @return:        Data which should be returned.
+            @rtype:         [str]
+        """
+        return []
+    
     def processInitMessage(self, msg, conn):
         """ Method which is used to when a message is received and the
             initialized flag of the protocol instance is not yet set.
@@ -419,11 +428,16 @@ class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):
             
             @param postInit:    Instances which should be informed about the
                                 successful initialization of a connection.
-            @type  trigger:     comm.interfaces.IPostInit
+            @type  postInit:    comm.interfaces.IPostInit
             
             @param postClose:   Instances which should be informed about the
                                 closing of a connection.
             @type  postClose:   comm.interfaces.IPostClose
+            
+            @raise:     util.interfaces.InterfaceError if the callbacks from
+                        postInit do not implement comm.interfaces.IPostInit 
+                        and the callbacks from postClose do not implement
+                        comm.interfaces.IPostClose.
         """
         _RCEFactory.__init__(self, commMngr, postInit, postClose)
         
@@ -444,7 +458,7 @@ class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):
         msg.msgType = types.INIT_REQUEST
         msg.dest = definition.NEIGHBOR_ADDR
         
-        msg.content = { 'remoteID' : self._serverID }
+        msg.content = { 'data' : [self._serverID] + self.getInitData() }
         
         try:
             buf = msg.serialize(self._commManager)
@@ -473,13 +487,6 @@ class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):
             conn.transport.loseConnection()
             return
         
-        if msg.content['remoteID'] != self._commManager.commID:
-            log.msg("Received remote ID does not match this node's "
-                    'communication ID for initialization of protocol '
-                    'instance.')
-            conn.transport.loseConnection()
-            return
-        
         # Set protocol to initialized and register connection in manager
         conn.dest = origin
         conn.initialized = True
@@ -488,7 +495,7 @@ class RCEClientFactory(_RCEFactory, ReconnectingClientFactory):
         
         # Trigger the post init method
         for cb in self._postInit:
-            cb.postInit(origin, conn.ip)
+            cb.postInit(origin, conn.ip, msg['data'])
 
 
 class RCEServerFactory(_RCEFactory, ServerFactory):
@@ -512,8 +519,10 @@ class RCEServerFactory(_RCEFactory, ServerFactory):
             conn.transport.loseConnection()
             return
         
-        if msg.content['remoteID'] != self._commManager.commID:
-            log.msg("Received remote ID does not match this node's for "
+        data = msg.content['data']
+        
+        if data[0] != self._commManager.commID:
+            log.msg("Received target ID does not match this node's for "
                     'initialization of protocol instance.')
             conn.transport.loseConnection()
             return
@@ -528,7 +537,7 @@ class RCEServerFactory(_RCEFactory, ServerFactory):
         msg = Message()
         msg.msgType = types.INIT_REQUEST
         msg.dest = origin
-        msg.content = { 'remoteID' : origin }
+        msg.content = { 'data' : self.getInitData() }
         
         try:
             buf = msg.serialize(self._commManager)
@@ -547,7 +556,7 @@ class RCEServerFactory(_RCEFactory, ServerFactory):
         
         # Trigger the post init method
         for cb in self._postInit:
-            cb.postInit(origin, conn.ip)
+            cb.postInit(origin, conn.ip, data[1:])
     
     def authOrigin(self, origin):
         """ Authenticate the origin of the InitRequest.

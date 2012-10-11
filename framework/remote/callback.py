@@ -77,26 +77,20 @@ class RelayCallbackFromEndpoint(_RoutingCallbackBase):
         
         self._manager = manager
     
-    def postInit(self, origin, ip):
+    def postInit(self, origin, _1, _2):
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of initialized connection.
             @type  origin:  str
-            
-            @param ip:      IP address of initialized connection.
-            @type  ip:      str
         """
         self._manager.registerEndpoint(origin)
         self.sendRoutingInfo(origin, [(None, True)])
     
-    def postClose(self, origin, ip):
+    def postClose(self, origin, _):
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of closed connection.
             @type  origin:  str
-            
-            @param ip:      IP address of closed connection.
-            @type  ip:      str
         """
         self._manager.unregisterEndpoint(origin)
 
@@ -113,28 +107,22 @@ class RelayCallbackFromRelay(_RoutingCallbackBase):
         
         self._manager = manager
     
-    def postInit(self, origin, ip):
+    def postInit(self, origin, _1, _2):
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of initialized connection.
             @type  origin:  str
-            
-            @param ip:      IP address of initialized connection.
-            @type  ip:      str
         """
-        self._manager.registerRelay(origin, ip)
+        self._manager.registerRelay(origin)
         self.sendRoutingInfo(origin, self._manager.getEndpointRouting())
     
-    def postClose(self, origin, ip):
+    def postClose(self, origin, _):
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of closed connection.
             @type  origin:  str
-            
-            @param ip:      IP address of closed connection.
-            @type  ip:      str
         """
-        self._manager.unregisterRelay(origin, ip)
+        self._manager.unregisterRelay(origin)
 
 
 class MasterCallbackFromRelay(object):
@@ -147,7 +135,7 @@ class MasterCallbackFromRelay(object):
         """
         self._machineCache = machineCache
     
-    def postInit(self, origin, ip):
+    def postInit(self, origin, ip, data):
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of initialized connection.
@@ -155,8 +143,11 @@ class MasterCallbackFromRelay(object):
             
             @param ip:      IP address of initialized connection.
             @type  ip:      str
+            
+            @param data:    Data which was sent with the INIT message.
+            @type  data:    str
         """
-        self._machineCache.addRelay(ip, origin)
+        self._machineCache.addRelay(ip, data[0], origin)
     
     def postClose(self, origin, ip):
         """ This method is called when the connection has been initialized.
@@ -180,7 +171,7 @@ class MasterCallbackFromContainer(object):
         """
         self._machineCache = machineCache
     
-    def postInit(self, origin, ip):
+    def postInit(self, origin, ip, _):
         """ This method is called when the connection has been initialized.
             
             @param origin:  CommID of initialized connection.

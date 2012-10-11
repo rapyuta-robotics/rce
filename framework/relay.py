@@ -60,6 +60,7 @@ from remote.message import ROSMsgSerializer, Messenger, RequestSerializer, \
 from remote.control import RemoteRequestSender
 from remote.callback import RelayCallbackFromEndpoint, RelayCallbackFromRelay
 from client.protocol import RobotWebSocketProtocol, CloudEngineWebSocketFactory
+from util.network import getIP
 
 from settings import MASTER_RELAY_PORT, RELAY_ROS_PORT, RELAY_RELAY_PORT, \
     CONVERTER_CLASSES, ROOT_PKG_DIR, ROOTFS
@@ -103,6 +104,15 @@ class Manager(RelayManager, RobotManager):
         super(Manager, self).__init__(reactor)
 
 
+class MasterFactory(RCEClientFactory):
+    """ RCE Client Factory for connections to Master Manager.
+    """
+    _EXTERNAL_IP = getIP('eth0')
+    
+    def getInitData(self):
+        return [self._EXTERNAL_IP]
+
+
 def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     #f = open('/home/rce-user/relay.log', 'w')
     #log.startLogging(f)
@@ -141,7 +151,7 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
                                            TagProcessor(distributor),
                                            messenger])
     
-    factory = RCEClientFactory(commManager, masterID)
+    factory = MasterFactory(commManager, masterID)
     factory.addApprovedMessageTypes([msgTypes.COMMAND, msgTypes.TAG,
                                      msgTypes.CONNECT])
     reactor.connectTCP(masterIP, masterPort, factory)
