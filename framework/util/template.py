@@ -61,18 +61,20 @@ lxc.cgroup.devices.allow = c 5:2 rwm
 lxc.cgroup.devices.allow = c 254:0 rwm
 """
 
-FSTAB = """proc    {proc}    proc    nodev,noexec,nosuid    0 0
+
+FSTAB_BASE = """proc    {proc}    proc    nodev,noexec,nosuid    0 0
 devpts    {devpts}    devpts    defaults    0 0
 sysfs    {sysfs}    sysfs    defaults    0 0
-{homeDir}    {fsHome}    none    bind    0 0
-{srcDir}    {fsSrc}    none    bind,ro    0 0
-{dataDir}    {fsData}    none    bind    0 0
-{upstartComm}    {fsComm}    none    bind,ro    0 0
-{upstartLauncher}    {fsLauncher}    none    bind,ro    0 0
 """
 
-FSTAB_PKG = """{pkgDir}    {fsPkg}    none    bind,ro    0 0
+
+FSTAB_BIND = """{srcDir}    {fsDir}    none    bind    0 0
 """
+
+
+FSTAB_BIND_RO = """{srcDir}    {fsDir}    none    bind,ro    0 0
+"""
+
 
 UPSTART_COMM = """# description
 author "Dominique Hunziker"
@@ -92,6 +94,7 @@ script
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {commID} 10.0.3.1 {serverID}
 end script
 """
+
 
 UPSTART_LAUNCHER = """# description
 author "Dominique Hunziker"

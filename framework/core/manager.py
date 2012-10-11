@@ -38,13 +38,14 @@ from math import log10
 from uuid import uuid4
 from functools import wraps
 
+pjoin = os.path.join
+
 # zope specific imports
 from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.defer import Deferred, DeferredList
-from twisted.internet.protocol import ProcessProtocol
 from twisted.internet.task import LoopingCall
 
 # Custom imports
@@ -53,12 +54,12 @@ from errors import InternalError, InvalidRequest, UserConstraintError, \
 from util.interfaces import verifyObject
 from util.loader import Loader
 from util.converter import Converter
-from util import template
 from core.types import req
 from core.interfaces import IRequestSender, IControlFactory, IMessenger, \
     ILoadBalancer
 from core.user import User
 from core.monitor import NodeMonitor
+from core.container import Container, checkExe, checkPath
 from comm import definition
 from comm import types as msgTypes
 from comm.protocol import RCEClientFactory
@@ -868,18 +869,10 @@ class RelayManager(_ManagerBase):
         
         super(RelayManager, self).shutdown()
 
+
 class ContainerManager(_UserManagerBase):
     """ Manager which handles the management of containers.
     """
-    class LXCProtocol(ProcessProtocol):
-        """ Protocol which is used to handle the LXC commands.
-        """
-        def __init__(self, deferred):
-            self._deferred = deferred
-        
-        def processEnded(self, reason):
-            self._deferred.callback(reason)
-    
     def __init__(self, reactor):
         super(ContainerManager, self).__init__(reactor)
         
@@ -891,62 +884,21 @@ class ContainerManager(_UserManagerBase):
         self._srcRoot = self._ROOT_SRC_DIR
         pkgRoot = self._ROOT_PKG_DIR
         
-        if not os.path.isabs(self._confDir):
-            raise ValueError('Configuration directory is not an '
-                             'absolute path.')
-        
-        if not os.path.isdir(self._confDir):
-            raise ValueError('Configuration directory does not exist: '
-                             '{0}'.format(self._confDir))
-        
-        if not os.path.isabs(self._dataDir):
-            raise ValueError('Data directory is not an absolute path.')
-        
-        if not os.path.isdir(self._dataDir):
-            raise ValueError('Data directory does not exist: {0}'.format(
-                                 self._dataDir))
-        
-        if not os.path.isabs(self._rootfs):
-            raise ValueError('Root file system directory is not an '
-                             'absolute path.')
-        
-        if not os.path.isabs(self._srcRoot):
-            raise ValueError('Root source directory is not an absolute path.')
+        checkPath(self._confDir, 'Configuration')
+        checkPath(self._dataDir, 'Data')
+        checkPath(self._rootfs, 'Container file system')
+        checkPath(self._srcRoot, 'RCE source')
         
         for path in pkgRoot:
-            if not os.path.isabs(path):
-                raise ValueError('Root package directory is not an absolute '
-                                 'path.')
-            
-            if not os.path.isdir(path):
-                raise ValueError('Root package directory does not exist: '
-                                 '{0}'.format(path))
+            checkPath(path, 'ROS Package')
         
         # Validate the executables used in the container
-        environmentExe = os.path.join(self._srcRoot, 'environment.py')
-        launcherExe = os.path.join(self._srcRoot, 'launcher.py')
-        
-        if not os.path.isfile(environmentExe):
-            raise ValueError('Root source directory does not contain the '
-                             'file "environment.py".')
-        
-        if not os.access(environmentExe, os.X_OK):
-            raise ValueError('File "environment.py" in root source directory '
-                             'is not executable.')
-        
-        if not os.path.isfile(launcherExe):
-            raise ValueError('Root source directory does not contain the '
-                             'file "launcher.py".')
-        
-        if not os.access(launcherExe, os.X_OK):
-            raise ValueError('File "launcher.py" in root source directory '
-                             'is not executable.')
+        checkExe(self._srcRoot, 'environment.py')
+        checkExe(self._srcRoot, 'launcher.py')
         
         if pkgRoot:
             fmt = 'rce-package-{{0:0{0}d}}'.format(int(log10(len(pkgRoot))+1))
-            destPath = [os.path.join(self._rootfs,
-                                     'opt/rce/packages',
-                                     fmt.format(i))
+            destPath = [os.path.join('opt/rce/packages', fmt.format(i))
                         for i in xrange(len(pkgRoot))]
             self._pkgRoot = zip(pkgRoot, destPath)
             
@@ -971,55 +923,35 @@ class ContainerManager(_UserManagerBase):
         
         self._relayID = relayID
     
-    def _createConfigFile(self, confDir):
-        """ Create a config file based on the given parameters.
-        """
-        with open(os.path.join(confDir, 'config'), 'w') as f:
-            f.write(template.CONFIG.format(
-                        rootfs=self._rootfs,
-                        fstab=os.path.join(confDir, 'fstab')))
-
-    def _createFstabFile(self, confDir, dataDir):
+    def _createFstabFile(self, container, confDir, dataDir):
         """ Create a fstab file based on the given parameters.
         """
-        with open(os.path.join(confDir, 'fstab'), 'w') as f:
-            f.write(template.FSTAB.format(
-                        proc=os.path.join(self._rootfs, 'proc'),
-                        devpts=os.path.join(self._rootfs, 'dev/pts'),
-                        sysfs=os.path.join(self._rootfs, 'sys'),
-                        homeDir=os.path.join(dataDir, 'ros'),
-                        fsHome=os.path.join(self._rootfs, 'home/ros'),
-                        srcDir=self._srcRoot,
-                        fsSrc=os.path.join(self._rootfs, 'opt/rce/src'),
-                        dataDir=os.path.join(dataDir, 'rce'),
-                        fsData=os.path.join(self._rootfs, 'opt/rce/data'),
-                        upstartComm=os.path.join(confDir, 'upstartComm'),
-                        fsComm=os.path.join(self._rootfs,
-                                            'etc/init/rceComm.conf'),
-                        upstartLauncher=os.path.join(confDir,
-                                                     'upstartLauncher'),
-                        fsLauncher=os.path.join(self._rootfs,
-                                                'etc/init/rceLauncher.conf')))
-            
-            for srcPath, destPath in self._pkgRoot:
-                f.write(template.FSTAB_PKG.format(pkgDir=srcPath,
-                                                  fsPkg=destPath))
+        container.extendFstab(pjoin(dataDir, 'ros'), 'home/ros', False)
+        container.extendFstab(pjoin(dataDir, 'rce'), 'opt/rce/data', False)
+        container.extendFstab(self._srcRoot, 'opt/rce/src', True)
+        container.extendFstab(pjoin(confDir, 'upstartComm'),
+                              'etc/init/rceComm.conf', True)
+        container.extendFstab(pjoin(confDir, 'upstartLauncher'),
+                              'etc/init/rceLauncher.conf', True)
+        
+        for srcPath, destPath in self._pkgRoot:
+            container.extendFstab(srcPath, destPath, True)
     
     def _createUpstartScripts(self, commID, confDir):
         """ Create an upstart script based on the given parameters.
         """
-        with open(os.path.join(confDir, 'upstartComm'), 'w') as f:
-            f.write(template.UPSTART_COMM.format(commID=commID,
-                                                 serverID=self._relayID))
+        with open(pjoin(confDir, 'upstartComm'), 'w') as f:
+            f.write(self._UPSTART_COMM.format(commID=commID,
+                                              serverID=self._relayID))
         
-        with open(os.path.join(confDir, 'upstartLauncher'), 'w') as f:
-            f.write(template.UPSTART_LAUNCHER)
+        with open(pjoin(confDir, 'upstartLauncher'), 'w') as f:
+            f.write(self._UPSTART_LAUNCHER)
     
     def _startContainer(self, deferred, tag, commID):
         """ Internally used method to start a container.
         """
         # Assemble path for config and fstab file
-        confDir = os.path.join(self._confDir, commID)
+        confDir = pjoin(self._confDir, commID)
         
         if os.path.isdir(confDir):
             deferred.errback('There exists already a configuration directory '
@@ -1040,18 +972,16 @@ class ContainerManager(_UserManagerBase):
             os.mkdir(confDir)
             os.mkdir(dataDir)
             
-            rceDir = os.path.join(dataDir, 'rce')
-            rosDir = os.path.join(dataDir, 'ros')
+            rceDir = pjoin(dataDir, 'rce')
+            rosDir = pjoin(dataDir, 'ros')
             os.mkdir(rceDir)
             os.mkdir(rosDir)
             
             if self._USE_SSL:
                 # Create a new certificate and key for environment node
-                caCertPath = os.path.join(self._SSL_DIR,
-                                          'Container.cert')
+                caCertPath = pjoin(self._SSL_DIR, 'Container.cert')
                 caCert = loadCertFile(caCertPath)
-                caKey = loadKeyFile(os.path.join(self._SSL_DIR,
-                                                 'container/env.key'))
+                caKey = loadKeyFile(pjoin(self._SSL_DIR, 'container/env.key'))
                 (cert, key) = createKeyCertPair(commID, caCert, caKey)
                 
                 # Copy/save file to data directory
@@ -1059,8 +989,8 @@ class ContainerManager(_UserManagerBase):
                 writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
                 writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
             
-            self._createConfigFile(confDir)
-            self._createFstabFile(confDir, dataDir)
+            container = Container(self._reactor, self._rootfs, confDir)
+            self._createFstabFile(container, confDir, dataDir)
             self._createUpstartScripts(commID, confDir)
         except:
             log.msg('Caught and exception when trying to create the '
@@ -1069,36 +999,8 @@ class ContainerManager(_UserManagerBase):
             etype, value, _ = sys.exc_info()
             deferred.errback('\n'.join(traceback.format_exception_only(etype,
                                                                        value)))
-            return
-        
-        # Start container
-        _deferred = Deferred()
-        
-        def callback(reason):
-            if reason.value.exitCode != 0:
-                deferred.errback('Received non zero exit code after start of '
-                                 'container: {0}'.format(
-                                     reason.getErrorMessage()))
-            else:
-                deferred.callback(None)
-        
-        _deferred.addCallbacks(callback, callback)
-        
-        try:
-            log.msg('Start container...')
-            cmd = [ '/usr/bin/lxc-start',
-                    '-n', commID,
-                    '-f', os.path.join(confDir, 'config'),
-                    '-d' ]
-            self.reactor.spawnProcess(ContainerManager.LXCProtocol(_deferred),
-                                      cmd[0], cmd, env=os.environ)
-        except:
-            log.msg('Caught an exception when trying to start the container.')
-            import sys, traceback #@Reimport
-            etype, value, _ = sys.exc_info()
-            deferred.errback('\n'.join(traceback.format_exception_only(etype,
-                                                                       value)))
-            return
+        else:
+            container.start(commID, deferred)
     
     @_UserManagerBase.verifyUser
     def createContainer(self, userID, container):
@@ -1116,9 +1018,9 @@ class ContainerManager(_UserManagerBase):
         
         deferred = Deferred()
         
-        def reportSuccess(_):
-            self.reactor.callFromThread(
-                             lambda: containers.__setitem__(tag, commID))
+        def reportSuccess(contnr):
+            self.reactor.callFromThread(containers.__setitem__, tag,
+                                        (commID, contnr))
             log.msg('Container successfully started.')
         
         def reportFailure(msg):
@@ -1130,48 +1032,33 @@ class ContainerManager(_UserManagerBase):
             deferred.errback('There is already a container registered under '
                              'the same tag.')
         else:
-            self.reactor.callInThread(self._startContainer, deferred,
-                                      tag, commID)
+            self.reactor.callInThread(self._startContainer, deferred, commID)
     
-    def _stopContainer(self, deferred, commID):
+    def _stopContainer(self, deferred, commID, container):
         """ Internally used method to stop a container.
         """
-        _deferred = Deferred()
-        
-        def callback(reason):
-            error = None
-            
-            if reason.value.exitCode != 0:
-                error = ('Received non zero exit code after stop of '
-                         'container: {0}'.format(reason.getErrorMessage()))
-            
+        def callback(error):
             try:
                 shutil.rmtree(os.path.join(self._confDir, commID))
                 shutil.rmtree(os.path.join(self._dataDir, commID))
             except:
                 import sys, traceback
                 etype, value, _ = sys.exc_info()
-                error = '\n'.join(traceback.format_exception_only(etype,
-                                                                  value))
+                e = '\n'.join(traceback.format_exception_only(etype, value))
+                
+                if error:
+                    error = '\n'.join([error, e])
+                else:
+                    error = e
             
             if error:
                 deferred.errback(error)
             else:
                 deferred.callback(None)
         
+        _deferred = Deferred()
         _deferred.addCallbacks(callback, callback)
-        
-        try:
-            cmd = ['/usr/bin/lxc-stop', '-n', commID]
-            self.reactor.spawnProcess(ContainerManager.LXCProtocol(_deferred),
-                                      cmd[0], cmd, env=os.environ)
-        except:
-            import sys, traceback
-            etype, value, _ = sys.exc_info()
-            msg = '\n'.join(traceback.format_exception_only(etype, value))
-            log.msg(msg)
-            deferred.errback(msg)
-            return
+        container.stop(commID, _deferred)
     
     @_UserManagerBase.verifyUser
     def destroyContainer(self, userID, tag):
@@ -1179,24 +1066,21 @@ class ContainerManager(_UserManagerBase):
         """
         containers = self._users[userID].containers
         
-        deferred = Deferred()
-        
         def reportSuccess(_):
             log.msg('Container successfully stopped.')
         
         def reportFailure(msg):
             log.msg('Container could not be stopped: {0}.'.format(msg))
         
+        deferred = Deferred()
         deferred.addCallbacks(reportSuccess, reportFailure)
         
         if tag not in containers:
             deferred.errback('There is no container registered under '
                              'this tag.')
-            return
         else:
-            self.reactor.callInThread(self._stopContainer, deferred,
-                                      containers[tag])
-            del containers[tag]
+            self.reactor.callInThread(self._stopContainer, deferred, 
+                                      *containers.pop(tag))
     
     def _cleanPackageDir(self, arg=None):
         for _, path in self._pkgRoot:
@@ -1206,11 +1090,12 @@ class ContainerManager(_UserManagerBase):
     
     def shutdown(self):
         deferreds = []
+        
         for user in self._users.itervalues():
-            for commID in user.containers.itervalues():
+            for commID, container in user.containers.itervalues():
                 deferred = Deferred()
                 deferreds.append(deferred)
-                self._stopContainer(deferred, commID)
+                self._stopContainer(deferred, commID, container)
         
         super(ContainerManager, self).shutdown()
         
