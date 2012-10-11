@@ -55,10 +55,14 @@ class Loader(object):
         To increase the speed the Loader has a cache for the classes and the
         paths to the nodes.
     """
-    def __init__(self):
+    def __init__(self, rosPath=None):
         """ Initialize the Loader.
+            
+            @param rosPath:     Ordered list of paths to search for resources.
+                                If None (default), use environment ROS path.
+            @type  rosPath:     [str] / None
         """
-        self._rp = rospkg.RosPack()
+        self._rp = rospkg.RosPack(rosPath)
         
         # Key:    tuple (package name, clsType, cls)
         # Value:  msg/srv module

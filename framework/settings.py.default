@@ -75,4 +75,4 @@ DATA_DIR = '/opt/rce/container/data'
 ROOT_SRC_DIR = '/opt/rce/framework'
 
 # Dictionary where the custom ROS nodes are stored
-ROOT_PKG_DIR = '/opt/rce/test'
+ROOT_PKG_DIR = ['/opt/rce/test']

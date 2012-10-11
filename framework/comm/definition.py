@@ -42,7 +42,7 @@ ADDR_BASE = string.ascii_uppercase
 ADDRESS_LENGTH = 6
 CHUNK_SIZE = 8192
 _MAX_MESSAGE_LENGTH = 10000000 # ~10mbyte
-MSG_QUEUE_TIMEOUT = 30
+MSG_QUEUE_TIMEOUT = 60
 
 
 ####################

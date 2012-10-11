@@ -34,6 +34,7 @@
 import os
 import shutil
 from datetime import datetime, timedelta
+from math import log10
 from uuid import uuid4
 from functools import wraps
 
@@ -166,11 +167,13 @@ class _UserManagerBase(_ManagerBase):
 class _ROSManagerBase(_UserManagerBase):
     """ Base class for managers which handle ROS specific tasks.
     """
+    _ROS_PACKAGE_PATH = None
+    
     def __init__(self, reactor):
         super(_ROSManagerBase, self).__init__(reactor)
         
         # References used by the manager
-        self._loader = Loader()
+        self._loader = Loader(self._ROS_PACKAGE_PATH)
     
     @property
     def loader(self):
@@ -890,7 +893,7 @@ class ContainerManager(_UserManagerBase):
         self._dataDir = self._DATA_DIR
         self._rootfs = self._ROOTFS
         self._srcRoot = self._ROOT_SRC_DIR
-        self._pkgRoot = self._ROOT_PKG_DIR
+        pkgRoot = self._ROOT_PKG_DIR
         
         if not os.path.isabs(self._confDir):
             raise ValueError('Configuration directory is not an '
@@ -914,12 +917,14 @@ class ContainerManager(_UserManagerBase):
         if not os.path.isabs(self._srcRoot):
             raise ValueError('Root source directory is not an absolute path.')
         
-        if not os.path.isabs(self._pkgRoot):
-            raise ValueError('Root package directory is not an absolute path.')
-        
-        if not os.path.isdir(self._pkgRoot):
-            raise ValueError('Root package directory does not exist: '
-                             '{0}'.format(self._pkgRoot))
+        for path in pkgRoot:
+            if not os.path.isabs(path):
+                raise ValueError('Root package directory is not an absolute '
+                                 'path.')
+            
+            if not os.path.isdir(path):
+                raise ValueError('Root package directory does not exist: '
+                                 '{0}'.format(path))
         
         # Validate the executables used in the container
         environmentExe = os.path.join(self._srcRoot, 'environment.py')
@@ -940,6 +945,19 @@ class ContainerManager(_UserManagerBase):
         if not os.access(launcherExe, os.X_OK):
             raise ValueError('File "launcher.py" in root source directory '
                              'is not executable.')
+        
+        if pkgRoot:
+            fmt = 'rce-package-{{0:0{0}d}}'.format(int(log10(len(pkgRoot))+1))
+            destPath = [os.path.join(self._rootfs,
+                                     'opt/rce/packages',
+                                     fmt.format(i))
+                        for i in xrange(len(pkgRoot))]
+            self._pkgRoot = zip(pkgRoot, destPath)
+            
+            for path in destPath:
+                os.mkdir(path)
+        else:
+            self._pkgRoot = []
     
     def registerRelayID(self, relayID):
         """ Register the communication ID of the relay manager which is used
@@ -977,9 +995,6 @@ class ContainerManager(_UserManagerBase):
                         fsHome=os.path.join(self._rootfs, 'home/ros'),
                         srcDir=self._srcRoot,
                         fsSrc=os.path.join(self._rootfs, 'opt/rce/src'),
-                        pkgDir=self._pkgRoot,
-                        fsPkg=os.path.join(self._rootfs,
-                                           'opt/rce/packages'),
                         dataDir=os.path.join(dataDir, 'rce'),
                         fsData=os.path.join(self._rootfs, 'opt/rce/data'),
                         upstartComm=os.path.join(confDir, 'upstartComm'),
@@ -989,6 +1004,10 @@ class ContainerManager(_UserManagerBase):
                                                      'upstartLauncher'),
                         fsLauncher=os.path.join(self._rootfs,
                                                 'etc/init/rceLauncher.conf')))
+            
+            for srcPath, destPath in self._pkgRoot:
+                f.write(template.FSTAB_PKG.format(pkgDir=srcPath,
+                                                  fsDir=destPath))
     
     def _createUpstartScripts(self, commID, confDir):
         """ Create an upstart script based on the given parameters.
@@ -1183,6 +1202,12 @@ class ContainerManager(_UserManagerBase):
                                       containers[tag])
             del containers[tag]
     
+    def _cleanPackageDir(self, arg):
+        for _, path in self._pkgRoot:
+            os.rmdir(path)
+        
+        return arg
+    
     def shutdown(self):
         deferreds = []
         for user in self._users.itervalues():
@@ -1195,6 +1220,7 @@ class ContainerManager(_UserManagerBase):
         
         if deferreds:
             deferredList = DeferredList(deferreds)
+            deferredList.addCallback(self._cleanPackageDir)
             return deferredList
 
 

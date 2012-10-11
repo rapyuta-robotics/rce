@@ -32,6 +32,7 @@
 
 # Python specific imports
 import sys
+import os
 
 # twisted specific imports
 from twisted.python import log
@@ -61,7 +62,7 @@ from remote.callback import RelayCallbackFromEndpoint, RelayCallbackFromRelay
 from client.protocol import RobotWebSocketProtocol, CloudEngineWebSocketFactory
 
 from settings import MASTER_RELAY_PORT, RELAY_ROS_PORT, RELAY_RELAY_PORT, \
-    CONVERTER_CLASSES
+    CONVERTER_CLASSES, ROOT_PKG_DIR, ROOTFS
 
 
 _CONVERTER = ((types.CONVERTER_SRV, ServiceConverterCommand,
@@ -95,6 +96,8 @@ class Manager(RelayManager, RobotManager):
     _MASTER_ID = definition.MASTER_ADDR
     _RELAY_PORT = RELAY_RELAY_PORT
     _INTERFACES = dict(map(lambda (k, _, v): (k, v), _CONVERTER))
+    _ROS_PACKAGE_PATH = ROOT_PKG_DIR[:] + [os.path.join(ROOTFS, p)
+        for p in ['/opt/ros/fuerte/share', '/opt/ros/fuerte/stacks']]
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)

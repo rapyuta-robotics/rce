@@ -48,7 +48,7 @@ from client.assembler import MessageAssembler
 class RCERobotProtocol(WebSocketClientProtocol):
     def __init__(self, connection):
         self._connection = connection
-        self._assembler = MessageAssembler(self, 30)
+        self._assembler = MessageAssembler(self, 60)
     
     def onConnect(self, _):
         self._assembler.start()

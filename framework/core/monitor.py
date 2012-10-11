@@ -129,21 +129,22 @@ class NodeMonitor(object):
         if self._started:
             raise InternalError('Can not launch an already running node.')
         
-        node = self._node
+        pkg = self._node.pkg
+        exe = self._node.exe
         
         # Find and validate executable
         try:
-            cmd = [self._manager.loader.findNode(node.pkg, node.exe)]
+            cmd = [self._manager.loader.findNode(pkg, exe)]
         except ResourceNotFound as e:
             raise InvalidRequest('Could not identify which node to launch: '
                                  '{0}'.format(e))
         
         # Add arguments
-        cmd.append(self._RE_FIND.subn(self._replaceFind, node.args)[0])
+        cmd.append(self._RE_FIND.subn(self._replaceFind, self._node.args)[0])
         
         # Process name and namespace argument
-        name = node.name
-        namespace = node.namespace
+        name = self._node.name
+        namespace = self._node.namespace
         
         if name:
             cmd.append('__name:={0}'.format(name))
@@ -154,7 +155,7 @@ class NodeMonitor(object):
         # Start node
         self._started = True
         log.msg('Start Node {0}/{1} [pkg: {2}, exe: '
-                '{3}].'.format(namespace, name, node.pkg, node.exe))
+                '{3}].'.format(namespace, name, pkg, exe))
         self._manager.reactor.spawnProcess(
             NodeMonitor._ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
     

@@ -78,7 +78,7 @@ class _Router(object):
         self._default = None
         
         # Setup periodic calling of clean method of manager
-        LoopingCall(self._clean).start(definition.MSG_QUEUE_TIMEOUT / 2)
+        LoopingCall(self._clean).start(definition.MSG_QUEUE_TIMEOUT / 4)
     
     def registerConnection(self, conn):
         """ Callback for Protocol instance to register the connection.

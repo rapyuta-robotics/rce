@@ -136,8 +136,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         self._userID = None
         self._robotID = None
         self._msgHandler = {}
-        self._assembler = MessageAssembler(self,
-                                           definition.MSG_QUEUE_TIMEOUT/4)
+        self._assembler = MessageAssembler(self, definition.MSG_QUEUE_TIMEOUT)
     
     def _initConnection(self, msg):
         """ Internally used method to setup the necessary context to use this

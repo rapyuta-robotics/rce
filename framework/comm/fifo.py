@@ -154,7 +154,8 @@ class ProducerFIFO(object):
         """ Remove producers which have exceeded the timeout.
         """
         i = 0
-        limit = datetime.now()-timedelta(seconds=definition.MSG_QUEUE_TIMEOUT)
+        limit = (datetime.now()
+                 - timedelta(seconds=definition.MSG_QUEUE_TIMEOUT/2))
         
         while len(self._fifo):
             if self._fifo[0][1] < limit:

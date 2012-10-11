@@ -66,10 +66,12 @@ devpts    {devpts}    devpts    defaults    0 0
 sysfs    {sysfs}    sysfs    defaults    0 0
 {homeDir}    {fsHome}    none    bind    0 0
 {srcDir}    {fsSrc}    none    bind,ro    0 0
-{pkgDir}    {fsPkg}    none    bind,ro    0 0
 {dataDir}    {fsData}    none    bind    0 0
 {upstartComm}    {fsComm}    none    bind,ro    0 0
 {upstartLauncher}    {fsLauncher}    none    bind,ro    0 0
+"""
+
+FSTAB_PKG = """{pkgDir}    {fsPkg}    none    bind,ro    0 0
 """
 
 UPSTART_COMM = """# description
