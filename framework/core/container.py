@@ -32,6 +32,7 @@
 
 # Python specific imports
 import os
+import shutil
 
 # twisted specific imports
 from twisted.python import log
@@ -102,8 +103,8 @@ class Container(object):
         """ # TODO: Add description
         """
         self._rootfs = rootfs
-        self._conf = os.path.join(conf, 'config')
-        self._fstab = os.path.join(conf, 'fstab')
+        self._conf = pjoin(conf, 'config')
+        self._fstab = pjoin(conf, 'fstab')
         
         checkPath(conf, 'Container Configuration')
         
@@ -234,3 +235,93 @@ class Container(object):
             etype, value, _ = sys.exc_info()
             deferred.errback('\n'.join(traceback.format_exception_only(etype,
                                                                        value)))
+
+
+class DeploymentContainer(Container):
+    """ # TODO: Add description
+    """
+    def __init__(self, reactor, commID, relayID, rootfs, conf, data):
+        """ # TODO: Add description
+        """
+        self._commID = commID
+        self._relayID = relayID
+        self._confDir = pjoin(conf, commID)
+        
+        if os.path.isdir(self._confDir):
+            raise ValueError('There is already a configuration directory for '
+                             "'{0}'.".format(commID))
+        
+        self._dataDir = pjoin(data, commID)
+        
+        if os.path.isdir(self._confDir):
+            raise ValueError('There is already a data directory for '
+                             "'{0}'.".format(commID))
+        
+        os.mkdir(self._confDir)
+        os.mkdir(self._dataDir)
+        
+        self._rceDir = pjoin(self._dataDir, 'rce')
+        self._rosDir = pjoin(self._dataDir, 'ros')
+        os.mkdir(self._rceDir)
+        os.mkdir(self._rosDir)
+        
+        super(DeploymentContainer, self).__init__(reactor, rootfs,
+                                                  self._confDir)
+    
+    def _createFstabFile(self):
+        """ Create a fstab file based on the given parameters.
+        """
+        self.extendFstab(self._rosDir, 'home/ros', False)
+        self.extendFstab(self._rceDir, 'opt/rce/data', False)
+        self.extendFstab(self._srcRoot, 'opt/rce/src', True)
+        self.extendFstab(pjoin(self._confDir, 'upstartComm'),
+                         'etc/init/rceComm.conf', True)
+        self.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
+                         'etc/init/rceLauncher.conf', True)
+        
+        for srcPath, destPath in self._pkgRoot:
+            self.extendFstab(srcPath, destPath, True)
+    
+    def _createUpstartScripts(self):
+        """ Create an upstart script based on the given parameters.
+        """
+        with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
+            f.write(self._UPSTART_COMM.format(commID=self._commID,
+                                              serverID=self._relayID))
+        
+        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
+            f.write(self._UPSTART_LAUNCHER)
+    
+    def start(self, deferred):
+        """ Start the deployment container.
+        """
+#        if self._USE_SSL:
+#            # Create a new certificate and key for environment node
+#            caCertPath = pjoin(self._SSL_DIR, 'Container.cert')
+#            caCert = loadCertFile(caCertPath)
+#            caKey = loadKeyFile(pjoin(self._SSL_DIR, 'container/env.key'))
+#            (cert, key) = createKeyCertPair(commID, caCert, caKey)
+#            
+#            # Copy/save file to data directory
+#            shutil.copyfile(caCertPath, os.path.join(rceDir, 'ca.pem'))
+#            writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
+#            writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
+        
+        self._createFstabFile()
+        self._createUpstartScripts()
+        
+        super(DeploymentContainer, self).start(self._commID, deferred)
+    
+    def stop(self, deferred):
+        """ Stop the deployment container.
+        """
+        super(DeploymentContainer, self).stop(self._commID, deferred)
+    
+    def __del__(self):
+        """ Destructor.
+        """
+        try:
+            shutil.rmtree(self._confDir)
+            shutil.rmtree(self._dataDir)
+        except:
+            pass
