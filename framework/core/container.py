@@ -63,7 +63,18 @@ class Container(object):
     """ Class representing a single container.
     """
     def __init__(self, reactor, rootfs, conf):
-        """ # TODO: Add description
+        """ Initialize the Container.
+            
+            @param reactor:     Reference to the twisted::reactor
+            @type  reactor:     twisted::reactor
+            
+            @param rootfs:      Filesystem path of the root directory of the
+                                container filesystem.
+            @type  rootfs:      str
+            
+            @param conf:        Filesystem path of folder where configuration
+                                files for the container should be stored.
+            @type  conf:        str
         """
         self._reactor = reactor
         self._rootfs = rootfs
@@ -133,7 +144,14 @@ class Container(object):
     def start(self, name, deferred):
         """ Start the container.
             
-            # TODO: Add description
+            @param name:        Name of the container which should be started.
+            @type  name:        str
+            
+            @param command:     Deferred whose callback is triggered on success
+                                with this Container instance as argument or
+                                whose errback is triggered on failure with an
+                                error message.
+            @type  command:     twisted::Deferred
         """
         protocol = self._setup(deferred)
         
@@ -151,7 +169,13 @@ class Container(object):
     def stop(self, name, deferred):
         """ Stop the container.
             
-            # TODO: Add description
+            @param name:        Name of the container which should be stopped.
+            @type  name:        str
+            
+            @param command:     Deferred whose callback is triggered on success
+                                or whose errback is triggered on failure with
+                                an error message.
+            @type  command:     twisted::Deferred
         """
         def callback(reason):
             if reason.value.exitCode == 0:
@@ -178,7 +202,12 @@ class Container(object):
     def execute(self, name, command):
         """ Execute a command inside the container.
             
-            # TODO: Add description
+            @param name:        Name of the container which will execute the
+                                command.
+            @type  name:        str
+            
+            @param command:     Command which should be executed.
+            @type  command:     str
         """
         def cb(msg):
             print(msg)
@@ -202,10 +231,19 @@ class Container(object):
 
 
 class DeploymentContainer(Container):
-    """ # TODO: Add description
+    """ Container representation for which is used to run a ROS environment
+        inside it. It is used for normal RCE operation.
     """
     def __init__(self, manager, commID):
-        """ # TODO: Add description
+        """ Initialize the deployment container.
+            
+            @param manager:     Container Manager which will manage this
+                                container.
+            @type  manager:     ContainerManager
+            
+            @param commID:      Communication ID of the Environment Manager
+                                which will be launched inside this container.
+            @type  commID:      str
         """
         self._manager = manager
         self._commID = commID
@@ -235,7 +273,8 @@ class DeploymentContainer(Container):
                                                   self._confDir)
     
     def _createFstabFile(self):
-        """ Create a fstab file based on the given parameters.
+        """ Internally used method to create a fstab file based on the given
+            parameters.
         """
         self.extendFstab(self._rosDir, 'home/ros', False)
         self.extendFstab(self._rceDir, 'opt/rce/data', False)
@@ -249,7 +288,8 @@ class DeploymentContainer(Container):
             self.extendFstab(srcPath, destPath, True)
     
     def _createUpstartScripts(self):
-        """ Create an upstart script based on the given parameters.
+        """ Internally used method to create an upstart script based on the
+            given parameters.
         """
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(template.UPSTART_COMM.format(
@@ -262,6 +302,12 @@ class DeploymentContainer(Container):
     
     def start(self, deferred):
         """ Start the deployment container.
+            
+            @param deferred:    Deferred whose callback is called with this
+                                Container instance as argument when the start
+                                was successful and whose errback is called with
+                                an error message when there was a problem.
+            @type  deferred:    twisted::Deferred
         """
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -283,6 +329,11 @@ class DeploymentContainer(Container):
     
     def stop(self, deferred):
         """ Stop the deployment container.
+            
+            @param deferred:    Deferred whose callback is called when the
+                                stop was successful and whose errback is called
+                                with an error message when there was a problem.
+            @type  deferred:    twisted::Deferred
         """
         super(DeploymentContainer, self).stop(self._commID, deferred)
     
@@ -294,3 +345,13 @@ class DeploymentContainer(Container):
             shutil.rmtree(self._dataDir)
         except:
             pass
+
+
+class CommandContainer(Container):
+    """ Container representation which is used to run a single command inside
+        a container. Should be primarily used for compiling source for usage
+        with RCE.
+    """
+    def __init__(self):
+        """
+        """

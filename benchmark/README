@@ -1,0 +1,13 @@
+Warning:
+    'benchmark.py' script can only be excuted in this folder due to unclean
+    imports of pyrce client.
+
+benchmark.py:
+    - Runs benchmark
+    - Usage: --help
+    - Output: benchmark.data
+
+plot.py
+    - Small script to quickly plot data
+    - Usage: --help
+    - Dependencies: python-matplotlib
