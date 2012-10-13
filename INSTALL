@@ -4,7 +4,7 @@ Comments pre install
 1.  Deploy on a local virtual machine:
     Load Ubutnu 12.04 serveubuntu-12.04-server ISO into you virtual machine
     http://releases.ubuntu.com/12.04/ubuntu-12.04-server-amd64.iso
-    tested on: VMware Fusion 4.0
+    (tested with developer-preview on: VMware Fusion 4.0)
     
     Deploy on an IaaS platform
     Lauch the Image provided by your IaaS perovider
@@ -33,7 +33,8 @@ Installation
     sudo git clone https://github.com/IDSCETHZurich/rce.git rce
 
 2.  Install the linux-container requirements
-    sudo apt-get install lxc bridge-utils dnsmasq debootstrap
+    sudo apt-get install lxc debootstrap
+    # Network should be automatically installed by lxc now; bridge-utils dnsmasq 
     
 3.  Open setup/setupHost and follow instructions
 
@@ -74,7 +75,7 @@ Installation
         touch /etc/init/rceLauncher.conf
     
     4.  Either change root password or disable root login
-        For changing the passwd:
+        For changing the password:
             passwd
         For disabling the root login:
             Edit file /etc/passwd and replace root:x:... with root:!:...
@@ -91,7 +92,7 @@ Installation
     
     Minimal installation:
         sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
-    For debug nodes:
+    For debug nodes (should no longer be necessary to install additional packages):
         sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
 7.  Install the websockets related libraries
