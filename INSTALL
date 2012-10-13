@@ -34,9 +34,9 @@ Installation
 
 2.  Install the linux-container requirements
     sudo apt-get install lxc debootstrap
-    # Network should be automatically installed by lxc now; bridge-utils dnsmasq 
+    # Network should be automatically installed by lxc now; ### bridge-utils dnsmasq 
     
-3.  Open setup/setupHost and follow instructions
+3.  # Network should be automatically installed by lxc now; ### Open setup/setupHost and follow instructions
 
 4.  Run setupContainer.bash to generate a 12.04 container for LXC
     cd /opt/rce/setup
