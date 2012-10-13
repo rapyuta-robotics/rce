@@ -1053,10 +1053,10 @@ class ContainerManager(_UserManagerBase):
         deferreds = []
         
         for user in self._users.itervalues():
-            for commID, container in user.containers.itervalues():
+            for container in user.containers.itervalues():
                 deferred = Deferred()
                 deferreds.append(deferred)
-                self._stopContainer(deferred, commID, container)
+                self._stopContainer(deferred, container)
         
         super(ContainerManager, self).shutdown()
         

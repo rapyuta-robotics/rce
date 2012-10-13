@@ -65,6 +65,7 @@ class Container(object):
     def __init__(self, reactor, rootfs, conf):
         """ # TODO: Add description
         """
+        self._reactor = reactor
         self._rootfs = rootfs
         self._conf = pjoin(conf, 'config')
         self._fstab = pjoin(conf, 'fstab')
@@ -118,14 +119,14 @@ class Container(object):
             f.writelines(self._fstabExt)
         
         def callback(reason):
-            if reason.value.exitCode != 0:
+            if reason.value.exitCode == 0:
+                deferred.callback(self)
+            else:
                 deferred.errback('Received non zero exit code from LXC: '
                                  '{0}'.format(reason.getErrorMessage()))
-            else:
-                deferred.callback(self)
         
         _deferred = Deferred()
-        _deferred.addCallback(callback)
+        _deferred.addCallbacks(callback, callback)
         
         return _LXCProtocol(_deferred)
     
@@ -161,7 +162,7 @@ class Container(object):
                 deferred.errback(msg)
         
         _deferred = Deferred()
-        _deferred.addCallback(callback)
+        _deferred.addCallback(callback, callback)
         
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', name]
@@ -210,7 +211,7 @@ class DeploymentContainer(Container):
         self._commID = commID
         
         self._confDir = pjoin(manager.confDir, commID)
-        self._dataDir = pjoin(manager.confDir, commID)
+        self._dataDir = pjoin(manager.dataDir, commID)
         
         if os.path.isdir(self._confDir):
             raise ValueError('There is already a configuration directory for '
