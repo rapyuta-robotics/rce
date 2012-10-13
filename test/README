@@ -1,3 +1,9 @@
+Test
+====
+
+Contains test and benchmark nodes.
+Some nodes require image support; Python Imaging Libary and ROS sensor_msgs
+
 Barcode
 =======
 
@@ -13,4 +19,10 @@ Dependencies:
 	  --without-qt
   
   2) Google API python client - http://code.google.com/p/google-api-python-client/
+  
+  3) nltk (Natural language toolkit) - python-nltk (base package) & wordnet corpus
 
+rceBinaryMsgDebug
+=================
+
+Status untested with newest release 

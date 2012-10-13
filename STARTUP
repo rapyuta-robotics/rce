@@ -4,16 +4,17 @@ It is assumed that you have installed the RoboEarth Cloud Engine according to th
 0. 	Copy rce/framework/settings.py.default to rce/framwork/settings.py
 
 1. 	Modify rce/framework/settings.py appropriately
-	SSL_DIR : An existing directory where the certificates will be stored
+	SSL_DIR : An existing directory where the certificates will be stored (at the moment SSL is not supported)
 
-1.1.	If you have restarted your server make sure you have re-applied the network settings mentioned in the rce/setup/setupHost
+2. 	python /opt/rce/framework/master.py
 
-2. 	python /opt/rce/framework/Master.py
-
-3. 	su
-	. /opt/ros/furte/setup.sh
-	ROS_PACKAGE_PATH=<INSERT ROOT_PKG_DIR>:$ROS_PACKAGE_PATH
-	python /opt/rce/framework/initServer.py --cert=<INSERT SSL_DIR>/RCE.cert <USER_NAME> #USER_NAME:process owner
+3. 	Either:
+		su
+		. /opt/ros/furte/setup.sh
+		python rce/framework/initServer.py <USER_NAME> <IP_ADDR_MASTER>    #USER_NAME: process owner
+	Or:
+		sudo sh rce/framework/initServer.sh <USER_NAME> <IP_ADDR_MASTER>
+		# For non default installation modify paths accordingly
 
 
 

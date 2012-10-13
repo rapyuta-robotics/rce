@@ -1,13 +1,29 @@
 Content of git respository
 ==========================
 
--framework:The core files of the RoboEarth Cloud Engine.		
+- framework:
+    The core files of the RoboEarth Cloud Engine.		
 
--setup:Setup files and utilities that are referenced from the INSTALL file.
+- setup:
+    Setup files and utilities that are referenced from the INSTALL file.
+    (needs revision)
 
--clients:Client examples on connecting to RoboEarth. 
-   A browser client and a python client 
-   is provided with the current release (developer-preview/alpha)
+- benchmark:
+    Client-side scripts, data, and plots for a simple communication benchmark.   
 
--test:ROS pakages which can be used with the framework.
+- test:
+    ROS packages which can be used with the framework. Contains server-side
+    files for benchmark.
+
+- pyrce:
+    Python client for the RoboEarth Cloud Engine.
+    ROS client for the RoboEarth Cloud Engine.
+
+- jsrce:
+    HTML/Javascript client.
+    Basic functionalities available, but needs revision
+
+- rce++:
+    C++ client for the RoboEarth Cloud Engine.
+    (not available yet; still under construction)
 

@@ -186,7 +186,7 @@ class Container(object):
                 deferred.errback(msg)
         
         _deferred = Deferred()
-        _deferred.addCallback(callback, callback)
+        _deferred.addCallbacks(callback, callback)
         
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', name]
