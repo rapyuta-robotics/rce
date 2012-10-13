@@ -1,1 +1,13 @@
-http://autobahn.ws/developers/autobahnpython/installation
+Warning:
+    For now the client has to be run from this folder, due to unclean
+    imports of framework components.
+
+Dependency:
+    http://autobahn.ws/developers/autobahnpython/installation
+
+Python Client:
+    Use the class 'Connection' from the module connection.
+
+ROS Client:
+    Use the script ros.py to start the client. Requires a configuration
+    file. An example can be found in rce/test/ros.cfg
