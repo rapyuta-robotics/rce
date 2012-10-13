@@ -1,6 +1,10 @@
 ### Setup machine for lxc containers
 ### Based on: http://www.activestate.com/blog/2011/10/virtualization-ec2-cloud-using-lxc
 
+==============================
+SHOULD BE NO LONGER NECESSARY!
+==============================
+
 0.  All commands have to be run as super user (some changes are not permananet) 
 
 1.  Add bridge network interface
