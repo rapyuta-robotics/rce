@@ -512,11 +512,8 @@ class LoadBalancer(object):
         """
         for machine in self._machines:
             if machine.matchIP(ip):
+                self._machines.remove(machine)
                 break
-        else:
-            raise InternalError('Tried to unregister a non existent machine.')
-        
-        self._machines.remove(machine)
     
     def getNextRobotLocation(self, repeat=False):
         """ Returns the CommID and IP address of the robot manager where the

@@ -117,7 +117,7 @@ class CommInfoProcessor(object):
         self._manager = manager
     
     def processMessage(self, msg):
-        self._manager.registerRelayID(msg.content)
+        self._manager.relayID = msg.content
 
 
 class RequestSerializer(object):

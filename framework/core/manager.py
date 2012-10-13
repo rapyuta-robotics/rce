@@ -32,13 +32,9 @@
 
 # Python specific imports
 import os
-import shutil
 from datetime import datetime, timedelta
-from math import log10
 from uuid import uuid4
 from functools import wraps
-
-pjoin = os.path.join
 
 # zope specific imports
 from zope.interface import implements
@@ -54,12 +50,13 @@ from errors import InternalError, InvalidRequest, UserConstraintError, \
 from util.interfaces import verifyObject
 from util.loader import Loader
 from util.converter import Converter
+from util import path as pathUtil
 from core.types import req
 from core.interfaces import IRequestSender, IControlFactory, IMessenger, \
     ILoadBalancer
 from core.user import User
 from core.monitor import NodeMonitor
-from core.container import DeploymentContainer, checkExe, checkPath
+from core.container import DeploymentContainer
 from comm import definition
 from comm import types as msgTypes
 from comm.protocol import RCEClientFactory
@@ -67,9 +64,6 @@ from comm.message import Message
 from remote.control import RemoteNodeControl
 from remote.callback import RelayCallbackFromRelay
 from client import types as clientTypes
-
-from util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
-    writeCertToFile, writeKeyToFile
 
 
 class _ManagerBase(object):
@@ -874,40 +868,63 @@ class ContainerManager(_UserManagerBase):
     """ Manager which handles the management of containers.
     """
     def __init__(self, reactor):
+        """ Initialize the Container Manager.
+            
+            @raise:         ValueError, if the paths/names are invalid.
+        """
         super(ContainerManager, self).__init__(reactor)
         
         self._relayID = None
         
+        self._rootfs = self._ROOTFS
         self._confDir = self._CONF_DIR
         self._dataDir = self._DATA_DIR
-        self._rootfs = self._ROOTFS
-        self._srcRoot = self._ROOT_SRC_DIR
-        pkgRoot = self._ROOT_PKG_DIR
+        self._srcDir = self._ROOT_SRC_DIR
+        pkgDir = self._ROOT_PKG_DIR
         
-        checkPath(self._confDir, 'Configuration')
-        checkPath(self._dataDir, 'Data')
-        checkPath(self._rootfs, 'Container file system')
-        checkPath(self._srcRoot, 'RCE source')
+        # Validate directory paths
+        pathUtil.checkPath(self._confDir, 'Configuration')
+        pathUtil.checkPath(self._dataDir, 'Data')
+        pathUtil.checkPath(self._rootfs, 'Container file system')
+        pathUtil.checkPath(self._srcDir, 'RCE source')
         
-        for path in pkgRoot:
-            checkPath(path, 'ROS Package')
+        # Validate executable paths
+        pathUtil.checkExe(self._srcDir, 'environment.py')
+        pathUtil.checkExe(self._srcDir, 'launcher.py')
         
-        # Validate the executables used in the container
-        checkExe(self._srcRoot, 'environment.py')
-        checkExe(self._srcRoot, 'launcher.py')
+        # Process ROS package paths
+        self._pkgDir = []
+        usedNames = set()
         
-        if pkgRoot:
-            fmt = 'rce-package-{{0:0{0}d}}'.format(int(log10(len(pkgRoot))+1))
-            destPath = [os.path.join('opt/rce/packages', fmt.format(i))
-                        for i in xrange(len(pkgRoot))]
-            self._pkgRoot = zip(pkgRoot, destPath)
+        for path, name in pkgDir:
+            pathUtil.checkPath(path, 'ROS Package')
             
-            for path in destPath:
-                os.mkdir(path)
-        else:
-            self._pkgRoot = []
+            if not name:
+                name = os.path.basename(path)
+            
+            pathUtil.checkName(name)
+            
+            if name in usedNames:
+                raise ValueError("Package name '{0}' is not "
+                                 'unique.'.format(name))
+            
+            usedNames.add(name)
+            self._pkgDir.append((path, os.path.join('opt/rce/packages', name)))
+        
+        for _, path in self._pkgDir:
+            os.mkdir(os.path.join(self._rootfs, path))
     
-    def registerRelayID(self, relayID):
+    @property
+    def relayID(self):
+        """ Communication ID of associated relay manager.
+        """
+        if not self._relayID:
+            raise InternalError('There is no relay ID registered.')
+        
+        return self._relayID
+    
+    @relayID.setter
+    def relayID(self, relayID):
         """ Register the communication ID of the relay manager which is used
             in this machine.
         """
@@ -923,13 +940,41 @@ class ContainerManager(_UserManagerBase):
         
         self._relayID = relayID
     
+    @property
+    def rootfs(self):
+        """ Host filesystem path of container filesystem root directory.
+        """
+        return self._rootfs
+    
+    @property
+    def confDir(self):
+        """ Filesystem path of configuration directory.
+        """
+        return self._confDir
+    
+    @property
+    def dataDir(self):
+        """ Filesystem path of temporary data directory.
+        """
+        return self._dataDir
+    
+    @property
+    def srcDir(self):
+        """ Filesystem path of RCE source directory.
+        """
+        return self._srcDir
+    
+    @property
+    def pkgDirIter(self):
+        """ Iterator over all file system paths of package directories.
+        """
+        return self._pkgDir.__iter__()
+    
     def _startContainer(self, deferred, commID):
         """ Internally used method to start a container.
         """
         try:
-            container = DeploymentContainer(self._reactor, commID,
-                                            self._relayID, self._rootfs,
-                                            self._confDir, self._dataDir)
+            container = DeploymentContainer(self, commID)
         except:
             log.msg('Caught an exception when trying to instantiate a '
                     'deployment container.')
@@ -999,8 +1044,8 @@ class ContainerManager(_UserManagerBase):
                                       containers.pop(tag))
     
     def _cleanPackageDir(self, arg=None):
-        for _, path in self._pkgRoot:
-            os.rmdir(path)
+        for _, path in self._pkgDir:
+            os.rmdir(os.path.join(self._rootfs, path))
         
         return arg
     

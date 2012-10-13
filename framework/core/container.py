@@ -34,6 +34,8 @@
 import os
 import shutil
 
+pjoin = os.path.join
+
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.defer import Deferred
@@ -41,49 +43,10 @@ from twisted.internet.protocol import ProcessProtocol
 
 # Custom imports
 from util import template
+from util import path
 
-pjoin = os.path.join
-
-
-def checkPath(path, description):
-    """ Check if the path is valid.
-        
-        @param path:            Path which should be checked.
-        @type  path:            str
-        
-        @param description:     Description which is used for the error
-                                message if necessary.
-        @type  description:     str
-        
-        @raise:                 ValueError, if path is not valid.
-    """
-    if not os.path.isabs(path):
-        raise ValueError('{0} directory is not an absolute '
-                         'path.'.format(description))
-    
-    if not os.path.isdir(path):
-        raise ValueError('{0} directory does not exist: '
-                         '{1}'.format(description, path))
-
-
-def checkExe(folder, exe):
-    """ Check if the executable is valid.
-        
-        @param folder:          Folder in which the executable is located.
-        @type  folder:          str
-        
-        @param exe:             Executable which should be checked.
-        @type  exe:             str
-        
-        @raise:                 ValueError, if executable is not valid.
-    """
-    path = pjoin(folder, exe)
-    
-    if not os.path.isfile(path):
-        raise ValueError("'{0}' is not a file.".format(exe))
-    
-    if not os.access(path, os.X_OK):
-        raise ValueError("'{0}' is not a executable.".format(exe))
+#from util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
+#    writeCertToFile, writeKeyToFile
 
 
 class _LXCProtocol(ProcessProtocol):
@@ -106,7 +69,7 @@ class Container(object):
         self._conf = pjoin(conf, 'config')
         self._fstab = pjoin(conf, 'fstab')
         
-        checkPath(conf, 'Container Configuration')
+        path.checkPath(conf, 'Container Configuration')
         
         if os.path.exists(self._conf):
             raise ValueError('There is already a config file in given '
@@ -176,7 +139,7 @@ class Container(object):
         try:
             log.msg("Start container '{0}'".format(name))
             cmd = ['/usr/bin/lxc-start', '-n', name, '-f', self._conf, '-d']
-            self.reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
+            self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
         except:
             log.msg('Caught an exception when trying to start the container.')
             import sys, traceback
@@ -202,8 +165,8 @@ class Container(object):
         
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', name]
-            self.reactor.spawnProcess(_LXCProtocol(_deferred), cmd[0], cmd,
-                                      env=os.environ)
+            self._reactor.spawnProcess(_LXCProtocol(_deferred), cmd[0], cmd,
+                                       env=os.environ)
         except:
             import sys, traceback
             etype, value, _ = sys.exc_info()
@@ -227,7 +190,7 @@ class Container(object):
         try:
             cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf,
                    command]
-            self.reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
+            self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
         except:
             log.msg('Caught an exception when trying to execute a command in '
                     'the container.')
@@ -240,20 +203,20 @@ class Container(object):
 class DeploymentContainer(Container):
     """ # TODO: Add description
     """
-    def __init__(self, reactor, commID, relayID, rootfs, conf, data):
+    def __init__(self, manager, commID):
         """ # TODO: Add description
         """
+        self._manager = manager
         self._commID = commID
-        self._relayID = relayID
-        self._confDir = pjoin(conf, commID)
+        
+        self._confDir = pjoin(manager.confDir, commID)
+        self._dataDir = pjoin(manager.confDir, commID)
         
         if os.path.isdir(self._confDir):
             raise ValueError('There is already a configuration directory for '
                              "'{0}'.".format(commID))
         
-        self._dataDir = pjoin(data, commID)
-        
-        if os.path.isdir(self._confDir):
+        if os.path.isdir(self._dataDir):
             raise ValueError('There is already a data directory for '
                              "'{0}'.".format(commID))
         
@@ -262,10 +225,12 @@ class DeploymentContainer(Container):
         
         self._rceDir = pjoin(self._dataDir, 'rce')
         self._rosDir = pjoin(self._dataDir, 'ros')
+        
         os.mkdir(self._rceDir)
         os.mkdir(self._rosDir)
         
-        super(DeploymentContainer, self).__init__(reactor, rootfs,
+        super(DeploymentContainer, self).__init__(manager.reactor,
+                                                  manager.rootfs,
                                                   self._confDir)
     
     def _createFstabFile(self):
@@ -273,28 +238,31 @@ class DeploymentContainer(Container):
         """
         self.extendFstab(self._rosDir, 'home/ros', False)
         self.extendFstab(self._rceDir, 'opt/rce/data', False)
-        self.extendFstab(self._srcRoot, 'opt/rce/src', True)
+        self.extendFstab(self._manager.srcDir, 'opt/rce/src', True)
         self.extendFstab(pjoin(self._confDir, 'upstartComm'),
                          'etc/init/rceComm.conf', True)
         self.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
                          'etc/init/rceLauncher.conf', True)
         
-        for srcPath, destPath in self._pkgRoot:
+        for srcPath, destPath in self._manager.pkgDirIter:
             self.extendFstab(srcPath, destPath, True)
     
     def _createUpstartScripts(self):
         """ Create an upstart script based on the given parameters.
         """
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
-            f.write(self._UPSTART_COMM.format(commID=self._commID,
-                                              serverID=self._relayID))
+            f.write(template.UPSTART_COMM.format(
+                commID=self._commID,
+                serverID=self._manager.relayID
+            ))
         
         with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
-            f.write(self._UPSTART_LAUNCHER)
+            f.write(template.UPSTART_LAUNCHER)
     
     def start(self, deferred):
         """ Start the deployment container.
         """
+        # TODO: SSL stuff
 #        if self._USE_SSL:
 #            # Create a new certificate and key for environment node
 #            caCertPath = pjoin(self._SSL_DIR, 'Container.cert')
