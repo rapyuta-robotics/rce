@@ -9,10 +9,10 @@ Content of git respository
     (needs revision)
 
 - benchmark:
-    Client side scripts, data, and plots for a simple communication benchmark.   
+    Client-side scripts, data, and plots for a simple communication benchmark.   
 
 - test:
-    ROS packages which can be used with the framework. Contains Server-side
+    ROS packages which can be used with the framework. Contains server-side
     files for benchmark.
 
 - pyrce:
