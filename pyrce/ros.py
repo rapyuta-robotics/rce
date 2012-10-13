@@ -44,7 +44,7 @@ except ImportError:
 from twisted.internet.defer import Deferred
 
 # Custom imports
-from connection import ROSConnection
+from connection import ConnectionError, ROSConnection
 
 
 _MAP = {#'ServiceConverter' : '???',
@@ -66,29 +66,39 @@ class Environment(object):
         self._ifs = []
     
     def run(self, _):
-        for container in self._containers:
-            self._conn.createContainer(**container)
-        
-        for node in self._nodes:
-            self._conn.addNode(**node)
-        
-        for interface in self._interfaces:
-            self._conn.addInterface(**interface)
-        
-        for connection in self._connections:
-            self._conn.addConnection(**connection)
-        
-        for ros in self._interfaces:
-            iType = ros['iType']
+        try:
+            for container in self._containers:
+                self._conn.createContainer(**container)
             
-            if iType in _MAP:
-                self._ifs.append(getattr(self._conn, _MAP[iType])(ros['iTag'],
-                                                                  ros['iCls'],
-                                                                  ros['addr']))
+            for node in self._nodes:
+                self._conn.addNode(**node)
+            
+            for interface in self._interfaces:
+                self._conn.addInterface(**interface)
+            
+            for connection in self._connections:
+                self._conn.addConnection(**connection)
+            
+            for ros in self._interfaces:
+                iType = ros['iType']
+                
+                if iType in _MAP:
+                    self._ifs.append(
+                        getattr(self._conn, _MAP[iType])(ros['iTag'],
+                                                         ros['iCls'],
+                                                         ros['addr'])
+                    )
+        except Exception as e:
+            import traceback
+            print(''.join(traceback.format_exception_only(type(e), e)))
+            rospy.signal_shutdown('Error')
     
     def terminate(self):
-        for container in self._containers:
-            self._conn.destroyContainer(**container)
+        try:
+            for container in self._containers:
+                self._conn.destroyContainer(**container)
+        except ConnectionError:
+            pass
         
         self._ifs = []
         

@@ -77,13 +77,14 @@ class _Subscriber(object):
         self._iTag = iTag
         self._msgType = msgType
         self._cb = cb
+        
+        conn.registerInterface(iTag, self, False)
         self._subscribed = True
     
     def unsubscribe(self):
         """ Unsubscribe from Interface. Afterwards no more messages are given
             to the registered callback.
         """
-        #return
         if self._subscribed:
             self._conn.unregisterInterface(self._iTag, self)
             self._subscribed = False
@@ -113,6 +114,8 @@ class _Service(object):
         self._srvType = srvType
         
         self._responses = {}
+        
+        conn.registerInterface(iTag, self, True)
     
     def callback(self, srvType, msg, msgID):
         """ Callback for Connection.
@@ -195,7 +198,8 @@ if HAS_ROS:
         def __del__(self):
             """ Finalize the Publisher.
             """
-            self._sub.unregister()
+            if hasattr(self, '_sub'):
+                self._sub.unregister()
     
     
     class ROSSubscriber(_Subscriber):
@@ -213,9 +217,7 @@ if HAS_ROS:
                 raise ValueError('Message type is not valid. Has to be of the '
                                  'form pkg/msg, i.e. std_msgs/Int8.')
             
-            msgCls = conn.loader.loadMsg(*args)
-            
-            self._pub = rospy.Publisher(addr, msgCls)
+            self._pub = rospy.Publisher(addr, conn.loader.loadMsg(*args))
         
         def _callback(self, msg):
             """ Internally used method to send received messages to the ROS
@@ -231,7 +233,8 @@ if HAS_ROS:
             """
             super(ROSSubscriber, self).__del__()
             
-            self._pub.unregister()
+            if hasattr(self, '_pub'):
+                self._pub.unregister()
     
     
     class ROSService(_Service):
@@ -242,11 +245,10 @@ if HAS_ROS:
             """
             super(ROSService, self).__init__(conn, iTag, srvType)
             
+            self._pendingLock = Lock()
+            self._pending = {}
+            
             args = srvType.split('/')
-            
-            if len(args) != 2:
-                raise ValueError('Invalid service type "{0}".'.format(srvType))
-            
             
             if len(args) != 2:
                 raise ValueError('Service type is not valid. Has to be of the '
@@ -257,8 +259,6 @@ if HAS_ROS:
             srvCls._response_class = rospy.AnyMsg
             
             self._service = rospy.Service(addr, srvCls, self._rosCB)
-            self._pendingLock = Lock()
-            self._pending = {}
         
         def _rosCB(self, req):
             """ Internally used callback for ROS Service.
@@ -298,7 +298,9 @@ if HAS_ROS:
             """ Finalize the Service.
             """
             super(ROSService, self).__del__()
-            self._service.shutdown()
+            
+            if hasattr(self, '_service'):
+                self._service.shutdown()
             
             with self._pendingLock:
                 for event in self._pending.itervalues():

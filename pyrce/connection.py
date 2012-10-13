@@ -283,8 +283,8 @@ class _Connection(object):
                            'data':{'disconnect':[{'tagA':iTag1,
                                                   'tagB':iTag2}]}})
     
-    def _registerInterface(self, iTag, interface, unique):
-        """ Internally used method to register an Interface.
+    def registerInterface(self, iTag, interface, unique):
+        """ Callback for Interface.
             
             @param unique:  Flag to indicate whether Interface should be unique
                             for its tag or not.
@@ -365,9 +365,7 @@ class Connection(_Connection):
         if not callable(cb):
             raise TypeError('Callback has to be callable.')
         
-        subscriber = interface.Subscriber(self, iTag, msgType, cb)
-        self._registerInterface(iTag, subscriber, False)
-        return subscriber
+        return interface.Subscriber(self, iTag, msgType, cb)
     
     def service(self, iTag, srvType, cb=None):
         """ Create a Service.
@@ -379,9 +377,7 @@ class Connection(_Connection):
         if cb and not callable(cb):
             raise TypeError('Callback has to be callable.')
         
-        service = interface.Service(self, iTag, srvType, cb)
-        self._registerInterface(iTag, service, False)
-        return service
+        return interface.Service(self, iTag, srvType, cb)
 
 
 if interface.HAS_ROS:
