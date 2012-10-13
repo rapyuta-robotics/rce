@@ -28,10 +28,45 @@
 #     
 #     \author/s: Dominique Hunziker 
 #     
+#     This file is based on the module roslib.launcher of the ROS library:
+#         
+#         Licensed under the Software License Agreement (BSD License)
+#         
+#         Copyright (c) 2008, Willow Garage, Inc.
+#         All rights reserved.
+#
+#         Redistribution and use in source and binary forms, with or without
+#         modification, are permitted provided that the following conditions
+#         are met:
+#         
+#          * Redistributions of source code must retain the above copyright
+#            notice, this list of conditions and the following disclaimer.
+#          * Redistributions in binary form must reproduce the above
+#            copyright notice, this list of conditions and the following
+#            disclaimer in the documentation and/or other materials provided
+#            with the distribution.
+#          * Neither the name of Willow Garage, Inc. nor the names of its
+#            contributors may be used to endorse or promote products derived
+#            from this software without specific prior written permission.
+#         
+#         THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#         "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#         LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+#         FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+#         COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+#         INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+#         BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+#         LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#         CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#         LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+#         ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#         POSSIBILITY OF SUCH DAMAGE.
+#     
 #     
 
 # Python specific imports
 import os
+import sys
 
 # ROS specific imports
 import rospkg
@@ -64,6 +99,9 @@ class Loader(object):
         """
         self._rp = rospkg.RosPack(rosPath)
         
+        # List of all packages which are already added to sys.path
+        self._packages = []
+        
         # Key:    tuple (package name, clsType, cls)
         # Value:  msg/srv module
         self._moduleCache = {}
@@ -74,6 +112,97 @@ class Loader(object):
         #                Value:  absolute path to node
         self._nodeCache = {}
     
+    def _getDepends(self, pkg):
+        """ roslib.launcher
+            
+            Get all package dependencies which are not catkin-ized.
+            
+            @param pkg:     Name of the package for which the dependencies
+                            should be returned.
+            @type  pkg:     str
+            
+            @return:        List of all non catkin-ized dependencies.
+            @rtype:         [str]
+        """
+        vals = self._rp.get_depends(pkg, implicit=True)
+        return [v for v in vals if not self._rp.get_manifest(v).is_catkin]
+    
+    def _appendPackagePaths(self, manifest, paths, pkgDir):
+        """ roslib.launcher
+            
+            Add paths for package to paths.
+            
+            @param manifest:    Package manifest
+            @type  manifest:    Manifest
+            
+            @param paths:       List of paths to append to
+            @type  paths:       [str]
+            
+            @param pkgDir:      Package's filesystem directory path
+            @type  pkgDir:      str
+        """
+        exports = manifest.get_export('python','path')
+        
+        if exports:
+            paths.extend(e.replace('${prefix}', pkgDir)
+                             for export in exports
+                                 for e in export.split(':'))
+        else:
+            dirs = [os.path.join(pkgDir, d) for d in ['src', 'lib']]
+            paths.extend([d for d in dirs if os.path.isdir(d)])
+    
+    def _generatePythonPath(self, pkg):
+        """ roslib.launcher
+            
+            Recursive subroutine for building dependency list and Python path.
+            
+            @param pkg:     Name of package for which Python paths should be
+                            generated.
+            @type  pkg:     str
+        """
+        if pkg in self._packages:
+            return []
+    
+        # short-circuit if this is a catkin-ized package
+        m = self._rp.get_manifest(pkg)
+        
+        if m.is_catkin:
+            self._packages.append(pkg)
+            return []
+    
+        packages = self._getDepends(pkg) 
+        packages.append(pkg)
+    
+        paths = []
+        
+        try:
+            for p in packages:
+                m = self._rp.get_manifest(p)
+                d = self._rp.get_path(p)
+                self._appendPackagePaths(m, paths, d)
+                self._packages.append(p)
+        except:
+            if pkg in self._packages:
+                self._packages.remove(pkg)
+            
+            raise
+        
+        return paths
+    
+    def _loadManifest(self, pkg):
+        """ roslib.launcher
+        
+            Update the Python sys.path with package's dependencies.
+            
+            @param pkg:     Name of the package for which the manifest should
+                            be loaded.
+            @type  pkg:     str
+        """
+        if pkg in self._packages:
+            return
+        
+        sys.path = self._generatePythonPath(pkg) + sys.path
+    
     def _loadModule(self, pkg, clsType, cls):
         """ Internally used method to load a module.
         """
@@ -81,15 +210,15 @@ class Loader(object):
             try:
                 pkg = str(pkg)
             except UnicodeEncodeError:
-                raise InternalError('The package "{0}" is not valid.'.format(
-                                                                          pkg))
+                raise InternalError('The package "{0}" is not '
+                                    'valid.'.format(pkg))
         
         if isinstance(cls, unicode):
             try:
                 cls = str(cls)
             except UnicodeEncodeError:
-                raise InternalError('The class "{0}" is not valid.'.format(
-                                                                        cls))
+                raise InternalError('The class "{0}" is not '
+                                    'valid.'.format(cls))
         
         try:
             return __import__('.'.join([pkg, clsType]), fromlist=[cls])
@@ -97,18 +226,16 @@ class Loader(object):
             pass
         
         try:
-            pkgDir = self._rp.get_path(pkg)
+            self._loadManifest(pkg)
         except rospkg.ResourceNotFound:
-            raise ResourceNotFound('Can not find ROS package "{0}".'.format(
-                                                                         pkg))
+            raise ResourceNotFound('Can not load manifest for ROS package '
+                                   '"{0}".'.format(pkg))
         
         try:
-            import imp
-            return imp.load_source(cls, os.path.join(
-                        pkgDir, 'src', pkg, clsType, '_{0}.py'.format(cls)))
+            return __import__('.'.join([pkg, clsType]), fromlist=[cls])
         except ImportError as e:
-            raise ResourceNotFound('Can not import ROS package '
-                                   '"{0}": {1}'.format(pkg, e))
+            raise ResourceNotFound('Can not import {0}.{1} of ROS package '
+                                   '{2}: {1}'.format(clsType, cls, pkg, e))
     
     def loadMsg(self, pkg, cls):
         """ Get the message class matching the string pair.
