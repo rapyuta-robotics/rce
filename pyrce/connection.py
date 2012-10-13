@@ -407,13 +407,9 @@ if interface.HAS_ROS:
         def subscriber(self, iTag, msgType, addr):
             """ Create a Subscriber using ROS.
             """
-            subscriber = interface.ROSSubscriber(self, iTag, msgType, addr)
-            self._registerInterface(iTag, subscriber, False)
-            return subscriber
+            return interface.ROSSubscriber(self, iTag, msgType, addr)
         
         def service(self, iTag, srvType, addr):
             """ Create a Service using ROS.
             """
-            service = interface.ROSService(self, iTag, srvType, addr)
-            self._registerInterface(iTag, service, False)
-            return service
+            return interface.ROSService(self, iTag, srvType, addr)

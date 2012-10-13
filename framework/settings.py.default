@@ -75,7 +75,8 @@ DATA_DIR = '/opt/rce/container/data'
 ROOT_SRC_DIR = '/opt/rce/framework'
 
 # Dictionary where the custom ROS nodes are stored
-#     Has to be a list of (filesystem path, unique name)
-#     If 'unique name' is None or an empty string the basename of
+#   - Has to be a list of (filesystem path, unique name) tuples.
+#   - Elements with lower index are searched first.
+#   - If 'unique name' is None or an empty string the basename of
 #     'filesystem path' is used as name
 ROOT_PKG_DIR = [('/opt/rce/test', None)]
