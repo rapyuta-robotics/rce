@@ -229,23 +229,16 @@ class Container(object):
             @param command:     Command which should be executed.
             @type  command:     [str]
         """
-        def callback(reason):
-            if reason.check(ProcessDone):
-                print('ProcessDone - Successful.')
-            elif reason.check(ProcessTerminated):
-                if reason.value.exitCode == 0:
-                    print('ProcessTerminated - Successful.')
-                else:
-                    print('ProcessTerminated - Received non zero exit code '
-                          'from LXC: {0}'.format(reason.getErrorMessage()))
-            else:
-                print('Received non zero exit code from LXC: '
-                      '{0}'.format(reason.getErrorMessage()))
-            
+        def cb(_):
+            print('\nSuccessful.')
+            self._reactor.stop()
+        
+        def eb(err):
+            print('\n{0}'.format(err.getErrorMessage()))
             self._reactor.stop()
         
         deferred = Deferred()
-        deferred.addCallbacks(callback, callback)
+        deferred.addCallbacks(cb, eb)
         
         self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
                          False)
@@ -399,7 +392,10 @@ class MakeContainer(Container):
             @type  pkgDir:      [(str, str)]
         """
         self._confDir = mkdtemp(prefix='rce_cmd')
+        self._rosDir = os.path.join(self._confDir, 'ros')
         self._pkgDir = pkgDir
+        
+        os.mkdir(self._rosDir)
         
         super(MakeContainer, self).__init__(reactor, rootfs, self._confDir)
     
@@ -411,6 +407,8 @@ class MakeContainer(Container):
         """
         for srcPath, destPath in self._pkgDir:
             self.extendFstab(srcPath, destPath, False)
+        
+        self.extendFstab(self._rosDir, 'home/ros', False)
         
         super(MakeContainer, self).execute(os.path.basename(self._confDir),
                                            ['/opt/rce/make.sh'] + command)

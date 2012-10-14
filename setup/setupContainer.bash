@@ -71,7 +71,7 @@ EOF
 
 download_ubuntu()
 {
-    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,vim,dhcp3-client,ssh,lsb-release,language-pack-en,python-twisted-core,wget,python-openssl,python-imaging
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,vim,dhcp3-client,ssh,lsb-release,language-pack-en,wget,python-twisted-core,python-openssl,python-imaging,build-essential
 	
 	### Local
 	#mirror=
