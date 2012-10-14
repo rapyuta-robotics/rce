@@ -88,7 +88,7 @@ Installation
         8.  Leave the container (make sure you are in the container when running in a cloud)
               poweroff
 
-    3.  Copy setup and upstart script to container
+    9.  Copy setup and upstart script to container
           sudo cp /opt/rce/setup/src/setup.sh /opt/rce/container/rootfs/opt/rce/
           sudo cp /opt/rce/setup/src/rce.conf /opt/rce/container/rootfs/etc/init/
 
