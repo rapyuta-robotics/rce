@@ -128,7 +128,7 @@ class Container(object):
         self._fstabExt.append(line.format(srcDir=src,
                                           fsDir=pjoin(self._rootfs, fs)))
     
-    def _setup(self, deferred):
+    def _setup(self, deferred, output=None):
         """ Setup necessary files.
         """
         with open(self._conf, 'w') as f:
@@ -152,7 +152,7 @@ class Container(object):
         _deferred = Deferred()
         _deferred.addCallbacks(callback, callback)
         
-        return _LXCProtocol(_deferred)
+        return _LXCProtocol(_deferred, output)
     
     def start(self, name, deferred):
         """ Start the container.
@@ -172,12 +172,11 @@ class Container(object):
             log.msg("Start container '{0}'".format(name))
             cmd = ['/usr/bin/lxc-start', '-n', name, '-f', self._conf, '-d']
             self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
-        except:
+        except Exception as e:
             log.msg('Caught an exception when trying to start the container.')
             import traceback
-            etype, value, _ = sys.exc_info()
-            deferred.errback('\n'.join(traceback.format_exception_only(etype,
-                                                                       value)))
+            deferred.errback('\n'.join(traceback.format_exception_only(type(e),
+                                                                       e)))
     
     def stop(self, name, deferred):
         """ Stop the container.
@@ -205,10 +204,9 @@ class Container(object):
             cmd = ['/usr/bin/lxc-stop', '-n', name]
             self._reactor.spawnProcess(_LXCProtocol(_deferred), cmd[0], cmd,
                                        env=os.environ)
-        except:
+        except Exception as e:
             import traceback
-            etype, value, _ = sys.exc_info()
-            msg = '\n'.join(traceback.format_exception_only(etype, value))
+            msg = '\n'.join(traceback.format_exception_only(type(e), e))
             log.msg(msg)
             deferred.errback(msg)
     
@@ -242,9 +240,8 @@ class Container(object):
             log.msg('Caught an exception when trying to execute a command in '
                     'the container.')
             import traceback
-            etype, value, _ = sys.exc_info()
-            deferred.errback('\n'.join(traceback.format_exception_only(etype,
-                                                                       value)))
+            deferred.errback('\n'.join(traceback.format_exception_only(type(e),
+                                                                       e)))
 
 
 class DeploymentContainer(Container):
@@ -386,8 +383,7 @@ class CommandContainer(Container):
         self._confDir = mkdtemp(prefix='rce-cmd')
         self._pkgDir = pathUtil.processPackagePaths(pkgDir)
         
-        super(DeploymentContainer, self).__init__(reactor, rootfs,
-                                                  self._confDir)
+        super(CommandContainer, self).__init__(reactor, rootfs, self._confDir)
     
     def execute(self, command):
         """ Execute the command in the command container.
@@ -395,7 +391,7 @@ class CommandContainer(Container):
             @param command:     Command which should be executed.
             @type  command:     str
         """
-        for srcPath, destPath in self._manager.pkgDirIter:
+        for srcPath, destPath in self._pkgDir:
             self.extendFstab(srcPath, destPath, True)
         
         super(CommandContainer, self).execute(os.path.basename(self._confDir),

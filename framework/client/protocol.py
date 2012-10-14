@@ -111,10 +111,9 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
             except AuthenticationError as e:
                 resp = 'Authentication Error: {0}'.format(e)
                 msgType = types.ERROR
-            except Exception:   # TODO: Refine Error handling
+            except Exception as e:   # TODO: Refine Error handling
                 #import sys, traceback
-                #etype, value, _ = sys.exc_info()
-                #resp = '\n'.join(traceback.format_exception_only(etype, value)))
+                #resp = '\n'.join(traceback.format_exception_only(type(e), e)))
                 
                 # Full debug message
                 import traceback
@@ -210,11 +209,10 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             import traceback
             resp = traceback.format_exc()
             msgType = types.ERROR
-        except:   # TODO: Refine Error handling
+        except Exception as e:   # TODO: Refine Error handling
             #import sys, traceback
-            #etype, value, _ = sys.exc_info()
             #WebSocketServerProtocol.sendMessage(self, '\n'.join(
-            #    traceback.format_exception_only(etype, value)))
+            #    traceback.format_exception_only(type(e), e)))
             
             # Full debug message
             import traceback

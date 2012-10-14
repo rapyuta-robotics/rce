@@ -44,6 +44,6 @@ def main(reactor, cmd):
     reactor.run()
 
 
-if __name__ == '_main__':
+if __name__ == '__main__':
     from twisted.internet import reactor
     main(reactor, sys.argv[1:])

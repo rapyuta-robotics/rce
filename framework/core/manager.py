@@ -958,13 +958,12 @@ class ContainerManager(_UserManagerBase):
         """
         try:
             container = DeploymentContainer(self, commID)
-        except:
+        except Exception as e:
             log.msg('Caught an exception when trying to instantiate a '
                     'deployment container.')
-            import sys, traceback
-            etype, value, _ = sys.exc_info()
-            deferred.errback('\n'.join(traceback.format_exception_only(etype,
-                                                                       value)))
+            import traceback
+            deferred.errback('\n'.join(traceback.format_exception_only(type(e),
+                                                                       e)))
         else:
             container.start(deferred)
     
