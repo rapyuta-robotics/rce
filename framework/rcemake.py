@@ -47,8 +47,9 @@ def main(reactor, cmd):
         os.mkdir(os.path.join(settings.ROOTFS, path))
     
     try:
-        c = CommandContainer(reactor, settings.ROOTFS, pkgDir)
-        c.execute(cmd)
+        c = CommandContainer(reactor, settings.ROOTFS,
+                             pkgDir+[('/usr/lib/lxc'), ('usr/lib/lxc')])
+        c.execute(' '.join(cmd))
         reactor.run()
     finally:
         for _, path in pkgDir:
