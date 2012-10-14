@@ -31,17 +31,28 @@
 #     
 
 # Python specific imports
+import os
 import sys
 
 # Custom imports
 import settings
 from core.container import CommandContainer
+from util import path as pathUtil
 
 
 def main(reactor, cmd):
-    c = CommandContainer(reactor, settings.ROOTFS, settings.ROOT_PKG_DIR)
-    c.execute(cmd)
-    reactor.run()
+    pkgDir = pathUtil.processPackagePaths(settings.ROOT_PKG_DIR)
+    
+    for _, path in pkgDir:
+        os.mkdir(os.path.join(settings.ROOTFS, path))
+    
+    try:
+        c = CommandContainer(reactor, settings.ROOTFS, pkgDir)
+        c.execute(cmd)
+        reactor.run()
+    finally:
+        for _, path in pkgDir:
+            os.rmdir(os.path.join(settings.ROOTFS, path))
 
 
 if __name__ == '__main__':

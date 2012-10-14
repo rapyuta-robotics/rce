@@ -236,7 +236,7 @@ class Container(object):
             cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf,
                    command]
             self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
-        except:
+        except Exception as e:
             log.msg('Caught an exception when trying to execute a command in '
                     'the container.')
             import traceback
@@ -376,12 +376,12 @@ class CommandContainer(Container):
                                 container filesystem.
             @type  rootfs:      str
             
-            @param pkgDir:      List of tuples containing package source path
-                                and package name or None.
-            @type  pkgDir:      [(str, str/None)]
+            @param pkgDir:      List of tuples containing package source and
+                                destination path for fstab file.
+            @type  pkgDir:      [(str, str)]
         """
-        self._confDir = mkdtemp(prefix='rce-cmd')
-        self._pkgDir = pathUtil.processPackagePaths(pkgDir)
+        self._confDir = mkdtemp(prefix='rce_cmd')
+        self._pkgDir = pkgDir
         
         super(CommandContainer, self).__init__(reactor, rootfs, self._confDir)
     
