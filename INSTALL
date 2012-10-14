@@ -54,27 +54,30 @@ Installation
     Inside the container do the following steps:
     (all commands require super user privileges)
     
-    1.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
+    1.  Install necessary LXC components
+        apt-get install --no-install-recommends lxc
+    
+    2.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
         sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
         wget http://packages.ros.org/ros.key -O - | apt-key add -
         apt-get update
         
         Minimal installation:
-            apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs
+            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
         For debug nodes:
-            apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
-    2.  Add users
+    3.  Add users
         adduser ros
         adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
-    3.  Add files and directories
+    4.  Add files and directories
         mkdir /opt/rce/packages
         mkdir /opt/rce/src
         touch /etc/init/rceComm.conf
         touch /etc/init/rceLauncher.conf
     
-    4.  Either change root password or disable root login
+    5.  Either change root password or disable root login
         For changing the password:
             passwd
         For disabling the root login:

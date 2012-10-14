@@ -32,7 +32,9 @@
 
 # Python specific imports
 import os
+import sys
 import shutil
+from tempfile import mkdtemp
 
 pjoin = os.path.join
 
@@ -42,8 +44,9 @@ from twisted.internet.defer import Deferred
 from twisted.internet.protocol import ProcessProtocol
 
 # Custom imports
+from errors import InternalError
 from util import template
-from util import path
+from util import path as pathUtil
 
 #from util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
@@ -52,8 +55,18 @@ from util import path
 class _LXCProtocol(ProcessProtocol):
     """ Protocol which is used to handle the LXC commands.
     """
-    def __init__(self, deferred):
+    def __init__(self, deferred, output=None):
         self._deferred = deferred
+        
+        if output and not callable(output):
+            raise InternalError('Output of LXC protocol has to be None or '
+                                'callable')
+        
+        self._output = output
+    
+    def outReceived(self, data):
+        if self._output:
+            self._output(data)
     
     def processEnded(self, reason):
         self._deferred.callback(reason)
@@ -81,7 +94,7 @@ class Container(object):
         self._conf = pjoin(conf, 'config')
         self._fstab = pjoin(conf, 'fstab')
         
-        path.checkPath(conf, 'Container Configuration')
+        pathUtil.checkPath(conf, 'Container Configuration')
         
         if os.path.exists(self._conf):
             raise ValueError('There is already a config file in given '
@@ -161,7 +174,7 @@ class Container(object):
             self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
         except:
             log.msg('Caught an exception when trying to start the container.')
-            import sys, traceback
+            import traceback
             etype, value, _ = sys.exc_info()
             deferred.errback('\n'.join(traceback.format_exception_only(etype,
                                                                        value)))
@@ -193,7 +206,7 @@ class Container(object):
             self._reactor.spawnProcess(_LXCProtocol(_deferred), cmd[0], cmd,
                                        env=os.environ)
         except:
-            import sys, traceback
+            import traceback
             etype, value, _ = sys.exc_info()
             msg = '\n'.join(traceback.format_exception_only(etype, value))
             log.msg(msg)
@@ -209,13 +222,17 @@ class Container(object):
             @param command:     Command which should be executed.
             @type  command:     str
         """
-        def cb(msg):
+        def cb(_):
+            self._reactor.stop()
+        
+        def eb(msg):
             print(msg)
+            self._reactor.stop()
         
         deferred = Deferred()
-        deferred.addErrback(cb)
+        deferred.addCallbacks(cb, eb)
         
-        protocol = self._setup(deferred)
+        protocol = self._setup(deferred, sys.stdout.write)
         
         try:
             cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf,
@@ -224,7 +241,7 @@ class Container(object):
         except:
             log.msg('Caught an exception when trying to execute a command in '
                     'the container.')
-            import sys, traceback
+            import traceback
             etype, value, _ = sys.exc_info()
             deferred.errback('\n'.join(traceback.format_exception_only(etype,
                                                                        value)))
@@ -352,6 +369,42 @@ class CommandContainer(Container):
         a container. Should be primarily used for compiling source for usage
         with RCE.
     """
-    def __init__(self):
+    def __init__(self, reactor, rootfs, pkgDir):
+        """ Initialize the command container.
+            
+            @param reactor:     Reference to the twisted::reactor
+            @type  reactor:     twisted::reactor
+            
+            @param rootfs:      Filesystem path of the root directory of the
+                                container filesystem.
+            @type  rootfs:      str
+            
+            @param pkgDir:      List of tuples containing package source path
+                                and package name or None.
+            @type  pkgDir:      [(str, str/None)]
         """
+        self._confDir = mkdtemp(prefix='rce-cmd')
+        self._pkgDir = pathUtil.processPackagePaths(pkgDir)
+        
+        super(DeploymentContainer, self).__init__(reactor, rootfs,
+                                                  self._confDir)
+    
+    def execute(self, command):
+        """ Execute the command in the command container.
+            
+            @param command:     Command which should be executed.
+            @type  command:     str
         """
+        for srcPath, destPath in self._manager.pkgDirIter:
+            self.extendFstab(srcPath, destPath, True)
+        
+        super(CommandContainer, self).execute(os.path.basename(self._confDir),
+                                              command)
+    
+    def __del__(self):
+        """ Destructor.
+        """
+        try:
+            shutil.rmtree(self._confDir)
+        except:
+            pass

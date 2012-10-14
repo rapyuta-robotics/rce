@@ -108,3 +108,36 @@ def checkExe(folder, exe):
     
     if not os.access(path, os.X_OK):
         raise ValueError("'{0}' is not a executable.".format(exe))
+
+
+def processPackagePaths(paths):
+    """ Utility function to process the attribute ROOT_PKG_DIR from settings.
+        
+        @param paths:       List of attribute ROOT_PKG_DIR from settings.py
+        @type  paths:       [(str, str/None)]
+        
+        @return:            Processed list; each element of ROOT_PKG_DIR will
+                            be transformed into a tuple of source path and
+                            destination path which can than be used for to
+                            extend the fstab file for the container creation.
+        @rtype:             [(str, str)]
+    """
+    pkgDir = []
+    usedNames = set()
+    
+    for path, name in paths:
+        checkPath(path, 'ROS Package')
+        
+        if not name:
+            name = os.path.basename(path)
+        
+        checkName(name)
+        
+        if name in usedNames:
+            raise ValueError("Package name '{0}' is not "
+                             'unique.'.format(name))
+        
+        usedNames.add(name)
+        pkgDir.append((path, os.path.join('opt/rce/packages', name)))
+    
+    return pkgDir

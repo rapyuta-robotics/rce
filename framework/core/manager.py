@@ -880,7 +880,6 @@ class ContainerManager(_UserManagerBase):
         self._confDir = self._CONF_DIR
         self._dataDir = self._DATA_DIR
         self._srcDir = self._ROOT_SRC_DIR
-        pkgDir = self._ROOT_PKG_DIR
         
         # Validate directory paths
         pathUtil.checkPath(self._confDir, 'Configuration')
@@ -893,23 +892,7 @@ class ContainerManager(_UserManagerBase):
         pathUtil.checkExe(self._srcDir, 'launcher.py')
         
         # Process ROS package paths
-        self._pkgDir = []
-        usedNames = set()
-        
-        for path, name in pkgDir:
-            pathUtil.checkPath(path, 'ROS Package')
-            
-            if not name:
-                name = os.path.basename(path)
-            
-            pathUtil.checkName(name)
-            
-            if name in usedNames:
-                raise ValueError("Package name '{0}' is not "
-                                 'unique.'.format(name))
-            
-            usedNames.add(name)
-            self._pkgDir.append((path, os.path.join('opt/rce/packages', name)))
+        self._pkgDir = pathUtil.processPackagePaths(self._ROOT_PKG_DIR)
         
         for _, path in self._pkgDir:
             os.mkdir(os.path.join(self._rootfs, path))
