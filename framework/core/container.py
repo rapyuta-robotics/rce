@@ -239,6 +239,9 @@ class Container(object):
         deferred = Deferred()
         deferred.addCallbacks(cb, eb)
         
+        self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
+                         False)
+        
         protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
         
         try:
@@ -370,10 +373,9 @@ class DeploymentContainer(Container):
             pass
 
 
-class CommandContainer(Container):
-    """ Container representation which is used to run a single command inside
-        a container. Should be primarily used for compiling source for usage
-        with RCE.
+class MakeContainer(Container):
+    """ Container representation which is used to make a ROS package inside
+        a container.
     """
     def __init__(self, reactor, rootfs, pkgDir):
         """ Initialize the command container.
@@ -392,7 +394,7 @@ class CommandContainer(Container):
         self._confDir = mkdtemp(prefix='rce_cmd')
         self._pkgDir = pkgDir
         
-        super(CommandContainer, self).__init__(reactor, rootfs, self._confDir)
+        super(MakeContainer, self).__init__(reactor, rootfs, self._confDir)
     
     def execute(self, command):
         """ Execute the command in the command container.
@@ -401,10 +403,15 @@ class CommandContainer(Container):
             @type  command:     [str]
         """
         for srcPath, destPath in self._pkgDir:
-            self.extendFstab(srcPath, destPath, True)
+            self.extendFstab(srcPath, destPath, False)
         
-        super(CommandContainer, self).execute(os.path.basename(self._confDir),
-                                              command)
+        script = os.path.join(self._confDir, 'script.sh')
+        
+        with open(script, 'w') as f:
+            f.write(template.MAKE)
+        
+        super(MakeContainer, self).execute(os.path.basename(self._confDir),
+                                           [script] + command)
     
     def __del__(self):
         """ Destructor.

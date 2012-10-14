@@ -36,7 +36,7 @@ import sys
 
 # Custom imports
 import settings
-from core.container import CommandContainer
+from core.container import MakeContainer
 from util import path as pathUtil
 
 
@@ -47,9 +47,9 @@ def main(reactor, cmd):
         os.mkdir(os.path.join(settings.ROOTFS, path))
     
     try:
-        c = CommandContainer(reactor, settings.ROOTFS,
-                             pkgDir+[('/usr/lib/lxc', 'usr/lib/lxc')])
-        c.execute(cmd)
+        make = MakeContainer(reactor, settings.ROOTFS,
+                             pkgDir)
+        make.execute(cmd)
         reactor.run()
     finally:
         for _, path in pkgDir:
