@@ -405,13 +405,8 @@ class MakeContainer(Container):
         for srcPath, destPath in self._pkgDir:
             self.extendFstab(srcPath, destPath, False)
         
-        script = os.path.join(self._confDir, 'script.sh')
-        
-        with open(script, 'w') as f:
-            f.write(template.MAKE)
-        
         super(MakeContainer, self).execute(os.path.basename(self._confDir),
-                                           [script] + command)
+                                           ['/opt/rce/make.sh'] + command)
     
     def __del__(self):
         """ Destructor.

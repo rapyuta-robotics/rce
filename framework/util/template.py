@@ -116,9 +116,3 @@ script
     start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
 end script
 """
-
-
-MAKE = """#!/bin/sh
-. /opt/rce/setup.sh
-rosmake $*
-"""

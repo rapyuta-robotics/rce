@@ -40,7 +40,7 @@ from core.container import MakeContainer
 from util import path as pathUtil
 
 
-def main(reactor, cmd):
+def main(reactor, pkgs):
     pkgDir = pathUtil.processPackagePaths(settings.ROOT_PKG_DIR)
     
     for _, path in pkgDir:
@@ -49,7 +49,7 @@ def main(reactor, cmd):
     try:
         make = MakeContainer(reactor, settings.ROOTFS,
                              pkgDir)
-        make.execute(cmd)
+        make.execute(pkgs)
         reactor.run()
     finally:
         for _, path in pkgDir:

@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 . /etc/environment
 . /opt/ros/fuerte/setup.sh
