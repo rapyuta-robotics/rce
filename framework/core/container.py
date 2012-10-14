@@ -40,6 +40,7 @@ pjoin = os.path.join
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.error import ProcessDone, ProcessTerminated
 from twisted.internet.defer import Deferred
 from twisted.internet.protocol import ProcessProtocol
 
@@ -229,8 +230,14 @@ class Container(object):
             @type  command:     [str]
         """
         def callback(reason):
-            if reason.value.exitCode == 0:
-                print('Successful.')
+            if reason.check(ProcessDone):
+                print('ProcessDone - Successful.')
+            elif reason.check(ProcessTerminated):
+                if reason.value.exitCode == 0:
+                    print('ProcessTerminated - Successful.')
+                else:
+                    print('ProcessTerminated - Received non zero exit code '
+                          'from LXC: {0}'.format(reason.getErrorMessage()))
             else:
                 print('Received non zero exit code from LXC: '
                       '{0}'.format(reason.getErrorMessage()))
