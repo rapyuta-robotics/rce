@@ -55,18 +55,27 @@ from util import path as pathUtil
 class _LXCProtocol(ProcessProtocol):
     """ Protocol which is used to handle the LXC commands.
     """
-    def __init__(self, deferred, output=None):
+    def __init__(self, deferred, out=None, err=None):
         self._deferred = deferred
         
-        if output and not callable(output):
-            raise InternalError('Output of LXC protocol has to be None or '
+        if out and not callable(out):
+            raise InternalError('stdout of LXC protocol has to be None or '
                                 'callable')
         
-        self._output = output
+        if err and not callable(err):
+            raise InternalError('errout of LXC protocol has to be None or '
+                                'callable')
+        
+        self._out = out
+        self._err = err
     
     def outReceived(self, data):
-        if self._output:
-            self._output(data)
+        if self._out:
+            self._out(data)
+    
+    def errReceived(self, data):
+        if self._err:
+            self._err(data)
     
     def processEnded(self, reason):
         self._deferred.callback(reason)
@@ -128,7 +137,7 @@ class Container(object):
         self._fstabExt.append(line.format(srcDir=src,
                                           fsDir=pjoin(self._rootfs, fs)))
     
-    def _setup(self, deferred, output=None):
+    def _setup(self, deferred, out=None, err=None):
         """ Setup necessary files.
         """
         with open(self._conf, 'w') as f:
@@ -152,7 +161,7 @@ class Container(object):
         _deferred = Deferred()
         _deferred.addCallbacks(callback, callback)
         
-        return _LXCProtocol(_deferred, output)
+        return _LXCProtocol(_deferred, out, err)
     
     def start(self, name, deferred):
         """ Start the container.
@@ -230,7 +239,7 @@ class Container(object):
         deferred = Deferred()
         deferred.addCallbacks(cb, eb)
         
-        protocol = self._setup(deferred, sys.stdout.write)
+        protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
         
         try:
             cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf,
