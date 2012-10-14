@@ -49,7 +49,7 @@ def main(reactor, cmd):
     try:
         c = CommandContainer(reactor, settings.ROOTFS,
                              pkgDir+[('/usr/lib/lxc', 'usr/lib/lxc')])
-        c.execute(' '.join(cmd))
+        c.execute(cmd)
         reactor.run()
     finally:
         for _, path in pkgDir:

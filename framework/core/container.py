@@ -227,7 +227,7 @@ class Container(object):
             @type  name:        str
             
             @param command:     Command which should be executed.
-            @type  command:     str
+            @type  command:     [str]
         """
         def cb(_):
             self._reactor.stop()
@@ -242,8 +242,8 @@ class Container(object):
         protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
         
         try:
-            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf,
-                   command]
+            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf]
+            cmd += command
             self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
         except Exception as e:
             log.msg('Caught an exception when trying to execute a command in '
@@ -398,7 +398,7 @@ class CommandContainer(Container):
         """ Execute the command in the command container.
             
             @param command:     Command which should be executed.
-            @type  command:     str
+            @type  command:     [str]
         """
         for srcPath, destPath in self._pkgDir:
             self.extendFstab(srcPath, destPath, True)
