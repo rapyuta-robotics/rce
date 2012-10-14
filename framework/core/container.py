@@ -250,11 +250,10 @@ class Container(object):
             cmd += command
             self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
         except Exception as e:
-            log.msg('Caught an exception when trying to execute a command in '
-                    'the container.')
             import traceback
-            deferred.errback('\n'.join(traceback.format_exception_only(type(e),
-                                                                       e)))
+            print('Caught an exception when trying to execute a command in '
+                  'the container.')
+            print('\n'.join(traceback.format_exception_only(type(e), e)))
 
 
 class DeploymentContainer(Container):
