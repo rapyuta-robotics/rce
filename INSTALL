@@ -13,7 +13,7 @@ Comments pre install
 2.  Ping google.com to check your internet connectivity and DNS.
 
 3.  Install the ssh deamons
-    sudo apt-get install openssh-client openssh-server
+      sudo apt-get install openssh-client openssh-server
         n.b. Installing starts them automatically
 
 4.  sudo apt-get install git-core
@@ -29,86 +29,86 @@ Installation
 ============
 
 1.  Clone the rce repository (switch branches if necessary)
-    cd /opt
-    sudo git clone https://github.com/IDSCETHZurich/rce.git rce
+      cd /opt
+      sudo git clone https://github.com/IDSCETHZurich/rce.git rce
 
 2.  Install the linux-container requirements
-    sudo apt-get install lxc debootstrap
-    # Network should be automatically installed by lxc now; ### bridge-utils dnsmasq 
+      sudo apt-get install lxc debootstrap
     
-3.  # Network should be automatically installed by lxc now; ### Open setup/setupHost and follow instructions
+3.  # Network should be automatically installed by lxc now; ### bridge-utils dnsmasq 
+    # Network should be automatically installed by lxc now; ### Open setup/setupHost and follow instructions
 
-4.  Run setupContainer.bash to generate a 12.04 container for LXC
-    cd /opt/rce/setup
-    sudo bash setupContainer.bash --path=/opt/rce/container
-    n.b. You may set the ubuntu mirror to the one near you
+4.  Setup the container filesystem
+
+    1.  Run setupContainer.bash to generate a 12.04 container for LXC
+          cd /opt/rce/setup
+          sudo bash setupContainer.bash --path=/opt/rce/container
+            n.b. You may set the ubuntu mirror to the one near you
     
-5.  Start the container and perform initial setups:
-    
-    Enter container (First login: user: root; password: root)
-    
-    sudo lxc-start -n ros -f /opt/rce/setup/src/stdConfig
-    Note:   The file stdConfig contains absolute paths.
+    2.  Enter container (First login: user: root; password: root)
+          sudo lxc-start -n ros -f /opt/rce/setup/src/stdConfig
+        Note:   The file stdConfig contains absolute paths.
             (has to be modified in case of non default installation)
     
-    Inside the container do the following steps:
-    (all commands require super user privileges)
+        Inside the container do the following steps:
+        (all commands require super user privileges)
     
-    1.  Install necessary LXC components
-        apt-get install --no-install-recommends lxc
+        3.  Install necessary LXC components
+              apt-get install libcap2 libapparmor1
     
-    2.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
-        sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-        wget http://packages.ros.org/ros.key -O - | apt-key add -
-        apt-get update
+        4.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
+              sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+              wget http://packages.ros.org/ros.key -O - | apt-key add -
+              apt-get update
         
-        Minimal installation:
-            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
-        For debug nodes:
-            apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+            Minimal installation:
+              apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+            For debug nodes:
+              apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
-    3.  Add users
-        adduser ros
-        adduser --disabled-password --disabled-login --home /opt/rce/data rce
+        5.  Add users
+              adduser ros
+              adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
-    4.  Add files and directories
-        mkdir /opt/rce/packages
-        mkdir /opt/rce/src
-        touch /etc/init/rceComm.conf
-        touch /etc/init/rceLauncher.conf
+        6.  Add files and directories
+              mkdir /usr/lib/lxc
+              mkdir /opt/rce/packages
+              mkdir /opt/rce/src
+              touch /etc/init/rceComm.conf
+              touch /etc/init/rceLauncher.conf
     
-    5.  Either change root password or disable root login
-        For changing the password:
-            passwd
-        For disabling the root login:
-            Edit file /etc/passwd and replace root:x:... with root:!:...
-            (Can also be done from the host machine;
-            To activate the login again replace root:!:... with root:x:...)
+        7.  Either change root password or disable root login
+            For changing the password:
+              passwd
+            For disabling the root login:
+                Edit file /etc/passwd and replace root:x:... with root:!:...
+                (Can also be done from the host machine;
+                To activate the login again replace root:!:... with root:x:...)
     
-    5.  Leave the container (make sure you are in the container when running in a cloud)
-        poweroff
+        8.  Leave the container (make sure you are in the container when running in a cloud)
+              poweroff
 
-6.  Install ROS in the container host
-    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-    wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-    sudo apt-get update
+    3.  Copy setup and upstart script to container
+          sudo cp /opt/rce/setup/src/setup.sh /opt/rce/container/rootfs/opt/rce/
+          sudo cp /opt/rce/setup/src/rce.conf /opt/rce/container/rootfs/etc/init/
+
+5.  Install ROS in the container host
+      sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+      wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+      sudo apt-get update
     
     Minimal installation:
-        sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
-    For debug nodes (should no longer be necessary to install additional packages):
-        sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+      sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs
+    # For debug nodes (should no longer be necessary to install additional packages):
+    #   sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
-7.  Install the websockets related libraries
-    sudo apt-get install python-twisted-core
-    sudo easy_install AutoBahn
+6.  Install the websockets related libraries
+      sudo apt-get install python-twisted-core
+      sudo easy_install AutoBahn
 
-8.  Install libraries needed for Custom Converters
-    sudo apt-get install python-imaging
+7.  Install libraries needed for Custom Converters
+      sudo apt-get install python-imaging
 
-9.  Create necessary folders holding temporary data of containers
-    sudo mkdir /opt/rce/container/data
-    sudo mkdir /opt/rce/container/config
-
-10. Copy setup and upstart script to container
-    sudo cp /opt/rce/setup/src/setup.sh /opt/rce/container/rootfs/opt/rce/
-    sudo cp /opt/rce/setup/src/rce.conf /opt/rce/container/rootfs/etc/init/
+8.  Create necessary folders holding temporary data of containers
+      sudo mkdir /opt/rce/container/data
+      sudo mkdir /opt/rce/container/config
