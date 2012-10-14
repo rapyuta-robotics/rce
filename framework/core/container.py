@@ -202,9 +202,8 @@ class Container(object):
             if reason.value.exitCode == 0:
                 deferred.callback(None)
             else:
-                msg = ('Received non zero exit code after stop of '
-                       'container: {0}'.format(reason.getErrorMessage()))
-                deferred.errback(msg)
+                deferred.errback('Received non zero exit code from LXC: '
+                                 '{0}'.format(reason.getErrorMessage()))
         
         _deferred = Deferred()
         _deferred.addCallbacks(callback, callback)
@@ -229,15 +228,17 @@ class Container(object):
             @param command:     Command which should be executed.
             @type  command:     [str]
         """
-        def cb(_):
-            self._reactor.stop()
-        
-        def eb(msg):
-            print(msg)
+        def callback(reason):
+            if reason.value.exitCode == 0:
+                print('Successful.')
+            else:
+                print('Received non zero exit code from LXC: '
+                      '{0}'.format(reason.getErrorMessage()))
+            
             self._reactor.stop()
         
         deferred = Deferred()
-        deferred.addCallbacks(cb, eb)
+        deferred.addCallbacks(callback, callback)
         
         self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
                          False)
