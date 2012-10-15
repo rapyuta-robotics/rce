@@ -47,8 +47,8 @@ def callback(arg):
 
 
 def parameter_test_server(arg):
-    rospy.init_node('paramter_test_server')
-    rospy.Service('paramterTest', ParameterTest, lambda req: callback(arg))
+    rospy.init_node('parameter_test_server')
+    rospy.Service('parameterTest', ParameterTest, lambda req: callback(arg))
     rospy.spin()
 
 
