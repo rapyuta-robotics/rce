@@ -395,7 +395,7 @@ class CommandContainer(Container):
         self._homeDir = os.path.join(self._confDir, 'home')
         self._pkgDir = pkgDir
         
-        os.mkdir(self._rosDir)
+        os.mkdir(self._homeDir)
         
         super(CommandContainer, self).__init__(reactor, rootfs, self._confDir)
     
