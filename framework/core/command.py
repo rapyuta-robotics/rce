@@ -479,7 +479,7 @@ class StrCommand(_ParameterCommand):
     
     def _validate(self, value):
         if isinstance(value, str):
-            return str
+            return value
         elif isinstance(value, unicode):
             return str(value)
         
@@ -596,7 +596,7 @@ class FileCommand(_ParameterCommand):
     
     def _validate(self, value):
         if isinstance(value, str):
-            return str
+            return value
         elif isinstance(value, unicode):
             return str(value)
         
