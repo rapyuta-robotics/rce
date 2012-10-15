@@ -34,6 +34,7 @@
 import os
 import re
 import tempfile
+import shlex
 from threading import Event, Lock
 from uuid import uuid4
 
@@ -87,6 +88,7 @@ class NodeMonitor(object):
     
     _STOP_ESCALATION = [ ('INT', 15), ('TERM', 2), ('KILL', None) ]
     _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
+    _RE_ENV = re.compile('\\$\\( *env +(?P<var>[a-zA-Z][a-zA-z0-9_]*) *\\)')
     
     def __init__(self, manager, userID, node):
         """ Initialize the NodeMonitor instance.
@@ -122,7 +124,22 @@ class NodeMonitor(object):
         """ Internally used method to replace found matches of _RE_FIND regular
             expression with corresponding package path.
         """
-        return self._manager.loader.findPkgPath(match.group('pkg'))
+        path = self._manager.loader.findPkgPath(match.group('pkg'))
+        
+        if ' ' in path:
+            return '"{0}"'.format(path)
+        else:
+            return path
+    
+    def _replaceEnv(self, match):
+        """ Internally used method to replace found matches of _RE_ENV regular
+            expression with corresponding environment variable.
+        """
+        try:
+            return os.environ[match.group('var')]
+        except KeyError:
+            raise InvalidRequest('Can not find environment variable: '
+                                 '{0}'.format(match.group('var')))
     
     def start(self):
         """ Launch the node.
@@ -145,7 +162,15 @@ class NodeMonitor(object):
                                  '{0}'.format(e))
         
         # Add arguments
-        cmd.append(self._RE_FIND.subn(self._replaceFind, self._node.args)[0])
+        args = self._RE_FIND.subn(self._replaceFind, self._node.args)[0]
+        args = self._RE_ENV.subn(self._replaceEnv, args)[0]
+        
+        for char in '$;':
+            if char in args:
+                raise InvalidRequest('Argument can not contain special '
+                                     "character '{0}'.".format(char))
+        
+        cmd += shlex.split(args)
         
         # Process name and namespace argument
         name = self._node.name

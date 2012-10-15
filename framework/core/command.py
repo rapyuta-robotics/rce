@@ -478,7 +478,12 @@ class StrCommand(_ParameterCommand):
         return cls(s.getElement(), s.getElement())
     
     def _validate(self, value):
-        return str(value)
+        if isinstance(value, str):
+            return str
+        elif isinstance(value, unicode):
+            return str(value)
+        
+        raise ValueError('String is invalid.')
 
 
 class FloatCommand(_ParameterCommand):
@@ -544,7 +549,20 @@ class BoolCommand(_ParameterCommand):
         return cls(s.getElement(), s.getBool())
     
     def _validate(self, value):
-        return bool(value)
+        if isinstance(value, basestring):
+            value = value.strip().lower()
+            
+            if value == 'true':
+                return True
+            elif value == 'false':
+                return False
+        else:
+            try:
+                return bool(int(value))
+            except ValueError:
+                pass
+        
+        raise ValueError('Bool is invalid.')
 
 
 class FileCommand(_ParameterCommand):
@@ -577,7 +595,12 @@ class FileCommand(_ParameterCommand):
         return cls(s.getElement(), s.getElement())
     
     def _validate(self, value):
-        return str(value)
+        if isinstance(value, str):
+            return str
+        elif isinstance(value, unicode):
+            return str(value)
+        
+        raise ValueError('File is invalid.')
 
 
 class _EndpointInterfaceCommand(object):
