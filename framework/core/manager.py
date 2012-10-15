@@ -960,9 +960,13 @@ class ContainerManager(_UserManagerBase):
             container = DeploymentContainer(self, commID)
             
             def cb(_):
-                return container
+                deferred.callback(container)
             
-            deferred.addCallback(cb)
+            def eb(m):
+                deferred.errback(m)
+            
+            internal = Deferred()
+            internal.addCallbacks(cb, eb)
         except Exception as e:
             log.msg('Caught an exception when trying to instantiate a '
                     'deployment container.')
@@ -970,7 +974,7 @@ class ContainerManager(_UserManagerBase):
             deferred.errback('\n'.join(traceback.format_exception_only(type(e),
                                                                        e)))
         else:
-            container.start(deferred)
+            container.start(internal)
     
     @_UserManagerBase.verifyUser
     def createContainer(self, userID, container):
