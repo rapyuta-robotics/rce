@@ -60,6 +60,7 @@ class Environment(object):
         
         self._containers = config.get('containers', [])
         self._nodes = config.get('nodes', [])
+        self._parameters = config.get('parameters', [])
         self._interfaces = config.get('interfaces', [])
         self._connections = config.get('connections', [])
         
@@ -72,6 +73,9 @@ class Environment(object):
             
             for node in self._nodes:
                 self._conn.addNode(**node)
+            
+            for parameter in self._parameters:
+                self._conn.addParameter(**parameter)
             
             for interface in self._interfaces:
                 self._conn.addInterface(**interface)
@@ -95,6 +99,10 @@ class Environment(object):
     
     def terminate(self):
         try:
+            for parameter in self._parameters:
+                self._conn.removeParameter(parameter['cTag'],
+                                           parameter['name'])
+            
             for container in self._containers:
                 self._conn.destroyContainer(**container)
         except ConnectionError:

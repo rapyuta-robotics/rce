@@ -389,9 +389,11 @@ class _ParameterCommand(object):
             @param value:   Value of the parameter which will be sent to the
                             parameter server.
             @type  value:   Depends on subclass
+            
+            @raise:         ValueError, if validation of value fails.
         """
         self._name = name
-        self._value = value
+        self._value = self._validate(value)
     
     @property
     def name(self):
@@ -402,6 +404,15 @@ class _ParameterCommand(object):
     def value(self):
         """ Value of the parameter. """
         return self._value
+    
+    def _validate(self, value):
+        """ Validation of the value.
+            
+            @return:        Value as correct type.
+            
+            @raise:         ValueError, if validation of value fails.
+        """
+        raise ValueError('No validation method implemented.')
 
 
 class IntCommand(_ParameterCommand):
@@ -432,6 +443,9 @@ class IntCommand(_ParameterCommand):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getInt())
+    
+    def _validate(self, value):
+        return int(value)
 
 
 class StrCommand(_ParameterCommand):
@@ -462,6 +476,9 @@ class StrCommand(_ParameterCommand):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getElement())
+    
+    def _validate(self, value):
+        return str(value)
 
 
 class FloatCommand(_ParameterCommand):
@@ -492,6 +509,9 @@ class FloatCommand(_ParameterCommand):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getFloat())
+    
+    def _validate(self, value):
+        return float(value)
 
 
 class BoolCommand(_ParameterCommand):
@@ -522,6 +542,9 @@ class BoolCommand(_ParameterCommand):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getBool())
+    
+    def _validate(self, value):
+        return bool(value)
 
 
 class FileCommand(_ParameterCommand):
@@ -552,6 +575,9 @@ class FileCommand(_ParameterCommand):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getElement())
+    
+    def _validate(self, value):
+        return str(value)
 
 
 class _EndpointInterfaceCommand(object):

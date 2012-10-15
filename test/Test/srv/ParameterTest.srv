@@ -1,6 +1,6 @@
 ---
-string	arg
-string	str
-int32	int
+string  arg
+string  str
+int32   int
 float32 float
-bool	bool
+bool    bool

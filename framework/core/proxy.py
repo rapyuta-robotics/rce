@@ -298,16 +298,19 @@ class ROSEnvProxy(_EndpointProxy):
         if not rosgraph.names.is_legal_name(name):
             raise InvalidRequest('The name "{0}" is not valid.'.format(name))
         
-        if paramType == 'int':
-            param = IntCommand(name, value)
-        elif paramType == 'str':
-            param = StrCommand(name, value)
-        elif paramType == 'float':
-            param = FloatCommand(name, value)
-        elif paramType == 'bool':
-            param = BoolCommand(name, value)
-        elif paramType == 'file':
-            param = FileCommand(name, value)
+        try:
+            if paramType == 'int':
+                param = IntCommand(name, value)
+            elif paramType == 'str':
+                param = StrCommand(name, value)
+            elif paramType == 'float':
+                param = FloatCommand(name, value)
+            elif paramType == 'bool':
+                param = BoolCommand(name, value)
+            elif paramType == 'file':
+                param = FileCommand(name, value)
+        except ValueError:
+            raise InternalError('Invalid value type.')
         
         log.msg('Add parameter "{0}" to ROS environment "{1}".'.format(
                     name, self._commID))
