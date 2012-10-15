@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rcemake.py
+#     rceexec.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -36,20 +36,19 @@ import sys
 
 # Custom imports
 import settings
-from core.container import MakeContainer
+from core.container import CommandContainer
 from util import path as pathUtil
 
 
-def main(reactor, pkgs):
+def main(reactor, cmd):
     pkgDir = pathUtil.processPackagePaths(settings.ROOT_PKG_DIR)
     
     for _, path in pkgDir:
         os.mkdir(os.path.join(settings.ROOTFS, path))
     
     try:
-        make = MakeContainer(reactor, settings.ROOTFS,
-                             pkgDir)
-        make.execute(pkgs)
+        make = CommandContainer(reactor, settings.ROOTFS, pkgDir)
+        make.execute(cmd)
         reactor.run()
     finally:
         for _, path in pkgDir:

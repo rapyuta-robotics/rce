@@ -373,9 +373,9 @@ class DeploymentContainer(Container):
             pass
 
 
-class MakeContainer(Container):
-    """ Container representation which is used to make a ROS package inside
-        a container.
+class CommandContainer(Container):
+    """ Container representation which is used to execute a single command
+        inside a container. Should be used for rosmake.
     """
     def __init__(self, reactor, rootfs, pkgDir):
         """ Initialize the command container.
@@ -392,12 +392,12 @@ class MakeContainer(Container):
             @type  pkgDir:      [(str, str)]
         """
         self._confDir = mkdtemp(prefix='rce_cmd')
-        self._rosDir = os.path.join(self._confDir, 'ros')
+        self._homeDir = os.path.join(self._confDir, 'home')
         self._pkgDir = pkgDir
         
         os.mkdir(self._rosDir)
         
-        super(MakeContainer, self).__init__(reactor, rootfs, self._confDir)
+        super(CommandContainer, self).__init__(reactor, rootfs, self._confDir)
     
     def execute(self, command):
         """ Execute the command in the command container.
@@ -408,10 +408,10 @@ class MakeContainer(Container):
         for srcPath, destPath in self._pkgDir:
             self.extendFstab(srcPath, destPath, False)
         
-        self.extendFstab(self._rosDir, 'home/ros', False)
+        self.extendFstab(self._homeDir, 'home/ros', False)
         
-        super(MakeContainer, self).execute(os.path.basename(self._confDir),
-                                           ['/opt/rce/make.sh'] + command)
+        super(CommandContainer, self).execute(os.path.basename(self._confDir),
+                                              command)
     
     def __del__(self):
         """ Destructor.
