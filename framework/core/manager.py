@@ -958,6 +958,11 @@ class ContainerManager(_UserManagerBase):
         """
         try:
             container = DeploymentContainer(self, commID)
+            
+            def cb(_):
+                return container
+            
+            deferred.addCallback(cb)
         except Exception as e:
             log.msg('Caught an exception when trying to instantiate a '
                     'deployment container.')

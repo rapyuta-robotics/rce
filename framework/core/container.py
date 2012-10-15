@@ -79,7 +79,7 @@ class _LXCProtocol(ProcessProtocol):
     
     def processEnded(self, reason):
         if reason.value.exitCode == 0:
-            self._deferred.callback(self)
+            self._deferred.callback(None)
         else:
             self._deferred.errback('Received non zero exit code from LXC: '
                                    '{0}'.format(reason.getErrorMessage()))
@@ -164,9 +164,8 @@ class Container(object):
             @type  name:        str
             
             @param command:     Deferred whose callback is triggered on success
-                                with this Container instance as argument or
-                                whose errback is triggered on failure with an
-                                error message.
+                                or whose errback is triggered on failure with
+                                an error message.
             @type  command:     twisted::Deferred
         """
         protocol = self._setup(deferred)
@@ -312,10 +311,10 @@ class DeploymentContainer(Container):
     def start(self, deferred):
         """ Start the deployment container.
             
-            @param deferred:    Deferred whose callback is called with this
-                                Container instance as argument when the start
-                                was successful and whose errback is called with
-                                an error message when there was a problem.
+            @param deferred:    Deferred whose callback is called when the
+                                start was successful and whose errback is
+                                called with an error message when there was a 
+                                problem.
             @type  deferred:    twisted::Deferred
         """
         # TODO: SSL stuff
