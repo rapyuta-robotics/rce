@@ -153,9 +153,13 @@ class NodeMonitor(object):
         
         if name:
             cmd.append('__name:={0}'.format(name))
+        else:
+            name = exe
         
         if namespace:
             cmd.append('__ns:={0}'.format(namespace))
+        
+        self._cmd = cmd
         
         # Start node
         self._started = True
@@ -191,7 +195,7 @@ class NodeMonitor(object):
         
         if exitCode:
             log.msg('Node ({0}) terminated with exit code: '
-                    '{1}'.format(self._name, exitCode))
+                    '{1}\ncmd = {2}'.format(self._name, exitCode, self._cmd))
     
     def stop(self):
         """ Stop the node.
