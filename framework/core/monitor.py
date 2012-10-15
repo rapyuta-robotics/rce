@@ -82,7 +82,8 @@ class NodeMonitor(object):
             self._nodeMonitor.started(self)
         
         def processEnded(self, reason):
-            self._nodeMonitor.stopped()
+            self._nodeMonitor.stopped(reason.value.exitCode)
+    
     
     _STOP_ESCALATION = [ ('INT', 15), ('TERM', 2), ('KILL', None) ]
     _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
@@ -103,10 +104,12 @@ class NodeMonitor(object):
         self._manager = manager
         self._userID = userID
         self._node = node
+        self._name = ''
         
         self._process = None
         self._started = False
         self._running = False
+        self._exitCode = None
         
         self._escalationLvl = 0
     
@@ -131,6 +134,8 @@ class NodeMonitor(object):
         
         pkg = self._node.pkg
         exe = self._node.exe
+        
+        self._name = '{0}/{1}'.format(pkg, exe)
         
         # Find and validate executable
         try:
@@ -175,13 +180,18 @@ class NodeMonitor(object):
         
         return self._running
     
-    def stopped(self):
+    def stopped(self, exitCode):
         """ Callback for ROSProcessProtocol to signal that the process has
             died.
         """
         self._manager.unregisterNode(self._userID, self)
         self._running = False
         self._process = None
+        self._exitCode = exitCode
+        
+        if exitCode:
+            log.msg('Node ({0}) terminated with exit code: '
+                    '{1}'.format(self._name, exitCode))
     
     def stop(self):
         """ Stop the node.

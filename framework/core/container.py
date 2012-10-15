@@ -40,7 +40,6 @@ pjoin = os.path.join
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.error import ProcessDone, ProcessTerminated
 from twisted.internet.defer import Deferred
 from twisted.internet.protocol import ProcessProtocol
 
@@ -79,7 +78,11 @@ class _LXCProtocol(ProcessProtocol):
             self._err(data)
     
     def processEnded(self, reason):
-        self._deferred.callback(reason)
+        if reason.value.exitCode == 0:
+            self._deferred.callback(self)
+        else:
+            self._deferred.errback('Received non zero exit code from LXC: '
+                                   '{0}'.format(reason.getErrorMessage()))
 
 
 class Container(object):
@@ -152,17 +155,7 @@ class Container(object):
                 sysfs=pjoin(self._rootfs, 'sys')))
             f.writelines(self._fstabExt)
         
-        def callback(reason):
-            if reason.value.exitCode == 0:
-                deferred.callback(self)
-            else:
-                deferred.errback('Received non zero exit code from LXC: '
-                                 '{0}'.format(reason.getErrorMessage()))
-        
-        _deferred = Deferred()
-        _deferred.addCallbacks(callback, callback)
-        
-        return _LXCProtocol(_deferred, out, err)
+        return _LXCProtocol(deferred, out, err)
     
     def start(self, name, deferred):
         """ Start the container.
@@ -199,19 +192,9 @@ class Container(object):
                                 an error message.
             @type  command:     twisted::Deferred
         """
-        def callback(reason):
-            if reason.value.exitCode == 0:
-                deferred.callback(None)
-            else:
-                deferred.errback('Received non zero exit code from LXC: '
-                                 '{0}'.format(reason.getErrorMessage()))
-        
-        _deferred = Deferred()
-        _deferred.addCallbacks(callback, callback)
-        
         try:
             cmd = ['/usr/bin/lxc-stop', '-n', name]
-            self._reactor.spawnProcess(_LXCProtocol(_deferred), cmd[0], cmd,
+            self._reactor.spawnProcess(_LXCProtocol(deferred), cmd[0], cmd,
                                        env=os.environ)
         except Exception as e:
             import traceback

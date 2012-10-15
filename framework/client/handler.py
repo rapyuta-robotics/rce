@@ -130,7 +130,7 @@ class ConfigureContainerHandler(_ClientHandlerBase):
                     'user' : self._userID,
                     'type' : req.ADD_PARAMETER,
                     'args' : (param['containerTag'], param['name'],
-                              param['value'], param['paramType'])
+                              str(param['value']), param['paramType'])
                 })
         
         if 'deleteParam' in msg:
