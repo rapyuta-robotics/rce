@@ -97,8 +97,10 @@ class Manager(RelayManager, RobotManager):
     _MASTER_ID = definition.MASTER_ADDR
     _RELAY_PORT = RELAY_RELAY_PORT
     _INTERFACES = dict(map(lambda (k, _, v): (k, v), _CONVERTER))
-    _ROS_PACKAGE_PATH = ROOT_PKG_DIR[:] + [os.path.join(ROOTFS, p)
-        for p in ['/opt/ros/fuerte/share', '/opt/ros/fuerte/stacks']]
+    _ROS_PACKAGE_PATH = (map(lambda x: x[0], ROOT_PKG_DIR) +
+                         [os.path.join(ROOTFS, p)
+                            for p in ['/opt/ros/fuerte/share',
+                                      '/opt/ros/fuerte/stacks']])
     
     def __init__(self, reactor):
         super(Manager, self).__init__(reactor)
