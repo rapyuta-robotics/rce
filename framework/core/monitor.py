@@ -649,7 +649,7 @@ class ServiceProviderMonitor(_InterfaceMonitor):
     
     def _send(self, msgData, msgID, _):
         msg = rospy.AnyMsg()
-        msg._buff = zlib.compress(msgData, GZIP_LVL)
+        msg._buff = zlib.decompress(msgData, GZIP_LVL)
         
         with self._pendingLock:
             event = self._pending[msgID]
@@ -668,7 +668,7 @@ class ServiceProviderMonitor(_InterfaceMonitor):
             raise InternalError('Can not connect more than one interface to a '
                                 'service-provider interface.')
         
-        msg = zlib.decompress(request._buff)
+        msg = zlib.compress(request._buff, GZIP_LVL)
         
         for commID, sender in self._conn:
             self._manager.send(self._userID, sender, commID, self._tag, msg,
@@ -721,7 +721,7 @@ class PublisherMonitor(_InterfaceMonitor):
 
     def _send(self, msgData, msgID, _):
         msg = rospy.AnyMsg()
-        msg._buff = zlib.compress(msgData, GZIP_LVL)
+        msg._buff = zlib.decompress(msgData)
 
         try:
             self._publisher.publish(msg)
@@ -745,7 +745,7 @@ class SubscriberMonitor(_InterfaceMonitor):
         self._subscriber = None
 
     def _callback(self, msg):
-        msg = zlib.decompress(msg._buff)
+        msg = zlib.compress(msg._buff, GZIP_LVL)
         
         for commID, sender in self._conn:
             self._manager.send(self._userID, sender, commID, self._tag, msg,
