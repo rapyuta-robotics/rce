@@ -41,6 +41,9 @@ CONVERTER_CLASSES = (
 	'util.converters.image.ImageConverter',
 )
 
+# Compression level used for communication
+GZIP_LVL = 9
+
 #######################################
 ###                                 ###
 ###     Communication settings      ###

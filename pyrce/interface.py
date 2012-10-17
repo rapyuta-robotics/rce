@@ -31,6 +31,7 @@
 #     
 
 # Python specific imports
+import zlib
 from uuid import uuid4
 from threading import Event, Lock
 
@@ -49,6 +50,10 @@ except ImportError:
 
 # twisted specific imports
 from twisted.internet.defer import Deferred
+
+
+# Compression level used for communication
+_GZIP_LVL = 9
 
 
 class _Publisher(object):
@@ -193,7 +198,7 @@ if HAS_ROS:
         def _rosCB(self, msg):
             """ Internally used callback for ROS Subscriber.
             """
-            self.publish(StringIO(msg._buff))
+            self.publish(StringIO(zlib.compress(msg._buff, _GZIP_LVL)))
         
         def __del__(self):
             """ Finalize the Publisher.
@@ -224,7 +229,7 @@ if HAS_ROS:
                 Publisher.
             """
             rosMsg = rospy.AnyMsg()
-            rosMsg._buff = msg.getvalue()
+            rosMsg._buff = zlib.decompress(msg.getvalue())
             
             self._pub.publish(rosMsg)
         
@@ -270,8 +275,9 @@ if HAS_ROS:
             deferred.addCallback(self._callback, uid, event)
             self._responses[uid] = deferred
             
-            self._conn.sendMessage(self._iTag, self._srvType,
-                                   StringIO(req._buff), uid)
+            msg = StringIO(zlib.compress(req._buff, _GZIP_LVL))
+            
+            self._conn.sendMessage(self._iTag, self._srvType, msg, uid)
             event.wait()
             
             with self._pendingLock:
@@ -287,7 +293,7 @@ if HAS_ROS:
                 Service as response.
             """
             rosMsg = rospy.AnyMsg()
-            rosMsg._buff = msg.getvalue()
+            rosMsg._buff = zlib.decompress(msg.getvalue())
             
             with self._pendingLock:
                 self._pending[uid] = rosMsg

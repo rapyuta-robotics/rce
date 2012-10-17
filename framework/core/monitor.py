@@ -35,6 +35,7 @@ import os
 import re
 import tempfile
 import shlex
+import zlib
 from threading import Event, Lock
 from uuid import uuid4
 
@@ -62,6 +63,7 @@ from twisted.python import log
 from twisted.internet.protocol import ProcessProtocol
 
 # Custom imports
+from settings import GZIP_LVL
 from errors import InternalError, InvalidRequest
 from util.interfaces import verifyObject
 from core.types import cmd as types
@@ -572,7 +574,7 @@ class ServiceMonitor(_InterfaceMonitor):
                 be executed in a separate thread.
             """
             msg = rospy.AnyMsg()
-            msg._buff = self._msg
+            msg._buff = zlib.decompress(self._msg)
 
             try:
                 rospy.wait_for_service(self._srv._name, timeout=5)
@@ -583,12 +585,11 @@ class ServiceMonitor(_InterfaceMonitor):
                 return
             except Exception:
                 raise
-            else:
-                self._msg = response._buff
             
+            msg = zlib.compress(response._buff, GZIP_LVL)
             commID, sender = self._dest
             self._srv._manager.send(self._srv._userID, sender, commID,
-                                    self._srv._tag, self._msg, self._msgID)
+                                    self._srv._tag, msg, self._msgID)
 
     def __init__(self, manager, userID, interface):
         super(ServiceMonitor, self).__init__(manager, userID, interface)
@@ -648,7 +649,7 @@ class ServiceProviderMonitor(_InterfaceMonitor):
     
     def _send(self, msgData, msgID, _):
         msg = rospy.AnyMsg()
-        msg._buff = msgData
+        msg._buff = zlib.compress(msgData, GZIP_LVL)
         
         with self._pendingLock:
             event = self._pending[msgID]
@@ -666,9 +667,12 @@ class ServiceProviderMonitor(_InterfaceMonitor):
         if len(self._conn) > 1:
             raise InternalError('Can not connect more than one interface to a '
                                 'service-provider interface.')
+        
+        msg = zlib.decompress(request._buff)
+        
         for commID, sender in self._conn:
-            self._manager.send(self._userID, sender, commID, self._tag,
-                               request._buff, msgID)
+            self._manager.send(self._userID, sender, commID, self._tag, msg,
+                               msgID)
         
         event.wait()
         
@@ -717,7 +721,7 @@ class PublisherMonitor(_InterfaceMonitor):
 
     def _send(self, msgData, msgID, _):
         msg = rospy.AnyMsg()
-        msg._buff = msgData
+        msg._buff = zlib.compress(msgData, GZIP_LVL)
 
         try:
             self._publisher.publish(msg)
@@ -741,7 +745,7 @@ class SubscriberMonitor(_InterfaceMonitor):
         self._subscriber = None
 
     def _callback(self, msg):
-        msg = msg._buff
+        msg = zlib.decompress(msg._buff)
         
         for commID, sender in self._conn:
             self._manager.send(self._userID, sender, commID, self._tag, msg,
@@ -824,16 +828,17 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
                                  'message type for this interface.')
         
         try:
-            rosMsg = self._converter.decode(self._inputMsgCls, msg)
+            msg = self._converter.decode(self._inputMsgCls, msg)
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
         buf = StringIO()
-        rosMsg.serialize(buf)
+        msg.serialize(buf)
+        msg = zlib.compress(buf.getvalue(), GZIP_LVL)
         
         for commID, target in self._conn:
-            self._manager.send(self._userID, target, commID, self._tag,
-                               buf.getvalue(), msgID)
+            self._manager.send(self._userID, target, commID, self._tag, msg,
+                               msgID)
     
     def _send(self, msg, msgID, _):
         """ Convert a ROS message into a JSON encoded message.
@@ -854,7 +859,7 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
                                 'outgoing messages.')
         
         rosMsg = self._outputMsgCls()
-        rosMsg.deserialize(msg)
+        rosMsg.deserialize(zlib.decompress(msg))
         
         try:
             jsonMsg = self._converter.encode(rosMsg)
