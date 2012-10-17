@@ -100,7 +100,7 @@ class Loader(object):
         self._rp = rospkg.RosPack(rosPath)
         
         # List of all packages which are already added to sys.path
-        self._packages = []
+        self._packages = set()
         
         # Key:    tuple (package name, clsType, cls)
         # Value:  msg/srv module
@@ -149,7 +149,7 @@ class Loader(object):
                                  for e in export.split(':'))
         else:
             dirs = [os.path.join(pkgDir, d) for d in ['src', 'lib']]
-            paths.extend([d for d in dirs if os.path.isdir(d)])
+            paths.extend(d for d in dirs if os.path.isdir(d))
     
     def _generatePythonPath(self, pkg):
         """ roslib.launcher
@@ -167,7 +167,7 @@ class Loader(object):
         m = self._rp.get_manifest(pkg)
         
         if m.is_catkin:
-            self._packages.append(pkg)
+            self._packages.add(pkg)
             return []
     
         packages = self._getDepends(pkg) 
@@ -180,11 +180,9 @@ class Loader(object):
                 m = self._rp.get_manifest(p)
                 d = self._rp.get_path(p)
                 self._appendPackagePaths(m, paths, d)
-                self._packages.append(p)
+                self._packages.add(p)
         except:
-            if pkg in self._packages:
-                self._packages.remove(pkg)
-            
+            self._packages.discard(pkg)
             raise
         
         return paths
