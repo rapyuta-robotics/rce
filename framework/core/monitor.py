@@ -574,7 +574,7 @@ class ServiceMonitor(_InterfaceMonitor):
                 be executed in a separate thread.
             """
             msg = rospy.AnyMsg()
-            msg._buff = zlib.decompress(self._msg)
+            msg._buff = self._msg
 
             try:
                 rospy.wait_for_service(self._srv._name, timeout=5)
@@ -586,10 +586,10 @@ class ServiceMonitor(_InterfaceMonitor):
             except Exception:
                 raise
             
-            msg = zlib.compress(response._buff, GZIP_LVL)
             commID, sender = self._dest
             self._srv._manager.send(self._srv._userID, sender, commID,
-                                    self._srv._tag, msg, self._msgID)
+                                    self._srv._tag, response._buff,
+                                    self._msgID)
 
     def __init__(self, manager, userID, interface):
         super(ServiceMonitor, self).__init__(manager, userID, interface)
@@ -649,7 +649,7 @@ class ServiceProviderMonitor(_InterfaceMonitor):
     
     def _send(self, msgData, msgID, _):
         msg = rospy.AnyMsg()
-        msg._buff = zlib.decompress(msgData, GZIP_LVL)
+        msg._buff = msgData
         
         with self._pendingLock:
             event = self._pending[msgID]
@@ -668,11 +668,9 @@ class ServiceProviderMonitor(_InterfaceMonitor):
             raise InternalError('Can not connect more than one interface to a '
                                 'service-provider interface.')
         
-        msg = zlib.compress(request._buff, GZIP_LVL)
-        
         for commID, sender in self._conn:
-            self._manager.send(self._userID, sender, commID, self._tag, msg,
-                               msgID)
+            self._manager.send(self._userID, sender, commID, self._tag,
+                               request._buff, msgID)
         
         event.wait()
         
@@ -721,7 +719,7 @@ class PublisherMonitor(_InterfaceMonitor):
 
     def _send(self, msgData, msgID, _):
         msg = rospy.AnyMsg()
-        msg._buff = zlib.decompress(msgData)
+        msg._buff = msgData
 
         try:
             self._publisher.publish(msg)
@@ -745,11 +743,9 @@ class SubscriberMonitor(_InterfaceMonitor):
         self._subscriber = None
 
     def _callback(self, msg):
-        msg = zlib.compress(msg._buff, GZIP_LVL)
-        
         for commID, sender in self._conn:
-            self._manager.send(self._userID, sender, commID, self._tag, msg,
-                               uuid4().hex)
+            self._manager.send(self._userID, sender, commID, self._tag,
+                               msg._buff, uuid4().hex)
 
 
 class _ConverterMonitor(_EndpointInterfaceMonitor):
@@ -834,7 +830,7 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
         
         buf = StringIO()
         msg.serialize(buf)
-        msg = zlib.compress(buf.getvalue(), GZIP_LVL)
+        msg = buf.getvalue()
         
         for commID, target in self._conn:
             self._manager.send(self._userID, target, commID, self._tag, msg,
@@ -859,7 +855,7 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
                                 'outgoing messages.')
         
         rosMsg = self._outputMsgCls()
-        rosMsg.deserialize(zlib.decompress(msg))
+        rosMsg.deserialize(msg)
         
         try:
             jsonMsg = self._converter.encode(rosMsg)
@@ -986,9 +982,11 @@ class _ForwarderMonitor(_EndpointInterfaceMonitor):
         if not _checkIsStringIO(msg):
             raise InvalidRequest('Sent message is not a binary message.')
         
+        msg = zlib.decompress(msg.getvalue())
+        
         for commID, target in self._conn:
-            self._manager.send(self._userID, target, commID, self._tag,
-                               msg.getvalue(), msgID)
+            self._manager.send(self._userID, target, commID, self._tag, msg,
+                               msgID)
     
     def _send(self, msg, msgID, _):
         """ Convert a ROS message into a JSON encoded message.
@@ -1000,7 +998,7 @@ class _ForwarderMonitor(_EndpointInterfaceMonitor):
             @type  msgID:   str
         """
         buf = StringIO()
-        buf.write(msg)
+        buf.write(zlib.compress(msg, GZIP_LVL))
         
         self._manager.sendToClient(self._userID, self._robotID,
             { 'dest' : self._robotID, 'orig' : self._tag,
