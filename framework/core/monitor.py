@@ -997,12 +997,10 @@ class _ForwarderMonitor(_EndpointInterfaceMonitor):
             @param msgID:   Unique ID to identify the message.
             @type  msgID:   str
         """
-        buf = StringIO()
-        buf.write(zlib.compress(msg, GZIP_LVL))
-        
         self._manager.sendToClient(self._userID, self._robotID,
             { 'dest' : self._robotID, 'orig' : self._tag,
-              'type' : self._msgType, 'msgID' : msgID, 'msg' : buf })
+              'type' : self._msgType, 'msgID' : msgID,
+              'msg' : StringIO(zlib.compress(msg, GZIP_LVL)) })
 
 
 class ServiceForwarder(_ForwarderMonitor):
