@@ -81,7 +81,7 @@ author "Dominique Hunziker"
 description "ReCloudEngine Comm - Framework for managing and using ROS Apps"
 
 # start/stop conditions
-start on started rce
+start on (started rce and net-device-up IFACE=eth0)
 stop on stopping rce
 
 kill timeout 5
