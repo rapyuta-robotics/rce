@@ -228,7 +228,7 @@ class Container(object):
         protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
         
         try:
-            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf]
+            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf, '--']
             cmd += command
             self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
         except Exception as e:
