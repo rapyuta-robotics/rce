@@ -1,5 +1,13 @@
 Dependency:
-    boost library >= 1.xx
+    websocketpp - https://github.com/zaphoyd/websocketpp
     
-    - successfully compiled and linked with 1.51
-    - default boost library 1.46 of ubuntu 11.10 is insufficient
+    Requires:
+        boost library 1.xx
+        
+        - successfully compiled and linked with 1.51
+        - default boost library 1.46 of ubuntu 11.10 is insufficient
+
+Linking:
+    LDLIBS=-lwebsocketpp -lboost_system -lboost_date_time -lboost_regex -lboost_random -lboost_thread
+    
+    

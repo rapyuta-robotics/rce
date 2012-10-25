@@ -38,57 +38,23 @@ namespace json_spirit
         typedef typename Config::String_type String_type;
         typedef typename String_type::const_pointer Const_str_ptr;  // eg const char*
         
-        Binary_impl() {}
+        Binary_impl();
+        Binary_impl( Const_str_ptr      value );
+        Binary_impl( const String_type& value );
 
-        Binary_impl( Const_str_ptr      value ) : v_( String_type( value ) )
-        {
-        	generateUUID();
-        }
-
-        Binary_impl( const String_type& value ) : v_( value )
-        {
-        	generateUUID();
-        }
+        Binary_impl( const Binary_impl& other );
         
-        Binary_impl( const Binary_impl& other ) : v_( other.v_ )
-        {
-        	generateUUID();
-        }
-        
-        bool operator==( const Binary_impl& lhs ) const
-        {
-            if( this == &lhs ) return true;
-            
-            return v_ == lhs.v_; 
-        }
-        
-        Binary_impl& operator=( const Binary_impl& lhs )
-        {
-            Binary_impl tmp( lhs );
+        bool operator==( const Binary_impl& lhs ) const;
 
-            std::swap( v_, tmp.v_ );
-
-            return *this;
-        }
+        Binary_impl& operator=( const Binary_impl& lhs );
         
-        const String_type& get_uuid() const
-        {
-        	assert( !uid_.empty() );
-            return uid_;
-        }
+        const String_type& get_uuid() const;
+        const String_type& get_data() const;
 
-        const String_type& get_data() const
-        {
-        	assert( !v_.empty() );
-            return v_;
-        }
+        void set_data(const String_type &value);
     
     private:
-        void generateUUID()
-        {
-        	assert( uid_.empty() );
-        	uid_ = rce::generateUUID< String_type >();
-        }
+        void generateUUID();
 
         String_type v_;
 		String_type uid_;
@@ -284,6 +250,73 @@ namespace json_spirit
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
     // implementation
+    template< class Config >
+    Binary_impl< Config >::Binary_impl() : v_(String_type())
+	{}
+
+    template< class Config >
+    Binary_impl< Config >::Binary_impl( Const_str_ptr value ) : v_( String_type( value ) )
+	{
+			generateUUID();
+	}
+
+    template< class Config >
+    Binary_impl< Config >::Binary_impl( const String_type& value ) : v_( value )
+	{
+			generateUUID();
+	}
+
+    template< class Config >
+    Binary_impl< Config >::Binary_impl( const Binary_impl& other ) : v_( other.v_ )
+	{
+			generateUUID();
+	}
+
+    template< class Config >
+    bool Binary_impl< Config >::operator==( const Binary_impl& lhs ) const
+	{
+		if( this == &lhs ) return true;
+
+		return v_ == lhs.v_;
+	}
+
+    template< class Config >
+    Binary_impl< Config >& Binary_impl< Config >::operator=( const Binary_impl& lhs )
+	{
+		Binary_impl tmp( lhs );
+
+		std::swap( v_, tmp.v_ );
+
+		return *this;
+	}
+
+    template< class Config >
+    const typename Config::String_type& Binary_impl< Config >::get_uuid() const
+	{
+			assert( !uid_.empty() );
+		return uid_;
+	}
+
+    template< class Config >
+    const typename Config::String_type& Binary_impl< Config >::get_data() const
+	{
+			assert( !v_.empty() );
+		return v_;
+	}
+
+    template< class Config >
+    void Binary_impl< Config >::set_data(const String_type &value)
+	{
+			assert( v_ == "" );
+			v_ = value;
+	}
+
+    template< class Config >
+    void Binary_impl< Config >::generateUUID()
+	{
+			assert( uid_.empty() );
+			uid_ = rce::generateUUID< String_type >();
+	}
 
     template< class Config >
     const Value_impl< Config > Value_impl< Config >::null;
@@ -306,6 +339,14 @@ namespace json_spirit
     template< class Config >
     Value_impl< Config >::Value_impl( const String_type& value )
     :   type_( str_type )
+    ,   v_( value )
+    ,   is_uint64_( false )
+    {
+    }
+
+    template< class Config >
+    Value_impl< Config >::Value_impl( const Binary& value )
+    :   type_( bin_type )
     ,   v_( value )
     ,   is_uint64_( false )
     {
@@ -431,10 +472,18 @@ namespace json_spirit
     template< class Config >
     const typename Config::String_type& Value_impl< Config >::get_str() const
     {
-        check_type(  str_type );
+        check_type( str_type );
 
         return *boost::get< String_type >( &v_ );
     }
+
+    template< class Config >
+	const typename Value_impl< Config >::Binary& Value_impl< Config >::get_bin() const
+	{
+			check_type( bin_type );
+
+			return *boost::get< Binary >( &v_ );
+	}
 
     template< class Config >
     const typename Value_impl< Config >::Object& Value_impl< Config >::get_obj() const
@@ -447,7 +496,7 @@ namespace json_spirit
     template< class Config >
     const typename Value_impl< Config >::Array& Value_impl< Config >::get_array() const
     {
-        check_type(  array_type );
+        check_type( array_type );
 
         return *boost::get< Array >( &v_ );
     }
@@ -455,7 +504,7 @@ namespace json_spirit
     template< class Config >
     bool Value_impl< Config >::get_bool() const
     {
-        check_type(  bool_type );
+        check_type( bool_type );
 
         return boost::get< bool >( v_ );
     }
@@ -463,7 +512,7 @@ namespace json_spirit
     template< class Config >
     int Value_impl< Config >::get_int() const
     {
-        check_type(  int_type );
+        check_type( int_type );
 
         return static_cast< int >( get_int64() );
     }
@@ -471,7 +520,7 @@ namespace json_spirit
     template< class Config >
     boost::int64_t Value_impl< Config >::get_int64() const
     {
-        check_type(  int_type );
+        check_type( int_type );
 
         return boost::get< boost::int64_t >( v_ );
     }
@@ -479,7 +528,7 @@ namespace json_spirit
     template< class Config >
     boost::uint64_t Value_impl< Config >::get_uint64() const
     {
-        check_type(  int_type );
+        check_type( int_type );
 
         return static_cast< boost::uint64_t >( get_int64() );
     }
@@ -493,7 +542,7 @@ namespace json_spirit
                                : static_cast< double >( get_int64() );
         }
 
-        check_type(  real_type );
+        check_type( real_type );
 
         return boost::get< double >( v_ );
     }
@@ -501,7 +550,7 @@ namespace json_spirit
     template< class Config >
     typename Value_impl< Config >::Object& Value_impl< Config >::get_obj()
     {
-        check_type(  obj_type );
+        check_type( obj_type );
 
         return *boost::get< Object >( &v_ );
     }
@@ -509,7 +558,7 @@ namespace json_spirit
     template< class Config >
     typename Value_impl< Config >::Array& Value_impl< Config >::get_array()
     {
-        check_type(  array_type );
+        check_type( array_type );
 
         return *boost::get< Array >( &v_ );
     }

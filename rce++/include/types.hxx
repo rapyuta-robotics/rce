@@ -27,7 +27,6 @@
  *     \author/s: Dominique Hunziker
  */
 
-
 #ifndef TYPES_HXX_
 #define TYPES_HXX_
 

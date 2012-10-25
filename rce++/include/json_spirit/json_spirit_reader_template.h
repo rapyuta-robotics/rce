@@ -187,40 +187,6 @@ namespace json_spirit
         return get_str( tmp.begin(), tmp.end() );
     }
 
-    template< class Binary_type, class String_type >
-    Binary_type get_bin_( typename String_type::const_iterator begin,
-                          typename String_type::const_iterator end )
-	{
-		assert( end - begin >= 2 );
-
-		typedef typename String_type::const_iterator Iter_type;
-
-		Iter_type str_without_quotes( ++begin );
-		Iter_type end_without_quotes( --end );
-
-		return Binary_type( substitute_esc_chars< String_type >( str_without_quotes, end_without_quotes ) );
-	}
-
-    template< class Binary_type >
-    inline Binary_type get_bin( std::string::const_iterator begin, std::string::const_iterator end )
-	{
-		return get_bin_< Binary_type, std::string >( begin, end );
-	}
-
-	template< class Binary_type >
-	inline Binary_type get_bin( std::wstring::const_iterator begin, std::wstring::const_iterator end )
-	{
-		return get_bin_< Binary_type, std::wstring >( begin, end );
-	}
-
-	template< class Binary_type, class Iter_type >
-	Binary_type get_bin( Iter_type begin, Iter_type end )
-	{
-		const typename Binary_type::String_type tmp( begin, end );  // convert multipass iterators to string iterators
-
-		return get_bin< Binary_type >( tmp.begin(), tmp.end() );
-	}
-
     // this class's methods get called by the spirit parse resulting
     // in the creation of a JSON object or array
     //
@@ -289,19 +255,17 @@ namespace json_spirit
 
         void new_str( Iter_type begin, Iter_type end )
         {
-        	Value_type value;
+        	Value_type value = get_str< String_type >( begin, end );
 
         	if (isBinary_)
         	{
-        		Binary_type binary = get_bin< Binary_type >( begin, end );
-        		value = Value_type(binary);
+        		String_type name = value.get_str();
+        		Binary_type binary = Binary_type();
 
-        		binaries_.push_back( std::pair< String_type, Binary_type* >( name_, &binary ) );
+        		binaries_.push_back( std::pair< String_type, Binary_type* >( name, &binary ) );
         		isBinary_ = false;
-        	}
-        	else
-        	{
-        		value = get_str< String_type >( begin, end );
+
+        		value = Value_type(binary);
         	}
 
         	add_to_current( value );
