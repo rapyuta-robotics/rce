@@ -876,6 +876,10 @@ class ContainerManager(_UserManagerBase):
         
         self._relayID = None
         
+        # Keys:    Container tag
+        # Values:  bool (True = ok; False = delete again)
+        self._pending = {}
+        
         self._rootfs = self._ROOTFS
         self._confDir = self._CONF_DIR
         self._dataDir = self._DATA_DIR
@@ -993,19 +997,27 @@ class ContainerManager(_UserManagerBase):
         deferred = Deferred()
         
         def reportSuccess(contnr):
-            self.reactor.callFromThread(containers.__setitem__, tag, contnr)
-            log.msg('Container successfully started.')
+            if self._pending.pop(tag):
+                containers[tag] = contnr
+                log.msg('Container successfully started.')
+            else:
+                self.reactor.callInThread(self._stopContainer, Deferred(), 
+                                          contnr)
         
         def reportFailure(msg):
             log.msg('Container could not be started: {0}.'.format(msg))
         
         deferred.addCallbacks(reportSuccess, reportFailure)
         
-        if tag in containers:
+        if tag not in containers:
+            self._pending[tag] = True
+            self.reactor.callInThread(self._startContainer, deferred, commID)
+        elif tag in self._pending:
+            deferred.errback('There is already a pending container registered '
+                             'under the same tag.')
+        else:
             deferred.errback('There is already a container registered under '
                              'the same tag.')
-        else:
-            self.reactor.callInThread(self._startContainer, deferred, commID)
     
     def _stopContainer(self, deferred, container):
         """ Internally used method to stop a container.
@@ -1028,8 +1040,11 @@ class ContainerManager(_UserManagerBase):
         deferred.addCallbacks(reportSuccess, reportFailure)
         
         if tag not in containers:
-            deferred.errback('There is no container registered under '
-                             'this tag.')
+            if tag not in self._pending:
+                deferred.errback('There is no container registered under '
+                                 'this tag.')
+            else:
+                self._pending[tag] = False
         else:
             self.reactor.callInThread(self._stopContainer, deferred, 
                                       containers.pop(tag))
