@@ -83,8 +83,8 @@ class RCEMasterProtocol(WebSocketClientProtocol):
         self._deferred = deferred
     
     def onConnect(self, _):
-        self.sendMessage(json.dumps({'userID' : self._userID,
-                                     'robotID' : self._robotID}))
+        data = {'userID' : self._userID, 'robotID' : self._robotID}
+        self.sendMessage(json.dumps({'type' : types.INIT, 'data' : data}))
     
     def onMessage(self, msg, binary):
         if binary:
@@ -107,12 +107,12 @@ class RCEMasterProtocol(WebSocketClientProtocol):
         
         if msgType == types.ERROR:
             print('Received error message from master: {0}'.format(data))
-        elif msgType == types.STATUS:
+        elif msgType == types.INIT:
             try:
                 self._deferred.callback((data['key'], data['url']))
             except KeyError as e:
                 print('Could not authenticate user/robot with master.\n'
-                      'Status message is missing "{0}".'.format(e))
+                      'INIT message is missing "{0}".'.format(e))
         else:
             print('Received message has invalid type.')
 

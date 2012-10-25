@@ -78,15 +78,24 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
             raise InvalidRequest('Message is not in valid JSON format.')
         
         try:
-            userID = msg['userID']
-            robotID = msg['robotID']
+            msgType = msg['type']
+            data = msg['data']
         except KeyError as e:
-            raise InvalidRequest('Error: Missing key: {0}'.format(e))
+            raise InvalidRequest('Message is missing key: {0}'.format(e))
+        
+        if msgType != types.INIT:
+            raise InvalidRequest('Message type is not INIT.')
+        
+        try:
+            userID = data['userID']
+            robotID = data['robotID']
+        except KeyError as e:
+            raise InvalidRequest('Data is missing key: {0}'.format(e))
         
         response = self._manager.newConnection(userID, robotID)
         
         if not response:
-            raise AuthenticationError('Error: Could not authenticate user.')
+            raise AuthenticationError('Could not authenticate user.')
         
         key, ip = response
         return {'key' : key, 'url' : 'ws://{0}:9010/'.format(ip)}
@@ -104,7 +113,7 @@ class MasterWebSocketProtocol(WebSocketServerProtocol):
         else:
             try:
                 resp = self._handleMessage(msg)
-                msgType = types.STATUS
+                msgType = types.INIT
             except InvalidRequest as e:
                 resp = 'Invalid Request: {0}'.format(e)
                 msgType = types.ERROR
@@ -144,17 +153,25 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             @param msg:     Incoming message.
             @type  msg:     dict
         """
-        if msg['type'] == types.INIT:
+        try:
+            msgType = msg['type']
             data = msg['data']
+        except KeyError as e:
+            raise InvalidRequest('Message is missing key: {0}'.format(e))
+            
+        if msgType != types.INIT:
+            raise InvalidRequest('First message has to be an INIT message.')
+        
+        try:
             userID = str(data['userID'])
             robotID = str(data['robotID'])
             key = str(data['key'])
-            
-            self._manager.robotConnected(userID, robotID, key, self)
-            self._robotID = robotID
-            self._userID = userID
-        else:
-            raise InvalidRequest('First message has to be an INIT message.')
+        except KeyError as e:
+            raise InvalidRequest('INIT Message is missing key: {0}'.format(e))
+        
+        self._manager.robotConnected(userID, robotID, key, self)
+        self._robotID = robotID
+        self._userID = userID
         
         # TODO: List should probably not be hard coded here,
         #       but given as an argument...
@@ -174,9 +191,15 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             the manager. (Called by client.protocol.BinaryAssembler)
         """
         try:
-            self._msgHandler[msg['type']].handle(msg['data'])
-        except KeyError:
-            if msg['type'] == types.INIT:
+            msgType = msg['type']
+            data = msg['data']
+        except KeyError as e:
+            raise InvalidRequest('Message is missing key: {0}'.format(e))
+        
+        try:
+            self._msgHandler[msgType].handle(data)
+        except KeyError as e:
+            if msgType == types.INIT:
                 raise InvalidRequest('Connection is already initialized.')
             
             raise InvalidRequest('This message type is not supported.')
