@@ -116,9 +116,9 @@ class MasterFactory(RCEClientFactory):
 
 
 def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
-    f = open('/home/rce-user/relay.log', 'w')
-    log.startLogging(f)
-    #log.startLogging(sys.stdout)
+    #f = open('/home/rce-user/relay.log', 'w')
+    #log.startLogging(f)
+    log.startLogging(sys.stdout)
     
     manager = Manager(reactor)
     manager.registerMasterIP(masterIP)
@@ -177,7 +177,7 @@ def main(reactor, commID, masterIP, masterPort, masterID, rosPort, relayPort):
     
     reactor.run()
     
-    f.close()
+    #f.close()
 
 
 def _get_argparse():

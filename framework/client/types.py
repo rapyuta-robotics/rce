@@ -32,8 +32,6 @@
 
 """ Message Types of RCE Client Protocol:
         
-        IN      Initialize the connection
-        
         CC      Create a container
         DC      Destroy a container
         
@@ -45,8 +43,6 @@
         ST      Status message
         ER      Error message
 """
-
-INIT = 'IN'
 
 CREATE_CONTAINER = 'CC'
 DESTROY_CONTAINER = 'DC'

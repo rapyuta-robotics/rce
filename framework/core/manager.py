@@ -1140,7 +1140,7 @@ class MasterManager(_ManagerBase):
             @raise:     errors.InvalidRequest
         """
         if userID in self.__users:
-            raise InvalidRequest('User does already exist.')
+            raise InternalError('User does already exist.')
         
         self.__users[userID] = User(self._ctrlFactory, self, userID)
     
@@ -1154,7 +1154,7 @@ class MasterManager(_ManagerBase):
             @raise:     errors.InvalidRequest
         """
         if userID not in self.__users:
-            raise InvalidRequest('User does not exist.')
+            raise InternalError('User does not exist.')
         
         self.__users.pop(userID).delete()
     

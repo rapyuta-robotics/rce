@@ -31,6 +31,8 @@
 #     
 
 # Python specific imports
+from urllib import urlencode
+from urllib2 import urlopen, HTTPError
 import json
 import weakref
 
@@ -48,7 +50,6 @@ except ImportError:
 
 # twisted specific imports
 from twisted.python.threadable import isInIOThread
-from twisted.internet.defer import Deferred
 from autobahn.websocket import connectWS
 
 # Custom package imports
@@ -59,7 +60,7 @@ from client import types
 from client.assembler import recursiveBinarySearch
 
 # Custom local imports
-from comm import RCEMasterFactory, RCERobotFactory
+from comm import RCERobotFactory
 import interface
 
 # Custom package imports
@@ -81,7 +82,6 @@ class _Connection(object):
     def __init__(self, userID, robotID, reactor):
         """ Initialize the Connection.
         """
-        self._init = False
         self._userID = userID
         self._robotID = robotID
         self._reactor = reactor
@@ -103,17 +103,12 @@ class _Connection(object):
         if self._conn:
             raise ConnectionError('There is already a connection registered.')
         
-        self._conn = conn
-        self._sendMessage({'type':types.INIT,
-                           'data':{'userID':self._userID,
-                                   'robotID':self._robotID,
-                                   'key':self._key}})
+        if self._connectedDeferred:
+            self._connectedDeferred.callback(self)
     
     def unregisterConnection(self, conn):
         """ Callback for RCERobotFactory.
         """
-        self._init = False
-        
         if not self._conn:
             raise ConnectionError('There is no connection registered.')
         
@@ -122,31 +117,40 @@ class _Connection(object):
         
         self._conn = None
     
-    def connect(self, masterUrl, connectedDeferred):
+    def connect(self, masterUrl, deferred):
         """ Connect to RCE.
         """
-        self._connectedDeferred = connectedDeferred
-        deferred = Deferred()
+        # First make a HTTP request to the Master to get a temporary key
+        argList = [('userID', self._userID), ('robotID', self._robotID)]
+        url = '{0}?{1}'.format(masterUrl, urlencode(argList))
         
-        def authenticate(resp):
-            self._key, url = resp
-            
-            lb = 2+url.find('//')
-            rb = url.rfind(':')
-            
-            if url[lb:rb] == '127.0.0.1':
-                mlb = 2+masterUrl.find('//')
-                mrb = masterUrl.rfind(':')
-                url = '{0}{1}{2}'.format(url[:lb], masterUrl[mlb:mrb],
-                                         url[rb:])
-            
-            factory = RCERobotFactory(url, self)
-            self._reactor.callLater(1, connectWS, factory)
+        try:
+            f = urlopen(url)
+        except HTTPError as e:
+            raise ConnectionError('HTTP Error {0}: {1} - '
+                                  '{2}'.format(e.getcode(), e.msg, e.read()))
         
-        deferred.addCallbacks(authenticate)
+        # Read the response
+        resp = json.loads(f.read())
+        url = resp['url']
+        argList.append(('key', resp['key']))
         
-        factory = RCEMasterFactory(masterUrl, self._userID, self._robotID,
-                                   deferred)
+        # TODO: Hack for localhost IP address still necessary?
+        lb = 2+url.find('//')
+        rb = url.rfind(':')
+        
+        if url[lb:rb] == '127.0.0.1':
+            print('Warning: Received localhost IP address!')
+            mlb = 2+masterUrl.find('//')
+            mrb = masterUrl.rfind(':')
+            url = '{0}{1}{2}'.format(url[:lb], masterUrl[mlb:mrb], url[rb:])
+        
+        # Make websocket connection to Robot Manager
+        url = '{0}?{1}'.format(url, urlencode(argList))
+        factory = RCERobotFactory(url, self)
+        # TODO: # What should this (v) be for ?!?
+        #self._reactor.callLater(1, connectWS, factory)
+        
         connectWS(factory)
     
     def close(self):
@@ -324,11 +328,7 @@ class _Connection(object):
             print('Received error message: {0}'.format(data))
         elif msgType == types.STATUS:
             print('Received status message: {0}'.format(data))
-            self._init = True
-            
-            if self._connectedDeferred:
-                self._connectedDeferred.callback(self)
-        elif self._init and msgType == types.DATA_MESSAGE:
+        elif msgType == types.DATA_MESSAGE:
             self._processDataMessage(data)
     
     def _processDataMessage(self, dataMsg):

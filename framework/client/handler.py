@@ -34,10 +34,58 @@
 from zope.interface import implements
 
 # Custom imports
-from errors import InvalidRequest
+from errors import InvalidRequest, AuthenticationError
 from client.interfaces import IClientMsgHandler
 from client import types
 from core.types import req
+
+
+class AuthenticationHandler(object):
+    """ Handler for Authentication Requests in Master.
+    """
+    def __init__(self, manager):
+        """ Initialize the handler.
+            
+            @param manager:     Master Manager which is used to handle the
+                                request.
+            @type  manager:     core.manager.MasterManager
+        """
+        self._manager = manager
+    
+    def handle(self, args):
+        """ Handle the authentication request.
+            
+            @param args:    Arguments which are passed with the request.
+            @type  args:    { str : [str] }
+        """
+        try:
+            userID = args['userID']
+            robotID = args['robotID']
+        except KeyError as e:
+            raise InvalidRequest('Request is missing parameter: {0}'.format(e))
+        
+        if len(userID) != 1:
+            raise InvalidRequest("Parameter 'userID' has to be unique in "
+                                 'request.')
+        else:
+            userID = userID[0]
+        
+        if len(robotID) != 1:
+            raise InvalidRequest("Parameter 'robotID' has to be unique in "
+                                 'request.')
+        else:
+            robotID = robotID[0]
+        
+        #response = self._manager.newConnection(userID, robotID)
+        import uuid
+        response = uuid.uuid4().hex, '127.0.0.1'
+            
+        if not response:
+            raise AuthenticationError('Could not authenticate user.')
+        
+        key, ip = response
+        
+        return {'key' : key, 'url' : 'ws://{0}:9010/'.format(ip)}
 
 
 class _ClientHandlerBase(object):

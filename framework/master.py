@@ -38,6 +38,7 @@ from zope.interface import classImplements
 
 # twisted specific imports
 from twisted.python import log
+from twisted.web.server import Site
 from autobahn.websocket import listenWS
 
 # Custom imports
@@ -65,8 +66,9 @@ from remote.control import RemoteRobotControl, RemoteNodeControl, \
 from remote.message import CommandSerializer, TagSerializer, \
     RequestSerializer, RequestProcessor, ConnectDirectiveSerializer, \
     CommInfoSerializer
+from client.handler import AuthenticationHandler
 from client.protocol import MasterWebSocketProtocol, \
-    CloudEngineWebSocketFactory
+    CloudEngineWebSocketFactory, MasterRobotAuthentication
 
 from settings import MASTER_CONTAINER_PORT, MASTER_RELAY_PORT, MASTER_UID_PORT
 
@@ -178,9 +180,9 @@ def _createControlFactory(commManager):
 
 
 def main(reactor, commID, uidPort, containerPort, relayPort):
-    f = open('/home/rce-user/master.log', 'w')
-    log.startLogging(f)
-    #log.startLogging(sys.stdout)
+    #f = open('/home/rce-user/master.log', 'w')
+    #log.startLogging(f)
+    log.startLogging(sys.stdout)
     
     manager = MasterManager(reactor)
     commManager = CommManager(reactor, commID)
@@ -220,9 +222,12 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     factory.addApprovedMessageTypes([types.REQUEST])
     reactor.listenTCP(relayPort, factory)
     
-    factory = CloudEngineWebSocketFactory(MasterWebSocketProtocol, manager,
-                                          'ws://localhost:9000')
-    listenWS(factory)
+#    factory = CloudEngineWebSocketFactory(MasterWebSocketProtocol, manager,
+#                                          'ws://localhost:9000')
+#    listenWS(factory)
+    
+    handler = AuthenticationHandler(manager)
+    reactor.listenTCP(9000, Site(MasterRobotAuthentication(handler)))
     
     reactor.addSystemEventTrigger('before', 'shutdown', uidServer.shutdown)
     reactor.addSystemEventTrigger('before', 'shutdown', manager.shutdown)
@@ -230,7 +235,7 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     
     reactor.run()
     
-    f.close()
+    #f.close()
 
 
 if __name__ == '__main__':

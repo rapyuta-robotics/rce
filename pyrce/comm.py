@@ -30,9 +30,6 @@
 #     
 #     
 
-# Python specific imports
-import json
-
 # twisted specific imports
 from autobahn.websocket import WebSocketClientFactory, \
     WebSocketClientProtocol
@@ -41,7 +38,6 @@ from autobahn.websocket import WebSocketClientFactory, \
 import sys                          ### TODO:
 sys.path.append('../framework')     ### TEMPORARY FIX
 
-from client import types
 from client.assembler import MessageAssembler
 
 
@@ -72,59 +68,5 @@ class RCERobotFactory(WebSocketClientFactory):
     
     def buildProtocol(self, addr):
         p = RCERobotProtocol(self._connection)
-        p.factory = self
-        return p
-
-
-class RCEMasterProtocol(WebSocketClientProtocol):
-    def __init__(self, userID, robotID, deferred):
-        self._userID = userID
-        self._robotID = robotID
-        self._deferred = deferred
-    
-    def onConnect(self, _):
-        data = {'userID' : self._userID, 'robotID' : self._robotID}
-        self.sendMessage(json.dumps({'type' : types.INIT, 'data' : data}))
-    
-    def onMessage(self, msg, binary):
-        if binary:
-            print('Received message should not be binary.')
-            return
-        
-        try:
-            msg = json.loads(msg)
-        except ValueError:
-            print('Received message has an invalid format.')
-            return
-        
-        try:
-            msgType = msg['type']
-            data = msg['data']
-        except KeyError as e:
-            print('Could not authenticate user/robot with master.\n'
-                  'Response is missing "{0}".'.format(e))
-            return
-        
-        if msgType == types.ERROR:
-            print('Received error message from master: {0}'.format(data))
-        elif msgType == types.INIT:
-            try:
-                self._deferred.callback((data['key'], data['url']))
-            except KeyError as e:
-                print('Could not authenticate user/robot with master.\n'
-                      'INIT message is missing "{0}".'.format(e))
-        else:
-            print('Received message has invalid type.')
-
-
-class RCEMasterFactory(WebSocketClientFactory):
-    def __init__(self, url, userID, robotID, deferred):
-        WebSocketClientFactory.__init__(self, url)
-        self._userID = userID
-        self._robotID = robotID
-        self._deferred = deferred
-    
-    def buildProtocol(self, addr):
-        p = RCEMasterProtocol(self._userID, self._robotID, self._deferred)
         p.factory = self
         return p
