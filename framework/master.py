@@ -39,7 +39,7 @@ from zope.interface import classImplements
 # twisted specific imports
 from twisted.python import log
 from twisted.web.server import Site
-from autobahn.websocket import listenWS
+#from autobahn.websocket import listenWS
 
 # Custom imports
 from core.interfaces import IControlFactory, IContainerControl, INodeControl, \
@@ -67,8 +67,8 @@ from remote.message import CommandSerializer, TagSerializer, \
     RequestSerializer, RequestProcessor, ConnectDirectiveSerializer, \
     CommInfoSerializer
 from client.handler import AuthenticationHandler
-from client.protocol import MasterWebSocketProtocol, \
-    CloudEngineWebSocketFactory, MasterRobotAuthentication
+from client.protocol import MasterRobotAuthentication#, \
+#    MasterWebSocketProtocol, CloudEngineWebSocketFactory
 
 from settings import MASTER_CONTAINER_PORT, MASTER_RELAY_PORT, MASTER_UID_PORT
 

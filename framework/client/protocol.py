@@ -230,7 +230,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
                                 'Request is missing parameter: {0}'.format(e))
         
-        for param, name in [('userID', userID),
+        for name, param in [('userID', userID),
                             ('robotID', robotID),
                             ('key', key)]:
             if len(param) != 1:
@@ -238,8 +238,12 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                     "Parameter '{0}' has to be unique in "
                                     'request.'.format(name))
         
+        userID = userID[0]
+        robotID = robotID[0]
+        key = key[0]
+        
         try:
-            self._manager.robotConnected(userID[0], robotID[0], key[0], self)
+            self._manager.robotConnected(userID, robotID, key, self)
         except AuthenticationError as e:
             raise HttpException(httpstatus.HTTP_STATUS_CODE_FORBIDDEN[0],
                                 str(e))
