@@ -45,10 +45,12 @@ class RCERobotProtocol(WebSocketClientProtocol):
     def __init__(self, connection):
         self._connection = connection
         self._assembler = MessageAssembler(self, 60)
+        self._registered = False
     
-    def onConnect(self, _):
+    def onOpen(self):
         self._assembler.start()
         self._connection.registerConnection(self)
+        self._registered = True
     
     def onMessage(self, msg, binary):
         self._assembler.processMessage(msg, binary)
@@ -56,9 +58,15 @@ class RCERobotProtocol(WebSocketClientProtocol):
     def processCompleteMessage(self, msg):
         self._connection.receivedMessage(msg)
     
-    def onClose(self, *_):
-        self._connection.unregisterConnection(self)
-        self._assembler.stop()
+    def onClose(self, *a):
+        if self._registered:
+            self._connection.unregisterConnection(self)
+            self._assembler.stop()
+            self._registered = False
+    
+    def failHandshake(self, reason):
+        print(reason)
+        WebSocketClientProtocol.failHandshake(self, reason)
 
 
 class RCERobotFactory(WebSocketClientFactory):

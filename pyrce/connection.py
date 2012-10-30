@@ -103,6 +103,8 @@ class _Connection(object):
         if self._conn:
             raise ConnectionError('There is already a connection registered.')
         
+        self._conn = conn
+        
         if self._connectedDeferred:
             self._connectedDeferred.callback(self)
     
@@ -130,27 +132,16 @@ class _Connection(object):
             raise ConnectionError('HTTP Error {0}: {1} - '
                                   '{2}'.format(e.getcode(), e.msg, e.read()))
         
+        self._connectedDeferred = deferred
+        
         # Read the response
         resp = json.loads(f.read())
         url = resp['url']
         argList.append(('key', resp['key']))
         
-        # TODO: Hack for localhost IP address still necessary?
-        lb = 2+url.find('//')
-        rb = url.rfind(':')
-        
-        if url[lb:rb] == '127.0.0.1':
-            print('Warning: Received localhost IP address!')
-            mlb = 2+masterUrl.find('//')
-            mrb = masterUrl.rfind(':')
-            url = '{0}{1}{2}'.format(url[:lb], masterUrl[mlb:mrb], url[rb:])
-        
         # Make websocket connection to Robot Manager
         url = '{0}?{1}'.format(url, urlencode(argList))
         factory = RCERobotFactory(url, self)
-        # TODO: # What should this (v) be for ?!?
-        #self._reactor.callLater(1, connectWS, factory)
-        
         connectWS(factory)
     
     def close(self):

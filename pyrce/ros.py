@@ -112,8 +112,8 @@ class Environment(object):
         
         self._reactor.callLater(1, self._reactor.callFromThread,
                                 self._reactor.stop)
-        
 
+    
 def main(config, reactor):
     rospy.init_node('RCE_ROS_Client')
     
