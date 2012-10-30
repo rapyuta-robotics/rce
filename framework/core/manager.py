@@ -304,7 +304,7 @@ class ParameterManager(_ROSManagerBase):
         parameters = self._users[userID].parameters
         
         try:
-            parameter = self._PARAMETERS[parameter.IDENTIFIER](parameter)
+            parameter = self._PARAMETERS[parameter.IDENTIFIER](parameter, self)
         except KeyError:
             raise InvalidRequest('ParameterManager can not manage '
                                  'requested component.')

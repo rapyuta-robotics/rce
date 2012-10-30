@@ -246,7 +246,7 @@ class _ParamMonitor(object):
     """ Base class which provides the basic functionalities to monitor a
         parameter.
     """
-    def __init__(self, parameter):
+    def __init__(self, parameter, _):
         """ Add a parameter to the parameter server.
             
             @param parameter:   Parameter command describing parameter which
@@ -308,13 +308,25 @@ class StrMonitor(_ParamMonitor):
     _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
     _RE_ENV = re.compile('\\$\\( *env +(?P<var>[a-zA-Z][a-zA-z0-9_]*) *\\)')
     
-    def __init__(self, parameter):
+    def __init__(self, parameter, manager):
         """ Add a parameter to the parameter server.
+            
+            @param parameter:   Parameter command describing parameter which
+                                should be monitored.
+            @type  parameter:   subclass of core.command._ParameterCommand
+            
+            @param manager:     Parameter manager which is responsible for
+                                this monitor.
+            @type  manager:     core.manager.ParameterManager
         """
         value = parameter.value
         
+        self._manager = manager
         value = self._RE_FIND.subn(self._replaceFind, value)[0]
         value = self._RE_ENV.subn(self._replaceEnv, value)[0]
+        
+        # remove the manager again to prevent circular references
+        del self._manager   
         
         self._init(parameter.name, value)
     
@@ -357,8 +369,12 @@ class FileMonitor(_ParamMonitor):
     """
     IDENTIFIER = types.PARAM_FILE
     
-    def __init__(self, parameter):
+    def __init__(self, parameter, _):
         """ Add a parameter to the parameter server.
+            
+            @param parameter:   Parameter command describing parameter which
+                                should be monitored.
+            @type  parameter:   subclass of core.command._ParameterCommand
         """
         self._fileCreated = False
         
