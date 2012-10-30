@@ -304,6 +304,40 @@ class StrMonitor(_ParamMonitor):
     """ Class which allows to handle a string parameter.
     """
     IDENTIFIER = types.PARAM_STR
+    
+    _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
+    _RE_ENV = re.compile('\\$\\( *env +(?P<var>[a-zA-Z][a-zA-z0-9_]*) *\\)')
+    
+    def __init__(self, parameter):
+        """ Add a parameter to the parameter server.
+        """
+        value = parameter.value
+        
+        value = self._RE_FIND.subn(self._replaceFind, value)[0]
+        value = self._RE_ENV.subn(self._replaceEnv, value)[0]
+        
+        self._init(parameter.name, value)
+    
+    def _replaceFind(self, match):
+        """ Internally used method to replace found matches of _RE_FIND regular
+            expression with corresponding package path.
+        """
+        path = self._manager.loader.findPkgPath(match.group('pkg'))
+        
+        if ' ' in path:
+            return '"{0}"'.format(path)
+        else:
+            return path
+    
+    def _replaceEnv(self, match):
+        """ Internally used method to replace found matches of _RE_ENV regular
+            expression with corresponding environment variable.
+        """
+        try:
+            return os.environ[match.group('var')]
+        except KeyError:
+            raise InvalidRequest('Can not find environment variable: '
+                                 '{0}'.format(match.group('var')))
 
 
 class FloatMonitor(_ParamMonitor):
