@@ -106,96 +106,96 @@ class MasterRobotAuthentication(Resource):
         return response[2]
 
 
-class MasterWebSocketProtocol(WebSocketServerProtocol):
-    """ Protocol which is used for the connections from the robots to the
-        master manager.
-    """
-    def __init__(self, manager):
-        """ Initialize the Protocol.
-        """
-        self._manager = manager
-    
-    def onConnect(self, req):
-        """ Method is called by the Autobahn engine when a request to establish
-            a connection has been received.
-            
-            @param req:     Connection Request object.
-            @type  req:     autobahn.websocket.ConnectionRequest
-            
-            @raise:         autobahn.websocket.HttpException
-        """
-        params = req.params
-        
-        try:
-            userID = params['userID']
-            robotID = params['robotID']
-        except KeyError as e:
-            raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
-                                'Request is missing parameter: {0}'.format(e))
-        
-        if len(userID) != 1:
-            raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
-                                "Parameter 'userID' has to be unique in "
-                                'request.')
-        else:
-            userID = userID[0]
-        
-        if len(robotID) != 1:
-            raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
-                                "Parameter 'robotID' has to be unique in "
-                                'request.')
-        else:
-            robotID = robotID[0]
-        
-        try:
-            response = self._manager.newConnection(userID, robotID)
-        except InternalError as e:
-            raise HttpException(
-                httpstatus.HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR[0], str(e)
-            )
-        except AuthenticationError as e:
-            raise HttpException(httpstatus.HTTP_STATUS_CODE_FORBIDDEN[0],
-                                str(e))
-            
-        if not response:
-            raise HttpException(httpstatus.HTTP_STATUS_CODE_FORBIDDEN[0],
-                                'Could not authenticate user.')
-        
-        key, ip = response
-        
-        return {'key' : key, 'url' : 'ws://{0}:9010/'.format(ip)}
-    
-    def onMessage(self, msg, binary):
-        """ Method is called by the Autobahn engine when a message has been '
-            received from the client.
-        """
-        log.msg('WebSocket: Received new message from client. '
-                '(binary={0})'.format(binary))
-        
-        if binary:
-            resp = 'Error: No binary messages allowed.'
-            msgType = types.ERROR
-        else:
-            try:
-                resp = self._handleMessage(msg)
-                msgType = types.INIT
-            except InvalidRequest as e:
-                resp = 'Invalid Request: {0}'.format(e)
-                msgType = types.ERROR
-            except AuthenticationError as e:
-                resp = 'Authentication Error: {0}'.format(e)
-                msgType = types.ERROR
-            except Exception as e:   # TODO: Refine Error handling
-                #import sys, traceback
-                #resp = '\n'.join(traceback.format_exception_only(type(e), e)))
-                
-                # Full debug message
-                import traceback
-                resp = traceback.format_exc()
-                msgType = types.ERROR
-        
-        self.sendMessage(json.dumps({'data' : resp, 'type' : msgType}))
-        self.dropConnection()
+#class MasterWebSocketProtocol(WebSocketServerProtocol):
+#    """ Protocol which is used for the connections from the robots to the
+#        master manager.
+#    """
+#    def __init__(self, manager):
+#        """ Initialize the Protocol.
+#        """
+#        self._manager = manager
+#    
+#    def onConnect(self, req):
+#        """ Method is called by the Autobahn engine when a request to establish
+#            a connection has been received.
+#            
+#            @param req:     Connection Request object.
+#            @type  req:     autobahn.websocket.ConnectionRequest
+#            
+#            @raise:         autobahn.websocket.HttpException
+#        """
+#        params = req.params
+#        
+#        try:
+#            userID = params['userID']
+#            robotID = params['robotID']
+#        except KeyError as e:
+#            raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
+#                                'Request is missing parameter: {0}'.format(e))
+#        
+#        if len(userID) != 1:
+#            raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
+#                                "Parameter 'userID' has to be unique in "
+#                                'request.')
+#        else:
+#            userID = userID[0]
+#        
+#        if len(robotID) != 1:
+#            raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
+#                                "Parameter 'robotID' has to be unique in "
+#                                'request.')
+#        else:
+#            robotID = robotID[0]
+#        
+#        try:
+#            response = self._manager.newConnection(userID, robotID)
+#        except InternalError as e:
+#            raise HttpException(
+#                httpstatus.HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR[0], str(e)
+#            )
+#        except AuthenticationError as e:
+#            raise HttpException(httpstatus.HTTP_STATUS_CODE_FORBIDDEN[0],
+#                                str(e))
+#            
+#        if not response:
+#            raise HttpException(httpstatus.HTTP_STATUS_CODE_FORBIDDEN[0],
+#                                'Could not authenticate user.')
+#        
+#        key, ip = response
+#        
+#        return {'key' : key, 'url' : 'ws://{0}:9010/'.format(ip)}
+#    
+#    def onMessage(self, msg, binary):
+#        """ Method is called by the Autobahn engine when a message has been '
+#            received from the client.
+#        """
+#        log.msg('WebSocket: Received new message from client. '
+#                '(binary={0})'.format(binary))
+#        
+#        if binary:
+#            resp = 'Error: No binary messages allowed.'
+#            msgType = types.ERROR
+#        else:
+#            try:
+#                resp = self._handleMessage(msg)
+#                msgType = types.INIT
+#            except InvalidRequest as e:
+#                resp = 'Invalid Request: {0}'.format(e)
+#                msgType = types.ERROR
+#            except AuthenticationError as e:
+#                resp = 'Authentication Error: {0}'.format(e)
+#                msgType = types.ERROR
+#            except Exception as e:   # TODO: Refine Error handling
+#                #import sys, traceback
+#                #resp = '\n'.join(traceback.format_exception_only(type(e), e)))
+#                
+#                # Full debug message
+#                import traceback
+#                resp = traceback.format_exc()
+#                msgType = types.ERROR
+#        
+#        self.sendMessage(json.dumps({'data' : resp, 'type' : msgType}))
+#        self.dropConnection()
 
 
 class RobotWebSocketProtocol(WebSocketServerProtocol):
@@ -279,9 +279,6 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         try:
             self._msgHandler[msgType].handle(data)
         except KeyError as e:
-            if msgType == types.INIT:
-                raise InvalidRequest('Connection is already initialized.')
-            
             raise InvalidRequest('This message type is not supported.')
     
     def onMessage(self, msg, binary):

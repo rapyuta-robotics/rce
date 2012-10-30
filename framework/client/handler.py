@@ -76,9 +76,7 @@ class AuthenticationHandler(object):
         else:
             robotID = robotID[0]
         
-        #response = self._manager.newConnection(userID, robotID)
-        import uuid
-        response = uuid.uuid4().hex, '127.0.0.1'
+        response = self._manager.newConnection(userID, robotID)
             
         if not response:
             raise AuthenticationError('Could not authenticate user.')
