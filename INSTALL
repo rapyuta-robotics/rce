@@ -25,6 +25,7 @@ Comments pre install
     ssh-keygen -t rsa -C "<your email>"
     (Generate authentication keys)
 
+
 Installation
 ============
 
@@ -113,3 +114,14 @@ Installation
 8.  Create necessary folders holding temporary data of containers
       sudo mkdir /opt/rce/container/data
       sudo mkdir /opt/rce/container/config
+
+
+Post Installation
+=================
+
+1.  Copy settings file and adjust appropriately
+      sudo cp /opt/rce/framework.settings.py.default /opt/rce/framework.settings.py
+
+2.  Copy upstart scripts and adjust appropriately
+      sudo cp /opt/rce/setup/src/rce-master.conf /etc/init/
+      sudo cp /opt/rce/setup/src/rce-machine.conf /etc/init/
