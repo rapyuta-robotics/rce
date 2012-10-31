@@ -39,11 +39,10 @@ from Test.srv import ParameterTest
 
 
 def callback(arg):
-    i = rospy.get_param('int')
-    s = rospy.get_param('str')
-    f = rospy.get_param('float')
-    b = rospy.get_param('bool')
-    return arg, s, i, f, b
+    msg = 'int:   {0}\nstr:   {1}\nfloat: {2}\nbool:  {3}\narray: {4}'
+    return msg.format(rospy.get_param('int'), rospy.get_param('str'),
+                      rospy.get_param('float'), rospy.get_param('bool'),
+                      rospy.get_param('array'))
 
 
 def parameter_test_server(arg):

@@ -44,28 +44,26 @@
         
         N   Node
 
-        I   IntParam
-        S   StrParam
-        F   FloatParam
-        B   BoolParam
+        Z   Standard Parameter
+        Y   Standard Parameter Array
         X   FileParam
         
-        V   ServiceInterface
-        K   ServiceProviderInterface
-        P   PublisherInterface
-        C   SubscriberInterface
+        V   Service Interface
+        K   Service Provider Interface
+        P   Publisher Interface
+        C   Subscriber Interface
         
-        W   ServiceConverter
-        L   ServiceProviderConverter
-        Q   PublisherConverter
-        D   SubscriberConverter
+        W   Service Converter
+        L   Service Provider Converter
+        Q   Publisher Converter
+        D   Subscriber Converter
         
-        U   ServiceForwarder
-        M   ServiceProviderForwarder
-        O   PublisherForwarder
-        E   SubscriberForwarder
+        U   Service Forwarder
+        I   Service Provider Forwarder
+        O   Publisher Forwarder
+        B   Subscriber Forwarder
         
-        Z   Connection
+        A   Connection
 """
 
 RM_CONTAINER = '-'
@@ -79,10 +77,8 @@ ROBOT = 'R'
 
 NODE = 'N'
 
-PARAM_INT = 'I'
-PARAM_STR = 'S'
-PARAM_FLOAT = 'F'
-PARAM_BOOL = 'B'
+PARAM_STD = 'Z'
+PARAM_ARR = 'Y'
 PARAM_FILE = 'X'
 
 INTERFACE_SRV = 'V'
@@ -96,8 +92,8 @@ CONVERTER_PUB = 'Q'
 CONVERTER_SUB = 'D'
 
 FORWARDER_SRV = 'U'
-FORWARDER_PRO = 'M'
+FORWARDER_PRO = 'I'
 FORWARDER_PUB = 'O'
-FORWARDER_SUB = 'E'
+FORWARDER_SUB = 'B'
 
-CONNECTION = 'Z'
+CONNECTION = 'A'

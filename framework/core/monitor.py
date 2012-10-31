@@ -294,16 +294,10 @@ class _ParamMonitor(object):
         self.remove()
 
 
-class IntMonitor(_ParamMonitor):
-    """ Class which allows to handle an integer parameter.
+class ParameterMonitor(_ParamMonitor):
+    """ Class which allows to handle a standard parameter.
     """
-    IDENTIFIER = types.PARAM_INT
-
-
-class StrMonitor(_ParamMonitor):
-    """ Class which allows to handle a string parameter.
-    """
-    IDENTIFIER = types.PARAM_STR
+    IDENTIFIER = types.PARAM_STD
     
     _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
     _RE_ENV = re.compile('\\$\\( *env +(?P<var>[a-zA-Z][a-zA-z0-9_]*) *\\)')
@@ -320,15 +314,31 @@ class StrMonitor(_ParamMonitor):
             @type  manager:     core.manager.ParameterManager
         """
         value = parameter.value
+        definition = parameter.definition
         
+        if len(value) != 1 or len(definition) != 1:
+            raise InternalError('Parameter monitor can not handle arrays; '
+                                'use Array monitor instead.')
+        
+        # Temporarily add a reference to the manager; used in _replace
         self._manager = manager
-        value = self._RE_FIND.subn(self._replaceFind, value)[0]
-        value = self._RE_ENV.subn(self._replaceEnv, value)[0]
+        
+        value = self._replace(value[0], definition)
         
         # remove the manager again to prevent circular references
         del self._manager   
         
         self._init(parameter.name, value)
+    
+    def _replace(self, value, definition):
+        """ Internally used method to find and replace $(CMD val) directives in
+            strings.
+        """
+        if definition == 'S':
+            value = self._RE_FIND.subn(self._replaceFind, value)[0]
+            value = self._RE_ENV.subn(self._replaceEnv, value)[0]
+        
+        return value
     
     def _replaceFind(self, match):
         """ Internally used method to replace found matches of _RE_FIND regular
@@ -352,16 +362,37 @@ class StrMonitor(_ParamMonitor):
                                  '{0}'.format(match.group('var')))
 
 
-class FloatMonitor(_ParamMonitor):
-    """ Class which allows to handle a float parameter.
+class ArrayMonitor(ParameterMonitor):
+    """ Class which allows to handle an array of standard parameter.
     """
-    IDENTIFIER = types.PARAM_FLOAT
-
-
-class BoolMonitor(_ParamMonitor):
-    """ Class which allows to handle a bool parameter.
-    """
-    IDENTIFIER = types.PARAM_BOOL
+    IDENTIFIER = types.PARAM_ARR
+    
+    def __init__(self, parameter, manager):
+        """ Add a parameter array to the parameter server.
+            
+            @param parameter:   Parameter command describing parameter which
+                                should be monitored.
+            @type  parameter:   subclass of core.command._ParameterCommand
+            
+            @param manager:     Parameter manager which is responsible for
+                                this monitor.
+            @type  manager:     core.manager.ParameterManager
+        """
+        value = parameter.value
+        definition = parameter.definition
+        
+        if len(value) != len(definition):
+            raise InternalError('Value does not match the definition.')
+        
+        # Temporarily add a reference to the manager; used in _replace
+        self._manager = manager
+        
+        value = [self._replace(v, d) for v, d in zip(value, definition)]
+        
+        # remove the manager again to prevent circular references
+        del self._manager   
+        
+        self._init(parameter.name, value)
 
 
 class FileMonitor(_ParamMonitor):

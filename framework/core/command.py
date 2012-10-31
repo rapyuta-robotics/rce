@@ -37,7 +37,7 @@ from zope.interface import implements
 from twisted.python import log
 
 # Custom imports
-from errors import InternalError
+from errors import InternalError, SerializationError
 from core.interfaces import ISerializable
 from core.types import cmd as types
 from core.interfaces import IEndpointConverterCommand, \
@@ -389,11 +389,9 @@ class _ParameterCommand(object):
             @param value:   Value of the parameter which will be sent to the
                             parameter server.
             @type  value:   Depends on subclass
-            
-            @raise:         ValueError, if validation of value fails.
         """
         self._name = name
-        self._value = self._validate(value)
+        self._value = value
     
     @property
     def name(self):
@@ -404,166 +402,99 @@ class _ParameterCommand(object):
     def value(self):
         """ Value of the parameter. """
         return self._value
-    
-    def _validate(self, value):
-        """ Validation of the value.
-            
-            @return:        Value as correct type.
-            
-            @raise:         ValueError, if validation of value fails.
-        """
-        raise ValueError('No validation method implemented.')
 
 
-class IntCommand(_ParameterCommand):
-    """ Class which represents an integer parameter command.
+class ParameterCommand(_ParameterCommand):
+    """ Class which represents an standard parameter command.
     """
-    IDENTIFIER = types.PARAM_INT
+    IDENTIFIER = types.PARAM_STD
     
-    def serialize(self, s):
-        """ Serialize the integer parameter command.
-            
-            @param s:   Serializer instance into which the message should be
-                        serialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        s.addElement(self._name)
-        s.addInt(self._value)
+    def __init__(self, name, value, definition):
+        """ Initialize the parameter command.
 
-    @classmethod
-    def deserialize(cls, s):
-        """ Deserialize the integer parameter command.
-            
-            @param s:   Serializer instance from which the message should be
-                        deserialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        return cls(s.getElement(), s.getInt())
-    
-    def _validate(self, value):
-        return int(value)
+            @param name:    Name under which the parameter is stored.
+            @type  name:    str
 
-
-class StrCommand(_ParameterCommand):
-    """ Class which represents a string parameter command.
-    """
-    IDENTIFIER = types.PARAM_STR
-    
-    def serialize(self, s):
-        """ Serialize the string parameter command.
-            
-            @param s:   Serializer instance into which the message should be
-                        serialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
+            @param value:   Value of the parameter which will be sent to the
+                            parameter server.
+            @type  value:   Depends on subclass
+                                
+            @param definition:  String containing all type identifiers of each
+                                value of the parameter.
+            @type  definition:  [str]
         """
-        s.addElement(self._name)
-        s.addElement(self._value)
-
-    @classmethod
-    def deserialize(cls, s):
-        """ Deserialize the string parameter command.
-            
-            @param s:   Serializer instance from which the message should be
-                        deserialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        return cls(s.getElement(), s.getElement())
-    
-    def _validate(self, value):
-        if isinstance(value, str):
-            return value
-        elif isinstance(value, unicode):
-            return str(value)
+        super(ParameterCommand, self).__init__(name, value)
         
-        raise ValueError('String is invalid.')
-
-
-class FloatCommand(_ParameterCommand):
-    """ Class which represents a float parameter command.
-    """
-    IDENTIFIER = types.PARAM_FLOAT
-    
-    def serialize(self, s):
-        """ Serialize the float parameter command.
-            
-            @param s:   Serializer instance into which the message should be
-                        serialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        s.addElement(self._name)
-        s.addFloat(self._value)
-
-    @classmethod
-    def deserialize(cls, s):
-        """ Deserialize the float parameter command.
-            
-            @param s:   Serializer instance from which the message should be
-                        deserialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        return cls(s.getElement(), s.getFloat())
-    
-    def _validate(self, value):
-        return float(value)
-
-
-class BoolCommand(_ParameterCommand):
-    """ Class which represents a bool parameter command.
-    """
-    IDENTIFIER = types.PARAM_BOOL
-    
-    def serialize(self, s):
-        """ Serialize the bool parameter command.
-            
-            @param s:   Serializer instance into which the message should be
-                        serialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        s.addElement(self._name)
-        s.addFloat(self._value)
-
-    @classmethod
-    def deserialize(cls, s):
-        """ Deserialize the bool parameter command.
-            
-            @param s:   Serializer instance from which the message should be
-                        deserialized.
-            @type  s:   comm.serializer.Serializer
-            
-            @raise:     errors.SerializationError
-        """
-        return cls(s.getElement(), s.getBool())
-    
-    def _validate(self, value):
-        if isinstance(value, basestring):
-            value = value.strip().lower()
-            
-            if value == 'true':
-                return True
-            elif value == 'false':
-                return False
-        else:
-            try:
-                return bool(int(value))
-            except ValueError:
-                pass
+        for char in definition:
+            if char not in 'ISFB':
+                raise InternalError('Parameter definition is not valid.')
         
-        raise ValueError('Bool is invalid.')
+        self._def = definition
+    
+    @property
+    def definition(self):
+        """ Parameter definition. """
+        return self._def
+    
+    def serialize(self, s):
+        """ Serialize the standard parameter command.
+            
+            @param s:   Serializer instance into which the message should be
+                        serialized.
+            @type  s:   comm.serializer.Serializer
+            
+            @raise:     errors.SerializationError
+        """
+        s.addElement(self._name)
+        s.addElement(self._def)
+        
+        for value, paramType in zip(self._value, self._def):
+            if paramType == 'I':
+                s.addInt(value)
+            elif paramType == 'S':
+                s.addElement(value)
+            elif paramType == 'F':
+                s.addFloat(value)
+            elif paramType == 'B':
+                s.addBool(value)
+    
+    @staticmethod
+    def _deserializeValue(s, paramType):
+        """ Internally used method to deserialize a single value.
+        """
+        if paramType == 'I':
+            return s.getInt()
+        elif paramType == 'S':
+            return s.getElement()
+        elif paramType == 'F':
+            return s.getFloat()
+        elif paramType == 'B':
+            return s.getBool()
+        
+        raise SerializationError('Can not identify type of parameter.')
+    
+    @classmethod
+    def deserialize(cls, s):
+        """ Deserialize the standard parameter command.
+            
+            @param s:   Serializer instance from which the message should be
+                        deserialized.
+            @type  s:   comm.serializer.Serializer
+            
+            @raise:     errors.SerializationError
+        """
+        name = s.getElement()
+        definition = s.getElement()
+        value = [ParameterCommand._deserializeValue(s, paramType)
+                    for paramType in definition]
+        
+        return cls(name, value, definition)
 
+
+class ArrayCommand(ParameterCommand):
+    """ Class which represents a standard parameter array command.
+    """
+    IDENTIFIER = types.PARAM_ARR
 
 class FileCommand(_ParameterCommand):
     """ Class which represents a file parameter command.
@@ -593,14 +524,6 @@ class FileCommand(_ParameterCommand):
             @raise:     errors.SerializationError
         """
         return cls(s.getElement(), s.getElement())
-    
-    def _validate(self, value):
-        if isinstance(value, str):
-            return value
-        elif isinstance(value, unicode):
-            return str(value)
-        
-        raise ValueError('File is invalid.')
 
 
 class _EndpointInterfaceCommand(object):

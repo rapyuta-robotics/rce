@@ -44,8 +44,8 @@ from errors import InternalError, InvalidRequest
 from util.interfaces import verifyObject
 from core.interfaces import IEndpointProxy, IEndpointControl, IRobotControl, \
     INodeControl, IParameterControl, IContainerControl
-from core.command import NodeCommand, IntCommand, StrCommand, FloatCommand, \
-    BoolCommand, FileCommand, ContainerCommand, RobotCommand
+from core.command import NodeCommand, ParameterCommand, ArrayCommand, FileCommand, \
+    ContainerCommand, RobotCommand
 
 
 class _EndpointProxy(object):
@@ -278,6 +278,48 @@ class ROSEnvProxy(_EndpointProxy):
                 '"{1}".'.format(tag, self._commID))
         self._control.removeNode(tag)
     
+    def _castStr(self, value):
+        """ Internally used method to convert a value to a string.
+        """
+        if isinstance(value, str):
+            return value
+        elif isinstance(value, unicode):
+            return str(value)
+        
+        raise ValueError('Value is not a valid string.')
+        
+    def _castBool(self, value):
+        """ Internally used method to convert a value to a bool.
+        """
+        if isinstance(value, basestring):
+            value = value.strip().lower()
+            
+            if value == 'true':
+                return True
+            elif value == 'false':
+                return False
+        else:
+            try:
+                return bool(int(value))
+            except ValueError:
+                pass
+        
+        raise ValueError('Value is not a valid bool.')
+    
+    def _cast(self, value, paramType):
+        """ Internally used method to convert a value.
+        """
+        if paramType == 'int':
+            return int(value)
+        elif paramType == 'str':
+            return self._castStr(value)
+        elif paramType == 'float':
+            return float(value)
+        elif paramType == 'bool':
+            return self._castBool(value)
+        
+        raise ValueError('Parameter type is invalid.')
+    
     def addParameter(self, name, value, paramType):
         """ Add a parameter to the parameter server in the monitored ROS
             environment.
@@ -288,9 +330,18 @@ class ROSEnvProxy(_EndpointProxy):
             @param value:   Value of the parameter which should be added.
             @type  value:   Depends on @param paramType
             
-            @param paramType:   Type of the parameter to add. Valid options
+            @param paramType:   Type of the parameter to add. Valid base types
                                 are:
-                                    int, str, float, bool, file
+                                    int, str, float, bool
+                                
+                                The base types can be summarized to an array,
+                                for example:
+                                    [int, str, bool, str]
+                                
+                                Additionally, a special type is defined for
+                                adding a file; this type can't be used in an
+                                array:
+                                    file
             @type  paramType:   str
             
             @raise:     InvalidRequest if the name is not a valid ROS name.
@@ -298,19 +349,30 @@ class ROSEnvProxy(_EndpointProxy):
         if not rosgraph.names.is_legal_name(name):
             raise InvalidRequest('The name "{0}" is not valid.'.format(name))
         
+        paramType = paramType.strip()
+        
         try:
-            if paramType == 'int':
-                param = IntCommand(name, value)
-            elif paramType == 'str':
-                param = StrCommand(name, value)
-            elif paramType == 'float':
-                param = FloatCommand(name, value)
-            elif paramType == 'bool':
-                param = BoolCommand(name, value)
-            elif paramType == 'file':
-                param = FileCommand(name, value)
-        except ValueError:
-            raise InternalError('Invalid value type.')
+            if paramType == 'file':
+                param = FileCommand(name, self._castStr(value))
+            else:
+                if paramType[0] == '[' and paramType[-1] == ']':
+                    paramType = map(lambda x: x.strip(),
+                                    paramType[1:-1].split(','))
+                    cmd = ArrayCommand
+                else:
+                    paramType = [paramType]
+                    cmd = ParameterCommand
+            
+                if len(paramType) != len(value):
+                    raise InvalidRequest('Length of parameter specification '
+                                         'does not match length of supplied '
+                                         'values.')
+                
+                value = [self._cast(*pair) for pair in zip(value, paramType)]
+                paramType = ''.join(p.upper()[0] for p in paramType)
+                param = cmd(name, value, paramType)
+        except ValueError as e:
+            raise InvalidRequest(str(e))
         
         log.msg('Add parameter "{0}" to ROS environment "{1}".'.format(
                     name, self._commID))

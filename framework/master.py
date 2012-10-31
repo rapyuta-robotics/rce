@@ -47,14 +47,13 @@ from core.interfaces import IControlFactory, IContainerControl, INodeControl, \
 from core.manager import MasterManager
 from core.machine import UIDServer, LoadBalancer
 from core.command import ContainerCommand, RobotCommand, NodeCommand, \
-    IntCommand, StrCommand, FloatCommand, BoolCommand, FileCommand, \
+    ParameterCommand, FileCommand, ConnectionCommand, \
     ServiceInterfaceCommand, ServiceProviderInterfaceCommand, \
     PublisherInterfaceCommand, SubscriberInterfaceCommand, \
     ServiceConverterCommand, ServiceProviderConverterCommand, \
     PublisherConverterCommand, SubscriberConverterCommand, \
     ServiceForwarderCommand, ServiceProviderForwarderCommand, \
-    PublisherForwarderCommand, SubscriberForwarderCommand, \
-    ConnectionCommand
+    PublisherForwarderCommand, SubscriberForwarderCommand
 from comm import definition
 from comm import types
 from comm.manager import CommManager
@@ -195,14 +194,13 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand(
         [ContainerCommand, RobotCommand, NodeCommand,
-         IntCommand, StrCommand, FloatCommand, BoolCommand, FileCommand,
+         ParameterCommand, FileCommand, ConnectionCommand,
          ServiceInterfaceCommand, ServiceProviderInterfaceCommand,
          PublisherInterfaceCommand, SubscriberInterfaceCommand,
          ServiceConverterCommand, ServiceProviderConverterCommand,
          PublisherConverterCommand, SubscriberConverterCommand,
          ServiceForwarderCommand, ServiceProviderForwarderCommand,
-         PublisherForwarderCommand, SubscriberForwarderCommand,
-         ConnectionCommand])
+         PublisherForwarderCommand, SubscriberForwarderCommand])
     commManager.registerContentSerializers([ConnectDirectiveSerializer(),
                                             CommInfoSerializer(),
                                             cmdSerializer,

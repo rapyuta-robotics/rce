@@ -1,6 +1,2 @@
 ---
-string  arg
-string  str
-int32   int
-float32 float
-bool    bool
+string  msg
