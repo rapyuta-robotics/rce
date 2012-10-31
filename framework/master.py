@@ -179,9 +179,9 @@ def _createControlFactory(commManager):
 
 
 def main(reactor, commID, uidPort, containerPort, relayPort):
-    #f = open('/home/rce-user/master.log', 'w')
-    #log.startLogging(f)
-    log.startLogging(sys.stdout)
+    f = open('/home/rce-user/master.log', 'w')
+    log.startLogging(f)
+    #log.startLogging(sys.stdout)
     
     manager = MasterManager(reactor)
     commManager = CommManager(reactor, commID)
@@ -233,7 +233,7 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     
     reactor.run()
     
-    #f.close()
+    f.close()
 
 
 if __name__ == '__main__':
