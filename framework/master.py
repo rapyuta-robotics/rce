@@ -47,7 +47,7 @@ from core.interfaces import IControlFactory, IContainerControl, INodeControl, \
 from core.manager import MasterManager
 from core.machine import UIDServer, LoadBalancer
 from core.command import ContainerCommand, RobotCommand, NodeCommand, \
-    ParameterCommand, FileCommand, ConnectionCommand, \
+    ParameterCommand, ArrayCommand, FileCommand, ConnectionCommand, \
     ServiceInterfaceCommand, ServiceProviderInterfaceCommand, \
     PublisherInterfaceCommand, SubscriberInterfaceCommand, \
     ServiceConverterCommand, ServiceProviderConverterCommand, \
@@ -194,7 +194,7 @@ def main(reactor, commID, uidPort, containerPort, relayPort):
     cmdSerializer = CommandSerializer()
     cmdSerializer.registerCommand(
         [ContainerCommand, RobotCommand, NodeCommand,
-         ParameterCommand, FileCommand, ConnectionCommand,
+         ParameterCommand, ArrayCommand, FileCommand, ConnectionCommand,
          ServiceInterfaceCommand, ServiceProviderInterfaceCommand,
          PublisherInterfaceCommand, SubscriberInterfaceCommand,
          ServiceConverterCommand, ServiceProviderConverterCommand,

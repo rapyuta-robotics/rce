@@ -41,12 +41,11 @@ from core.types import cmd as types
 from core.manager import NodeFwdManager, ParameterManager, \
     ROSInterfaceOnlyManager
 from core.command import ControlDistributor, NodeForwarderCommand, \
-    ParameterCommand, FileCommand, \
+    ParameterCommand, ArrayCommand, FileCommand, ConnectionCommand, \
     ServiceInterfaceCommand, ServiceProviderInterfaceCommand, \
-    PublisherInterfaceCommand, SubscriberInterfaceCommand, ConnectionCommand
-from core.monitor import IntMonitor, StrMonitor, FloatMonitor, \
-    BoolMonitor, FileMonitor, ServiceMonitor, ServiceProviderMonitor, \
-    PublisherMonitor, SubscriberMonitor
+    PublisherInterfaceCommand, SubscriberInterfaceCommand
+from core.monitor import ParameterMonitor, ArrayMonitor, FileMonitor, \
+    ServiceMonitor, ServiceProviderMonitor, PublisherMonitor, SubscriberMonitor
 from comm import definition
 from comm import types as msgTypes
 from comm.manager import CommManager
@@ -57,7 +56,8 @@ from remote.message import CommandSerializer, TagSerializer, \
 from settings import RELAY_ROS_PORT, ROS_NODE_PORT
 
 
-_PARAMETER = ((types.PARAM_STD, ParameterCommand, IntMonitor),
+_PARAMETER = ((types.PARAM_STD, ParameterCommand, ParameterMonitor),
+              (types.PARAM_ARR, ArrayCommand, ArrayMonitor),
               (types.PARAM_FILE, FileCommand, FileMonitor))
 
 _INTERFACE = ((types.INTERFACE_SRV, ServiceInterfaceCommand,
