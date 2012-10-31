@@ -30,6 +30,9 @@
 #     
 #     
 
+# Python specific imports
+import json
+
 # zope specific imports
 from zope.interface import implements
 
@@ -176,7 +179,7 @@ class ConfigureContainerHandler(_ClientHandlerBase):
                     'user' : self._userID,
                     'type' : req.ADD_PARAMETER,
                     'args' : (param['containerTag'], param['name'],
-                              str(param['value']), param['paramType'])
+                              json.dumps(param['value']), param['paramType'])
                 })
         
         if 'deleteParam' in msg:

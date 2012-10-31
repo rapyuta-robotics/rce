@@ -30,6 +30,9 @@
 #     
 #     
 
+# Python specific imports
+import json
+
 # twisted specific imports
 from twisted.python import log
 
@@ -212,8 +215,9 @@ class User(object):
             @param name:    Name of the parameter which should be added.
             @type  name:    str
             
-            @param value:   Value of the parameter which should be added.
-            @type  value:   Depends on @param paramType
+            @param value:   Value of the parameter which should be added as a
+                            serialized JSON string.
+            @type  value:   str
             
             @param paramType:   Type of the parameter to add. Valid options
                                 are:
@@ -227,7 +231,8 @@ class User(object):
             return
         
         try:
-            self._containers[cTag].addParameter(name, value, paramType)
+            self._containers[cTag].addParameter(name, json.loads(value),
+                                                paramType)
         except KeyError:
             raise InvalidRequest('Container tag is invalid.')
     

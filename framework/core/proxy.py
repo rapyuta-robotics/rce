@@ -360,10 +360,11 @@ class ROSEnvProxy(_EndpointProxy):
                                     paramType[1:-1].split(','))
                     cmd = ArrayCommand
                 else:
+                    value = [value]
                     paramType = [paramType]
                     cmd = ParameterCommand
             
-                if len(paramType) != len(value):
+                if len(value) != len(paramType):
                     raise InvalidRequest('Length of parameter specification '
                                          'does not match length of supplied '
                                          'values.')
