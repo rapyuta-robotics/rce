@@ -63,8 +63,8 @@ from util.interfaces import verifyObject
 from comm import definition
 
 
-# Minimal required version of the client
-_MIN_VERSION = '20121031'
+_MIN_VERSION = '20121031'  # Minimal required version of the client
+_CUR_VERSION = '20121031'  # Current version of the client
 
 
 class MasterRobotAuthentication(Resource):
@@ -85,20 +85,27 @@ class MasterRobotAuthentication(Resource):
         """ Internally used method to process a GET request.
         """
         try:
-            version = args['version']
-        except KeyError:
-            return (httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
-                    'text/plain; charset=utf-8',
-                    "Request is missing the argument 'version'.")
+            try:
+                version = args['version']
+            except KeyError:
+                raise InvalidRequest('Request is missing parameter: version')
+            
+            if len(version) != 1:
+                raise InvalidRequest("Parameter 'version' has to be unique in "
+                                     'request.')
+            
+            version = version[0]
+            
+            if version < _MIN_VERSION:
+                return (httpstatus.HTTP_STATUS_CODE_GONE[0],
+                        'text/plain; charset=utf-8',
+                        'Client version is out-dated. Minimal version is '
+                        "'{0}'.".format(_MIN_VERSION))
+            
+            msg = self._handler.handle(args)
         
-        if version < _MIN_VERSION:
-            return (httpstatus.HTTP_STATUS_CODE_GONE[0],
-                    'text/plain; charset=utf-8',
-                    'Client version is out-dated. Minimal version is '
-                    "'{0}'.".format(_MIN_VERSION))
-        
-        try:
-            msg = json.dumps(self._handler.handle(args))
+            if version != _CUR_VERSION:
+                msg['current'] = _CUR_VERSION
         except InvalidRequest as e:
             return (httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
                     'text/plain; charset=utf-8', str(e))
@@ -110,7 +117,7 @@ class MasterRobotAuthentication(Resource):
                     'text/plain; charset=utf-8', str(e))
         
         return (httpstatus.HTTP_STATUS_CODE_OK[0],
-                'application/json; charset=utf-8', msg)
+                'application/json; charset=utf-8', json.dumps(msg))
     
     def render_GET(self, request):
         """ This method is called by the twisted framework when a GET request

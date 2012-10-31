@@ -68,6 +68,9 @@ if interface.HAS_ROS:
     from util.loader import Loader
 
 
+_VERSION = '20121031'  # Client version
+
+
 class ConnectionError(Exception):
     """ Error is raised when there is no connection or the connection is
         not valid.
@@ -154,7 +157,8 @@ class _Connection(object):
         
         # First make a HTTP request to the Master to get a temporary key
         argList = [('userID', self._userID), ('robotID', self._robotID)]
-        url = '{0}?{1}'.format(masterUrl, urlencode(argList))
+        url = '{0}?{1}'.format(masterUrl,
+                               urlencode(argList+[('version', _VERSION)]))
         
         try:
             f = urlopen(url)
@@ -167,12 +171,16 @@ class _Connection(object):
         # Read the response
         resp = json.loads(f.read())
         url = resp['url']
-        argList.append(('key', resp['key']))
+        current = resp.get('current', None)
+        
+        if current:
+            print("Warning: There is a newer client (version: '{0}') "
+                  'available.'.format(current))
         
         print('Connect to Robot Manager on: {0}'.format(url))
         
         # Make websocket connection to Robot Manager
-        url = '{0}?{1}'.format(url, urlencode(argList))
+        url = '{0}?{1}'.format(url, urlencode(argList+[('key', resp['key'])]))
         factory = RCERobotFactory(url, self)
         connectWS(factory)
     
