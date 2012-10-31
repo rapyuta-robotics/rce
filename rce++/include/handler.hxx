@@ -112,12 +112,13 @@ class Master_Handler_impl: public Handler_Base_impl<Client>
 		typedef typename Client::Config_type Config_type;
 		typedef typename Client::Object_type Object_type;
 		typedef typename Client::Value_type Value_type;
+		typedef typename Client::Connect_Callback_type Connect_Callback_type;
 
 	public:
 		Master_Handler_impl(Client &client, const std::string &userID,
-				const std::string &robotID) :
+				const std::string &robotID, const Connect_Callback_type &cb) :
 			Handler_Base_impl<Client> ("Master Manager"), _client(client),
-					_userID(userID), _robotID(robotID)
+					_userID(userID), _robotID(robotID), _cb(cb)
 		{
 		}
 
@@ -129,6 +130,7 @@ class Master_Handler_impl: public Handler_Base_impl<Client>
 
 		const std::string _userID;
 		const std::string _robotID;
+		const Connect_Callback_type cb;
 };
 
 template<class Client>
@@ -141,14 +143,16 @@ class Robot_Handler_impl: public Handler_Base_impl<Client>
 
 	private:
 		typedef typename Client::Config_type Config_type;
+		typedef typename Client::Connect_Callback_type Connect_Callback_type;
 		typedef std::pair<std::string, Interface_type*> _Interface_ref;
 		typedef std::vector<_Interface_ref> _Interface_ref_vector;
 
 	public:
 		Robot_Handler_impl(const std::string &userID,
-				const std::string &robotID, const std::string &key) :
+				const std::string &robotID, const std::string &key,
+				const Connect_Callback_type &cb) :
 			Handler_Base_impl<Client> ("Robot Manager"), _userID(userID),
-					_robotID(robotID), _key(key)
+					_robotID(robotID), _key(key), _cb(cb)
 		{
 		}
 
@@ -167,6 +171,7 @@ class Robot_Handler_impl: public Handler_Base_impl<Client>
 		const std::string _userID;
 		const std::string _robotID;
 		const std::string _key;
+		const Connect_Callback_type _cb;
 
 		_Interface_ref_vector _interfaces;
 };
@@ -422,7 +427,8 @@ void Master_Handler_impl<Client>::processInit(const Object_type &msg)
 				+ " with invalid format.");
 
 	_client._handler = typename Client::Robot_ptr(
-			new typename Client::Robot_type(_userID, _robotID, key.get_str()));
+			new typename Client::Robot_type(_userID, _robotID, key.get_str(),
+					_cb));
 	typename Client::_Handler_ptr robotHandler(_client._handler);
 	_client._endpoint = typename Client::_Client_ptr(
 			new typename Client::_Client_type(robotHandler));
@@ -431,8 +437,8 @@ void Master_Handler_impl<Client>::processInit(const Object_type &msg)
 	_client._endpoint->alog().set_level(websocketpp::log::alevel::ALL);
 	_client._endpoint->elog().set_level(websocketpp::log::elevel::ALL);
 #else
-    _client._endpoint->alog().unset_level(websocketpp::log::alevel::ALL);
-    _client._endpoint->elog().unset_level(websocketpp::log::elevel::ALL);
+	_client._endpoint->alog().unset_level(websocketpp::log::alevel::ALL);
+	_client._endpoint->elog().unset_level(websocketpp::log::elevel::ALL);
 #endif
 
 	_client._endpoint->connect(url.get_str());
