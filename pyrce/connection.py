@@ -81,6 +81,18 @@ class _Connection(object):
     
     def __init__(self, userID, robotID, reactor):
         """ Initialize the Connection.
+            
+            @param userID:      User ID which will be used to authenticate the
+                                connection.
+            @type  userID:      str
+            
+            @param robotID:     Robot ID which will be used to authenticate the
+                                connection.
+            @type  robotID:     str
+            
+            @param reactor:     Reference to reactor which is used for this
+                                connection.
+            @type  reactor:     twisted::reactor
         """
         self._userID = userID
         self._robotID = robotID
@@ -93,23 +105,30 @@ class _Connection(object):
     
     @property
     def reactor(self):
-        """ Reference to twisted::reactor.
-        """
+        """ Reference to twisted::reactor. """
         return self._reactor
     
     def registerConnection(self, conn):
         """ Callback for RCERobotFactory.
+            
+            @param conn:    Connection which should be registered.
+            @type  conn:    pyrce.comm.RCERobotProtocol
         """
         if self._conn:
             raise ConnectionError('There is already a connection registered.')
         
         self._conn = conn
         
+        print('Connection to RCE established.')
+        
         if self._connectedDeferred:
             self._connectedDeferred.callback(self)
     
     def unregisterConnection(self, conn):
         """ Callback for RCERobotFactory.
+            
+            @param conn:    Connection which should be unregistered.
+            @type  conn:    pyrce.comm.RCERobotProtocol
         """
         if not self._conn:
             raise ConnectionError('There is no connection registered.')
@@ -121,7 +140,18 @@ class _Connection(object):
     
     def connect(self, masterUrl, deferred):
         """ Connect to RCE.
+            
+            @param masterUrl:   URL of Authentication Handler of Master Manager
+            @type  masterUrl:   str
+            
+            @param deferred:    Deferred which is called as soon as the
+                                connection was successfully established.
+            @type  deferred:    twisted::Deferred
+            
+            @raise:     ConnectionError, if no connection could be established.
         """
+        print('Connect to Master Manager on: {0}'.format(masterUrl))
+        
         # First make a HTTP request to the Master to get a temporary key
         argList = [('userID', self._userID), ('robotID', self._robotID)]
         url = '{0}?{1}'.format(masterUrl, urlencode(argList))
@@ -139,6 +169,8 @@ class _Connection(object):
         url = resp['url']
         argList.append(('key', resp['key']))
         
+        print('Connect to Robot Manager on: {0}'.format(url))
+        
         # Make websocket connection to Robot Manager
         url = '{0}?{1}'.format(url, urlencode(argList))
         factory = RCERobotFactory(url, self)
@@ -151,9 +183,27 @@ class _Connection(object):
             self._conn.dropConnection()
         
         self._subscribers = {}
+        print('Connection closed.')
     
     def sendMessage(self, dest, msgType, msg, msgID):
         """ Callback for Interfaces.
+            
+            @param dest:        Interface tag of message destination.
+            @type  dest:        str
+            
+            @param msgType:     ROS Message type in format "pkg/msg", e.g.
+                                    'std_msgs/String'
+            @type  msgType:     str
+            
+            @param msg:         Message which should be sent in form of a
+                                dictionary matching the structure of the ROS
+                                message and using StringIO instances for binary
+                                message parts.
+            @type msg:          { str : {} / base_types / StringIO }
+            
+            @param msgID:       Message ID which is used to match request and
+                                response message.
+            @type  msgID:       str
         """
         self._sendMessage({'type':types.DATA_MESSAGE,
                            'data':{'dest':dest,
@@ -164,6 +214,8 @@ class _Connection(object):
     
     def _sendMessage(self, msg):
         """ Internally used method to send messages via RCERobotProtocol.
+            
+            @param msg:     Message which should be sent.
         """
         if isInIOThread():
             self._sendMessageSynced(msg)
@@ -172,6 +224,8 @@ class _Connection(object):
     
     def _sendMessageSynced(self, msg):
         """ Internally used method to send messages via RCERobotProtocol.
+            
+            @param msg:     Message which should be sent.
         """
         if not self._conn:
             raise ConnectionError('No connection registered.')
@@ -185,19 +239,58 @@ class _Connection(object):
     
     def createContainer(self, cTag):
         """ Create a container.
+            
+            @param cTag:    Unique tag which will be used to identify the
+                            container to create.
+            @type  cTag:    str
         """
+        print('Request creation of container "{0}".'.format(cTag))
         self._sendMessage({'type':types.CREATE_CONTAINER,
                            'data':{'containerTag':cTag}})
     
     def destroyContainer(self, cTag):
         """ Destroy a container.
+            
+            @param cTag:    Tag of the container to remove.
+            @type  cTag:    str
         """
+        print('Request destruction of container "{0}".'.format(cTag))
         self._sendMessage({'type':types.DESTROY_CONTAINER,
                            'data':{'containerTag':cTag}})
     
     def addNode(self, cTag, nTag, pkg, exe, args='', name='', namespace=''):
         """ Add a node.
+            
+            @param cTag:    Tag of container in which the node should be added.
+            @type  cTag:    str
+            
+            @param nTag:    Unique tag within a container which will be used to
+                            identify the node to add.
+            @type  nTag:    str
+            
+            @param pkg:     Name of ROS package where the executable can be
+                            found.
+            @type  pkg:     str
+            
+            @param exe:     Name of the executable which should be executed.
+            @type  exe:     str
+            
+            @param args:    Optional arguments which should be passed to the
+                            executable as a single string. Can contain the
+                            directives $(find PKG) or $(env VAR). Other
+                            special characters as '$' or ';' are not allowed.
+            @type  args:    str
+            
+            @param name:    Optional argument which defines the name used in
+                            the ROS environment.
+            @type  name:    str
+            
+            @param namespace:   Optional argument which defines the namespace
+                                used in the ROS environment.
+            @type  namespace:   str
         """
+        print('Request addition of node "{0}" to container "{1}" '
+              '[pkg: {2}; exe: {3}].'.format(nTag, cTag, pkg, exe))
         node = {'containerTag':cTag, 'nodeTag':nTag, 'pkg':pkg, 'exe':exe}
         
         if args:
@@ -214,16 +307,51 @@ class _Connection(object):
     
     def removeNode(self, cTag, nTag):
         """ Remove a node.
+            
+            @param cTag:    Tag of container in which the node should be
+                            removed.
+            @type  cTag:    str
+            
+            @param nTag:    Tag the node to remove.
+            @type  nTag:    str
         """
+        print('Request removal of node "{0}" from container '
+              '"{1}".'.format(nTag, cTag))
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
                            'data':{'removeNodes':[{'containerTag':cTag,
                                                    'nodeTag':nTag}]}})
     
     def addParameter(self, cTag, name, paramType, value):
         """ Add a parameter.
+            
+            @param cTag:        Tag of container in which the parameter should
+                                be added.
+            @type  cTag:        str
+            
+            @param name:        Name of the parameter which is used to identify
+                                the parameter and which is used inside the ROS
+                                environment.
+            @type  name:        str
+            
+            @param paramType:   String describing the type of the parameter.
+                                Valid base types are:
+                                    int, str, float, bool
+                                
+                                These base types can be used as a single type
+                                or can be combined to an array of base types,
+                                e.g.
+                                    [int, str, str]
+                                
+                                Additionally, the special type file is defined
+                                which will upload a file and add the path to
+                                the file to the parameter server.
+            @type  paramType:   str
+            
+            @param value:       Value which should be added. Has to match the
+                                given @param paramType.
         """
-        if paramType not in ['int', 'str', 'float', 'bool', 'file']:
-            raise TypeError('Parameter type is not valid.')
+        print('Request addition of parameter "{0}" to container '
+              '"{1}".'.format(name, cTag))
         
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
                            'data':{'setParam':[{'containerTag':cTag,
@@ -233,14 +361,50 @@ class _Connection(object):
     
     def removeParameter(self, cTag, name):
         """ Remove a parameter.
+            
+            @param cTag:    Tag of container in which the parameter should
+                            be removed.
+            @type  cTag:        str
+            
+            @param name:    Name of the parameter to remove.
+            @type  name:    str
         """
+        print('Request removal of parameter "{0}" from container '
+              '"{1}".'.format(name, cTag))
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
                            'data':{'deleteParam':[{'containerTag':cTag,
                                                    'name':name}]}})
     
     def addInterface(self, eTag, iTag, iType, iCls, addr=''):
         """ Add an interface.
+            
+            @param eTag:    Tag of endpoint to which the interface should be
+                            added. (Either a container tag or robot ID).
+            @type  eTag:    str
+            
+            @param iTag:    Unique tag which will be used to identify the
+                            interface to add.
+            @type  iTag:    str
+            
+            @param iType:   Type of the interface, which needs one of the
+                            following prefix:
+                                Service, ServiceProvider, Publisher, Subscriber
+                            and on of the following suffix:
+                                Interface, Converter
+            @type  iType:   str
+            
+            @param iCls:    ROS Message/Service type in format "pkg/msg", e.g.
+                                'std_msgs/String'
+            @type  iCls:    str
+            
+            @param addr:    Optional argument which is used for ROS Interfaces
+                            where the argument will provide the name under
+                            which the interface will be available in the local
+                            ROS environment.
+            @type  addr:    str
         """
+        print('Request addition of interface "{0}" of type "{1}" to endpoint '
+              '"{2}".'.format(iTag, iType, eTag))
         if iType not in ['ServiceInterface', 'ServiceProviderInterface',
                          'PublisherInterface', 'SubscriberInterface',
                          'ServiceConverter', 'ServiceProviderConverter',
@@ -260,53 +424,84 @@ class _Connection(object):
     
     def removeInterface(self, iTag):
         """ Remove an interface.
+            
+            @param iTag:    Tag of interface to remove.
+            @type  iTag:    str
         """
+        print('Request removal of interface "{0}".'.format(iTag))
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
                            'data':{'removeInterfaces':[iTag]}})
     
     def addConnection(self, iTag1, iTag2):
         """ Create a connection.
+            
+            @param iTagX:       One of the interfaces which should be
+                                connected.
+            @type  iTagX:       str
         """
+        print('Request creation of connection between interface "{0}" and '
+              '"{1}".'.format(iTag1, iTag2))
         self._sendMessage({'type':types.CONFIGURE_CONNECTION,
                            'data':{'connect':[{'tagA':iTag1,
                                                'tagB':iTag2}]}})
     
     def removeConnection(self, iTag1, iTag2):
         """ Destroy a connection.
+            
+            @param iTagX:       One of the interfaces which should be
+                                disconnected.
+            @type  iTagX:       str
         """
+        print('Request destruction of connection between interface "{0}" and '
+              '"{1}".'.format(iTag1, iTag2))
         self._sendMessage({'type':types.CONFIGURE_CONNECTION,
                            'data':{'disconnect':[{'tagA':iTag1,
                                                   'tagB':iTag2}]}})
     
-    def registerInterface(self, iTag, interface, unique):
+    def registerInterface(self, iTag, iface, unique):
         """ Callback for Interface.
             
-            @param unique:  Flag to indicate whether Interface should be unique
-                            for its tag or not.
-            @type  unique:  bool
+            @param iTag:        Tag of interface which should be registered.
+            @type  iTag:        str
+            
+            @param iface:       Interface instance which should be registered.
+            @type  iface:       pyrce.interface._Subscriber/_Publisher/_Service
+            
+            @param unique:      Flag to indicate whether Interface should be
+                                unique for its tag or not.
+            @type  unique:      bool
         """
         if iTag not in self._interfaces:
             self._interfaces[iTag] = weakref.WeakSet()
         elif unique:
             ValueError('Can not have multiple interfaces with the same tag.')
         
-        self._interfaces[iTag].add(interface)
+        self._interfaces[iTag].add(iface)
         
-    def unregisterInterface(self, iTag, interface):
+    def unregisterInterface(self, iTag, iface):
         """ Callback for Interfaces.
+            
+            @param iTag:    Tag of interface which should be unregistered.
+            @type  iTag:    str
+            
+            @param iface:   Interface instance which should be unregistered.
+            @type  iface:   pyrce.interface._Subscriber/_Publisher/_Service
         """
         if iTag not in self._interfaces:
             raise ValueError('No Interface register with tag '
                              '"{0}".'.format(iTag))
         
         interfaces = self._interfaces[iTag]
-        interfaces.discard(interface)
+        interfaces.discard(iface)
         
         if not interfaces:
             del self._interfaces[iTag]
     
     def receivedMessage(self, msg):
         """ Callback from RCERobotProtocol.
+            
+            @param msg:     Message which has been received.
+            @type  msg:     { str : {} / base_types / StringIO }
         """
         try:
             msgType = msg['type']
@@ -324,6 +519,10 @@ class _Connection(object):
     
     def _processDataMessage(self, dataMsg):
         """ Internally used message to process a Data Message.
+            
+            @param dataMsg:     Data part of data message which has been
+                                received.
+            @type  dataMsg:     { str : {} / base_types / StringIO } / StringIO
         """
         msgType = dataMsg['type']
         msg = dataMsg['msg']
@@ -347,11 +546,31 @@ class Connection(_Connection):
     """
     def publisher(self, iTag, msgType):
         """ Create a Publisher.
+            
+            @param iTag:        Unique tag which will be used to identify the
+                                publisher.
+            @type  iTag:        str
+            
+            @param msgType:     ROS message which will be published, e.g.
+                                    'std_msgs/String'
+            @type  msgType:     str
         """
         return interface.Publisher(self, iTag, msgType)
     
     def subscriber(self, iTag, msgType, cb):
         """ Create a Subscriber.
+            
+            @param iTag:        Unique tag which will be used to identify the
+                                subscriber.
+            @type  iTag:        str
+            
+            @param msgType:     ROS message to which will be subscribed, e.g.
+                                    'std_msgs/String'
+            @type  msgType:     str
+            
+            @param cb:          Callback which will takes as single argument
+                                the received message.
+            @type  cb:          callable
         """
         if not callable(cb):
             raise TypeError('Callback has to be callable.')
@@ -361,9 +580,17 @@ class Connection(_Connection):
     def service(self, iTag, srvType, cb=None):
         """ Create a Service.
             
-            @param cb:  Can be used to specify a default callback for received
-                        Service responses.
-            @type  cb:  Callbable
+            @param iTag:        Unique tag which will be used to identify the
+                                service.
+            @type  iTag:        str
+            
+            @param srvType:     ROS Service which will used.
+            @type  srvType:     str
+            
+            @param cb:          Can be used to specify a default callback for
+                                received service responses; it should take the
+                                repsonse as the single argument.
+            @type  cb:          callbable
         """
         if cb and not callable(cb):
             raise TypeError('Callback has to be callable.')
@@ -386,21 +613,53 @@ if interface.HAS_ROS:
         
         @property
         def loader(self):
-            """ Reference to Loader.
-            """
+            """ Reference to Loader. """
             return self._LOADER
         
         def publisher(self, iTag, msgType, addr):
             """ Create a Publisher using ROS.
+            
+            @param iTag:        Unique tag which will be used to identify the
+                                publisher.
+            @type  iTag:        str
+            
+            @param msgType:     ROS message which will be published, e.g.
+                                    'std_msgs/String'
+            @type  msgType:     str
+            
+            @param addr:        Topic where the publisher will listen for
+                                messages which should be published to the RCE.
+            @type  addr:        str
             """
             return interface.ROSPublisher(self, iTag, msgType, addr)
         
         def subscriber(self, iTag, msgType, addr):
             """ Create a Subscriber using ROS.
+            
+            @param iTag:        Unique tag which will be used to identify the
+                                subscriber.
+            @type  iTag:        str
+            
+            @param msgType:     ROS message to which will be subscribed, e.g.
+                                    'std_msgs/String'
+            @type  msgType:     str
+            
+            @param addr:        Topic where the subscriber will publish
+                                received messages from to the RCE.
+            @type  addr:        str
             """
             return interface.ROSSubscriber(self, iTag, msgType, addr)
         
         def service(self, iTag, srvType, addr):
             """ Create a Service using ROS.
+            
+            @param iTag:        Unique tag which will be used to identify the
+                                service.
+            @type  iTag:        str
+            
+            @param srvType:     ROS Service which will used.
+            @type  srvType:     str
+            
+            @param addr:        Address where the service will be available.
             """
             return interface.ROSService(self, iTag, srvType, addr)

@@ -42,39 +42,78 @@ from client.assembler import MessageAssembler
 
 
 class RCERobotProtocol(WebSocketClientProtocol):
+    """ WebSocket client protocol which is used to communicate with the Robot
+        Manager.
+    """
     def __init__(self, connection):
+        """ Initialize the protocol.
+            
+            @param connection:      Connection instance which provides callback
+                                    functions.
+            @type  connection:      pyrce.connection._Connection
+        """
         self._connection = connection
         self._assembler = MessageAssembler(self, 60)
         self._registered = False
     
     def onOpen(self):
+        """ This method is called by twisted as soon as the websocket
+            connection has been successfully established.
+        """
         self._assembler.start()
         self._connection.registerConnection(self)
         self._registered = True
     
     def onMessage(self, msg, binary):
+        """ This method is called by twisted when a new message has been
+            received.
+        """
         self._assembler.processMessage(msg, binary)
     
     def processCompleteMessage(self, msg):
+        """ Callback for MessageAssembler which will be called as soon as a
+            message has been completed and is ready for processing.
+        """
         self._connection.receivedMessage(msg)
     
     def onClose(self, *a):
+        """ This method is called by twisted when the connection has been
+            closed.
+        """
         if self._registered:
             self._connection.unregisterConnection(self)
             self._assembler.stop()
             self._registered = False
     
     def failHandshake(self, reason):
+        """ This method is called by twisted when the connection could not be
+            initialized.
+        """
         print(reason)
         WebSocketClientProtocol.failHandshake(self, reason)
 
 
 class RCERobotFactory(WebSocketClientFactory):
+    """ WebSocket protocol factory which is used for the communication with the
+        Robot Manager.
+    """
     def __init__(self, url, connection):
+        """ Initialize the factory.
+            
+            @param url:             URL of the Robot Manager.
+            @type  url:             str
+            
+            @param connection:      Connection instance which provides callback
+                                    functions.
+            @type  connection:      pyrce.connection._Connection
+        """
         WebSocketClientFactory.__init__(self, url)
         self._connection = connection
     
     def buildProtocol(self, addr):
+        """ This method is called by twisted when a new connection should be
+            made.
+        """
         p = RCERobotProtocol(self._connection)
         p.factory = self
         return p

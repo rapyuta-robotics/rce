@@ -78,6 +78,7 @@ class _Subscriber(object):
     def __init__(self, conn, iTag, msgType, cb):
         """ Initialize the Subscriber.
         """
+        self._subscribed = False
         self._conn = conn
         self._iTag = iTag
         self._msgType = msgType
@@ -85,6 +86,7 @@ class _Subscriber(object):
         
         conn.registerInterface(iTag, self, False)
         self._subscribed = True
+        print('Subscriber to RCE Interface "{0}" is up.'.format(iTag))
     
     def unsubscribe(self):
         """ Unsubscribe from Interface. Afterwards no more messages are given
@@ -93,6 +95,8 @@ class _Subscriber(object):
         if self._subscribed:
             self._conn.unregisterInterface(self._iTag, self)
             self._subscribed = False
+            print('Subscriber to RCE Interface "{0}" is '
+                  'down.'.format(self._iTag))
     
     def callback(self, msgType, msg, _):
         """ Callback for Connection.
@@ -114,6 +118,7 @@ class _Service(object):
     def __init__(self, conn, iTag, srvType):
         """ Initialize the Service.
         """
+        self._subscribed = False
         self._conn = conn
         self._iTag = iTag
         self._srvType = srvType
@@ -121,6 +126,8 @@ class _Service(object):
         self._responses = {}
         
         conn.registerInterface(iTag, self, True)
+        self._subscribed = True
+        print('Service Client to RCE Interface "{0}" is up.'.format(iTag))
     
     def callback(self, srvType, msg, msgID):
         """ Callback for Connection.
@@ -136,7 +143,11 @@ class _Service(object):
     def __del__(self):
         """ Finalize the Service.
         """
-        self._conn.unregisterInterface(self._iTag, self)
+        if self._subscribed:
+            self._conn.unregisterInterface(self._iTag, self)
+            self._subscribed = False
+            print('ServiceClient to RCE Interface "{0}" is '
+                  'down.'.format(self._iTag))
 
 
 class Publisher(_Publisher):
@@ -193,7 +204,10 @@ if HAS_ROS:
             """
             super(ROSPublisher, self).__init__(conn, iTag, msgType)
             
+            self._addr = addr
+            
             self._sub = rospy.Subscriber(addr, rospy.AnyMsg, self._rosCB)
+            print('Local ROS Subscriber on topic "{0}" is up.'.format(addr))
         
         def _rosCB(self, msg):
             """ Internally used callback for ROS Subscriber.
@@ -205,6 +219,8 @@ if HAS_ROS:
             """
             if hasattr(self, '_sub'):
                 self._sub.unregister()
+                print('Local ROS Subscriber on topic "{0}" is '
+                      'down.'.format(self._addr))
     
     
     class ROSSubscriber(_Subscriber):
@@ -223,6 +239,7 @@ if HAS_ROS:
                                  'form pkg/msg, i.e. std_msgs/Int8.')
             
             self._pub = rospy.Publisher(addr, conn.loader.loadMsg(*args))
+            print('Local ROS Publisher on topic "{0}" is up.'.format(addr))
         
         def _callback(self, msg):
             """ Internally used method to send received messages to the ROS
@@ -240,6 +257,8 @@ if HAS_ROS:
             
             if hasattr(self, '_pub'):
                 self._pub.unregister()
+                print('Local ROS Publisher on topic "{0}" is '
+                      'down.'.format(self._addr))
     
     
     class ROSService(_Service):
@@ -264,6 +283,7 @@ if HAS_ROS:
             srvCls._response_class = rospy.AnyMsg
             
             self._service = rospy.Service(addr, srvCls, self._rosCB)
+            print('Local ROS Service on address "{0}" is up.'.format(addr))
         
         def _rosCB(self, req):
             """ Internally used callback for ROS Service.
@@ -307,6 +327,8 @@ if HAS_ROS:
             
             if hasattr(self, '_service'):
                 self._service.shutdown()
+                print('Local ROS Service on address "{0}" is '
+                      'down.'.format(self._addr))
             
             with self._pendingLock:
                 for event in self._pending.itervalues():
