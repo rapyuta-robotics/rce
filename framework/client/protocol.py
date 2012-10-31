@@ -63,6 +63,10 @@ from util.interfaces import verifyObject
 from comm import definition
 
 
+# Minimal required version of the client
+_MIN_VERSION = '20121031'
+
+
 class MasterRobotAuthentication(Resource):
     """ Twisted web.Resource which is used in the Master to authenticate new
         robots connections.
@@ -80,6 +84,19 @@ class MasterRobotAuthentication(Resource):
     def _processGET(self, args):
         """ Internally used method to process a GET request.
         """
+        try:
+            version = args['version']
+        except KeyError:
+            return (httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
+                    'text/plain; charset=utf-8',
+                    "Request is missing the argument 'version'.")
+        
+        if version < _MIN_VERSION:
+            return (httpstatus.HTTP_STATUS_CODE_GONE[0],
+                    'text/plain; charset=utf-8',
+                    'Client version is out-dated. Minimal version is '
+                    "'{0}'.".format(_MIN_VERSION))
+        
         try:
             msg = json.dumps(self._handler.handle(args))
         except InvalidRequest as e:
