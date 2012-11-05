@@ -1,3 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo ./rceexec /opt/rce/make.sh $*
+ROOTFS=$(./rcemakeSetup.py -u)
+
+if [ $? -eq 0 ]; then
+    chroot $ROOTFS /bin/bash
+fi
+
+./rcemakeSetup.py

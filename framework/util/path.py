@@ -118,7 +118,7 @@ def processPackagePaths(paths):
         
         @return:            Processed list; each element of ROOT_PKG_DIR will
                             be transformed into a tuple of source path and
-                            destination path which can than be used for to
+                            destination path which can than be used to
                             extend the fstab file for the container creation.
         @rtype:             [(str, str)]
     """

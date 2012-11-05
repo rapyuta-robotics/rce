@@ -32,15 +32,14 @@
 
 # Python specific imports
 import os
-import sys
+#import sys
 import shutil
-from tempfile import mkdtemp
 
 pjoin = os.path.join
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.defer import Deferred
+#from twisted.internet.defer import Deferred
 from twisted.internet.protocol import ProcessProtocol
 
 # Custom imports
@@ -201,41 +200,41 @@ class Container(object):
             log.msg(msg)
             deferred.errback(msg)
     
-    def execute(self, name, command):
-        """ Execute a command inside the container.
-            
-            @param name:        Name of the container which will execute the
-                                command.
-            @type  name:        str
-            
-            @param command:     Command which should be executed.
-            @type  command:     [str]
-        """
-        def cb(_):
-            print('\nSuccessful.')
-            self._reactor.stop()
-        
-        def eb(err):
-            print('\n{0}'.format(err.getErrorMessage()))
-            self._reactor.stop()
-        
-        deferred = Deferred()
-        deferred.addCallbacks(cb, eb)
-        
-        self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
-                         False)
-        
-        protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
-        
-        try:
-            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf, '--']
-            cmd += command
-            self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
-        except Exception as e:
-            import traceback
-            print('Caught an exception when trying to execute a command in '
-                  'the container.')
-            print('\n'.join(traceback.format_exception_only(type(e), e)))
+#    def execute(self, name, command):
+#        """ Execute a command inside the container.
+#            
+#            @param name:        Name of the container which will execute the
+#                                command.
+#            @type  name:        str
+#            
+#            @param command:     Command which should be executed.
+#            @type  command:     [str]
+#        """
+#        def cb(_):
+#            print('\nSuccessful.')
+#            self._reactor.stop()
+#        
+#        def eb(err):
+#            print('\n{0}'.format(err.getErrorMessage()))
+#            self._reactor.stop()
+#        
+#        deferred = Deferred()
+#        deferred.addCallbacks(cb, eb)
+#        
+#        self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
+#                         False)
+#        
+#        protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
+#        
+#        try:
+#            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf, '--']
+#            cmd += command
+#            self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
+#        except Exception as e:
+#            import traceback
+#            print('Caught an exception when trying to execute a command in '
+#                  'the container.')
+#            print('\n'.join(traceback.format_exception_only(type(e), e)))
 
 
 class DeploymentContainer(Container):
@@ -351,54 +350,5 @@ class DeploymentContainer(Container):
         try:
             shutil.rmtree(self._confDir)
             shutil.rmtree(self._dataDir)
-        except:
-            pass
-
-
-class CommandContainer(Container):
-    """ Container representation which is used to execute a single command
-        inside a container. Should be used for rosmake.
-    """
-    def __init__(self, reactor, rootfs, pkgDir):
-        """ Initialize the command container.
-            
-            @param reactor:     Reference to the twisted::reactor
-            @type  reactor:     twisted::reactor
-            
-            @param rootfs:      Filesystem path of the root directory of the
-                                container filesystem.
-            @type  rootfs:      str
-            
-            @param pkgDir:      List of tuples containing package source and
-                                destination path for fstab file.
-            @type  pkgDir:      [(str, str)]
-        """
-        self._confDir = mkdtemp(prefix='rce_cmd')
-        self._homeDir = os.path.join(self._confDir, 'home')
-        self._pkgDir = pkgDir
-        
-        os.mkdir(self._homeDir)
-        
-        super(CommandContainer, self).__init__(reactor, rootfs, self._confDir)
-    
-    def execute(self, command):
-        """ Execute the command in the command container.
-            
-            @param command:     Command which should be executed.
-            @type  command:     [str]
-        """
-        for srcPath, destPath in self._pkgDir:
-            self.extendFstab(srcPath, destPath, False)
-        
-        self.extendFstab(self._homeDir, 'home/ros', False)
-        
-        super(CommandContainer, self).execute(os.path.basename(self._confDir),
-                                              command)
-    
-    def __del__(self):
-        """ Destructor.
-        """
-        try:
-            shutil.rmtree(self._confDir)
         except:
             pass
