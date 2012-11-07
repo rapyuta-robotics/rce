@@ -164,7 +164,7 @@ def main(reactor, user, masterIP):
             exit(1)
     
     def errback(errMsg):
-        log.msg(errMsg)
+        log.msg(errMsg.getErrorMessage())
         exit(1)
     
     deferred.addCallbacks(callback, errback)

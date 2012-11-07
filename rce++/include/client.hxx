@@ -100,7 +100,7 @@ class ServiceClient_impl: public Interface_impl<Client>
 {
 	public:
 		typedef typename Client::Value_type Value_type;
-		typedef typename Client::template Callback_type<RespMsg> Callback_type;
+		typedef typename Client::template Msg_Callback_type<RespMsg> Callback_type;
 		typedef typename Client::Robot_ptr Robot_ptr;
 
 	private:
@@ -171,7 +171,7 @@ class Subscriber_impl: public Interface_impl<Client>
 {
 	public:
 		typedef typename Client::Value_type Value_type;
-		typedef typename Client::template Callback_type<Message> Callback_type;
+		typedef typename Client::template Msg_Callback_type<Message> Callback_type;
 		typedef typename Client::Robot_ptr Robot_ptr;
 
 		Subscriber_impl(const Robot_ptr handler, const std::string &tag,
@@ -210,7 +210,7 @@ class Client_impl
 		typedef typename Message::Object Object_type;
 		typedef typename Message::Config_type Config_type;
 		typedef Interface_impl<Client_impl> Interface_type;
-		template<class Msg> class Callback_type: public boost::function<void(
+		template<class Msg> class Msg_Callback_type: public boost::function<void(
 				const Msg &msg)>
 		{
 		};
@@ -226,6 +226,7 @@ class Client_impl
 				Client_impl, Msg>
 		{
 		};
+		typedef boost::function<void(const Client_impl &client)> Connect_Callback_type;
 
 		typedef Robot_Handler_impl<Client_impl> Robot_type;
 		typedef boost::shared_ptr<Robot_type> Robot_ptr;
@@ -242,7 +243,7 @@ class Client_impl
 		{
 		}
 
-		void connect(const std::string &url);
+		void connect(const std::string &url, const Connect_Callback_type &cb);
 		void disconnect();
 
 		void createContainer(const std::string &cTag) const;
@@ -279,7 +280,7 @@ class Client_impl
 		template<class ReqMsg, class RespMsg>
 		ServiceClient_type<ReqMsg, RespMsg>
 		service(const std::string &iTag, const std::string &srvType,
-				const Callback_type<RespMsg> &cb);
+				const Msg_Callback_type<RespMsg> &cb);
 
 		template<class Msg>
 		Publisher_type<Msg> publisher(const std::string &iTag,
@@ -287,7 +288,7 @@ class Client_impl
 
 		template<class Msg>
 		Subscriber_type<Msg> subscriber(const std::string &iTag,
-				const std::string &msgType, const Callback_type<Msg> &cb);
+				const std::string &msgType, const Msg_Callback_type<Msg> &cb);
 
 	private:
 		friend void _Master_type::processInit(const Object_type &msg);
@@ -309,7 +310,7 @@ class Client_impl
 
 typedef Message_impl<json_spirit::Config> Message;
 typedef Client_impl<Message> Client;
-template<class Message> class Callback: public Client::Callback_type<Message>
+template<class Message> class MessageCallback: public Client::Msg_Callback_type<Message>
 {
 };
 template<class ReqMsg, class RespMsg> class ServiceClient: public Client::ServiceClient_type<
@@ -326,7 +327,7 @@ template<class Message> class Subscriber: public Client::Subscriber_type<
 
 typedef Message_impl<json_spirit::mConfig> mMessage;
 typedef Client_impl<mMessage> mClient;
-template<class Message> class mCallback: public mClient::Callback_type<Message>
+template<class Message> class mMessageCallback: public mClient::Msg_Callback_type<Message>
 {
 };
 template<class ReqMsg, class RespMsg> class mServiceClient: public mClient::ServiceClient_type<
@@ -417,7 +418,7 @@ void Subscriber_impl<Client, Message>::unsubscribe()
 ///////////////////////////////////////////////////////////////////////////////
 ////	Client_impl
 template<class Message>
-void Client_impl<Message>::connect(const std::string &url)
+void Client_impl<Message>::connect(const std::string &url, const Connect_Callback_type &cb)
 {
 #ifdef DEBUG
 	std::cout << "Start connection with:" << std::endl;
@@ -425,7 +426,7 @@ void Client_impl<Message>::connect(const std::string &url)
 	std::cout << "    robotID: " << _userID << std::endl;
 #endif
 
-	_Handler_ptr masterHandler(new _Master_type(*this, _robotID, _userID));
+	_Handler_ptr masterHandler(new _Master_type(*this, _robotID, _userID, cb));
 	_endpoint = _Client_ptr(new _Client_type(masterHandler));
 
 #ifdef DEBUG
@@ -665,7 +666,7 @@ void Client_impl<Message>::configConnection(const std::string &type,
 template<class Message> template<class ReqMsg, class RespMsg>
 Client_impl<Message>::ServiceClient_type<ReqMsg, RespMsg> Client_impl<Message>::service(
 		const std::string &iTag, const std::string &srvType,
-		const Callback_type<RespMsg> &cb)
+		const Msg_Callback_type<RespMsg> &cb)
 {
 	return ServiceClient_type<ReqMsg, RespMsg> (_handler, iTag, srvType, cb);
 }
@@ -680,7 +681,7 @@ Client_impl<Message>::Publisher_type<Msg> Client_impl<Message>::publisher(
 template<class Message> template<class Msg>
 Client_impl<Message>::Subscriber_type<Msg> Client_impl<Message>::subscriber(
 		const std::string &iTag, const std::string &msgType,
-		const Callback_type<Msg> &cb)
+		const Msg_Callback_type<Msg> &cb)
 {
 	return Subscriber_type<Msg> (_handler, iTag, msgType, cb);
 }

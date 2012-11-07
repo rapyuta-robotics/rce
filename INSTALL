@@ -54,8 +54,9 @@ Installation
         Inside the container do the following steps:
         (all commands require super user privileges)
     
-        3.  Install necessary LXC components
-              apt-get install libcap2 libapparmor1
+        3.  # Should no longer be necessary
+            #Install necessary LXC components
+            #  apt-get install libcap2 libapparmor1
     
         4.  Install ROS (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
               sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -72,7 +73,7 @@ Installation
               adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
         6.  Add files and directories
-              mkdir /usr/lib/lxc
+              # No longer necessary; mkdir /usr/lib/lxc
               mkdir /opt/rce/packages
               mkdir /opt/rce/src
               touch /etc/init/rceComm.conf
@@ -105,7 +106,7 @@ Installation
     #   sudo apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
 6.  Install the websockets related libraries
-      sudo apt-get install python-twisted-core
+      sudo apt-get install python-twisted-core python-openssl
       sudo easy_install AutoBahn
 
 7.  Install libraries needed for Custom Converters
