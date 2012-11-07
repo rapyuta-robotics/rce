@@ -30,10 +30,10 @@
 #     
 #     
 
-ROOTFS=$(./rcemakeSetup.py up)
+ROOTFS=$(./setupRCEmake.py up)
 
 if [ $? -eq 0 ]; then
     chroot $ROOTFS /bin/bash
 fi
 
-./rcemakeSetup.py down
+./setupRCEmake.py down
