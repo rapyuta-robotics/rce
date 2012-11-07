@@ -100,7 +100,7 @@ def _get_argparse():
                             description='Setup the machine for the usage of '
                                         'chroot.')
 
-    parser.add_argument('-u', '--up', action='store_true',
+    parser.add_argument('action', choices=['up', 'down'],
                         help='Flag to select set up instead of tear down.', )
 
     return parser
@@ -109,7 +109,9 @@ def _get_argparse():
 if __name__ == '__main__':
     args = _get_argparse().parse_args()
     
-    if args.up:
+    if args.action == 'up':
         up()
-    else:
+    elif args.action == 'down':
         down()
+    else:
+        raise ValueError('Action can only be up or down.')
