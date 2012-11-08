@@ -115,7 +115,7 @@ class Environment(object):
 
     
 def main(config, reactor):
-    rospy.init_node('RCE_ROS_Client')
+    rospy.init_node('RCE_ROS_Client', anonymous=True)
     
     try:
         userID = config['userID']
