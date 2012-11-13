@@ -780,16 +780,13 @@ class RobotManager(_InterfaceManager):
             robot.timestamp = datetime.now()
             robot.conn = None
     
-    def sendRequest(self, userID, robotID, reqType, args):
+    def sendRequest(self, uid, reqType, args):
         """ Send a request received from the robot to the master manager for
             processing.
                 (Called by client.handler.*)
             
-            @param userID:      ID of user who is responsible for request.
-            @type  userID:      str
-            
-            @param robotID:     ID of robot who is responsible for request.
-            @type  robotID:     str
+            @param uid:         Identifier for the robot: (userID, robotID)
+            @type  uid:         (str, str)
             
             @param reqType:     Identifier of this request. For a list of
                                 options hava a look at module core.types.req.
@@ -799,11 +796,9 @@ class RobotManager(_InterfaceManager):
                                 handler in form of a tuple of strings.
             @type  args:        (str)
         """
-        cbArgs = (userID, robotID)
         deferred = Deferred()
-        deferred.addCallbacks(self._reqCB, self._reqEB, cbArgs, {}, cbArgs, {})
-        
-        self._reqSender.processRequest(userID, reqType, args, deferred)
+        deferred.addCallbacks(self._reqCB, self._reqEB, uid, {}, uid, {})
+        self._reqSender.processRequest(uid[0], reqType, args, deferred)
     
     @_UserManagerBase.verifyUser
     def receivedFromClient(self, userID, robotID, iTag, msgType, msgID, msg):

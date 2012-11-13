@@ -280,14 +280,15 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             
         self._robotID = robotID
         self._userID = userID
+        uid = (userID, robotID)
         
         # TODO: List should probably not be hard coded here,
         #       but given as an argument...
-        for handler in [ CreateContainerHandler(self._manager, userID),
-                         DestroyContainerHandler(self._manager, userID),
-                         ConfigureContainerHandler(self._manager, userID),
-                         ConnectInterfacesHandler(self._manager, userID),
-                         DataMessageHandler(self._manager, userID) ]:
+        for handler in [ CreateContainerHandler(self._manager, uid),
+                         DestroyContainerHandler(self._manager, uid),
+                         ConfigureContainerHandler(self._manager, uid),
+                         ConnectInterfacesHandler(self._manager, uid),
+                         DataMessageHandler(self._manager, uid) ]:
             verifyObject(IClientMsgHandler, handler)
             self._msgHandler[handler.TYPE] = handler
         
