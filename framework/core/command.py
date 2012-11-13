@@ -89,7 +89,7 @@ class ControlDistributor(object):
         
         del self._handlers[identifier]
     
-    def processCommand(self, user, cmd):
+    def processCommand(self, user, cmd, resp):
         """ Process a command message.
             
             @param user:    UserID of the user who is responsible for the
@@ -97,6 +97,9 @@ class ControlDistributor(object):
             @type  user:    str
             
             @param cmd:     Command which should be processed.
+            
+            @param resp:    Deferred which is used to send a response.
+            @type  resp:    twisted::Deferred
         """
         try:
             identifier = cmd.IDENTIFIER
@@ -108,9 +111,9 @@ class ControlDistributor(object):
             log.msg('Received command type "{0}", which can not be '
                     'handled.'.format(identifier))
         else:
-            self._handlers[identifier](user, cmd)
+            self._handlers[identifier](user, cmd, resp)
     
-    def processTag(self, user, identifier, tag):
+    def processTag(self, user, identifier, tag, resp):
         """ Process a tag message.
             
             @param user:            UserID of the user who is responsible for
@@ -122,12 +125,15 @@ class ControlDistributor(object):
             @type  identifier:      str
             
             @param tag:             Tag which should be processed.
+            
+            @param resp:    Deferred which is used to send a response.
+            @type  resp:    twisted::Deferred
         """
         if identifier not in self._handlers:
             log.msg('Received tag type "{0}", which can not be '
                     'handled.'.format(identifier))
         else:
-            self._handlers[identifier](user, tag)
+            self._handlers[identifier](user, tag, resp)
 
 
 class ContainerCommand(object):

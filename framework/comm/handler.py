@@ -35,12 +35,14 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.defer import Deferred
 from twisted.python.threadable import isInIOThread
 from twisted.internet.interfaces import IConsumer
 
 # Custom imports
 from errors import InternalError, SerializationError
 from comm import definition
+from comm import types
 from comm.interfaces import IRCEProducer
 from comm.message import Message
 from comm.fifo import MessageFIFO
@@ -262,6 +264,24 @@ class _EndReceiver(_Receiver):
         self._handler = handler
         self._manager = manager
     
+    def _cb(self, msg, orig, dest, msgNr):
+        """ Internally used callback for Deferred callback.
+        """
+        message = Message()
+        message.msgType = types.STATUS
+        message.dest = orig
+        message.content = { 'id' : msgNr, 'msg' : str(msg) }
+        self._manager.sendMessage(message)
+    
+    def _eb(self, msg, orig, dest, msgNr):
+        """ Internally used callback for Deferred errback.
+        """
+        message = Message()
+        message.msgType = types.ERROR
+        message.dest = orig
+        message.content = { 'id' : msgNr, 'msg' : str(msg) }
+        self._manager.sendMessage(message)
+    
     def unregisterProducer(self):
         """ Method which is used by the producer to signal that he has finished
             sending data.
@@ -269,33 +289,38 @@ class _EndReceiver(_Receiver):
         super(_EndReceiver, self).unregisterProducer()
         
         try:
-            self._handler.processMessage(
-                Message.deserialize(self._buf, self._manager))
+            msg = Message.deserialize(self._buf, self._manager)
         except SerializationError as e:
             log.msg('Could not deserialize message: {0}'.format(e))
+        
+        spec = (msg.origin, msg.dest, msg.msgNr)
+        
+        deferred = Deferred()
+        deferred.addCallbacks(self._cb, self._eb, spec, {}, spec, {})
+        
+        self._handler.processMessage(msg, deferred)
 
 
-def send(manager, msg):
+def send(manager, msg, dest):
     """ Function which is used to construct a new message handler for an
         outgoing message.
         
         @param manager:     CommManger which is responsible for this node.
         @type  manager:     comm.manager.CommManager
         
-        @param msg:     Message which should be sent.
-        @type  msg:     comm.message.Message
+        @param msg:     Serialized message which should be sent.
+        @type  msg:     comm.fifo.MessageFIFO
+        
+        @param dest:    Communication ID of message destination.
+        @type  dest:    str
     """
-    try:
-        buf = msg.serialize(manager)
-        sender = _Sender(len(buf), manager.commID, msg.dest, buf)
-    except SerializationError as e:
-        log.msg('Message could not be sent: {0}'.format(e))
+    sender = _Sender(len(msg), manager.commID, dest, msg)
+    
+    if isInIOThread():
+        manager.router.registerProducer(sender, dest)
     else:
-        if isInIOThread():
-            manager.router.registerProducer(sender, msg.dest)
-        else:
-            manager.reactor.callFromThread(manager.router.registerProducer,
-                                           sender, msg.dest)
+        manager.reactor.callFromThread(manager.router.registerProducer,
+                                       sender, dest)
 
 
 def receive(factory, msgType, msgLen, origin, dest, init):
@@ -347,9 +372,9 @@ def receive(factory, msgType, msgLen, origin, dest, init):
         return _EndReceiver(commManager, commManager, msgLen, origin, commID)
     
     # Message is not for this node; therefore, forward it, but first
-    # check if the forwarding is allowed.
+    # check if forwarding is permitted.
     if dest[:definition.PREFIX_LENGTH] == definition.PREFIX_PRIV_ADDR:
-        # Tried to send a message to Container Manager via this node
+        # Tried to send a message to a private address via this node
         # which is not allowed for security reasons.
         log.msg('Received a private message via this node. '
                 'Message is dropped.')

@@ -32,6 +32,10 @@
 
 """ Message Types of RCE Protocol:
         
+        ?E  Error message
+        ?S  Status message
+        ?P  Process message
+        
         AR  Initialization request
         AI  Routing information
         AC  Connection directives
@@ -45,6 +49,10 @@
         
         RM  ROS Message
 """
+
+ERROR = '?E'
+STATUS = '?S'
+PROCESS = '?P'
 
 INIT_REQUEST = 'AR'
 ROUTE_INFO = 'AI'

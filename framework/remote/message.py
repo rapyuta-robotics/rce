@@ -34,7 +34,7 @@
 from zope.interface import implements
 
 # Custom imports
-from errors import InternalError, SerializationError
+from errors import InvalidRequest, InternalError, SerializationError
 from util.interfaces import verifyClass, verifyObject, InterfaceError
 from comm import types as msgTypes
 from comm.message import Message
@@ -54,16 +54,19 @@ class ConnectDirectiveSerializer(object):
     IDENTIFIER = types.CONNECT
     
     def serialize(self, s, msg):
+        if not isinstance(msg, list):
+            raise SerializationError('Content of the message ConnectDirective '
+                                     'has to be a list.')
+        
         s.addInt(len(msg))
         
         for element in msg:
-            try:
-                s.addElement(element[0])
-                s.addElement(element[1])
-            except KeyError as e:
-                raise SerializationError('Could not serialize content '
-                                         'ConnectDirective. Missing key: '
-                                         '{0}'.format(e))
+            if len(element) != 2:
+                raise SerializationError('Connection Directive has to be of '
+                                         'the form (commID, IP address).')
+            
+            s.addElement(element[0])
+            s.addElement(element[1])
     
     def deserialize(self, s):
         return [(s.getElement(), s.getElement()) for _ in xrange(s.getInt())]
@@ -82,7 +85,7 @@ class ConnectDirectiveProcessor(object):
         """
         self._manager = manager
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, _):
         self._manager.connectToRelays(msg.content)
 
 
@@ -116,8 +119,62 @@ class CommInfoProcessor(object):
         """
         self._manager = manager
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, _):
         self._manager.relayID = msg.content
+
+
+class ProcessSerializer(object):
+    """ Message content type to send a process status update.
+        
+        The fields are:
+            user    User ID to which the process belongs
+            cTag    Tag of Container
+            nTag    Optional argument
+            status  Bool representing the status:
+                        True    Process has been started
+                        False   Process has been terminated
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = types.PROCESS
+    
+    def serialize(self, s, msg):
+        if not isinstance(msg, dict):
+            raise SerializationError('Content of the message Process '
+                                     'has to be a dictionary.')
+        
+        try:
+            s.addElement(msg['user'])
+            s.addElement(msg['cTag'])
+            s.addElement(msg['nTag'])
+            s.addBool(msg['status'])
+        except KeyError as e:
+            raise SerializationError('Could not serialize content of '
+                                     'Process Message. Missing key: '
+                                     '{0}'.format(e))
+    
+    def deserialize(self, s):
+        return { 'user'   : s.getElement(),
+                 'cTag'   : s.getElement(),
+                 'nTag'   : s.getElement(),
+                 'status' : s.getBool() }
+
+
+class ProcessProcessor(object):
+    """ Message processor for Request messages. It is responsible for
+        forwarding the message to the correct user instance.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.PROCESS
+    
+    def __init__(self, manager):
+        """ Initialize the process processor.
+        """
+        self._manager = manager
+    
+    def processMessage(self, msg, resp):
+        self._manager.processRequest(msg.content, resp)
 
 
 class RequestSerializer(object):
@@ -150,6 +207,31 @@ class RequestSerializer(object):
         return { 'user' : s.getElement(),
                  'type' : s.getElement(),
                  'args' : tuple(s.getList()) }
+
+
+class RequestProcessor(object):
+    """ Message processor for Request messages. It is responsible for
+        forwarding the message to the correct handler.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.REQUEST
+    
+    def __init__(self, manager):
+        """ Initialize the request processor.
+        """
+        self._manager = manager
+    
+    def processMessage(self, msg, resp):
+        try:
+            user = msg['user']
+            reqType = msg['type']
+            args = msg['args']
+        except KeyError as e:
+            resp.errback(InvalidRequest('Request is missing the key '
+                                        '"{0}".'.format(e)))
+            
+        self._manager.processRequest(user, reqType, args, resp)
 
 
 class CommandSerializer(object):
@@ -200,6 +282,10 @@ class CommandSerializer(object):
             raise InternalError('Can not unregister a non-existent command.')
     
     def serialize(self, s, msg):
+        if not isinstance(msg, dict):
+            raise SerializationError('Content of the message Command '
+                                     'has to be a dictionary.')
+        
         try:
             s.addElement(msg['user'])
             cmd = msg['cmd']
@@ -235,6 +321,27 @@ class CommandSerializer(object):
         return { 'user' : user, 'cmd' : cls.deserialize(s) }
 
 
+class CommandProcessor(object):
+    """ Message processor for Command messages. It is responsible for
+        forwarding the message to the correct distributor.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.COMMAND
+    
+    def __init__(self, distributor):
+        """ Initialize the command processor.
+            
+            @param distributor:     Used distributor for control messages.
+            @type  distributor:     core.command.ControlDistributor
+        """
+        self._distributor = distributor
+    
+    def processMessage(self, msg, resp):
+        msg = msg.content
+        self._distributor.processCommand(msg['user'], msg['cmd'], resp)
+
+
 class TagSerializer(object):
     """ Message content type to send a tag with a type.
         
@@ -267,46 +374,6 @@ class TagSerializer(object):
                  'type' : s.getElement() }
 
 
-class RequestProcessor(object):
-    """ Message processor for Request messages. It is responsible for
-        forwarding the message to the correct handler.
-    """
-    implements(IMessageProcessor)
-    
-    IDENTIFIER = types.REQUEST
-    
-    def __init__(self, manager):
-        """ Initialize the request processor.
-        """
-        super(RequestProcessor, self).__init__()
-        
-        self._manager = manager
-    
-    def processMessage(self, msg):
-        self._manager.processRequest(msg.content)
-
-
-class CommandProcessor(object):
-    """ Message processor for Command messages. It is responsible for
-        forwarding the message to the correct distributor.
-    """
-    implements(IMessageProcessor)
-    
-    IDENTIFIER = types.COMMAND
-    
-    def __init__(self, distributor):
-        """ Initialize the command processor.
-            
-            @param distributor:     Used distributor for control messages.
-            @type  distributor:     core.command.ControlDistributor
-        """
-        self._distributor = distributor
-    
-    def processMessage(self, msg):
-        msg = msg.content
-        self._distributor.processCommand(msg['user'], msg['cmd'])
-
-
 class TagProcessor(object):
     """ Message processor for Tag messages. It is responsible for
         forwarding the message to the correct distributor.
@@ -323,9 +390,10 @@ class TagProcessor(object):
         """
         self._distributor = distributor
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, resp):
         msg = msg.content
-        self._distributor.processTag(msg['user'], msg['type'], msg['tag'])
+        self._distributor.processTag(msg['user'], msg['type'], msg['tag'],
+                                     resp)
 
 
 class ROSMsgSerializer(object):
@@ -425,7 +493,7 @@ class Messenger(object):
                         'user'    : userID }
         self._commManager.sendMessage(msg)
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, _):
         srcCommID = msg.origin
         msg = msg.content
         

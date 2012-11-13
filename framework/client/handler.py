@@ -115,9 +115,8 @@ class CreateContainerHandler(_ClientHandlerBase):
     
     def handle(self, msg):
         try:
-            self._manager.sendRequest({'user' : self._userID,
-                                       'type' : req.CREATE_CONTAINER,
-                                       'args' : (msg['containerTag'],)})
+            self._manager.sendRequest(self._userID, req.CREATE_CONTAINER,
+                                      (msg['containerTag'],))
         except KeyError as e:
             raise InvalidRequest('Can not process "CreateContainer" request. '
                                  'Missing key: {0}'.format(e))
@@ -129,9 +128,8 @@ class DestroyContainerHandler(_ClientHandlerBase):
     TYPE = types.DESTROY_CONTAINER
     
     def handle(self, msg):
-        self._manager.sendRequest({'user' : self._userID,
-                                   'type' : req.DESTROY_CONTAINER,
-                                   'args' : (msg['containerTag'],)})
+        self._manager.sendRequest(self._userID, req.DESTROY_CONTAINER,
+                                  (msg['containerTag'],))
 
 
 class ConfigureContainerHandler(_ClientHandlerBase):
@@ -142,52 +140,48 @@ class ConfigureContainerHandler(_ClientHandlerBase):
     def handle(self, msg):
         if 'addNodes' in msg:
             for node in msg['addNodes']:
-                self._manager.sendRequest({
-                    'user' : self._userID,
-                    'type' : req.ADD_NODE,
-                    'args' : (node['containerTag'], node['nodeTag'],
-                              node['pkg'], node['exe'], node.get('args', ''),
-                              node.get('name', ''), node.get('namespace', ''))
-                })
+                self._manager.sendRequest(self._userID, req.ADD_NODE,
+                                          (node['containerTag'],
+                                           node['nodeTag'],
+                                           node['pkg'],
+                                           node['exe'],
+                                           node.get('args', ''),
+                                           node.get('name', ''),
+                                           node.get('namespace', '')))
         
         if 'removeNodes' in msg:
             for node in msg['removeNodes']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.REMOVE_NODE,
-                                           'args' : (node['containerTag'],
-                                                     node['nodeTag'])})
+                self._manager.sendRequest(self._userID, req.REMOVE_NODE,
+                                          (node['containerTag'],
+                                           node['nodeTag']))
         
         if 'addInterfaces' in msg:
             for conf in msg['addInterfaces']:
-                self._manager.sendRequest({
-                    'user' : self._userID,
-                    'type' : req.ADD_INTERFACE,
-                    'args' : (conf['interfaceType'], conf['endpointTag'],
-                              conf['interfaceTag'], conf['className'],
-                              conf.get('addr', ''))
-                })
+                self._manager.sendRequest(self._userID, req.ADD_INTERFACE,
+                                          (conf['interfaceType'],
+                                           conf['endpointTag'],
+                                           conf['interfaceTag'],
+                                           conf['className'],
+                                           conf.get('addr', '')))
         
         if 'removeInterfaces' in msg:
             for interfaceTag in msg['removeInterfaces']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.REMOVE_INTERFACE,
-                                           'args' : (interfaceTag,)})
+                self._manager.sendRequest(self._userID, req.REMOVE_INTERFACE,
+                                          (interfaceTag,))
         
         if 'setParam' in msg:
             for param in  msg['setParam']:
-                self._manager.sendRequest({
-                    'user' : self._userID,
-                    'type' : req.ADD_PARAMETER,
-                    'args' : (param['containerTag'], param['name'],
-                              json.dumps(param['value']), param['paramType'])
-                })
+                self._manager.sendRequest(self._userID, req.ADD_PARAMETER,
+                                          (param['containerTag'],
+                                           param['name'],
+                                           json.dumps(param['value']),
+                                           param['paramType']))
         
         if 'deleteParam' in msg:
             for param in msg['deleteParam']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.REMOVE_NODE,
-                                           'args' : (param['containerTag'],
-                                                     param['name'])})
+                self._manager.sendRequest(self._userID, req.REMOVE_NODE,
+                                          (param['containerTag'],
+                                           param['name']))
 
 
 class ConnectInterfacesHandler(_ClientHandlerBase):
@@ -198,17 +192,13 @@ class ConnectInterfacesHandler(_ClientHandlerBase):
     def handle(self, msg):
         if 'connect' in msg:
             for conn in msg['connect']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.ADD_CONNECTION,
-                                           'args' : (conn['tagA'],
-                                                     conn['tagB'])})
+                self._manager.sendRequest(self._userID, req.ADD_CONNECTION,
+                                          (conn['tagA'], conn['tagB']))
         
         if 'disconnect' in msg:
             for conn in msg['disconnect']:
-                self._manager.sendRequest({'user' : self._userID,
-                                           'type' : req.REMOVE_CONNECTION,
-                                           'args' : (conn['tagA'],
-                                                     conn['tagB'])})
+                self._manager.sendRequest(self._userID, req.REMOVE_CONNECTION,
+                                          (conn['tagA'], conn['tagB']))
 
 
 class DataMessageHandler(_ClientHandlerBase):

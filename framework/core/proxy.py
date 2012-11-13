@@ -38,14 +38,347 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.defer import Deferred, DeferredList
 
 # Custom imports
+import settings
 from errors import InternalError, InvalidRequest
 from util.interfaces import verifyObject
 from core.interfaces import IEndpointProxy, IEndpointControl, IRobotControl, \
     INodeControl, IParameterControl, IContainerControl
-from core.command import NodeCommand, ParameterCommand, ArrayCommand, FileCommand, \
-    ContainerCommand, RobotCommand
+from core.command import NodeCommand, ContainerCommand, RobotCommand, \
+    ParameterCommand, ArrayCommand, FileCommand, \
+    ServiceInterfaceCommand, ServiceProviderInterfaceCommand, \
+    PublisherInterfaceCommand, SubscriberInterfaceCommand, \
+    ServiceConverterCommand, ServiceProviderConverterCommand, \
+    PublisherConverterCommand, SubscriberConverterCommand, \
+    ServiceForwarderCommand, ServiceProviderForwarderCommand, \
+    PublisherForwarderCommand, SubscriberForwarderCommand
+
+
+class _InterfaceImpl(object):
+    """ Contains interface type specific stuff.
+    """
+    COMMAND = None
+    
+    @classmethod
+    def createCommand(cls, tag, msgType, endpointID, addr):
+        return cls.COMMAND(tag, msgType, endpointID, addr)
+
+
+class _ConverterImpl(object):
+    """ Contains interface type specific stuff.
+    """
+    COMMAND = None
+    
+    @classmethod
+    def createCommand(cls, tag, msgType, endpointID, _):
+        return cls.COMMAND(tag, msgType, endpointID, '')
+    
+
+class _ServiceImpl(object):
+    """ Contains interface type specific stuff.
+    """
+    NUMBER_OF_CONNECTIONS = 1
+    
+    @staticmethod
+    def validConnection(otherCls):
+        return issubclass(otherCls, _ServiceProviderImpl)
+
+
+class _ServiceProviderImpl(object):
+    """ Contains interface type specific stuff.
+    """
+    NUMBER_OF_CONNECTIONS = 1
+    
+    @staticmethod
+    def validConnection(otherCls):
+        return issubclass(otherCls, _ServiceImpl)
+
+
+class _PublisherImpl(object):
+    """ Contains interface type specific stuff.
+    """
+    NUMBER_OF_CONNECTIONS = None
+    
+    @staticmethod
+    def validConnection(otherCls):
+        return issubclass(otherCls, _SubscriberImpl)
+
+
+class _SubscriberImpl(object):
+    """ Contains interface type specific stuff.
+    """
+    NUMBER_OF_CONNECTIONS = None
+    
+    @staticmethod
+    def validConnection(otherCls):
+        return issubclass(otherCls, _PublisherImpl)
+
+
+class _ServiceInterface(_InterfaceImpl, _ServiceImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceInterfaceCommand
+
+
+class _ServiceProviderInterface(_InterfaceImpl, _ServiceProviderImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceProviderInterfaceCommand
+    
+
+class _PublisherInterface(_InterfaceImpl, _PublisherImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = PublisherInterfaceCommand
+
+
+class _SubscriberInterface(_InterfaceImpl, _SubscriberImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = SubscriberInterfaceCommand
+
+
+class _ServiceConverter(_ConverterImpl, _ServiceImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceConverterCommand
+
+
+class _ServiceProviderConverter(_ConverterImpl, _ServiceProviderImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceProviderConverterCommand
+
+
+class _PublisherConverter(_ConverterImpl, _PublisherImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = PublisherConverterCommand
+
+
+class _SubscriberConverter(_ConverterImpl, _SubscriberImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = SubscriberConverterCommand
+
+
+class _ServiceForwarder(_ConverterImpl, _ServiceImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceForwarderCommand
+
+
+class _ServiceProviderForwarder(_ConverterImpl, _ServiceProviderImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = ServiceProviderForwarderCommand
+
+
+class _PublisherForwarder(_ConverterImpl, _PublisherImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = PublisherForwarderCommand
+
+
+class _SubscriberForwarder(_ConverterImpl, _SubscriberImpl):
+    """ Contains interface specific stuff.
+    """
+    COMMAND = SubscriberForwarderCommand
+
+
+class InterfaceProxy(object):
+    """ Class which represents an interface. It is associated with an endpoint.
+    """
+    _MAP = { 'ServiceInterface'         : _ServiceInterface,
+             'ServiceProviderInterface' : _ServiceProviderInterface,
+             'PublisherInterface'       : _PublisherInterface,
+             'SubscriberInterface'      : _SubscriberInterface,
+             'ServiceConverter'         : _ServiceConverter,
+             'ServiceProviderConverter' : _ServiceProviderConverter,
+             'PublisherConverter'       : _PublisherConverter,
+             'SubscriberConverter'      : _SubscriberConverter,
+             'ServiceForwarder'         : _ServiceForwarder,
+             'ServiceProviderForwarder' : _ServiceProviderForwarder,
+             'PublisherForwarder'       : _PublisherForwarder,
+             'SubscriberForwarder'      : _SubscriberForwarder }
+    
+    def __init__(self, endpoint, tag, iType, msgType, rosAddr, resp):
+        """ Initialize the Interface.
+            
+            @param endpoint:    Endpoint to which this interface belongs.
+            @type  endpoint:    core.interfaces.IEndpointProxy
+            
+            @param tag:         Tag which is used to identify this interface.
+            @type  tag:         str
+            
+            @param iType:       Interface type; valid values are:
+                                    service, publisher, subscriber
+            @type  iType:       str
+            
+            @param msgType:     Message type of the form package/messageClass,
+                                i.e. 'std_msgs/Int8'.
+            @type  msgType:     str
+            
+            @param rosAddr:     Address which is used for the interface in the
+                                ROS environment, i.e. '/namespace/interface';
+                                only necessary if it is a ROS environment
+                                interface.
+            @type  rosAddr:     str
+            
+            @raise:     errors.InvalidRequest, util.interfaces.InterfaceError
+        """
+        verifyObject(IEndpointProxy, endpoint)
+        
+        if iType not in self._MAP:
+            raise InvalidRequest('"{0}" is not a valid interface type.')
+        
+        self._endpoint = endpoint
+        self._control = None
+        self._tag = tag
+        self._iType = self._MAP[iType]
+        self._msgType = msgType
+        self._rosAddr = rosAddr
+        
+        self._conn = set()
+        
+        endpoint.registerInterface(self, rosAddr)
+        endpoint.owner.registerInterface(self)
+    
+    @property
+    def tag(self):
+        """ Tag used to identify this interface by the user. """
+        return self._tag
+    
+    @property
+    def commID(self):
+        """ CommID of endpoint to which this interface belongs. """
+        return self._endpoint.commID
+    
+    def registerControl(self, control):
+        """ Register control for the communication with the endpoint.
+            
+            @param control: Control which should be registered for the
+                            communication with the endpoint.
+            @type  control: core.interfaces.IEndpointControl
+            
+            @raise:     errors.InternalError, util.interfaces.InterfaceError
+        """
+        if self._control:
+            raise InternalError('There is already a control for the '
+                                'communication registered.')
+        
+        verifyObject(IEndpointControl, control)
+        self._control = control
+    
+    def validConnection(self, otherInterface):
+        """ Check whether this interface can be connected to the other
+            interface.
+            
+            @return:    True if it is possible; False otherwise.
+        """
+        return (self._msgType == otherInterface._msgType and
+                self._iType.validConnection(otherInterface._iType))
+    
+    def registerConnection(self, interface, resp):
+        """ Register a connection such that the other endpoint is allowed to
+            communicate with this interface.
+            
+            @param interface:   Interface to which the connection should be
+                                established.
+            @type  interface:   core.interface.Interface
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
+        """
+        if interface == self:
+            raise InvalidRequest('Can not connect to itself.')
+        
+        if interface in self._conn:
+            raise InvalidRequest('Can not create the same connection twice.')
+        
+        if (self._iType.NUMBER_OF_CONNECTIONS and
+                self._iType.NUMBER_OF_CONNECTIONS <= len(self._conn)):
+            raise InvalidRequest('Can not add more than {0} connections to '
+                                 'this interface.'.format(
+                                     self._iType.NUMBER_OF_CONNECTIONS))
+        
+        deferredList = []
+        
+        if not self._conn:
+            deferredList.append(Deferred())
+            
+            # There are no connections to this interface so far; -> add it
+            self._control.addInterface(
+                self._iType.createCommand(self._tag, self._msgType,
+                                          self._endpoint.uid, self._rosAddr),
+                deferredList[0]
+            )
+        
+        if deferredList:
+            deferredList.append(Deferred())
+            resp.chainDeferred(DeferredList(deferredList))
+            resp = deferredList[-1]
+        
+        self._control.registerConnection(self._tag, interface.commID,
+                                         interface.tag, resp)
+        self._conn.add(interface)
+    
+    def unregisterConnection(self, interface, resp):
+        """ Unregister a connection such that the other endpoint is no longer
+            allowed to communicate with this interface.
+            
+            @param interface:   Interface to which the connection should be
+                                destroyed.
+            @type  interface:   core.interface.Interface
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
+        """
+        if interface not in self._conn:
+            raise InvalidRequest('Can not remove a connection '
+                                 'which is not here.')
+        
+        self._conn.remove(interface)
+        
+        if not self._conn:
+            # There are no more references to this interface; -> remove it
+            self._control.removeInterface(self._tag, resp)
+        else:
+            self._control.unregisterConnection(self._tag, interface.commID,
+                                               interface.tag, resp)
+    
+    def delete(self, resp=None):
+        """ Removes the interface.
+            
+            Make sure to call this method, because this method makes sure that
+            all necessary references are removed.
+            
+            Once this method is called this monitor can no longer be used.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
+        """
+        self._endpoint.owner.unregisterInterface(self, self._rosAddr)
+        self._endpoint.unregisterInterface(self)
+        
+        if self._conn:
+            deferredList = [Deferred()]
+            
+            for interface in self._conn:
+                deferredList.append(Deferred())
+                interface.unregisterConnection(self, deferredList[-1])
+            
+            self._control.removeInterface(self._tag, deferredList[0])
+            
+            if resp:
+                resp.chainDeferred(DeferredList(deferredList))
+        
+        self._endpoint = None
 
 
 class _EndpointProxy(object):
@@ -77,6 +410,7 @@ class _EndpointProxy(object):
         self._commID = commID
         self._control = control
         self._interfaces = set()
+        self._interfaceAddr = set()
     
     @property
     def owner(self):
@@ -93,31 +427,47 @@ class _EndpointProxy(object):
         """ Communication ID of this endpoint. """
         return self._commID
     
-    def registerInterface(self, interface):
+    def registerInterface(self, interface, addr=''):
         """ Register a new interface with this endpoint.
             
             @param interface:   Interface instance which should be registered.
             @type  interface:   core.interface.Interface
+            
+            @param addr:        ROS address of the interface, if it has one.
+            @type  addr:        str
         """
+        if addr and addr in self._interfaceAddr:
+            raise InvalidRequest('ROS address for interface is already in '
+                                 'use.')
+        
         if interface in self._interfaces:
             raise InternalError('There exists already an interface '
                                 'with the same tag.')
         
         interface.registerControl(self._control)
         self._interfaces.add(interface)
+        
+        if addr:
+            self._interfaceAddr.add(addr)
     
-    def unregisterInterface(self, interface):
+    def unregisterInterface(self, interface, addr=''):
         """ Unregister an interface with this endpoint.
             
             @param interface:   Interface instance which should be
                                 unregistered.
             @type  interface:   core.interface.Interface
+            
+            @param addr:        ROS address of the interface, if it has one.
+            @type  addr:        str
         """
         if interface not in self._interfaces:
             raise InternalError('Tried to unregister a non existing '
                                 'interface.')
         
         self._interfaces.remove(interface)
+        
+        if addr:
+            self._interfaceAddr.discard(addr)
     
     def delete(self):
         """ Removes the proxy, i.e. the represented endpoint.
@@ -174,9 +524,47 @@ class RobotProxy(_EndpointProxy):
         self._control.destroyRobot(self._uid)
         
         super(RobotProxy, self).delete()
+        
+
+class _ProcessStatus(object):
+    """ Class which is used to keep track of the status of a process.
+    """
+    STARTUP = 0
+    RUNNING = 1
+    STOPPING = 2
+    STOPPED = 3
+    
+    def __init__(self):
+        """ Initialize the node proxy.
+        """
+        self._status = self.STARTUP
+        self._failed = False
+    
+    @property
+    def status(self):
+        """ Status of process as integer. """
+        return self._status
+    
+    def setStatus(self, new, failed=False):
+        """ Advance the status of the node to 'new'. If flag failed is set the
+            status can not be changed anymore.
+        """
+        if self._failed:
+            return
+        
+        if new <= self._status:
+            raise InternalError('Can not set status to a predecessor.')
+        
+        self._status = new
+        self._failed = failed
+    
+    def setFailed(self):
+        """ Set the current status to failed.
+        """
+        self._failed = True
 
 
-class ROSEnvProxy(_EndpointProxy):
+class _ROSEnvProxy(_EndpointProxy):
     """ Class which is used to keep track of the status of a ROS environment.
     """
     def __init__(self, user, tag, commID, control):
@@ -199,94 +587,173 @@ class ROSEnvProxy(_EndpointProxy):
         verifyObject(INodeControl, control)
         verifyObject(IParameterControl, control)
         
-        super(ROSEnvProxy, self).__init__(user, tag, commID, control)
+        super(_ROSEnvProxy, self).__init__(user, tag, commID, control)
         
-        self._rosAddrs = set()
+        self._nodes = {}
     
-    def addNode(self, tag, pkg, exe, args, name, namespace):
+    def addNode(self, tag, pkg, exe, args, name, namespace, resp):
         """ Add a node to the monitored ROS environment.
             
-            @param tag:     Tag which is used to identify the ROS node which
-                            should added.
-            @type  tag:     str
+            @param tag:         Tag which is used to identify the ROS node
+                                which should added.
+            @type  tag:         str
 
-            @param pkg:     Package name where the node can be found.
-            @type  pkg:     str
+            @param pkg:         Package name where the node can be found.
+            @type  pkg:         str
 
-            @param exe:     Name of executable which should be launched.
-            @type  exe:     str
+            @param exe:         Name of executable which should be launched.
+            @type  exe:         str
             
-            @param args:    Arguments which should be used for the launch.
-            @type  args:    str
+            @param args:        Arguments which should be used for the launch.
+            @type  args:        str
             
-            @param name:    Name of the node under which it should be launched.
-            @type  name:    str
+            @param name:        Name of the node under which it should be
+                                launched.
+            @type  name:        str
             
             @param namespace:   Namespace in which the node should use be
                                 launched.
             @type  namespace:   str
             
-            @raise:     errors.InvalidRequest
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
+            
+            @raise:             errors.InvalidRequest
         """
+        if tag in self._nodes:
+            raise InvalidRequest('There exists already a node with the same '
+                                 'tag.')
+        
         # First make sure, that the received strings are str objects
         # and not unicode objects
-        if isinstance(pkg, unicode):
-            try:
-                pkg = str(pkg)
-            except UnicodeEncodeError:
-                raise InvalidRequest('The package "{0}" is not '
-                                     'valid.'.format(pkg))
+        try:
+            pkg = self._castStr(pkg, 'package')
+            exe = self._castStr(exe, 'executable')
+            name = self._castStr(name, 'name')
+            namespace = self._castStr(namespace, 'namespace')
+        except ValueError as e:
+            raise InvalidRequest(str(e))
         
-        if isinstance(exe, unicode):
-            try:
-                exe = str(exe)
-            except UnicodeEncodeError:
-                raise InvalidRequest('The executable "{0}" is not '
-                                     'valid.'.format(exe))
-        
-        if isinstance(name, unicode):
-            try:
-                name = str(name)
-            except UnicodeEncodeError:
-                raise InvalidRequest('The name "{0}" is not '
-                                     'valid.'.format(name))
-        
-        if isinstance(namespace, unicode):
-            try:
-                namespace = str(namespace)
-            except UnicodeEncodeError:
-                raise InvalidRequest('The namespace "{0}" is not '
-                                     'valid.'.format(namespace))
-        
+        # Validate the namespace
         if not rosgraph.names.is_legal_name(namespace):
             raise InvalidRequest('The namespace "{0}" is not '
                                  'valid.'.format(namespace))
         
-        log.msg('Start node "{0}/{1}" (tag: "{2}") in ROS environment '
-                '"{3}".'.format(pkg, exe, tag, self._commID))
+        if settings.DEBUG:
+            nodeDesc = '"{0}/{1}" (tag: "{2}")'.format(pkg, exe, tag)
+            log.msg('Start node {0} in ROS environment '
+                    '"{1}".'.format(nodeDesc, self._commID))
+            
+            def cb(msg):
+                log.msg('Node {0} successfully started in ROS environment '
+                        '"{1}".'.format(nodeDesc, self._commID))
+                return msg
+            
+            def eb(e):
+                log.msg('Node {0} could not be started in ROS environment '
+                        '"{1}":\n{2}'.format(nodeDesc, self._commID,
+                                             e.getErrorMessage()))
+                return e
+            
+            resp.addCallbacks(cb, eb)
+        
+        status = _ProcessStatus()
+        
+        def statusEB(e):
+            status.setFailed()
+            return e
+        
+        resp.addErrback(statusEB)
+        
+        # Add the node
+        self._nodes[tag] = status
         self._control.addNode(NodeCommand(tag, pkg, exe, args, name,
-                                          namespace))
+                                          namespace), resp)
     
-    def removeNode(self, tag):
+    def removeNode(self, tag, resp):
         """ Remove a node from the monitored ROS environment.
             
             @param tag:     Tag which is used to identify the ROS node which
                             should be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
-        log.msg('Remove node (tag: "{0}") from ROS environment '
-                '"{1}".'.format(tag, self._commID))
-        self._control.removeNode(tag)
+        if tag not in self._nodes:
+            raise InvalidRequest('There does not exist a node with the given '
+                                 'tag.')
+        
+        if settings.DEBUG:
+            log.msg('Stop node (tag: "{0}") in ROS environment '
+                    '"{1}".'.format(tag, self._commID))
+            
+            def cb(msg):
+                log.msg('Node (tag: "{0}") successfully stopped in ROS '
+                        'environment "{1}".'.format(tag, self._commID))
+                return msg
+            
+            def eb(e):
+                log.msg('Node (tag: "{0}") could not be stopped in ROS '
+                        'environment "{1}":\n{2}'.format(tag, self._commID,
+                                                         e.getErrorMessage()))
+                return e
+            
+            resp.addCallbacks(cb, eb)
+        
+        status = self._nodes[tag]
+        
+        def statusEB(e):
+            status.setFailed()
+            return e
+        
+        resp.addErrback(statusEB)
+        
+        status.setStatus(_ProcessStatus.STOPPING)
+        self._control.removeNode(tag, resp)
     
-    def _castStr(self, value):
+    def setNodeStatus(self, nTag, newStatus):
+        """ Set the received status of the node process.
+            
+            @param nTag:        Node tag to identify the node process.
+            @type  nTag:        str
+            
+            @param newStatus:   Flag which indicates the status of the node
+                                process:
+                                    True    Node has been started
+                                    False   Node has been terminated
+            @type  newStatus:   bool
+        """
+        status = self._nodes[nTag]
+        
+        if newStatus:
+            status.setStatus(_ProcessStatus.RUNNING)
+        elif status.status == _ProcessStatus.RUNNING:
+            status.setFailed()
+        else:
+            status.setStatus(_ProcessStatus.STOPPED)
+    
+    def _castStr(self, value, desc=''):
         """ Internally used method to convert a value to a string.
         """
         if isinstance(value, str):
             return value
         elif isinstance(value, unicode):
-            return str(value)
-        
-        raise ValueError('Value is not a valid string.')
+            try:
+                return str(value)
+            except UnicodeEncodeError:
+                if desc:
+                    raise ValueError("The {0} '{1}' is not a"
+                                     'valid string.'.format(desc, value))
+                else:
+                    raise ValueError('Value is not a valid string.')
+            
+        if desc:
+            raise ValueError('Type of {0} is not a string.'.format(desc))
+        else:
+            raise ValueError('Value is not a valid string.')
         
     def _castBool(self, value):
         """ Internally used method to convert a value to a bool.
@@ -320,15 +787,15 @@ class ROSEnvProxy(_EndpointProxy):
         
         raise ValueError('Parameter type is invalid.')
     
-    def addParameter(self, name, value, paramType):
+    def addParameter(self, name, value, paramType, resp):
         """ Add a parameter to the parameter server in the monitored ROS
             environment.
             
-            @param name:    Name of the parameter which should be added.
-            @type  name:    str
+            @param name:        Name of the parameter which should be added.
+            @type  name:        str
             
-            @param value:   Value of the parameter which should be added.
-            @type  value:   Depends on @param paramType
+            @param value:       Value of the parameter which should be added.
+            @type  value:       Depends on @param paramType
             
             @param paramType:   Type of the parameter to add. Valid base types
                                 are:
@@ -344,7 +811,12 @@ class ROSEnvProxy(_EndpointProxy):
                                     file
             @type  paramType:   str
             
-            @raise:     InvalidRequest if the name is not a valid ROS name.
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
+            
+            @raise:             errors.InvalidRequest if the name is not a
+                                valid ROS name.
         """
         if not rosgraph.names.is_legal_name(name):
             raise InvalidRequest('The name "{0}" is not valid.'.format(name))
@@ -375,51 +847,61 @@ class ROSEnvProxy(_EndpointProxy):
         except ValueError as e:
             raise InvalidRequest(str(e))
         
-        log.msg('Add parameter "{0}" to ROS environment "{1}".'.format(
-                    name, self._commID))
-        self._control.addParameter(param)
+        if settings.DEBUG:
+            log.msg('Add parameter "{0}" to ROS environment '
+                    '"{1}".'.format(name, self._commID))
+            
+            def cb(msg):
+                log.msg('Parameter "{0}" successfully added to ROS environment'
+                        ' "{1}".'.format(name, self._commID))
+                return msg
+            
+            def eb(e):
+                log.msg('Parameter "{0}" could not be added to ROS environment'
+                        ' "{1}":\n{2}'.format(name, self._commID,
+                                              e.getErrorMessage()))
+                return e
+            
+            resp.addCallbacks(cb, eb)
+        
+        self._control.addParameter(param, resp)
     
-    def removeParameter(self, name):
+    def removeParameter(self, name, resp):
         """ Remove a parameter from the parameter server in the monitored ROS
             environment.
             
             @param name:    Name of the parameter which should be removed.
             @type  name:    str
-        """
-        log.msg('Remove parameter "{0}" from ROS environment "{1}".'.format(
-                    name, self._commID))
-        self._control.removeParameter(name)
-    
-    def reserveAddr(self, addr):
-        """ Callback method for Interface to reserve the ROS address.
             
-            @param addr:    ROS address which should be reserved.
-            @type  adrr:    str
-            
-            @raise:     ValueError if the address is already in use.
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
-        if addr in self._rosAddrs:
-            raise ValueError('Address already is in use.')
+        if settings.DEBUG:
+            log.msg('Remove parameter "{0}" from ROS environment '
+                    '"{1}".'.format(name, self._commID))
+            
+            def cb(msg):
+                log.msg('Parameter "{0}" successfully removed from ROS '
+                        'environment "{1}".'.format(name, self._commID))
+                return msg
+            
+            def eb(e):
+                log.msg('Parameter "{0}" could not be removed from ROS '
+                        'environment "{1}":\n{2}'.format(name, self._commID,
+                                                         e.getErrorMessage()))
+                return e
+            
+            resp.addCallbacks(cb, eb)
         
-        self._rosAddrs.add(addr)
-    
-    def freeAddr(self, addr):
-        """ Callback method for Interface to free the ROS address.
-            
-            @param addr:    ROS address which should be freed.
-            @type  addr:    str
-        """
-        if addr not in self._rosAddrs:
-            log.msg('Tried to free an address which was not reserved.')
-        else:
-            self._rosAddrs.remove(addr)
+        self._control.removeParameter(name, resp)
 
 
-class ContainerProxy(ROSEnvProxy):
+class ContainerProxy(_ROSEnvProxy):
     """ Class which is used to keep track of the status of a container
         (containing a ROS environment).
     """
-    def __init__(self, user, cTag, commID, control):
+    def __init__(self, user, cTag, commID, control, resp):
         """ Initialize the Container proxy.
             
             @param user:        User instance to which this Container belongs.
@@ -436,53 +918,83 @@ class ContainerProxy(ROSEnvProxy):
             @param cTag:        Container tag which is used by the user to
                                 identify this Container.
             @type  cTag:        str
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
         verifyObject(IContainerControl, control)
         
         super(ContainerProxy, self).__init__(user, cTag, commID, control)
         
-        self._connected = False   # TODO: At the moment not used
+        def statusCB(msg):
+            self._status.setStatus(_ProcessStatus.RUNNING)
+            return msg
         
-        log.msg('Start container "{0}".'.format(commID))
-        control.createContainer(ContainerCommand(cTag, commID))
-    
-    @property
-    def status(self):   # TODO: At the moment not used
-        """ Status of the container. (True = connected; False = disconnected)
-        """
-        return self._connected
-    
-    def setConnectedFlag(self, flag):   # TODO: At the moment not used
-        """ Set the 'connected' flag for the container.
+        def statusEB(e):
+            self._status.setStatus(_ProcessStatus.RUNNING, True)
+            return e
+        
+        resp.addCallbacks(statusCB, statusEB)
+        
+        if settings.DEBUG:
+            log.msg('Start container "{0}".'.format(commID))
             
-            @param flag:    Flag which should be set. True for connected and
-                            False for not connected.
-            @type  flag:    bool
+            def cb(msg):
+                log.msg('Container "{0}" successfully started.'.format(commID))
+                return msg
             
-            @raise:         InvalidRequest if the container is already
-                            registered as connected.
-        """
-        if flag:
-            if self._connected:
-                raise InvalidRequest('Tried to set container to connected '
-                                     'which already is registered as '
-                                     'connected.')
+            def eb(e):
+                log.msg('Container "{0}" could not be '
+                        'started.'.format(commID, e.getErrorMessage()))
+                return e
             
-            self._connected = True
-            self._user.sendContainerUpdate(self._uid, True)
-        else:
-            self._connected = False
-            self._user.sendContainerUpdate(self._uid, False)
+            resp.addCallbacks(cb, eb)
+        
+        self._status = _ProcessStatus()
+        control.createContainer(ContainerCommand(cTag, commID), resp)
     
-    def delete(self):
+    def delete(self, resp=None):
         """ Removes the monitor, i.e. the represented container.
             
             Make sure to call this method, because this method makes sure
             that all necessary references are removed.
             
             Once this method is called this monitor can no longer be used.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
-        log.msg('Stop container "{0}".'.format(self._commID))
+        if not resp:
+            resp = Deferred()
+        
+        def statusCB(msg):
+            self._status.setStatus(_ProcessStatus.STOPPED)
+            return msg
+        
+        def statusEB(e):
+            self._status.setStatus(_ProcessStatus.STOPPED, True)
+            return e
+        
+        resp.addCallbacks(statusCB, statusEB)
+        
+        if settings.DEBUG:
+            log.msg('Stop container "{0}".'.format(self._commID))
+            
+            def cb(msg):
+                log.msg('Container "{0}" successfully '
+                        'stopped.'.format(self._commID))
+                return msg
+            
+            def eb(e):
+                log.msg('Container "{0}" could not be '
+                        'stopped.'.format(self._commID, e.getErrorMessage()))
+                return e
+            
+            resp.addCallbacks(cb, eb)
+        
+        self._status.setStatus(_ProcessStatus.STOPPING)
         self._control.destroyContainer(self._uid)
         
         super(ContainerProxy, self).delete()

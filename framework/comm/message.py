@@ -86,7 +86,9 @@ class Message(object):
         s = Serializer()
         serializer.serialize(s, self.content)
         
-        self.msgNr = manager.getMessageNr()
+        if self.msgNr is None:
+            self.msgNr = manager.getMessageNr()
+        
         self.origin = manager.commID
         
         buf = s.getMsg()

@@ -57,18 +57,29 @@ class RemoteRequestSender(object):
         """
         self._commManager = commMngr
     
-    def processRequest(self, request):
+    def processRequest(self, user, reqType, args, resp):
         """ Send a request to the master manager.
             
-            @param request:     Request which should be sent to the master
-                                manager.
-            @type  request:     { 'user' : str, 'type' : str, 'args' : tuple }
+            @param user:        ID of user who is responsible for request.
+            @type  user:        str
+            
+            @param reqType:     Identifier of this request. For a list of
+                                options hava a look at module core.types.req.
+            @type  reqType:     str
+            
+            @param args:        Arguments which should be passed to the request
+                                handler in form of a tuple of strings.
+            @type  args:        (str)
+            
+            @param resp:        Deferred whose callbacks are used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.REQUEST
         msg.dest = definition.MASTER_ADDR
-        msg.content = request
-        self._commManager.sendMessage(msg)
+        msg.content = { 'user' : user, 'type' : reqType, 'args' : args }
+        self._commManager.sendMessage(msg, resp)
 
 
 class _RemoteControlBase(object):
@@ -98,24 +109,32 @@ class RemoteNodeControl(_RemoteControlBase):
     """
     implements(INodeControl)
     
-    def addNode(self, node):
+    def addNode(self, node, resp):
         """ Add a node to the ROS environment.
             
             @param node:    Node description which should be added.
             @type  node:    core.command.NodeCommand
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.COMMAND
         msg.dest = self._commID
         msg.content = { 'user' : self._userID, 'cmd' : node }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
     
-    def removeNode(self, tag):
+    def removeNode(self, tag, resp):
         """ Remove a node from the ROS environment.
             
             @param tag:     Tag which is used to identify the node which should
                             be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.TAG
@@ -123,7 +142,7 @@ class RemoteNodeControl(_RemoteControlBase):
         msg.content = { 'user' : self._userID,
                         'type' : types.RM_NODE,
                         'tag'  : tag }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
 
 
 class RemoteParameterControl(_RemoteControlBase):
@@ -131,23 +150,31 @@ class RemoteParameterControl(_RemoteControlBase):
     """
     implements(IParameterControl)
     
-    def addParameter(self, parameter):
+    def addParameter(self, parameter, resp):
         """ Add a parameter to the ROS environment.
             
             @param parameter:   Parameter description which should be added.
             @type  parameter:   core.command._ParameterCommand
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.COMMAND
         msg.dest = self._commID
         msg.content = { 'user' : self._userID, 'cmd' : parameter }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
     
-    def removeParameter(self, name):
+    def removeParameter(self, name, resp):
         """ Remove a parameter from the ROS environment.
             
             @param name:    Name of the parameter which should be removed.
             @type  name:    str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.TAG
@@ -155,7 +182,7 @@ class RemoteParameterControl(_RemoteControlBase):
         msg.content = { 'user' : self._userID,
                         'type' : types.RM_PARAMETER,
                         'tag'  : name }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
 
 
 
@@ -164,24 +191,32 @@ class RemoteEndpointControl(_RemoteControlBase):
     """
     implements(IEndpointControl)
     
-    def addInterface(self, interface):
+    def addInterface(self, interface, resp):
         """ Add an interface to the endpoint.
             
             @param interface:   Interface description which should be added.
             @type  interface:   core.command._EndpointInterfaceCommand
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.COMMAND
         msg.dest = self._commID
         msg.content = { 'user' : self._userID, 'cmd' : interface }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
     
-    def removeInterface(self, tag):
+    def removeInterface(self, tag, resp):
         """ Remove an interface from the endpoint.
             
             @param tag:     Tag which is used to identify the interface which
                             should be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.TAG
@@ -189,9 +224,9 @@ class RemoteEndpointControl(_RemoteControlBase):
         msg.content = { 'user' : self._userID,
                         'type' : types.RM_INTERFACE,
                         'tag'  : tag }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
     
-    def registerConnection(self, tag, commID, remoteTag):
+    def registerConnection(self, tag, commID, remoteTag, resp):
         """ Register a user with an interface to the endpoint.
             
             @param tag:     Tag which is used to identify the interface where
@@ -205,7 +240,11 @@ class RemoteEndpointControl(_RemoteControlBase):
             @param remoteTag:   Identifier which will be used to validate
                                 received messages and which will be sent along
                                 with outgoing messages.
-            @type  remoteTag:    str
+            @type  remoteTag:   str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         cmd = ConnectionCommand(tag, commID, remoteTag, True)
         
@@ -213,9 +252,9 @@ class RemoteEndpointControl(_RemoteControlBase):
         msg.msgType = msgTypes.COMMAND
         msg.dest = self._commID
         msg.content = { 'user' : self._userID, 'cmd' : cmd }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
     
-    def unregisterConnection(self, tag, commID, remoteTag):
+    def unregisterConnection(self, tag, commID, remoteTag, resp):
         """ Unregister a user from an interface to the endpoint.
             
             @param tag:     Tag which is used to identify the interface which
@@ -229,6 +268,10 @@ class RemoteEndpointControl(_RemoteControlBase):
             @param remoteTag:   Identifier which was used to register the
                                 target.
             @type  remoteTag:   str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         cmd = ConnectionCommand(tag, commID, remoteTag, False)
         
@@ -236,7 +279,7 @@ class RemoteEndpointControl(_RemoteControlBase):
         msg.msgType = msgTypes.COMMAND
         msg.dest = self._commID
         msg.content = { 'user' : self._userID, 'cmd' : cmd }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
 
 
 class RemoteRobotControl(RemoteEndpointControl):
@@ -244,13 +287,17 @@ class RemoteRobotControl(RemoteEndpointControl):
     """
     implements(IRobotControl)
     
-    def createRobot(self, robot):
+    def createRobot(self, robot, resp):
         """ Create a robot.
             
             Should be called only once.
             
             @param robot:   Robot description which should be created.
             @type  robot:   core.command.RobotCommand
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.COMMAND
@@ -258,7 +305,7 @@ class RemoteRobotControl(RemoteEndpointControl):
         msg.content = { 'user' : self._userID, 'cmd' : robot }
         self._commManager.sendMessage(msg)
     
-    def destroyRobot(self, robotID):
+    def destroyRobot(self, robotID, resp):
         """ Destroy a robot.
             
             Should be called only once.
@@ -266,6 +313,10 @@ class RemoteRobotControl(RemoteEndpointControl):
             @param robotID:     Identifier of the robot which should be
                                 destroyed.
             @type  robotID:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.TAG
@@ -273,7 +324,7 @@ class RemoteRobotControl(RemoteEndpointControl):
         msg.content = { 'user' : self._userID,
                         'type' : types.RM_ROBOT,
                         'tag'  : robotID }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
 
 
 class RemoteContainerControl(_RemoteControlBase):
@@ -281,27 +332,35 @@ class RemoteContainerControl(_RemoteControlBase):
     """
     implements(IContainerControl)
     
-    def createContainer(self, container):
+    def createContainer(self, container, resp):
         """ Create a container.
             
             Should be called only once.
             
             @param container:   Container description which should be created.
             @type  container:   core.command.ContainerCommand
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.COMMAND
         msg.dest = self._commID
         msg.content = { 'user' : self._userID, 'cmd' : container }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)
     
-    def destroyContainer(self, cTag):
+    def destroyContainer(self, cTag, resp):
         """ Destroy a container.
             
             Should be called only once.
             
             @param cTag:    Tag of the container which should be removed.
             @type  cTag:    str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
         msg = Message()
         msg.msgType = msgTypes.TAG
@@ -309,4 +368,4 @@ class RemoteContainerControl(_RemoteControlBase):
         msg.content = { 'user' : self._userID,
                         'type' : types.RM_CONTAINER,
                         'tag'  : cTag }
-        self._commManager.sendMessage(msg)
+        self._commManager.sendMessage(msg, resp)

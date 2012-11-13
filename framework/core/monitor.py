@@ -69,6 +69,7 @@ from util.interfaces import verifyObject
 from core.types import cmd as types
 from core.interfaces import IEndpointInterfaceMonitor, \
     IEndpointInterfaceCommand, IEndpointConverterCommand
+from client import types as clientTypes
 from util.loader import ResourceNotFound
 
 
@@ -78,19 +79,40 @@ class NodeMonitor(object):
     class _ROSNodeProtocol(ProcessProtocol):
         """ Protocol which is used to handle the ROS nodes.
         """
-        def __init__(self, nodeMonitor):
+        def __init__(self, nodeMonitor, out=None, err=None):
             self._nodeMonitor = nodeMonitor
+            
+            if out:
+                self._out = open(out, 'w')
+                
+                # Overwrite method from base class
+                self.outReceived = self._out.write
+            
+            if err:
+                self._err = open(err, 'w')
+                
+                # Overwrite method from base class
+                self.errReceived = self._err.write
         
         def connectionMade(self):
             self._nodeMonitor.started(self)
         
         def processEnded(self, reason):
             self._nodeMonitor.stopped(reason.value.exitCode)
+        
+        def __del__(self):
+            if hasattr(self, '_out'):
+                self._out.close()
+            
+            if hasattr(self, '_err'):
+                self._err.close()
     
     
     _STOP_ESCALATION = [ ('INT', 15), ('TERM', 2), ('KILL', None) ]
     _RE_FIND = re.compile('\\$\\( *find +(?P<pkg>[a-zA-Z][a-zA-z0-9_]*) *\\)')
     _RE_ENV = re.compile('\\$\\( *env +(?P<var>[a-zA-Z][a-zA-z0-9_]*) *\\)')
+    
+    _LOG_DIR = '/home/ros'
     
     def __init__(self, manager, userID, node):
         """ Initialize the NodeMonitor instance.
@@ -121,6 +143,17 @@ class NodeMonitor(object):
     def tag(self):
         """ Node tag to identify the node. """
         return self._node.tag
+    
+    @property
+    def exitCode(self):
+        """ Exit code of process.
+            
+            If process is still running raises InternalError.
+        """
+        if self._running:
+            raise InternalError('Process has not yet finished running.')
+        
+        return self._exitCode
     
     def _replaceFind(self, match):
         """ Internally used method to replace found matches of _RE_FIND regular
@@ -188,12 +221,17 @@ class NodeMonitor(object):
         
         self._cmd = cmd
         
+        # Create protocol instance
+        dirPath = os.path.join(self._LOG_DIR, namespace)
+        out = os.path.join(dirPath, '{0}-out.log'.format(name or exe))
+        err = os.path.join(dirPath, '{0}-err.log'.format(name or exe))
+        p = NodeMonitor._ROSNodeProtocol(self, out, err)
+        
         # Start node
         self._started = True
         log.msg('Start Node {0}/{1} [pkg: {2}, exe: '
                 '{3}].'.format(namespace, name, pkg, exe))
-        self._manager.reactor.spawnProcess(
-            NodeMonitor._ROSNodeProtocol(self), cmd[0], cmd, env=os.environ)
+        self._manager.reactor.spawnProcess(p, cmd[0], cmd, env=os.environ)
     
     def started(self, process):
         """ Callback for ROSProcessProtocol to signal that the process has
@@ -215,10 +253,10 @@ class NodeMonitor(object):
         """ Callback for ROSProcessProtocol to signal that the process has
             died.
         """
-        self._manager.unregisterNode(self._userID, self)
         self._running = False
         self._process = None
         self._exitCode = exitCode
+        self._manager.unregisterNode(self._userID, self)
         
         if exitCode:
             log.msg('Node ({0}) terminated with exit code: '
@@ -663,8 +701,10 @@ class ServiceMonitor(_InterfaceMonitor):
                                                  self._srv._srvCls)
                 response = serviceFunc(msg)
             except rospy.ROSInterruptException:
-                return
-            except Exception:
+                return  # TODO: How should the error be returned?
+            except rospy.ROSException:
+                return  # TODO: How should the error be returned?
+            except:
                 raise
             
             commID, sender = self._dest
@@ -943,9 +983,13 @@ class _ConverterMonitor(_EndpointInterfaceMonitor):
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
-        self._manager.sendToClient(self._userID, self._robotID,
+        self._manager.sendToClient(
+            self._userID,
+            self._robotID,
             { 'dest' : self._robotID, 'orig' : self._tag,
-              'type' : self._msgType, 'msgID' : msgID, 'msg' : jsonMsg })
+              'type' : self._msgType, 'msgID' : msgID, 'msg' : jsonMsg },
+            clientTypes.DATA_MESSAGE
+        )
 
 
 class ServiceConverter(_ConverterMonitor):
@@ -1078,10 +1122,14 @@ class _ForwarderMonitor(_EndpointInterfaceMonitor):
             @param msgID:   Unique ID to identify the message.
             @type  msgID:   str
         """
-        self._manager.sendToClient(self._userID, self._robotID,
+        self._manager.sendToClient(
+            self._userID,
+            self._robotID,
             { 'dest' : self._robotID, 'orig' : self._tag,
               'type' : self._msgType, 'msgID' : msgID,
-              'msg' : StringIO(zlib.compress(msg, GZIP_LVL)) })
+              'msg' : StringIO(zlib.compress(msg, GZIP_LVL)) },
+            clientTypes.DATA_MESSAGE
+        )
 
 
 class ServiceForwarder(_ForwarderMonitor):

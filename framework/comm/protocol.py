@@ -208,7 +208,7 @@ class _RCEProtocol(Protocol, object):
                 # Update number of parsed bytes
                 self._parsedBytes += lenBuf
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, _):
         """ Callback from MessageHandler. This method is used when a message
             has been received, but the connection is not yet initialized.
 

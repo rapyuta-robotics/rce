@@ -64,7 +64,7 @@ from comm import definition
 
 
 _MIN_VERSION = '20121031'  # Minimal required version of the client
-_CUR_VERSION = '20121031'  # Current version of the client
+_CUR_VERSION = '20121113'  # Current version of the client
 
 
 class MasterRobotAuthentication(Resource):

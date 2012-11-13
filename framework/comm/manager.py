@@ -38,6 +38,7 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
 
 # Custom imports
@@ -119,9 +120,6 @@ class _Router(object):
             @type  conn:    comm.factory._RCEProtocol
         """
         self._connections.pop(conn.dest, None)
-        # TODO: Fire a routeInfoUpdate event (probably only for selected
-        #       connections). Only necessary in Server node; check if this
-        #       is not done there.
     
     def registerProducer(self, producer, dest):
         """ Register a producer for a given destination.
@@ -287,6 +285,54 @@ class _InitMessage(object):
         return { 'data' : s.getList() }
 
 
+class _StatusMessage(object):
+    """ Message content type to send a status message to another process in
+        the RCE.
+        
+        The fields are:
+            msg     Message which should be delivered
+            id      Message number to which this message belongs
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = types.STATUS
+    
+    def serialize(self, s, msg):
+        try:
+            s.addElement(msg['msg'])
+            s.addInt(msg['id'])
+        except KeyError:
+            raise SerializationError('Could not serialize content of '
+                                     "Status Message. Missing key: 'data'")
+    
+    def deserialize(self, s):
+        return { 'msg' : s.getElement(), 'id' : s.getInt() }
+
+
+class _ErrorMessage(object):
+    """ Message content type to send an error message to another process in
+        the RCE.
+        
+        The fields are:
+            msg     Message which should be delivered
+            id      Message number to which this message belongs
+    """
+    implements(IContentSerializer)
+    
+    IDENTIFIER = types.ERROR
+    
+    def serialize(self, s, msg):
+        try:
+            s.addElement(msg['msg'])
+            s.addInt(msg['id'])
+        except KeyError:
+            raise SerializationError('Could not serialize content of '
+                                     "Error Message. Missing key: 'data'")
+    
+    def deserialize(self, s):
+        return { 'msg' : s.getElement(), 'id' : s.getInt() }
+
+
 class _RouteMessage(object):
     """ Message content type to provide other nodes with routing information.
         
@@ -319,6 +365,40 @@ class _RouteMessage(object):
         return [(s.getElement(), s.getBool()) for _ in xrange(s.getInt())]
 
 
+class _StatusProcessor(object):
+    """ Message processor to handle a status message.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.STATUS
+    
+    def __init__(self, manager):
+        """ @param manager:     CommManager which is used in this node.
+            @type  manager:     comm.manager.CommManager
+        """
+        self.manager = manager
+    
+    def processMessage(self, msg, _):
+        self.manager.processStatusMessage(msg.content)
+
+
+class _ErrorProcessor(object):
+    """ Message processor to handle an error message.
+    """
+    implements(IMessageProcessor)
+    
+    IDENTIFIER = types.ERROR
+    
+    def __init__(self, manager):
+        """ @param manager:     CommManager which is used in this node.
+            @type  manager:     comm.manager.CommManager
+        """
+        self.manager = manager
+    
+    def processMessage(self, msg, _):
+        self.manager.processErrorMessage(msg.content)
+
+
 class _RouteProcessor(object):
     """ Message processor to update the routing information.
     """
@@ -332,7 +412,7 @@ class _RouteProcessor(object):
         """
         self.manager = manager
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, _):
         self.manager.router.updateRoutingInfo(msg.origin, msg.content)
 
 
@@ -358,6 +438,9 @@ class CommManager(object):
         # Reference to Router
         self._router = _Router()
         
+        # Dictionary containing pending response deferreds (keys: msgNr as int)
+        self._responses = {}
+        
         # Message number counter
         self._msgNr = 0
         
@@ -366,11 +449,14 @@ class CommManager(object):
         
         # Content serializers
         self._contentSerializer = {}
-        self.registerContentSerializers([_InitMessage(), _RouteMessage()])
+        self.registerContentSerializers([_InitMessage(), _StatusMessage(),
+                                         _ErrorMessage(), _RouteMessage()])
         
         # Message processors
         self._processors = {}
-        self.registerMessageProcessors([_RouteProcessor(self)])
+        self.registerMessageProcessors([_StatusProcessor(self),
+                                        _ErrorProcessor(self),
+                                        _RouteProcessor(self)])
     
     @property
     def commID(self):
@@ -433,29 +519,87 @@ class CommManager(object):
         """
         return self._contentSerializer.get(msgType, None)
     
-    def sendMessage(self, msg):
+    def sendMessage(self, msg, resp=None):
         """ Send a message.
 
             @param msg:     Message which should be sent.
             @type  msg:     comm.message.Message
+            
+            @param resp:    Optional argument which has to be a Deferred and
+                            will be called when a response to message that
+                            should be sent is received. When a status message
+                            is received the deferred's callback is used and
+                            the deferred's errback when an error message is
+                            received.
+            @type  resp:    twisted::Deferred
         """
+        # Check if the response object is a Deferred
+        if resp and not isinstance(resp, Deferred):
+            raise InternalError('Response handler is not a Deferred.')
+        
+        # First check if the message has to be sent at all
         if msg.dest == self._commID:
             log.msg('Warning: Tried to send a message to myself.')
-            self.processMessage(msg)
+            self.processMessage(msg, resp or Deferred())
+            return
+        
+        # Register Deferred object if necessary
+        if resp:
+            nr = self.getMessageNr()
+            msg.msgNr = nr
+            
+            if nr in self._responses:
+                raise InternalError('Tried to register a response deferred, '
+                                    'but there is already one registered.')
+            
+            self._responses[nr] = resp
+        
+        # Try to send the message
+        try:
+            buf = msg.serialize(self)
+        except SerializationError as e:
+            log.msg('Message could not be sent: {0}'.format(e))
         else:
-            send(self, msg)
+            send(self, buf, msg.dest)
     
-    def processMessage(self, msg):
+    def processMessage(self, msg, resp):
         """ Process the message using the registered message processors.
             
             @param msg:     Received message.
-            @type  msg:     Message
+            @type  msg:     comm.message.Message
+            
+            @param resp:    Deferred which will send a status message when
+                            callback is used and a error message when errback
+                            is used as a response to the sender.
+            @type  resp:    twisted::Deferred
         """
         if msg.msgType in self._processors:
-            self._processors[msg.msgType].processMessage(msg)
+            self._processors[msg.msgType].processMessage(msg, resp)
         else:
             log.msg('Received a message whose type ("{0}") can not be handled '
                     'by this CommManager.'.format(msg.msgType))
+    
+    def processStatusMessage(self, msg):
+        """ Callback from _StatusProcessor.
+            
+            @param msg:     Status message to process.
+            @type  msg:     comm.message.Message
+        """
+        deferred = self._responses.pop(msg['nr'], None)
+        
+        if deferred:
+            deferred.callback(msg['msg'])
+    
+    def processErrorMessage(self, msg):
+        """ Callback from _ErrorProcessor.
+            
+            @param msg:     Error message to process.
+            @type  msg:     comm.message.Message
+        """
+        deferred = self._responses.pop(msg['nr'], None)
+        
+        if deferred:
+            deferred.errback(msg['msg'])
     
     def shutdown(self):
         """ Method which should be used when the CommManager is terminated.
@@ -463,3 +607,4 @@ class CommManager(object):
         """
         self._contentSerializer = {}
         self._processors = {}
+        self._responses = {}

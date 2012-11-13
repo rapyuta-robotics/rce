@@ -164,12 +164,19 @@ class IRequestSender(Interface):
     """ Interface which declares the necessary method which the request sender
         has to implement.
     """
-    def processRequest(req): #@NoSelf
+    def processRequest(user, reqType, args, resp): #@NoSelf
         """ Send a request to the master manager.
             
-            @param request:     Request which should be sent to the master
-                                manager.
-            @type  request:     { 'user' : str, 'type' : str, 'args' : tuple }
+            @param user:        ID of user who is responsible for request.
+            @type  user:        str
+            
+            @param reqType:     Identifier of this request. For a list of
+                                options hava a look at module core.types.req.
+            @type  reqType:     str
+            
+            @param args:        Arguments which should be passed to the request
+                                handler in form of a tuple of strings.
+            @type  args:        (str)
         """
 
 
@@ -196,19 +203,27 @@ class INodeControl(Interface):
     """ Interface which declares the necessary methods which are required to
         control ROS nodes.
     """
-    def addNode(node): #@NoSelf
+    def addNode(node, resp): #@NoSelf
         """ Add a node to the ROS environment.
             
             @param node:    Node description which should be added.
             @type  node:    core.command.NodeCommand
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
     
-    def removeNode(tag): #@NoSelf
+    def removeNode(tag, resp): #@NoSelf
         """ Remove a node from the ROS environment.
             
             @param tag:     Tag which is used to identify the node which
                             should be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
 
 
@@ -216,18 +231,26 @@ class IParameterControl(Interface):
     """ Interface which declares the necessary methods which are required to
         control ROS parameters.
     """
-    def addParameter(parameter): #@NoSelf
+    def addParameter(parameter, resp): #@NoSelf
         """ Add a parameter to the ROS environment.
             
             @param parameter:   Parameter description which should be added.
             @type  parameter:   core.command._ParameterCommand
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
     
-    def removeParameter(name): #@NoSelf
+    def removeParameter(name, resp): #@NoSelf
         """ Remove a parameter from the ROS environment.
             
             @param name:    Name of the parameter which should be removed.
             @type  name:    str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
 
 
@@ -235,22 +258,30 @@ class IEndpointControl(Interface):
     """ Interface which declares the necessary methods which are required to
         control interfaces of an endpoint.
     """
-    def addInterface(interface): #@NoSelf
+    def addInterface(interface, resp): #@NoSelf
         """ Add an interface to the ROS environment.
             
             @param interface:   Interface description which should be added.
             @type  interface:   core.command._EndpointInterfaceCommand
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
     
-    def removeInterface(tag): #@NoSelf
+    def removeInterface(tag, resp): #@NoSelf
         """ Remove an interface from the ROS environment.
             
             @param tag:     Tag which is used to identify the interface which
                             should be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
     
-    def registerConnection(tag, commID, connID): #@NoSelf
+    def registerConnection(tag, commID, connID, resp): #@NoSelf
         """ Register a user with an interface to the ROS environment.
             
             @param tag:     Tag which is used to identify the interface where
@@ -264,9 +295,13 @@ class IEndpointControl(Interface):
             @param connID:  Identifier of the interface from where the
                             connections originates.
             @type  connID:  str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
     
-    def unregisterConnection(tag, commID, connID): #@NoSelf
+    def unregisterConnection(tag, commID, connID, resp): #@NoSelf
         """ Unregister a user from an interface to the ROS environment.
             
             @param tag:     Tag which is used to identify the interface where
@@ -280,6 +315,10 @@ class IEndpointControl(Interface):
             @param connID:  Identifier of the interface from where the
                             connections originates.
             @type  connID:  str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
 
 
@@ -287,18 +326,26 @@ class IRobotControl(IEndpointControl):
     """ Interface which declares the necessary methods which are required to
         control robots.
     """
-    def createRobot(robot): #@NoSelf
+    def createRobot(robot, resp): #@NoSelf
         """ Create a robot.
             
             @param robot:       Robot description which should be created.
             @type  robot:       core.command.RobotCommand
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
     
-    def destroyRobot(robotID): #@NoSelf
+    def destroyRobot(robotID, resp): #@NoSelf
         """ Destroy a robot.
             
-            @param robotID: ID of the robot which should be destroyed.
-            @type  robotID: str
+            @param robotID:     ID of the robot which should be destroyed.
+            @type  robotID:     str
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
 
 
@@ -306,18 +353,26 @@ class IContainerControl(Interface):
     """ Interface which declares the necessary methods which are required to
         control containers.
     """
-    def createContainer(container): #@NoSelf
+    def createContainer(container, resp): #@NoSelf
         """ Create a container.
             
             @param container:   Container description which should be created.
             @type  container:   core.command.ContainerCommand
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
     
-    def destroyContainer(tag): #@NoSelf
+    def destroyContainer(tag, resp): #@NoSelf
         """ Destroy a container.
             
             @param tag:     Tag of the container which should be destroyed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
         """
 
 

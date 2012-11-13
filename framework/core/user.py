@@ -35,11 +35,12 @@ import json
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.defer import Deferred, DeferredList
 
 # Custom imports
 from errors import InvalidRequest, InternalError
-from core.proxy import RobotProxy, ContainerProxy
-from core.interface import Interface
+from core.proxy import RobotProxy, ContainerProxy, InterfaceProxy
+
 
 class User(object):
     """ Class which represents a user. A user can have multiple robots
@@ -51,18 +52,18 @@ class User(object):
             @param ctrlFactory:     Control factory which is used in this node.
             @type  ctrlFactory:     core.interfaces.IControlFactory
                             
-            @param mngr:        Manager which is used in this node.
-            @type  mngr:        core.manager._MasterManager
+            @param mngr:            Manager which is used in this node.
+            @type  mngr:            core.manager._MasterManager
             
-            @param userID:      ID of the represented user.
-            @type  userID:      str
+            @param userID:          ID of the represented user.
+            @type  userID:          str
         """
         self._controlFactory = ctrlFactory
         self._manager = mngr
         self._userID = userID
         
         self._active = True
-        self._containers = {}
+        self._environments = {}
         self._robots = {}
         self._interfaces = {}
     
@@ -89,6 +90,9 @@ class User(object):
         if not self._active:
             return
         
+        if not robotID:
+            raise InvalidRequest('Robot ID can not be an empty string.')
+        
         if robotID in self._robots:
             raise InvalidRequest('A robot with the same robotID '
                                  'has already been registered.')
@@ -99,27 +103,36 @@ class User(object):
     def destroyRobot(self, robotID):
         """ Destroy the robot with the given robotID of this user.
             
-            @param robotID: RobotID which is used to identify the robot
-                            which should be destroyed.
-            @type  robotID: str
+            @param robotID:     RobotID which is used to identify the robot
+                                which should be destroyed.
+            @type  robotID:     str
         """
-        if robotID not in self._robots:
+        try:
+            robot = self._robots.pop(robotID)
+        except KeyError:
             raise InvalidRequest('The robot has never been registered.')
         
-        robot = self._robots.pop(robotID)
         robot.delete()
     
-    def createContainer(self, cTag):
+    def createContainer(self, resp, cTag):
         """ Create a container with the given container tag of this user.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
             
             @param cTag:    Tag which will be used to identify the container
                             which should be created.
             @type  cTag:    str
         """
+        # TODO: What to do with the response
         if not self._active:
             return
         
-        if cTag in self._containers:
+        if not cTag:
+            raise InvalidRequest('Container tag can not be an empty string.')
+        
+        if cTag in self._environments:
             raise InvalidRequest('There exists already a container '
                                  'with the same tag.')
         
@@ -127,168 +140,210 @@ class User(object):
         ctrlID = self._manager.getNextContainerLocation()
         control = self._controlFactory.createContainerControl(self._userID,
                                                               commID, ctrlID)
-        self._containers[cTag] = ContainerProxy(self, cTag, commID, control)
+        self._environments[cTag] = ContainerProxy(self, cTag, commID, control)
     
-    def destroyContainer(self, cTag):
+    def destroyContainer(self, resp, cTag):
         """ Destroy the container with the given container tag of this user.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
             
             @param cTag:    Tag which is used to identify the container
                             which should be destroyed.
             @type  cTag:    str
         """
-        if cTag not in self._containers:
+        # TODO: What to do with the response
+        try:
+            container = self._environments.pop(cTag)
+        except KeyError:
             raise InvalidRequest('There exists no container '
                                  'with the given tag.')
         
-        container = self._containers.pop(cTag)
-        container.delete()
+        container.delete(resp)
         self._manager.delCommID(container.commID)
     
-    def addNode(self, cTag, nTag, pkg, exe, args, name, namespace):
+    def addNode(self, resp, cTag, nTag, pkg, exe, args, name, namespace):
         """ Add a node to the ROS environment matching the given parameters.
             
-            @param cTag:    Container tag which is used to identify the
-                            container in which the node should be added.
-            @type  cTag:    str
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
             
-            @param nTag:    Tag which is used to identify the ROS node which
-                            should added.
-            @type  nTag:    str
+            @param cTag:        Tag which is used to identify the ROS
+                                environment in which the node should be added.
+            @type  cTag:        str
+            
+            @param nTag:        Tag which is used to identify the ROS node
+                                which should added.
+            @type  nTag:        str
 
-            @param pkg:     Package name where the node can be found.
-            @type  pkg:     str
+            @param pkg:         Package name where the node can be found.
+            @type  pkg:         str
 
-            @param exe:     Name of executable which should be launched.
-            @type  exe:     str
+            @param exe:         Name of executable which should be launched.
+            @type  exe:         str
             
-            @param args:    Arguments which should be used for the launch.
-            @type  args:    str
+            @param args:        Arguments which should be used for the launch.
+            @type  args:        str
             
-            @param name:    Name of the node under which it should be launched.
-            @type  name:    str
+            @param name:        Name of the node under which it should be
+                                launched.
+            @type  name:        str
             
             @param namespace:   Namespace in which the node should be started
                                 in the environment.
             @type  namespace:   str
             
-            @raise:     InvalidRequest if the nodeName is not a valid ROS name.
-                        InvalidRequest if the container tag is not valid.
+            @raise:             errors.InvalidRequest if the nodeName is not a
+                                valid ROS name.
+                                errors.InvalidRequest if the container tag is
+                                not valid.
         """
         if not self._active:
             return
         
+        if not nTag:
+            raise InvalidRequest('Node tag can not be an empty string.')
+        
         try:
-            self._containers[cTag].addNode(nTag, pkg, exe, args, name,
-                                           namespace)
+            self._environments[cTag].addNode(nTag, pkg, exe, args, name,
+                                             namespace, resp)
         except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
+            raise InvalidRequest('ROS environment tag is invalid.')
     
-    def removeNode(self, cTag, nTag):
+    def removeNode(self, resp, cTag, nTag):
         """ Remove a node from the ROS environment matching the given tag.
             
-            @param cTag:    Container tag which is used to identify the
-                            container from which the node should be removed.
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
+            
+            @param cTag:    Tag which is used to identify the ROS
+                            environment from which the node should be removed.
             @type  cTag:    str
             
             @param nTag:    Tag which is used to identify the ROS node which
                             should removed.
             @type  nTag:    str
             
-            @raise:     InvalidRequest if the container tag is not valid.
+            @raise:         errors.InvalidRequest if the container tag is not
+                            valid.
         """
         if not self._active:
             return
         
         try:
-            self._containers[cTag].removeNode(nTag)
+            self._environments[cTag].removeNode(nTag, resp)
         except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
+            raise InvalidRequest('ROS environment tag is invalid.')
     
-    def addParameter(self, cTag, name, value, paramType):
+    def addParameter(self, resp, cTag, name, value, paramType):
         """ Add a parameter to the parameter server in the ROS environment
             matching the given tag.
             
-            @param cTag:    Container tag which is used to identify the
-                            container in which the parameter should be added.
-            @type  cTag:    str
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
             
-            @param name:    Name of the parameter which should be added.
-            @type  name:    str
+            @param cTag:        Tag which is used to identify the ROS
+                                environment in which the parameter should be
+                                added.
+            @type  cTag:        str
             
-            @param value:   Value of the parameter which should be added as a
-                            serialized JSON string.
-            @type  value:   str
+            @param name:        Name of the parameter which should be added.
+            @type  name:        str
+            
+            @param value:       Value of the parameter which should be added as
+                                a serialized JSON string.
+            @type  value:       str
             
             @param paramType:   Type of the parameter to add. Valid options
                                 are:
                                     int, str, float, bool, file
             @type  paramType:   str
             
-            @raise:     InvalidRequest if the name is not a valid ROS name.
-                        InvalidRequest if the container tag is not valid.
+            @raise:             errors.InvalidRequest if the name is not a
+                                valid ROS name.
+                                errors.InvalidRequest if the container tag is
+                                not valid.
         """
         if not self._active:
             return
         
+        if not name:
+            raise InvalidRequest('Parameter name can not be an empty string.')
+        
         try:
-            self._containers[cTag].addParameter(name, json.loads(value),
-                                                paramType)
+            self._environments[cTag].addParameter(name, json.loads(value),
+                                                  paramType, resp)
         except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
+            raise InvalidRequest('ROS environment tag is invalid.')
     
-    def removeParameter(self, cTag, name):
+    def removeParameter(self, resp, cTag, name):
         """ Remove a parameter from the parameter server in the ROS environment
             matching the given tag.
             
-            @param cTag:    Container tag which is used to identify the
-                            container from which the parameter should be
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
+            
+            @param cTag:    Tag which is used to identify the ROS
+                            environment from which the parameter should be
                             removed.
             @type  cTag:    str
             
             @param name:    Name of the parameter which should be removed.
             @type  name:    str
             
-            @raise:     InvalidRequest if the container tag is not valid.
+            @raise:         errors.InvalidRequest if the container tag is not
+                            valid.
         """
         if not self._active:
             return
         
         try:
-            self._containers[cTag].removeParameter(name)
+            self._environments[cTag].removeParameter(name, resp)
         except KeyError:
-            raise InvalidRequest('Container tag is invalid.')
+            raise InvalidRequest('ROS environment tag is invalid.')
     
-    def addInterface(self, iType, destTag, iTag, className, addr=None):
+    def addInterface(self, _, iType, destTag, iTag, className, addr=None):
         """ Add an interface for this user.
             
-            @param iType:   Type of the interface. Valid types are:
-                                serviceInterface, serviceProviderInterface,
-                                publisherInterface, subscriberInterface,
-                                serviceConverter, serviceProviderConverter,
-                                publisherConverter, subscriberConverter
-            @type  iType:   str
+            @param iType:       Type of the interface. Valid types are:
+                                    serviceInterface, serviceProviderInterface,
+                                    publisherInterface, subscriberInterface,
+                                    serviceConverter, serviceProviderConverter,
+                                    publisherConverter, subscriberConverter
+            @type  iType:       str
             
-            @param destTag: Tag which is used to identify the endpoint where
-                            the interface should be added; either
-                            containerTag or robotID.
-            @type  destTag: str
+            @param destTag:     Tag which is used to identify the endpoint
+                                where the interface should be added; either
+                                containerTag or robotID.
+            @type  destTag:     str
                             
-            @param iTag:    Tag which is used to identify the new interface.
-            @type  iTag:    str
+            @param iTag:        Tag which is used to identify the new
+                                interface.
+            @type  iTag:        str
             
             @param className:   Message type/Service type consisting of the
                                 package and the name of the message/service,
                                 i.e. 'std_msgs/Int32'.
             @type  className:   str
             
-            @param addr:    ROS name/address which the interface should use.
-                            Only necessary if it is of subtype xxxInterface.
-            @type  addr:    str
+            @param addr:        ROS name/address which the interface should
+                                use. Only necessary if it is of subtype
+                                xxxInterface.
+            @type  addr:        str
             
-            @raise:     InvalidRequest if the destTag is not valid.
+            @raise:             errors.InvalidRequest if the destTag is not
+                                valid.
         """
         if not self._active:
             return
+        
+        if not iTag:
+            raise InvalidRequest('Interface tag can not be an empty string.')
         
         if iTag in self._interfaces:
             raise InvalidRequest('There exists already an interface '
@@ -307,7 +362,7 @@ class User(object):
             addr = None
         elif iType.endswith('Interface'):
             try:
-                endpoint = self._containers[destTag]
+                endpoint = self._environments[destTag]
             except KeyError:
                 raise InvalidRequest('Container tag is invalid.')
             
@@ -318,28 +373,33 @@ class User(object):
                                  'invalid.'.format(iType))
         
         log.msg(msg.format(iTag, iType, addr, destTag))
-        Interface(endpoint, iTag, iType, className, addr)
+        InterfaceProxy(endpoint, iTag, iType, className, addr)
     
-    def removeInterface(self, iTag):
+    def removeInterface(self, resp, iTag):
         """ Remove an interface for this user.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
             
             @param iTag:    Tag which is used to identify the interface to
                             remove.
             @type  iTag:    str
             
-            @raise:     InvalidRequest if the interface tag is not valid.
+            @raise:         errors.InvalidRequest if the interface tag is not
+                            valid.
         """
         if not self._active:
             return
         
         try:
-            self._interfaces[iTag].delete()
+            self._interfaces[iTag].delete(resp)
         except KeyError:
             raise InvalidRequest('Interface tag is invalid.')
     
     def registerInterface(self, interface):
         """ Register a new interface with this user.
-                 (Callback from core.interface.Interface)
+                 (Callback from core.proxy.InterfaceProxy)
             
             @param interface:   New interface instance which should be
                                 registered.
@@ -355,7 +415,7 @@ class User(object):
     
     def unregisterInterface(self, interface):
         """ Unregister an interface with this user.
-                 (Callback from core.interface.Interface)
+                 (Callback from core.proxy.InterfaceProxy)
             
             @param interface:   Interface instance which should be
                                 unregistered.
@@ -369,8 +429,12 @@ class User(object):
         
         del self._interfaces[tag]
     
-    def createConnection(self, iTag1, iTag2):
+    def createConnection(self, resp, iTag1, iTag2):
         """ Create a connection between two interfaces.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
             
             @param iTagX:   The two tags of the two interfaces which should
                             be connected.
@@ -388,15 +452,23 @@ class User(object):
         if not interface1.validConnection(interface2):
             raise InvalidRequest('Can not connect the two interfaces.')
         
-        interface1.registerConnection(interface2)
-        interface2.registerConnection(interface1)
+        resp1 = Deferred()
+        resp2 = Deferred()
+        resp.chainDeferred(DeferredList((resp1, resp2)))
+        
+        interface1.registerConnection(interface2, resp1)
+        interface2.registerConnection(interface1, resp2)
         
         log.msg('Create connection from "({0}, {1})" to "({2}, {3})".'.format(
                     interface1.commID, interface1.tag,
                     interface2.commID, interface2.tag))
     
-    def destroyConnection(self, iTag1, iTag2):
+    def destroyConnection(self, resp, iTag1, iTag2):
         """ Destroy a connection between two interfaces.
+            
+            @param resp:    Deferred whose callbacks can be used to give a
+                            response to the request.
+            @type  resp:    twisted::Deferred
             
             @param iTagX:   The two tags of the two interfaces which should
                             be disconnected.
@@ -411,12 +483,29 @@ class User(object):
         except KeyError:
             raise InvalidRequest('Interface tag is invalid.')
         
-        interface1.unregisterConnection(interface2)
-        interface2.unregisterConnection(interface1)
+        resp1 = Deferred()
+        resp2 = Deferred()
+        resp.chainDeferred(DeferredList((resp1, resp2)))
+        
+        interface1.unregisterConnection(interface2, resp1)
+        interface2.unregisterConnection(interface1, resp2)
         
         log.msg('Destroy connection from "({0}, {1})" to "({2}, {3})".'.format(
                     interface1.commID, interface1.tag,
                     interface2.commID, interface2.tag))
+    
+    def processStatusUpdate(self, cTag, nTag, status):
+        """ 
+        """
+        container = self._environments.get(cTag, None)
+        
+        if not container:
+            return
+        
+        if nTag:
+            container.setNodeStatus(nTag, status)
+        else:
+            container.setContainerStatus(status)
     
     def delete(self):
         """ Removes the user.
@@ -428,7 +517,7 @@ class User(object):
         """
         self._active = False
         
-        cTags = self._containers.keys()
+        cTags = self._environments.keys()
         rIDs = self._robots.keys()
         
         for cTag in cTags:

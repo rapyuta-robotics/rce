@@ -36,6 +36,8 @@
 ###                                 ###
 #######################################
 
+DEBUG = True
+
 # Custom JSON/ROS messages converters
 CONVERTER_CLASSES = (
 	'util.converters.image.ImageConverter',

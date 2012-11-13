@@ -102,12 +102,16 @@ class IMessageProcessor(Interface):
     Valid values are registered in comm.types.
     """)
     
-    def processMessage(msg): #@NoSelf
+    def processMessage(msg, resp): #@NoSelf
         """ Process the message.
             
-            All references which are necessary to process the message have to
-            available as instance variables as the arguments of this method can
-            not be changed.
+            @param msg:     Received message which should be processed.
+            @type  msg:     Message
+            
+            @param resp:    Deferred which will send a status message when
+                            callback is used and a error message when errback
+                            is used as a response to the sender.
+            @type  resp:    twisted::Deferred
         """
 
 

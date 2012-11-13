@@ -50,6 +50,7 @@ except ImportError:
 
 # twisted specific imports
 from twisted.python.threadable import isInIOThread
+from twisted.internet.threads import deferToThread
 from autobahn.websocket import connectWS
 
 # Custom package imports
@@ -68,7 +69,7 @@ if interface.HAS_ROS:
     from util.loader import Loader
 
 
-_VERSION = '20121031'  # Client version
+_VERSION = '20121113'  # Client version
 
 
 class ConnectionError(Exception):
@@ -100,6 +101,8 @@ class _Connection(object):
         self._userID = userID
         self._robotID = robotID
         self._reactor = reactor
+        
+        self._argList = [('userID', self._userID), ('robotID', self._robotID)]
         
         self._conn = None
         self._connectedDeferred = None
@@ -141,6 +144,41 @@ class _Connection(object):
         
         self._conn = None
     
+    def _masterConnect(self, masterUrl):
+        """ Internally used method to connect to the Master manager.
+        """
+        print('Connect to Master Manager on: {0}'.format(masterUrl))
+        
+        url = '{0}?{1}'.format(
+                masterUrl, urlencode(self._argList+[('version', _VERSION)])
+            )
+        
+        try:
+            f = urlopen(url)
+        except HTTPError as e:
+            raise ConnectionError('HTTP Error {0}: {1} - '
+                                  '{2}'.format(e.getcode(), e.msg, e.read()))
+        
+        return json.loads(f.read())
+    
+    def _robotConnect(self, resp):
+        """ Internally used method to connect to the Robot manager.
+        """
+        # Read the response
+        url = resp['url']
+        current = resp.get('current', None)
+        
+        if current:
+            print("Warning: There is a newer client (version: '{0}') "
+                  'available.'.format(current))
+        
+        print('Connect to Robot Manager on: {0}'.format(url))
+        
+        # Make websocket connection to Robot Manager
+        args = urlencode(self._argList+[('key', resp['key'])])
+        factory = RCERobotFactory('{0}?{1}'.format(url, args), self)
+        connectWS(factory)
+    
     def connect(self, masterUrl, deferred):
         """ Connect to RCE.
             
@@ -153,36 +191,13 @@ class _Connection(object):
             
             @raise:     ConnectionError, if no connection could be established.
         """
-        print('Connect to Master Manager on: {0}'.format(masterUrl))
-        
-        # First make a HTTP request to the Master to get a temporary key
-        argList = [('userID', self._userID), ('robotID', self._robotID)]
-        url = '{0}?{1}'.format(masterUrl,
-                               urlencode(argList+[('version', _VERSION)]))
-        
-        try:
-            f = urlopen(url)
-        except HTTPError as e:
-            raise ConnectionError('HTTP Error {0}: {1} - '
-                                  '{2}'.format(e.getcode(), e.msg, e.read()))
-        
         self._connectedDeferred = deferred
         
-        # Read the response
-        resp = json.loads(f.read())
-        url = resp['url']
-        current = resp.get('current', None)
+        def eb(e):
+            print(e)
         
-        if current:
-            print("Warning: There is a newer client (version: '{0}') "
-                  'available.'.format(current))
-        
-        print('Connect to Robot Manager on: {0}'.format(url))
-        
-        # Make websocket connection to Robot Manager
-        url = '{0}?{1}'.format(url, urlencode(argList+[('key', resp['key'])]))
-        factory = RCERobotFactory(url, self)
-        connectWS(factory)
+        connection = deferToThread(self._masterConnect, masterUrl)
+        connection.addCallbacks(self._robotConnect, eb)
     
     def close(self):
         """ Disconnect from RCE.

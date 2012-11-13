@@ -183,31 +183,48 @@ class NodeManager(_ROSManagerBase):
         super(NodeManager, self).__init__(reactor)
         
     @_UserManagerBase.verifySingleUser
-    def addNode(self, userID, node):
+    def addNode(self, userID, node, resp):
         """ Add a Node to the ROS environment.
             
             @param node:    Node instance containing the necessary launch
                             information which should be added.
             @type  node:    core.command.NodeCommand
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
-        if node.tag in self._users[userID].nodes:
-            raise InvalidRequest('Node already exists.')
-        
-        nodeMonitor = NodeMonitor(self, userID, node)
-        nodeMonitor.start()
+        try:
+            if node.tag in self._users[userID].nodes:
+                raise InvalidRequest('Node already exists.')
+            
+            nodeMonitor = NodeMonitor(self, userID, node)
+            nodeMonitor.start()
+        except Exception as e:
+            resp.errback(e)
+        else:
+            resp.callback("Node '{0}' successfully added.".format(node.tag))
     
     @_UserManagerBase.verifySingleUser
-    def removeNode(self, userID, tag):
+    def removeNode(self, userID, tag, resp):
         """ Remove a Node from the ROS environment.
             
             @param tag:     Tag which is used to identify the node which should
                             be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         try:
             self._users[userID].nodes[tag].stop()
         except KeyError:
-            raise InvalidRequest('Node does not exist.')
+            resp.errback(InvalidRequest('Node does not exist.'))
+        except Exception as e:
+            resp.errback(e)
+        else:
+            resp.callback("Node '{0}' successfully removed.".format(tag))
     
     @_UserManagerBase.verifySingleUser
     def registerNode(self, userID, node):
@@ -219,6 +236,9 @@ class NodeManager(_ROSManagerBase):
             raise InvalidRequest('Node already exists.')
         
         nodes[node.tag] = node
+        
+        # Inform manager about change in process
+        ### TODO: Add code here
     
     @_UserManagerBase.verifySingleUser
     def unregisterNode(self, userID, node):
@@ -228,6 +248,9 @@ class NodeManager(_ROSManagerBase):
             del self._users[userID].nodes[node.tag]
         except KeyError:
             raise InvalidRequest('Node does not exist.')
+        
+        # Inform manager about change in process
+        ### TODO: Add code here
     
     def shutdown(self):
         """ Method is called when the manager is stopped.
@@ -254,83 +277,167 @@ class NodeManager(_ROSManagerBase):
 class NodeFwdManager(_UserManagerBase):
     """ Manager which handles the management of nodes.
     """
+    _STARTUP = 0
+    _RUNNING = 1
+    _STOPPING = 2
+    _STATUS_NAMES = ['starting up', 'running', 'stopping']
+    
     def __init__(self, reactor):
         super(NodeFwdManager, self).__init__(reactor)
     
     @_UserManagerBase.verifySingleUser
-    def addNode(self, userID, node):
+    def addNode(self, userID, node, resp):
         """ Add a Node to the ROS environment.
             
             @param node:    Node instance containing the necessary launch
                             information which should be added.
             @type  node:    core.command.NodeForwarderCommand
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         user = self._users[userID]
         
-        if not user.nodes:
-            user.nodes = RemoteNodeControl(userID, self._NODE_FWD_ID,
-                                           self._commManager)
+        if not user.nodeControl:
+            user.nodeControl = RemoteNodeControl(userID, self._NODE_FWD_ID,
+                                                 self._commManager)
         
-        user.nodes.addNode(node)
+        # Register node status for message filter
+        tag = node.tag
+        nodes = user.nodes
+        
+        if tag in nodes:
+            resp.errback(InternalError(
+                'Node (tag: "{0}") is already '
+                '{1}.'.format(self._STATUS_NAMES[nodes[tag]])
+            ))
+            return
+        else:
+            nodes[tag] = self._STARTUP
+            
+        user.nodeControl.addNode(node, resp)
     
     @_UserManagerBase.verifySingleUser
-    def removeNode(self, userID, tag):
+    def removeNode(self, userID, tag, resp):
         """ Remove a Node from the ROS environment.
             
             @param tag:     Tag which is used to identify the node which should
                             be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         user = self._users[userID]
         
         if not user.nodes:
-            user.nodes = RemoteNodeControl(userID, self._NODE_FWD_ID,
-                                           self._commManager)
+            user.nodeControl = RemoteNodeControl(userID, self._NODE_FWD_ID,
+                                                 self._commManager)
         
-        user.nodes.removeNode(tag)
+        # Register node status for message filter
+        nodes = user.nodes
+        
+        if nodes.get(tag, 10) >= self._STOPPING:
+            resp.errback(InternalError(
+                'Node (tag: "{0}") is already '
+                '{1}.'.format(self._STATUS_NAMES[nodes[tag]])
+            ))
+            return
+        else:
+            nodes[tag] = self._STOPPING
+        
+        user.nodeControl.removeNode(tag, resp)
+    
+    @_UserManagerBase.verifySingleUser
+    def nodeStarted(self, userID, tag):
+        """ # TODO: Add description
+        """
+        nodes = self._users[userID].nodes
+        
+        if nodes.get(tag, 10) >= self._RUNNING:
+            # TODO: What to do with an error here?
+            pass
+        else:
+            nodes[tag] = self._RUNNING
+        
+        # TODO: Send message to Master manager
+    
+    @_UserManagerBase.verifySingleUser
+    def nodeStopped(self, userID, tag):
+        """ # TODO: Add description
+        """
+        nodes = self._users[userID].nodes
+        
+        if tag not in nodes:
+            # TODO: What to do with an error here?
+            pass
+        else:
+            del nodes[tag]
+        
+        # TODO: Send message to Master manager
 
 
 class ParameterManager(_ROSManagerBase):
     """ Manager which handles the management of parameters.
     """
     @_UserManagerBase.verifySingleUser
-    def addParameter(self, userID, parameter):
+    def addParameter(self, userID, parameter, resp):
         """ Add a parameter. If the parameter already exists, the old will be
             removed and the new one kept.
 
             @param parameter:   Parameter which should be added.
             @type  parameter:   core.command._ParameterCommand
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         parameters = self._users[userID].parameters
         
         try:
-            parameter = self._PARAMETERS[parameter.IDENTIFIER](parameter, self)
-        except KeyError:
-            raise InvalidRequest('ParameterManager can not manage '
-                                 'requested component.')
-        
-        name = parameter.name
-        log.msg('Register parameter "{0}".'.format(name))
-        
-        if name in parameters:
-            parameters[name].remove()
-        
-        parameters[name] = parameter
+            try:
+                parameter = self._PARAMETERS[parameter.IDENTIFIER](parameter,
+                                                                   self)
+            except KeyError:
+                raise InvalidRequest('ParameterManager can not manage '
+                                     'requested component.')
+            
+            name = parameter.name
+            log.msg('Register parameter "{0}".'.format(name))
+            
+            if name in parameters:
+                parameters[name].remove()
+            
+            parameters[name] = parameter
+        except Exception as e:
+            resp.errback(e)
+        else:
+            resp.callback("Parameter '{0}' successfully added.".format(name))
     
     @_UserManagerBase.verifySingleUser
-    def removeParameter(self, userID, name):
+    def removeParameter(self, userID, name, resp):
         """ Remove a parameter.
             
             @param name:    Name which is used to identify the parameter which
                             should be removed.
             @type  name:    str
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         log.msg('Remove parameter "{0}".'.format(name))
         
         try:
             self._users[userID].pop(name).remove()
         except KeyError:
-            pass
+            resp.errback("Parameter '{0}' does not exist.".foramt(name))
+        except Exception as e:
+            resp.errback(e)
+        else:
+            resp.callback("Parameter '{0}' successfully removed.".format(name))
 
     def shutdown(self):
         for user in self._users.itervalues():
@@ -363,47 +470,61 @@ class _InterfaceManager(_ROSManagerBase):
         
         self._messenger = messenger
     
-    def addInterface(self, userID, interface):
+    def addInterface(self, userID, interface, resp):
         """ Add an interface.
 
             @param interface:   Interface which should be added.
             @type  interface:   core.command._EndpointInterfaceCommand
-
-            @raise:     errors.InternalError if there is already an interface
-                        with the same tag registered.
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         interfaces = self._users[userID].interfaces
         
         try:
-            monitor = self._INTERFACES[interface.IDENTIFIER](self, userID,
-                                                             interface)
-        except KeyError:
-            raise InvalidRequest('InterfaceManager can not manage '
-                                 'requested component.')
-        
-        tag = monitor.tag
-
-        if tag in interfaces:
-            raise InternalError('There is already an interface with '
-                                'the same tag.')
-        
-        log.msg('Register new interface "{0}".'.format(tag))
-        monitor.start()
-        interfaces[tag] = monitor
+            try:
+                monitor = self._INTERFACES[interface.IDENTIFIER](self, userID,
+                                                                 interface)
+            except KeyError:
+                raise InvalidRequest('InterfaceManager can not manage '
+                                     'requested component.')
+            
+            tag = monitor.tag
     
-    def removeInterface(self, userID, tag):
+            if tag in interfaces:
+                raise InternalError('There is already an interface with '
+                                    'the same tag.')
+            
+            log.msg('Register new interface "{0}".'.format(tag))
+            monitor.start()
+            interfaces[tag] = monitor
+        except Exception as e:
+            resp.errback(e)
+        else:
+            resp.callback("Interface '{0}' successfully added.".format(tag))
+    
+    def removeInterface(self, userID, tag, resp):
         """ Remove an interface.
             
             @param tag:     Tag which is used to identify the interface which
                             should be removed.
             @type  tag:     str
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         log.msg('Remove interface "{0}".'.format(tag))
         
         try:
             self._users[userID].interfaces.pop(tag).stop()
         except KeyError:
-            pass
+            resp.errback("Interface '{0}' does not exist.".format(tag))
+        except Exception as e:
+            resp.errback(e)
+        else:
+            resp.callback("Interface '{0}' successfully removed.".format(tag))
     
     def _getInterface(self, userID, tag):
         """ Internally used method to get an interface safely.
@@ -419,13 +540,17 @@ class _InterfaceManager(_ROSManagerBase):
         
         return interfaces[tag]
     
-    def modifyConnection(self, userID, conn):
+    def modifyConnection(self, userID, conn, resp):
         """ Modify a connection to another interface, i.e. either add one or
             remove an existing one.
             
             @param conn:    Connection description which should be used for
                             this operation.
             @type  conn:    core.command.ConnectionCommand
+            
+            @param resp:    Deferred whose callbacks are used to return a
+                            response to the Master Manager.
+            @type  resp:    twisted::Deferred
         """
         tag = conn.tag
         commID = conn.commID
@@ -436,11 +561,25 @@ class _InterfaceManager(_ROSManagerBase):
         if conn.add:
             log.msg('Register connection "({0}, {1})" for interface '
                     '"{2}" (user: "{3}").'.format(commID, target, tag, userID))
-            interface.addConnection(commID, conn.target)
+            
+            try:
+                interface.addConnection(commID, conn.target)
+            except Exception as e:
+                resp.errback(e)
+            else:
+                resp.callback("Connection between '{0}' and '{1}' successfully"
+                              ' added.'.format(tag, target))
         else:
             log.msg('Unregister connection "({0}, {1})" for interface '
                     '"{2}" (user: "{3}").'.format(commID, target, tag, userID))
-            self._getInterface(userID, tag).removeConnection(commID, target)
+            
+            try:
+                interface.removeConnection(commID, target)
+            except Exception as e:
+                resp.errback(e)
+            else:
+                resp.callback("Connection between '{0}' and '{1}' successfully"
+                              ' removed.'.format(tag, target))
     
     def send(self, userID, tag, commID, senderTag, msg, msgID):
         """ Send a message which was received from an endpoint to another
@@ -572,30 +711,34 @@ class RobotManager(_InterfaceManager):
         self._reqSender = sender
     
     @_UserManagerBase.verifyUser
-    def addRobot(self, userID, robot):
+    def addRobot(self, userID, robot, resp):
         """ # TODO: Add description
         """
         robotID = robot.robotID
         robots = self._users[userID].robots
         
         if robotID in robots:
-            raise InternalError('There already exists a robot with the robot '
-                                'ID "{0}".'.format(robotID))
+            resp.errback(InternalError('There already exists a robot with the '
+                                       'robot ID "{0}".'.format(robotID)))
+            return
         
         robots[robotID] = RobotManager._Robot(robot.key)
     
     @_UserManagerBase.verifyUser
-    def removeRobot(self, userID, tag):
+    def removeRobot(self, userID, tag, resp):
         """ # TODO: Add description
         """
         robots = self._users[userID].robots
         
         if tag not in robots:
-            raise InternalError('Tried to remove a robot which does not '
-                                'exist.')
+            resp.errback(InternalError('Tried to remove a robot which does '
+                                       'not exist.'))
+            return
         
         if robots[tag].conn:
-            raise InternalError('Connection to robot is not closed yet.')
+            resp.errback(InternalError('Connection to robot is not closed '
+                                       'yet.'))
+            return
         
         del robots[tag]
     
@@ -637,16 +780,30 @@ class RobotManager(_InterfaceManager):
             robot.timestamp = datetime.now()
             robot.conn = None
     
-    def sendRequest(self, request):
+    def sendRequest(self, userID, robotID, reqType, args):
         """ Send a request received from the robot to the master manager for
             processing.
                 (Called by client.handler.*)
             
-            @param request:     Request which should be sent to the master
-                                manager.
-            @type  request:     { 'user' : str, 'type' : str, 'args' : tuple }
+            @param userID:      ID of user who is responsible for request.
+            @type  userID:      str
+            
+            @param robotID:     ID of robot who is responsible for request.
+            @type  robotID:     str
+            
+            @param reqType:     Identifier of this request. For a list of
+                                options hava a look at module core.types.req.
+            @type  reqType:     str
+            
+            @param args:        Arguments which should be passed to the request
+                                handler in form of a tuple of strings.
+            @type  args:        (str)
         """
-        self._reqSender.processRequest(request)
+        cbArgs = (userID, robotID)
+        deferred = Deferred()
+        deferred.addCallbacks(self._reqCB, self._reqEB, cbArgs, {}, cbArgs, {})
+        
+        self._reqSender.processRequest(userID, reqType, args, deferred)
     
     @_UserManagerBase.verifyUser
     def receivedFromClient(self, userID, robotID, iTag, msgType, msgID, msg):
@@ -679,7 +836,7 @@ class RobotManager(_InterfaceManager):
         self._getInterface(userID, iTag).receive(msgType, msgID, msg)
     
     @_UserManagerBase.verifyUser
-    def sendToClient(self, userID, robotID, msg):
+    def sendToClient(self, userID, robotID, msg, msgType):
         """ Send a message to a client.
                 (Called by core.monitor._ConverterMonitor)
             
@@ -693,10 +850,13 @@ class RobotManager(_InterfaceManager):
             @param msg:         JSON compatible message which should be sent to
                                 the client/robot.
             @type  msg:         dict
+            
+            @param msgType:     The type of message which should be sent.
+            @type  msgType:     str
         """
         try:
             self._users[userID].robots[robotID].conn.sendMessage(
-                {'data' : msg, 'type' : clientTypes.DATA_MESSAGE})
+                {'data' : msg, 'type' : msgType})
         except KeyError:
             log.msg('Message could not be sent: The robot "{0}" is no longer '
                     'connected.'.format(robotID))
@@ -713,6 +873,19 @@ class RobotManager(_InterfaceManager):
         super(RobotManager, self).shutdown()
         
         self._reqSender = None
+    
+    def _reqCB(self, msg, userID, robotID):
+        """ Internally used method to provide a callback for a response
+            deferred belonging to a request message.
+        """
+        self.sendToClient(userID, robotID, msg, clientTypes.STATUS)
+    
+    def _reqEB(self, e, userID, robotID):
+        """ Internally used method to provide an errback for a response
+            deferred belonging to a request message.
+        """
+        self.sendToClient(userID, robotID, e.getErrorMessage(),
+                          clientTypes.ERROR)
     
     def __clean(self):
         """ Internally used method to remove unclaimed robot connections.
@@ -981,8 +1154,10 @@ class ContainerManager(_UserManagerBase):
             container.start(internal)
     
     @_UserManagerBase.verifyUser
-    def createContainer(self, userID, container):
+    def createContainer(self, resp, userID, container):
         """ Callback for message processor to stop a container.
+            
+            # TODO: Add description
         """
         if not self._relayID:
             raise InternalError('Can not use the container manager before the '
@@ -994,23 +1169,34 @@ class ContainerManager(_UserManagerBase):
         tag = container.tag
         commID = container.commID
         
-        deferred = Deferred()
-        
         def reportSuccess(contnr):
-            if self._pending.pop(tag):
-                containers[tag] = contnr
-                log.msg('Container successfully started.')
-            else:
-                self.reactor.callInThread(self._stopContainer, Deferred(), 
+            deferred = self._pending.pop(tag)
+                
+            msg = 'Container successfully started.'
+            log.msg(msg)
+            
+            if deferred:
+                self.reactor.callInThread(self._stopContainer, deferred, 
                                           contnr)
+            else:
+                containers[tag] = contnr
+            
+            return msg
         
         def reportFailure(msg):
-            log.msg('Container could not be started: {0}.'.format(msg))
+            del self._pending[tag]
+            
+            msg = 'Container could not be started: {0}.'.format(msg)
+            log.msg(msg)
+            
+            return msg
         
+        deferred = Deferred()
         deferred.addCallbacks(reportSuccess, reportFailure)
+        deferred.chainDeferred(resp)
         
         if tag not in containers:
-            self._pending[tag] = True
+            self._pending[tag] = None
             self.reactor.callInThread(self._startContainer, deferred, commID)
         elif tag in self._pending:
             deferred.errback('There is already a pending container registered '
@@ -1025,8 +1211,10 @@ class ContainerManager(_UserManagerBase):
         container.stop(deferred)
     
     @_UserManagerBase.verifyUser
-    def destroyContainer(self, userID, tag):
+    def destroyContainer(self, resp, userID, tag):
         """ Callback for message processor to stop a container.
+            
+            # TODO: Add description
         """
         containers = self._users[userID].containers
         
@@ -1038,13 +1226,17 @@ class ContainerManager(_UserManagerBase):
         
         deferred = Deferred()
         deferred.addCallbacks(reportSuccess, reportFailure)
+        deferred.chainDeferred(resp)
         
         if tag not in containers:
             if tag not in self._pending:
                 deferred.errback('There is no container registered under '
                                  'this tag.')
+            elif self._pending[tag]:
+                deferred.errback('Container is already registered for '
+                                 'removal.')
             else:
-                self._pending[tag] = False
+                self._pending[tag] = deferred
         else:
             self.reactor.callInThread(self._stopContainer, deferred, 
                                       containers.pop(tag))
@@ -1081,27 +1273,27 @@ class MasterManager(_ManagerBase):
     
     _REQUEST_MAP = {
         req.CREATE_CONTAINER :
-            lambda user, args: user.createContainer(*args),
+            lambda user, args, resp: user.createContainer(resp, *args),
         req.DESTROY_CONTAINER :
-            lambda user, args: user.destroyContainer(*args),
+            lambda user, args, resp: user.destroyContainer(resp, *args),
         req.DESTROY_ROBOT :
-            lambda user, args: user.destroyRobot(*args),
+            lambda user, args, resp: user.destroyRobot(*args),
         req.ADD_NODE :
-            lambda user, args: user.addNode(*args),
+            lambda user, args, resp: user.addNode(resp, *args),
         req.REMOVE_NODE :
-            lambda user, args: user.removeNode(*args),
+            lambda user, args, resp: user.removeNode(resp, *args),
         req.ADD_PARAMETER :
-            lambda user, args: user.addParameter(*args),
+            lambda user, args, resp: user.addParameter(resp, *args),
         req.REMOVE_PARAMETER :
-            lambda user, args: user.removeParameter(*args),
+            lambda user, args, resp: user.removeParameter(resp, *args),
         req.ADD_INTERFACE :
-            lambda user, args: user.addInterface(*args),
+            lambda user, args, resp: user.addInterface(resp, *args),
         req.REMOVE_INTERFACE :
-            lambda user, args: user.removeInterface(*args),
+            lambda user, args, resp: user.removeInterface(resp, *args),
         req.ADD_CONNECTION :
-            lambda user, args: user.createConnection(*args),
+            lambda user, args, resp: user.createConnection(resp, *args),
         req.REMOVE_CONNECTION :
-            lambda user, args: user.destroyConnection(*args)
+            lambda user, args, resp: user.destroyConnection(resp, *args)
                     }
     
     def __init__(self, reactor):
@@ -1173,29 +1365,44 @@ class MasterManager(_ManagerBase):
         
         return (key, ip)
     
-    def processRequest(self, request):
+    def processRequest(self, user, reqType, args, resp):
         """ Process a request received from a robot.
             
-            @param request:     Request which should be processed.
-            @type  request:     { 'user' : str, 'type' : str, 'args' : tuple }
+            @param user:        ID of user who is responsible for request.
+            @type  user:        str
+            
+            @param reqType:     Identifier of this request. For a list of
+                                options hava a look at module core.types.req.
+            @type  reqType:     str
+            
+            @param args:        Arguments which should be passed to the request
+                                handler in form of a tuple of strings.
+            @type  args:        (str)
+            
+            @param resp:        Deferred whose callbacks can be used to give a
+                                response to the request.
+            @type  resp:        twisted::Deferred
         """
-        try:
-            user = request['user']
-            identifier = request['type']
-            args = request['args']
-        except KeyError as e:
-            raise InvalidRequest('Request is missing the key "{0}".'.format(e))
-        
         try:
             user = self.__users[user]
         except KeyError:
-            raise InvalidRequest('User "{0}" does not exist.'.format(user))
+            resp.errback(InvalidRequest('User "{0}" does not '
+                                        'exist.'.format(user)))
+            return
         
-        if identifier not in self._REQUEST_MAP:
-            InvalidRequest('Received request type "{0}", which can not be '
-                           'handled.'.format(identifier))
+        if reqType not in self._REQUEST_MAP:
+            resp.errback(InvalidRequest('Received request type "{0}", which '
+                                        'can not be handled.'.format(
+                                            reqType)))
+            return
         
-        self._REQUEST_MAP[identifier](user, args)
+        try:
+            self._REQUEST_MAP[reqType](user, args, resp)
+        except (InvalidRequest, InternalError) as e:
+            resp.errback(e)
+        except Exception as e:
+            log.msg('Unhandled Error\n{0}',format(e.getTraceback()))
+        
     
     def getCommID(self):
         """ Get a new unique communication ID.
