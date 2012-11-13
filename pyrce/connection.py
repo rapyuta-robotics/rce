@@ -194,7 +194,7 @@ class _Connection(object):
         self._connectedDeferred = deferred
         
         def eb(e):
-            print(e)
+            print(e.getErrorMessage())
         
         connection = deferToThread(self._masterConnect, masterUrl)
         connection.addCallbacks(self._robotConnect, eb)

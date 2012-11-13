@@ -56,6 +56,42 @@ from core.command import NodeCommand, ContainerCommand, RobotCommand, \
     PublisherForwarderCommand, SubscriberForwarderCommand
 
 
+class _Status(object):
+    """ Base class for status objects.
+    """
+    INIT = 0
+    
+    def __init__(self):
+        """ Initialize the status instance.
+        """
+        self._status = self.INIT
+        self._failed = False
+    
+    @property
+    def status(self):
+        """ Status as integer. """
+        return self._status
+    
+    def setStatus(self, new, failed=False):
+        """ Advance the status to 'new'. If flag failed is set the status can
+            not be changed anymore.
+        """
+        if self._failed:
+            return
+        
+        if new <= self._status:
+            raise InternalError('Can not set status to a predecessor.')
+        
+        self._status = new
+        self._failed = failed
+    
+    def setFailed(self):
+        """ Set the current status to failed. If flag failed is set the status
+            can not be changed anymore.
+        """
+        self._failed = True
+
+
 class _InterfaceImpl(object):
     """ Contains interface type specific stuff.
     """
@@ -484,6 +520,15 @@ class _EndpointProxy(object):
         self._control = None
 
 
+class _RobotStatus(_Status):
+    """ Class which is used to keep track of the status of a robot.
+    """
+    CREATE = INIT = 0
+    CREATED = 1
+    DESTROY = 2
+    DESTROYED = 3
+
+
 class RobotProxy(_EndpointProxy):
     """ Class which is used to keep track of the status of a Robot.
     """
@@ -511,7 +556,21 @@ class RobotProxy(_EndpointProxy):
         
         super(RobotProxy, self).__init__(user, robotID, commID, control)
         
-        control.createRobot(RobotCommand(robotID, key))
+        self._status = _RobotStatus()
+        
+        resp = Deferred()
+        
+        def cb(msg):
+            self._status.setStatus(_RobotStatus.CREATED)
+            return msg
+        
+        def eb(e):
+            self._status.setFailed()
+            return e
+        
+        resp.addCallbacks(cb, eb)
+            
+        control.createRobot(RobotCommand(robotID, key), resp)
     
     def delete(self):
         """ Removes the proxy, i.e. the represented robot.
@@ -521,47 +580,32 @@ class RobotProxy(_EndpointProxy):
             
             Once this method is called this monitor can no longer be used.
         """
-        self._control.destroyRobot(self._uid)
+        self._status.setStatus(_RobotStatus.DESTROY)
+        
+        resp = Deferred()
+        
+        def cb(msg):
+            self._status.setStatus(_RobotStatus.DESTROYED)
+            return msg
+        
+        def eb(e):
+            self._status.setFailed()
+            return e
+        
+        resp.addCallbacks(cb, eb)
+        
+        self._control.destroyRobot(self._uid, resp)
         
         super(RobotProxy, self).delete()
         
 
-class _ProcessStatus(object):
+class _ProcessStatus(_Status):
     """ Class which is used to keep track of the status of a process.
     """
-    STARTUP = 0
+    STARTUP = INIT = 0
     RUNNING = 1
     STOPPING = 2
     STOPPED = 3
-    
-    def __init__(self):
-        """ Initialize the node proxy.
-        """
-        self._status = self.STARTUP
-        self._failed = False
-    
-    @property
-    def status(self):
-        """ Status of process as integer. """
-        return self._status
-    
-    def setStatus(self, new, failed=False):
-        """ Advance the status of the node to 'new'. If flag failed is set the
-            status can not be changed anymore.
-        """
-        if self._failed:
-            return
-        
-        if new <= self._status:
-            raise InternalError('Can not set status to a predecessor.')
-        
-        self._status = new
-        self._failed = failed
-    
-    def setFailed(self):
-        """ Set the current status to failed.
-        """
-        self._failed = True
 
 
 class _ROSEnvProxy(_EndpointProxy):
