@@ -273,7 +273,7 @@ class Deserializer(object):
             if n != _B_LEN:
                 raise SerializationError('There is not enough data left.')
             
-            return _B_STRUCT.unpack(data)[0]
+            return bool(_B_STRUCT.unpack(data)[0])
         except StructError as e:
             raise SerializationError('Data is not a valid boolean: '
                                      '{0}'.format(e))
