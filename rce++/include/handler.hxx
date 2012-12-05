@@ -30,8 +30,6 @@
 #ifndef HANDLER_HXX_
 #define HANDLER_HXX_
 
-#define DEBUG 1
-
 #ifdef DEBUG
 #include <iostream>
 #endif
@@ -56,21 +54,19 @@ class HandlerException: public std::runtime_error
 };
 
 template<class Client>
-class Handler_Base_impl: public websocketpp::client::handler
+class HandlerBase_impl: public websocketpp::client::handler
 {
 	private:
-		typedef typename Client::Config_type Config_type;
-		typedef typename Client::Object_type Object_type;
-		typedef typename Client::Value_type Value_type;
-		typedef typename Client::Message_type::Binary _Binary;
-		typedef std::pair<std::string, _Binary*> _Binary_in_type;
-		typedef std::vector<_Binary_in_type> _Binary_in_vector;
-		typedef std::pair<Object_type, _Binary_in_vector> _Pending_Message_type;
-		typedef std::vector<_Pending_Message_type> _Pending_Message_vector;
-		typedef std::vector<std::string> _Binary_out_vector;
+		typedef std::pair<typename Client::String, typename Client::Binary*>
+				_BinaryIn_t;
+		typedef std::vector<_BinaryIn_t> _BinaryInVector_t;
+		typedef std::pair<typename Client::Object, _BinaryInVector_t>
+				_PendingMessage_t;
+		typedef std::vector<_PendingMessage_t> _PendingMessageVector_t;
+		typedef std::vector<typename Client::String> _BinaryOutVector_t;
 
 	public:
-		Handler_Base_impl(const std::string &mngr) :
+		HandlerBase_impl(const typename Client::String &mngr) :
 			_manager(mngr)
 		{
 		}
@@ -80,100 +76,68 @@ class Handler_Base_impl: public websocketpp::client::handler
 		void on_open(connection_ptr con);
 		void on_close(connection_ptr con);
 
+		void send(const typename Client::String &type,
+				const typename Client::Object &data);
+
 	protected:
 		void processMessage(const std::string &msg);
-		void processMessage(const Object_type &msg);
+		void processMessage(const typename Client::Object &msg);
 		void processBinary(const std::string &msg);
 
-		virtual void processData(const Object_type &data);
-		virtual void processStatus(const std::string &data);
-		virtual void processError(const std::string &data);
-		virtual void processInit(const Object_type &data);
+		virtual void processData(const typename Client::Object &data);
+		virtual void processStatus(const typename Client::String &data);
+		virtual void processError(const typename Client::String &data);
+		virtual void processInit(const typename Client::Object &data);
 
 		virtual void onConnect();
-
-		void send(const std::string &type, const Object_type &data);
 
 	private:
 		void send(const std::string &message, bool binary);
 
 	protected:
-		const std::string _manager;
+		const typename Client::String _manager;
 
 	private:
 		connection_ptr _con; // Pointer to session object of websocketpp
-		_Pending_Message_vector _pending;
+		_PendingMessageVector_t _pending;
 };
 
 template<class Client>
-class Master_Handler_impl: public Handler_Base_impl<Client>
+class RobotHandler_impl: public HandlerBase_impl<Client>
 {
 	private:
-		typedef typename Client::Config_type Config_type;
-		typedef typename Client::Object_type Object_type;
-		typedef typename Client::Value_type Value_type;
-		typedef typename Client::Connect_Callback_type Connect_Callback_type;
+		typedef std::pair<std::string, typename Client::Interface_t* >
+				_InterfaceRef_t;
+		typedef std::vector<_InterfaceRef_t> _InterfaceRefVector_t;
 
 	public:
-		Master_Handler_impl(Client &client, const std::string &userID,
-				const std::string &robotID, const Connect_Callback_type &cb) :
-			Handler_Base_impl<Client> ("Master Manager"), _client(client),
-					_userID(userID), _robotID(robotID), _cb(cb)
+		RobotHandler_impl(const typename Client::String &robotID,
+				typename Client::ClientPtr_t client) :
+			HandlerBase_impl<Client> ("Robot Manager"), _robotID(robotID), _client(client)
 		{
 		}
 
-	private:
-		void onConnect();
-		void processInit(const Object_type &data);
+		void registerInterface(const typename Client::String &tag,
+				typename Client::Interface_t* interface);
+		void unregisterInterface(const typename Client::String &tag,
+				typename Client::Interface_t* interface);
 
-		Client &_client;
-
-		const std::string _userID;
-		const std::string _robotID;
-		const Connect_Callback_type cb;
-};
-
-template<class Client>
-class Robot_Handler_impl: public Handler_Base_impl<Client>
-{
-	public:
-		typedef typename Client::Interface_type Interface_type;
-		typedef typename Client::Object_type Object_type;
-		typedef typename Client::Value_type Value_type;
-
-	private:
-		typedef typename Client::Config_type Config_type;
-		typedef typename Client::Connect_Callback_type Connect_Callback_type;
-		typedef std::pair<std::string, Interface_type*> _Interface_ref;
-		typedef std::vector<_Interface_ref> _Interface_ref_vector;
-
-	public:
-		Robot_Handler_impl(const std::string &userID,
-				const std::string &robotID, const std::string &key,
-				const Connect_Callback_type &cb) :
-			Handler_Base_impl<Client> ("Robot Manager"), _userID(userID),
-					_robotID(robotID), _key(key), _cb(cb)
-		{
-		}
-
-		void registerInterface(const std::string &tag,
-				const Interface_type *interface);
-		void unregisterInterface(const std::string &tag,
-				const Interface_type *interface);
-
-		void send(const std::string &tag, const std::string &type,
-				const Value_type &msg, const std::string &msgID);
+		void send(const typename Client::String &type,
+				const typename Client::Object &data);
+		void send(const typename Client::String &tag,
+				const typename Client::String &type,
+				const typename Client::Value &msg,
+				const typename Client::String &msgID);
 
 	private:
 		void onConnect();
-		void processData(const Object_type &data);
 
-		const std::string _userID;
-		const std::string _robotID;
-		const std::string _key;
-		const Connect_Callback_type _cb;
+		void processData(const typename Client::Object &data);
 
-		_Interface_ref_vector _interfaces;
+		const typename Client::String _robotID;
+		typename Client::ClientPtr_t _client;
+
+		_InterfaceRefVector_t _interfaces;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -183,7 +147,7 @@ class Robot_Handler_impl: public Handler_Base_impl<Client>
 ///////////////////////////////////////////////////////////////////////////////
 ////	Handler_Base_impl
 template<class Client>
-void Handler_Base_impl<Client>::on_message(connection_ptr con, message_ptr msg)
+void HandlerBase_impl<Client>::on_message(connection_ptr con, message_ptr msg)
 {
 	switch (msg->get_opcode())
 	{
@@ -202,14 +166,14 @@ void Handler_Base_impl<Client>::on_message(connection_ptr con, message_ptr msg)
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::on_fail(connection_ptr con)
+void HandlerBase_impl<Client>::on_fail(connection_ptr con)
 {
 	throw HandlerException("Connection to " + _manager + " failed: "
 			+ con->get_fail_reason());
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::on_open(connection_ptr con)
+void HandlerBase_impl<Client>::on_open(connection_ptr con)
 {
 	if (_con != NULL)
 		throw HandlerException(
@@ -221,7 +185,7 @@ void Handler_Base_impl<Client>::on_open(connection_ptr con)
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::on_close(connection_ptr con)
+void HandlerBase_impl<Client>::on_close(connection_ptr con)
 {
 	if (_con == NULL)
 		throw HandlerException(
@@ -231,10 +195,10 @@ void Handler_Base_impl<Client>::on_close(connection_ptr con)
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::processMessage(const std::string &msg)
+void HandlerBase_impl<Client>::processMessage(const std::string &msg)
 {
-	Value_type messageValue;
-	_Binary_in_vector binaries;
+	typename Client::Value messageValue;
+	_BinaryInVector_t binaries;
 
 	json_spirit::read_string_or_throw(msg, messageValue, binaries);
 
@@ -242,16 +206,16 @@ void Handler_Base_impl<Client>::processMessage(const std::string &msg)
 		throw HandlerException("Received a message from " + _manager
 				+ " with invalid JSON format.");
 
-	Object_type message = messageValue.get_obj();
+	typename Client::Object message = messageValue.get_obj();
 
 	if (!binaries.empty())
-		_pending.push_back(_Pending_Message_type(message, binaries));
+		_pending.push_back(_PendingMessage_t(message, binaries));
 	else
 		this->processMessage(message);
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::processBinary(const std::string &msg)
+void HandlerBase_impl<Client>::processBinary(const std::string &msg)
 {
 	if (msg.length() < 32)
 		throw HandlerException("Received a binary message with invalid header.");
@@ -259,8 +223,8 @@ void Handler_Base_impl<Client>::processBinary(const std::string &msg)
 	std::string uid = msg.substr(0, 32);
 	std::string binary = msg.substr(32);
 
-	typename _Pending_Message_vector::iterator msgIt;
-	typename _Binary_in_vector::iterator binIt;
+	typename _PendingMessageVector_t::iterator msgIt;
+	typename _BinaryInVector_t::iterator binIt;
 
 	for (msgIt = _pending.begin(); msgIt != _pending.end(); ++msgIt)
 		for (binIt = msgIt->second.begin(); binIt != msgIt->second.end(); ++binIt)
@@ -285,18 +249,19 @@ void Handler_Base_impl<Client>::processBinary(const std::string &msg)
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::processMessage(const Object_type &msg)
+void HandlerBase_impl<Client>::processMessage(
+		const typename Client::Object &msg)
 {
-	Value_type type = json_spirit::find_value<Object_type, std::string>(msg,
-			"type");
-	Value_type data = json_spirit::find_value<Object_type, std::string>(msg,
-			"data");
+	typename Client::Value type = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(msg, "type");
+	typename Client::Value data = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(msg, "data");
 
 	if (type.type() != json_spirit::str_type)
 		throw HandlerException("Received a message from " + _manager
 				+ " with invalid type for field 'type'.");
 
-	std::string dataType = type.get_str();
+	typename Client::String dataType = type.get_str();
 
 	if (dataType == RCE_DATA_MESSAGE)
 	{
@@ -336,29 +301,30 @@ void Handler_Base_impl<Client>::processMessage(const Object_type &msg)
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::processData(const Object_type &data)
+void HandlerBase_impl<Client>::processData(const typename Client::Object &data)
 {
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::processStatus(const std::string &data)
-{
-	std::cout << data << std::endl;
-}
-
-template<class Client>
-void Handler_Base_impl<Client>::processError(const std::string &data)
+void HandlerBase_impl<Client>::processStatus(
+		const typename Client::String &data)
 {
 	std::cout << data << std::endl;
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::processInit(const Object_type &data)
+void HandlerBase_impl<Client>::processError(const typename Client::String &data)
+{
+	std::cout << data << std::endl;
+}
+
+template<class Client>
+void HandlerBase_impl<Client>::processInit(const typename Client::Object &data)
 {
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::onConnect()
+void HandlerBase_impl<Client>::onConnect()
 {
 #ifdef DEBUG
 	std::cout << "Connection established." << std::endl;
@@ -366,25 +332,25 @@ void Handler_Base_impl<Client>::onConnect()
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::send(const std::string &type,
-		const Object_type &data)
+void HandlerBase_impl<Client>::send(const typename Client::String &type,
+		const typename Client::Object &data)
 {
-	Object_type message;
-	Config_type::add(message, "type", type);
-	Config_type::add(message, "data", data);
+	typename Client::Object message;
+	Client::Config_t::add(message, "type", type);
+	Client::Config_t::add(message, "data", data);
 
-	_Binary_out_vector binaries = _Binary_out_vector();
-	_Binary_out_vector::iterator it;
+	_BinaryOutVector_t binaries = _BinaryOutVector_t();
+	typename _BinaryOutVector_t::iterator it;
 
-	this->send(json_spirit::write_string(Value_type(message), binaries, false),
-			false);
+	this->send(json_spirit::write_string(typename Client::Value(message),
+			binaries, false), false);
 
 	for (it = binaries.begin(); it != binaries.end(); ++it)
 		this->send(*it, true);
 }
 
 template<class Client>
-void Handler_Base_impl<Client>::send(const std::string &message, bool binary)
+void HandlerBase_impl<Client>::send(const std::string &message, bool binary)
 {
 #ifdef DEBUG
 	if (!binary)
@@ -402,70 +368,28 @@ void Handler_Base_impl<Client>::send(const std::string &message, bool binary)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-////	Master_Handler_impl
-template<class Client>
-void Master_Handler_impl<Client>::onConnect()
-{
-	Object_type initMsg;
-	Config_type::add(initMsg, "userID", _userID);
-	Config_type::add(initMsg, "robotID", _robotID);
-
-	Handler_Base_impl<Client>::send(RCE_INIT, initMsg);
-}
-
-template<class Client>
-void Master_Handler_impl<Client>::processInit(const Object_type &msg)
-{
-	Value_type key = json_spirit::find_value<Object_type, std::string>(msg,
-			"key");
-	Value_type url = json_spirit::find_value<Object_type, std::string>(msg,
-			"url");
-
-	if (key.type() != json_spirit::str_type || url.type()
-			!= json_spirit::str_type)
-		throw HandlerException("Received a message " + this->_manager
-				+ " with invalid format.");
-
-	_client._handler = typename Client::Robot_ptr(
-			new typename Client::Robot_type(_userID, _robotID, key.get_str(),
-					_cb));
-	typename Client::_Handler_ptr robotHandler(_client._handler);
-	_client._endpoint = typename Client::_Client_ptr(
-			new typename Client::_Client_type(robotHandler));
-
-#ifdef DEBUG
-	_client._endpoint->alog().set_level(websocketpp::log::alevel::ALL);
-	_client._endpoint->elog().set_level(websocketpp::log::elevel::ALL);
-#else
-	_client._endpoint->alog().unset_level(websocketpp::log::alevel::ALL);
-	_client._endpoint->elog().unset_level(websocketpp::log::elevel::ALL);
-#endif
-
-	_client._endpoint->connect(url.get_str());
-	_client._endpoint->run();
-}
-
-///////////////////////////////////////////////////////////////////////////////
 ////	Robot_Handler_impl
 template<class Client>
-void Robot_Handler_impl<Client>::registerInterface(const std::string &tag,
-		const Interface_type *interface)
+void RobotHandler_impl<Client>::registerInterface(
+		const typename Client::String &tag,
+		typename Client::Interface_t* interface)
 {
-	typename _Interface_ref_vector::iterator it;
+	typename _InterfaceRefVector_t::iterator it;
 
 	for (it = _interfaces.begin(); it < _interfaces.end(); it++)
 		if (it->first == tag && it->second == interface)
 			throw HandlerException(
 					"Can not register Interface. It is already registered.");
 
-	_interfaces.push_back(_Interface_ref(tag, interface));
+	_interfaces.push_back(_InterfaceRef_t(tag, interface));
 }
 
 template<class Client>
-void Robot_Handler_impl<Client>::unregisterInterface(const std::string &tag,
-		const Interface_type *interface)
+void RobotHandler_impl<Client>::unregisterInterface(
+		const typename Client::String &tag,
+		typename Client::Interface_t* interface)
 {
-	typename _Interface_ref_vector::iterator it;
+	typename _InterfaceRefVector_t::iterator it;
 
 	for (it = _interfaces.begin(); it < _interfaces.end(); it++)
 		if (it->first == tag && it->second == interface)
@@ -479,63 +403,85 @@ void Robot_Handler_impl<Client>::unregisterInterface(const std::string &tag,
 }
 
 template<class Client>
-void Robot_Handler_impl<Client>::send(const std::string &tag,
-		const std::string &type, const Value_type &msg,
-		const std::string &msgID)
+void RobotHandler_impl<Client>::send(const typename Client::String &type,
+		const typename Client::Object &data)
 {
-	Object_type data;
-	Config_type::add(data, "dest", tag);
-	Config_type::add(data, "orig", _robotID);
-	Config_type::add(data, "type", type);
-	Config_type::add(data, "msgID", msgID);
-	Config_type::add(data, "msg", msg);
-
-	Handler_Base_impl<Client>::send(RCE_DATA_MESSAGE, data);
+	HandlerBase_impl<Client>::send(type, data);
 }
 
 template<class Client>
-void Robot_Handler_impl<Client>::onConnect()
+void RobotHandler_impl<Client>::send(const typename Client::String &tag,
+		const typename Client::String &type, const typename Client::Value &msg,
+		const typename Client::String &msgID)
 {
-	Object_type initMsg;
-	Config_type::add(initMsg, "userID", _userID);
-	Config_type::add(initMsg, "robotID", _robotID);
-	Config_type::add(initMsg, "key", _key);
+	typename Client::Object data;
+	Client::Config_t::add(data, "dest", tag);
+	Client::Config_t::add(data, "orig", _robotID);
+	Client::Config_t::add(data, "type", type);
+	Client::Config_t::add(data, "msgID", msgID);
+	Client::Config_t::add(data, "msg", msg);
 
-	Handler_Base_impl<Client>::send(RCE_INIT, initMsg);
+	send(RCE_DATA_MESSAGE, data);
 }
 
 template<class Client>
-void Robot_Handler_impl<Client>::processData(const Object_type &data)
+void RobotHandler_impl<Client>::processData(const typename Client::Object &data)
 {
-	Value_type orig = json_spirit::find_value<Object_type, std::string>(data,
-			"orig");
-	Value_type dest = json_spirit::find_value<Object_type, std::string>(data,
-			"dest");
-	Value_type type = json_spirit::find_value<Object_type, std::string>(data,
-			"type");
-	Value_type msgID = json_spirit::find_value<Object_type, std::string>(data,
-			"msgID");
-	Value_type msg = json_spirit::find_value<Object_type, std::string>(data,
-			"msg");
+	typename Client::Value orig = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(data, "orig");
+	typename Client::Value dest = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(data, "dest");
+	typename Client::Value type = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(data, "type");
+	typename Client::Value msgID = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(data, "msgID");
+	typename Client::Value msg = json_spirit::find_value<
+			typename Client::Object, typename Client::String>(data, "msg");
 
+#ifdef DEBUG
+	if (orig.type() != json_spirit::str_type)
+		std::cout << "Message origin is not a valid string." << std::endl;
+		
+	if (dest.type() != json_spirit::str_type)
+		std::cout << "Message destination is not a valid string." << std::endl;
+	
+	if (type.type() != json_spirit::str_type)
+		std::cout << "Message type is not a valid string." << std::endl;
+	
+	if (msgID.type() != json_spirit::str_type)
+		std::cout << "Message ID is not a valid string." << std::endl;
+	
+	if (msg.type() != json_spirit::obj_type && msg.type() != json_spirit::bin_type)
+		std::cout << "Message is neither a valid binary nor a valid object." << std::endl;
+#endif
+	
 	if (orig.type() != json_spirit::str_type || dest.type()
 			!= json_spirit::str_type || type.type() != json_spirit::str_type
 			|| msgID.type() != json_spirit::str_type || (msg.type()
-			!= json_spirit::obj_type || msg.type() != json_spirit::bin_type))
+			!= json_spirit::obj_type && msg.type() != json_spirit::bin_type))
 		throw HandlerException(
 				"Received a message from Robot Manager with invalid format.");
-
+		
 	if (dest.get_str() != _robotID)
 		throw HandlerException(
 				"Received a message from Robot Manager where the robot ID does not match.");
 
-	std::string tag = orig.get_str();
+	typename Client::String tag = orig.get_str();
 
-	typename _Interface_ref_vector::iterator it;
+	typename _InterfaceRefVector_t::iterator it;
 
 	for (it = _interfaces.begin(); it < _interfaces.end(); it++)
 		if (it->first == tag)
 			it->second->receive(type.get_str(), msg, msgID.get_str());
+}
+
+template<class Client>
+void RobotHandler_impl<Client>::onConnect()
+{
+	HandlerBase_impl<Client>::onConnect();
+
+	if (_client.get())
+		_client->connected();
 }
 
 } /* namespace rce */
