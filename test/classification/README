@@ -4,6 +4,19 @@ Classification
 Contains configuration files for furniture classification. furniture_classification package must be installed. You can find instalation instructions on http://www.ros.org/wiki/furniture_classification
 
 To run it:
-1. Go to rce/pyrce filder
-2. run ./ros.py ../test/classification/classification.cfg
-3. publish pointcloud from your local machine rosrun pcl_ros pcd_to_pointcloud $(find furniture_classification)/data/test/scenes/chairAndDesk1.pcd 0
+1. Go to rce/pyrce folder
+2. run 
+
+./ros.py ../test/classification/classification.cfg
+
+3. If you want to use one of provided test scenes publish pointcloud from your local machine 
+
+rosrun pcl_ros pcd_to_pointcloud $(find furniture_classification)/data/test/scenes/chairAndDesk1.pcd 0
+
+4. If you want to try live classification run
+
+roslaunch furniture_classification converted_pointclouds.launch
+
+5. To visualize results go to furniture_classification directory and run 
+
+rosrun rviz rviz -d view_nodes.vcg
