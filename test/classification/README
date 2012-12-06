@@ -1,7 +1,7 @@
 Classification
 ====
 
-Contains configuration files for furniture classification. furniture_classification package must be installed. You can find instalation instructions on http://www.ros.org/wiki/furniture_classification
+Contains configuration files for furniture classification. furniture_classification package must be installed. You can find installation instructions on http://www.ros.org/wiki/furniture_classification
 
 To run it:
 1. Go to rce/pyrce folder
