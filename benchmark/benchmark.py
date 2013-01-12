@@ -187,8 +187,8 @@ class LocalTopicTest(LocalTest):
 
 class Benchmark(object):
     TYPES = [('service', 'red'), ('topic', 'blue')]
-    REMOTE_TESTS = [('N-to-N', ':', 'stringEcho'), ('C-to-C-1', '--', 'local'),
-                    ('C-to-C-2', '-', 'remote')]
+    REMOTE_TESTS = [('N-to-N', ':', 'stringEcho'), ('C-to-C-1', '--', 'local')]#,
+                    #('C-to-C-2', '-', 'remote')]
     LOCAL_TEST = ('R-to-C', '-.', '')
     
     

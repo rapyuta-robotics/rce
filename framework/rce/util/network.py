@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rcemake
+#     network.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -30,16 +30,28 @@
 #     
 #     
 
-# Check if the script is run as super-user
-if [ $(id -u) -ne 0 ]; then
-	echo "rcemake has to be run as super-user."
-	exit
-fi
+import socket
+import fcntl
+import struct
 
-ROOTFS=$(./setupRCEmake.py up)
-
-if [ $? -eq 0 ]; then
-    chroot $ROOTFS /bin/bash
-fi
-
-./setupRCEmake.py down
+def getIP(ifname):
+    """ Get the IP address associated with a network interface.
+        
+        Based on:
+            http://code.activestate.com/recipes/439094-get-the-ip-address-
+            associated-with-a-network-inter/
+            
+            PSF License (Python Software Foundation)
+        
+        @param ifname:      Name of the network interface.
+        @type  finame:      str
+        
+        @return:            IP address as a string, i.e. x.x.x.x
+        @rtype:             str
+    """
+    s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])

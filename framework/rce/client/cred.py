@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rcemake
+#     cred.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -12,7 +12,7 @@
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
 #     
-#     Copyright 2012 RoboEarth
+#     Copyright 2013 RoboEarth
 #     
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -30,16 +30,34 @@
 #     
 #     
 
-# Check if the script is run as super-user
-if [ $(id -u) -ne 0 ]; then
-	echo "rcemake has to be run as super-user."
-	exit
-fi
+# zope specific imports
+from zope.interface import implements
 
-ROOTFS=$(./setupRCEmake.py up)
+# Custom imports
+from rce.client.interfaces import IRobotCredentials
 
-if [ $? -eq 0 ]; then
-    chroot $ROOTFS /bin/bash
-fi
 
-./setupRCEmake.py down
+class RobotCredentials(object):
+    """
+    """
+    implements(IRobotCredentials)
+    
+    def __init__(self, userID, robotID, key):
+        """
+        """
+        self._userID = userID
+        self._robotID = robotID
+        self._key = key
+    
+    @property
+    def userID(self):
+        """ ... """
+        return self._userID
+    
+    @property
+    def robotID(self):
+        """ ... """
+        return self._robotID
+    
+    def checkKey(self, key):
+        return self._key == key

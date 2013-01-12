@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rcemake
+#     name.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -30,16 +30,39 @@
 #     
 #     
 
-# Check if the script is run as super-user
-if [ $(id -u) -ne 0 ]; then
-	echo "rcemake has to be run as super-user."
-	exit
-fi
+# Python specific imports
+import re
 
-ROOTFS=$(./setupRCEmake.py up)
 
-if [ $? -eq 0 ]; then
-    chroot $ROOTFS /bin/bash
-fi
+# ASCII char followed by (alphanumeric, _)
+_NAME_RE = re.compile('^[A-Za-z][\w_]*$') 
 
-./setupRCEmake.py down
+
+def isLegalName(name):
+    """ Check if the name is legal, i.e. if it starts with an ASCII char
+        followed by alphanumeric chars or '_'.
+        
+        @param name:    Name which should be checked.
+        @type  name:    str
+        
+        @return:        True if the name is legal.
+        @rtype:         bool
+    """
+    if not name:
+        return False
+    
+    m = _NAME_RE.match(name)
+    return m is not None and m.group(0) == name
+
+
+def checkName(name):
+    """ Check if the name is legal, i.e. if it starts with an ASCII char
+        followed by alphanumeric chars or '_'.
+        
+        @param name:    Name which should be checked.
+        @type  name:    str
+        
+        @raise:         ValueError if the name is not legal.
+    """
+    if not isLegalName(name):
+        raise ValueError("'{0}' is not a legal name.".format(name))

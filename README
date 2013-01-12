@@ -9,7 +9,8 @@ Content of git respository
     (needs revision)
 
 - benchmark:
-    Client-side scripts, data, and plots for a simple communication benchmark.   
+    Client-side scripts, data, and plots for a simple communication benchmark. 
+    outdated  
 
 - test:
     ROS packages which can be used with the framework. Contains server-side
@@ -21,9 +22,9 @@ Content of git respository
 
 - jsrce:
     HTML/Javascript client.
-    Basic functionalities available, but needs revision
+    outdated
 
 - rce++:
     C++ client for the RoboEarth Cloud Engine.
-    (not available yet; still under construction)
+    outdated
 

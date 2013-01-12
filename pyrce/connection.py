@@ -57,8 +57,8 @@ from autobahn.websocket import connectWS
 import sys                          ### TODO:
 sys.path.append('../framework')     ### TEMPORARY FIX
 
-from client import types
-from client.assembler import recursiveBinarySearch
+from rce.client import types
+from rce.client.assembler import recursiveBinarySearch
 
 # Custom local imports
 from comm import RCERobotFactory
@@ -66,10 +66,10 @@ import interface
 
 # Custom package imports
 if interface.HAS_ROS:
-    from util.loader import Loader
+    from rce.util.loader import Loader
 
 
-_VERSION = '20121113'  # Client version
+_VERSION = '20130101'  # Client version
 
 
 class ConnectionError(Exception):
@@ -83,7 +83,7 @@ class _Connection(object):
     """
     INTERFACE_MAP = {}
     
-    def __init__(self, userID, robotID, reactor):
+    def __init__(self, userID, robotID, password, reactor):
         """ Initialize the Connection.
             
             @param userID:      User ID which will be used to authenticate the
@@ -94,12 +94,17 @@ class _Connection(object):
                                 connection.
             @type  robotID:     str
             
+            @param password:    Password which will be used to authenticate the
+                                connection.
+            @type  password:    str
+            
             @param reactor:     Reference to reactor which is used for this
                                 connection.
             @type  reactor:     twisted::reactor
         """
         self._userID = userID
         self._robotID = robotID
+        self._password = password
         self._reactor = reactor
         
         self._argList = [('userID', self._userID), ('robotID', self._robotID)]
@@ -143,21 +148,28 @@ class _Connection(object):
             raise ConnectionError('This connection is not registered.')
         
         self._conn = None
+        print('Connection closed.')
+        
+        self._interfaces = {}
     
     def _masterConnect(self, masterUrl):
         """ Internally used method to connect to the Master manager.
         """
         print('Connect to Master Manager on: {0}'.format(masterUrl))
         
-        url = '{0}?{1}'.format(
-                masterUrl, urlencode(self._argList+[('version', _VERSION)])
-            )
+        args = self._argList+[('password', self._password),
+                              ('version', _VERSION)]
         
         try:
-            f = urlopen(url)
+            f = urlopen('{0}?{1}'.format(masterUrl, urlencode(args)))
         except HTTPError as e:
-            raise ConnectionError('HTTP Error {0}: {1} - '
-                                  '{2}'.format(e.getcode(), e.msg, e.read()))
+            msg = e.read()
+            
+            if msg:
+                msg = ' - {0}'.format(msg)
+            
+            raise ConnectionError('HTTP Error {0}: '
+                                  '{1}{2}'.format(e.getcode(), e.msg, msg))
         
         return json.loads(f.read())
     
@@ -204,9 +216,6 @@ class _Connection(object):
         """
         if self._conn:
             self._conn.dropConnection()
-        
-        self._subscribers = {}
-        print('Connection closed.')
     
     def sendMessage(self, dest, msgType, msg, msgID):
         """ Callback for Interfaces.
@@ -229,8 +238,7 @@ class _Connection(object):
             @type  msgID:       str
         """
         self._sendMessage({'type':types.DATA_MESSAGE,
-                           'data':{'dest':dest,
-                                   'orig':self._robotID,
+                           'data':{'iTag':dest,
                                    'type':msgType,
                                    'msgID':msgID,
                                    'msg':msg}})
@@ -344,7 +352,7 @@ class _Connection(object):
                            'data':{'removeNodes':[{'containerTag':cTag,
                                                    'nodeTag':nTag}]}})
     
-    def addParameter(self, cTag, name, paramType, value):
+    def addParameter(self, cTag, name, value):
         """ Add a parameter.
             
             @param cTag:        Tag of container in which the parameter should
@@ -356,20 +364,6 @@ class _Connection(object):
                                 environment.
             @type  name:        str
             
-            @param paramType:   String describing the type of the parameter.
-                                Valid base types are:
-                                    int, str, float, bool
-                                
-                                These base types can be used as a single type
-                                or can be combined to an array of base types,
-                                e.g.
-                                    [int, str, str]
-                                
-                                Additionally, the special type file is defined
-                                which will upload a file and add the path to
-                                the file to the parameter server.
-            @type  paramType:   str
-            
             @param value:       Value which should be added. Has to match the
                                 given @param paramType.
         """
@@ -378,9 +372,7 @@ class _Connection(object):
         
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
                            'data':{'setParam':[{'containerTag':cTag,
-                                                'name':name,
-                                                'value':value,
-                                                'paramType':paramType}]}})
+                                                'name':name, 'value':value}]}})
     
     def removeParameter(self, cTag, name):
         """ Remove a parameter.
@@ -428,9 +420,9 @@ class _Connection(object):
         """
         print('Request addition of interface "{0}" of type "{1}" to endpoint '
               '"{2}".'.format(iTag, iType, eTag))
-        if iType not in ['ServiceInterface', 'ServiceProviderInterface',
+        if iType not in ['ServiceClientInterface', 'ServiceProviderInterface',
                          'PublisherInterface', 'SubscriberInterface',
-                         'ServiceConverter', 'ServiceProviderConverter',
+                         'ServiceClientConverter', 'ServiceProviderConverter',
                          'PublisherConverter', 'SubscriberConverter']:
             raise TypeError('Interface type is not valid.')
         
@@ -551,12 +543,8 @@ class _Connection(object):
         msg = dataMsg['msg']
         msgID = dataMsg['msgID']
         
-        if dataMsg['dest'] != self._robotID:
-            print('Received message which was not for this connection.')
-            return
-        
         try:
-            interfaces = self._interfaces[dataMsg['orig']].copy()
+            interfaces = self._interfaces[dataMsg['iTag']].copy()
         except (KeyError, weakref.ReferenceError):
             interfaces = []
         

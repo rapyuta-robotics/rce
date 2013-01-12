@@ -30,14 +30,20 @@
 #     
 #     
 
-# Python specific imports
+# Before we start to import everything check if the script can be executed
 import os
+
+if os.getuid() != 0:
+    print('setupRCEmake has to be run as super user.')
+    exit(1)
+
+# Python specific imports
 import sys
 import subprocess
 
 # Custom imports
 import settings
-from util import path as pathUtil
+from util.path import processPackagePaths
 
 
 _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']
@@ -45,11 +51,11 @@ _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']
 
 def up():
     mounts = [(pkg[0], os.path.join(settings.ROOTFS, pkg[1]))
-              for pkg in pathUtil.processPackagePaths(settings.ROOT_PKG_DIR)]
+              for pkg in processPackagePaths(settings.ROOT_PKG_DIR)]
     
     # Create all the necessary mount points
     for mount in mounts:
-        os.mkdir(mount[1])
+        os.makedirs(mount[1])
     
     # Add the system relevant directories which have to be mounted as well and
     # mount all directories
@@ -64,13 +70,13 @@ def up():
             if e.output:
                 sys.stderr.write('\tOutput: {0}'.format(e.output))
     
-    # Return the directory to the root filesystem
+    # Return the directory to the root of the container filesystem
     sys.stdout.write(settings.ROOTFS)
 
 
 def down():
     mounts = [os.path.join(settings.ROOTFS, pkg[1])
-              for pkg in pathUtil.processPackagePaths(settings.ROOT_PKG_DIR)]
+              for pkg in processPackagePaths(settings.ROOT_PKG_DIR)]
     
     stdDir = _STD_DIR[:]
     stdDir.reverse()

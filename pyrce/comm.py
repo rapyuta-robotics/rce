@@ -38,7 +38,7 @@ from autobahn.websocket import WebSocketClientFactory, \
 import sys                          ### TODO:
 sys.path.append('../framework')     ### TEMPORARY FIX
 
-from client.assembler import MessageAssembler
+from rce.client.assembler import MessageAssembler
 
 
 class RCERobotProtocol(WebSocketClientProtocol):
