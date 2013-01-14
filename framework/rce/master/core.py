@@ -40,8 +40,6 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python import log
 from twisted.cred.credentials import UsernamePassword
-from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
-#from twisted.cred.checkers import FilePasswordDB
 from twisted.cred.portal import IRealm, Portal
 from twisted.spread.pb import IPerspective, PBServerFactory, Avatar
 from twisted.web.server import Site
@@ -55,9 +53,15 @@ from rce.master.environment import EnvironmentEndpoint
 from rce.master.robot import Distributor, RobotEndpoint
 from rce.master.user import User
 
-# TODO: At the moment only one user available and Password database in memory
+
 class RoboEarthCloudEngine(object):
-    """
+    """ Realm for the twisted cred system. It is responsible for storing all
+        cloud engine relevant informations by having a reference to a Network,
+        Load Balancer, and Distributor instance, where each is responsible for
+        part of the system. Additionally, the realm keeps a list of all User
+        object.
+        
+        There should be only one instance running in the Master process.
     """
     implements(IRealm)
     
@@ -66,29 +70,30 @@ class RoboEarthCloudEngine(object):
     LOAD_BALANCER_CLS = LoadBalancer
     DISTRIBUTOR_CLS = Distributor
     
-    def __init__(self, reactor):
-        """
+    def __init__(self, reactor, checker):
+        """ Initialize the RoboEarth Cloud Engine realm.
+            
+            @param reactor:     Twisted reactor used in this process.
+            @type  reactor:     twisted::reactor
+            
+            @param checker:     Login checker which authenticates the User when
+                                an initial request is received.
+            @type  checker:     twisted.cred.checkers.ICredentialsChecker
         """
         self._reactor = reactor
-        
-        self._checker = InMemoryUsernamePasswordDatabaseDontUse(testUser='testUser')
-        #self._checker = FilePasswordDB(userFile)
-        self._users = {}
+        self._checker = checker
         
         self._network = Network()
         self._balancer = self.LOAD_BALANCER_CLS()
         self._distributor = self.DISTRIBUTOR_CLS()
         
+        self._users = {}
         self._pendingContainer = {}
     
-    def _detachRobotEndpoint(self, endpoint):
-        """
-        """
-        self._distributor.unregisterRelay(endpoint)
-        self._network.destroyEndpoint(endpoint)
-    
     def requestAvatar(self, avatarId, mind, *interfaces):
-        """
+        """ Returns avatar for slave processes of the cloud engine.
+            
+            Implementation for IRealm
         """
         if IPerspective not in interfaces:
             raise NotImplementedError('RoboEarthCloudEngine only '
@@ -119,33 +124,74 @@ class RoboEarthCloudEngine(object):
         return IPerspective, avatar, detach
     
     def _getUser(self, userID):
-        """
-        """
         if userID not in self._users:
             self._users[userID] = User(self, userID)
         
         return self._users[userID]
     
     def requestUser(self, userID, robotID, password):
-        """
+        """ Callback for client protocol to initialize the connection by
+            authenticating himself and announcing the robot's ID.
+            
+            @param userID:      User ID under which the robot will login.
+            @type  userID:      str
+            
+            @param robotID:     ID of the robot which will be using the cloud
+                                engine.
+            @type  robotID:     str
+            
+            @param password:    Password matching the User ID for login.
+            @type  password:    str
+            
+            @return:            Key which should be used to authenticate the
+                                websocket connection and the IP address of
+                                responsible robot process as a tuple.
+            @rtype:             twisted::Deferred
+            
         """
         d = self._checker.requestAvatarId(UsernamePassword(userID, password))
         d.addCallback(self._userAuthenticated, robotID)
         return d
     
     def _userAuthenticated(self, userID, robotID):
-        """
+        """ Internally used method which is used as a Deferred callback to
+            retrieve the User object based on the User ID and create a new
+            Robot object matching the robotID.
+            Returns a Deferred which fires with the authentication key and
+            IP address for websocket login.
         """
         return self._getUser(userID).createRobot(robotID)
     
-    def createRobot(self, user, userID, robotID, uid):
+    def createRobot(self, user, robotID, uid):
+        """ Callback for User instance to create a new Robot object in a
+            robot process.
+            
+            @param user:        User instance under which the robot has logged
+                                in and will run.
+            @type  user:        rce.master.user.User
+                                (subclass of twisted.spread.pb.Referenceable)
+            
+            @param robotID:     ID of the robot which has to be created.
+            @type  robotID:     str
+            
+            @param uid:         Key which will be used to authenticate the
+                                webscoket connection.
+            @type  uid:         str
+            
+            @return:            New Robot instance.
+            @rtype:             rce.master.robot.Robot
+                                (subclass of rce.master.base.Proxy)
         """
-        """
-        return self._distributor.getNextLocation(
-                    ).createNamespace(user, userID, robotID, uid)
+        location = self._distributor.getNextLocation()
+        return location.createNamespace(user, robotID, uid)
     
-    def createContainer(self, tag):
-        """
+    def createContainer(self):
+        """ Callback for User instance to create a new Container object in a
+            container process.
+            
+            @return:            New Container instance.
+            @rtype:             rce.master.machine.Container
+                                (subclass of rce.master.base.Proxy)
         """
         while 1:
             uid = uuid4().hex
@@ -159,32 +205,40 @@ class RoboEarthCloudEngine(object):
         return endpoint.createNamespace()
     
     def createConnection(self, interfaceA, interfaceB):
-        """
+        """ Callback for User instance to create a new connection between two
+            interfaces.
+            
+            @param interfaceX:  Interface which should be connected.
+            @type  interfaceX:  rce.master.network.Interface
+            
+            @return:            New Connection instance.
+            @rtype:             rce.master.network.Connection
         """
         return self._network.createConnection(interfaceA, interfaceB)
-        
     
     def preShutdown(self):
-        """
+        """ Method is executed by the twisted reactor when a shutdown event
+            is triggered, before the reactor is being stopped.
         """
         for user in self._users.values():
             user.destroy()
     
     def postShutdown(self):
-        """
+        """ Method is executed by the twisted reactor when a shutdown event
+            is triggered, after the reactor has been stopped.
         """
         self._network.cleanUp()
         self._balancer.cleanUp()
         self._distributor.cleanUp()
 
 
-def main(reactor, cred, internalPort, externalPort):
+def main(reactor, interalCred, externalCred, internalPort, externalPort):
     log.startLogging(sys.stdout)
     
-    rce = RoboEarthCloudEngine(reactor)
+    rce = RoboEarthCloudEngine(reactor, externalCred)
     
-    p = Portal(rce, (cred,))
-    #p = Portal(RoboEarthCloudEngine(), (FilePasswordDB(credFile),))
+    # Internal communication
+    p = Portal(rce, (interalCred,))
     reactor.listenTCP(internalPort, PBServerFactory(p))
     
     # Client Connection

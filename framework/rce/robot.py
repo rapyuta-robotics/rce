@@ -243,10 +243,10 @@ class RobotClient(Endpoint):
     
     credentialInterfaces = (IRobotCredentials,)
     
-    def __init__(self, reactor):
+    def __init__(self, reactor, commPort):
         """
         """
-        Endpoint.__init__(self, reactor)
+        Endpoint.__init__(self, reactor, commPort)
         
         self._pendingRobots = {}
     
@@ -300,7 +300,7 @@ class RobotClient(Endpoint):
         return robot
 
 
-def main(reactor, cred, masterIP, masterPort, robotPort):
+def main(reactor, cred, masterIP, masterPort, extPort, commPort):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -310,14 +310,14 @@ def main(reactor, cred, masterIP, masterPort, robotPort):
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = RobotClient(reactor)
+    client = RobotClient(reactor, commPort)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '__ref', ref))
     d.addErrback(_err)
     
     portal = Portal(client, (client,))
     robot = CloudEngineWebSocketFactory(RobotWebSocketProtocol, portal,
-                                        'ws://localhost:{0}'.format(robotPort))
+                                        'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
     
     reactor.addSystemEventTrigger('before', 'shutdown', client.terminate)

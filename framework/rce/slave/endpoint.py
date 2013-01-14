@@ -39,18 +39,16 @@ from twisted.spread.pb import Referenceable
 # Custom imports
 from rce.error import ConnectionError
 from rce.slave.protocol import Protocol, RCEInternalProtocol
-import settings
 
 
 class Endpoint(Referenceable):
     """
     """
-    def __init__(self, reactor):
+    def __init__(self, reactor, commPort):
         """
         """
         self._reactor = reactor
-        reactor.listenTCP(settings.RCE_INTERNAL_PORT,
-                          RCEInternalServerFactory(self))
+        reactor.listenTCP(commPort, RCEInternalServerFactory(self))
         
         self._loopback = Protocol()
         

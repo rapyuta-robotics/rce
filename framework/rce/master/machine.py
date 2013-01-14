@@ -35,61 +35,83 @@ from twisted.internet.address import IPv4Address
 from twisted.spread.pb import DeadReferenceError
 
 # Custom imports
-from rce.error import MaxNumberExceeded
+from rce.error import InternalError, MaxNumberExceeded
 from rce.master.base import Proxy
 
 
 class MachineError(Exception):
-    """
+    """ Exception is raised if there is no free container process.
     """
 
 
 class LoadBalancer(object):
-    """
+    """ The Load Balancer is responsible for selecting the appropriate
+        container to launch a new container. It therefore also keeps track
+        of all the container processes registered with the cloud engine.
+        
+        There should only one instance running in the Master process.
     """
     def __init__(self):
-        """
+        """ Initialize the Load Balancer.
         """
         self._machines = set()
-        self._iter = iter(self._machines)
     
     def createMachine(self, ref, maxNr):
-        """
+        """ Create a new Machine object, which can be used to create new
+            containers.
+            
+            @param ref:         Remote reference to the ContainerClient in the
+                                container process.
+            @type  ref:         twisted::RemoteReference
+            
+            @param maxNr:       The maximum number of container which are
+                                allowed in the machine.
+            @type  maxNr:       int
+            
+            @return:            New Machine instance.
+            @rtype:             rce.master.machine.Machine
         """
         machine = Machine(ref, maxNr)
         self._machines.add(machine)
         return machine
     
     def destroyMachine(self, machine):
-        """
+        """ Destroy a Machine object.
+            
+            @param machine:     Machine instance which should be destroyed.
+            @type  machine:     rce.master.machine.Machine
         """
         try:
             self._machines.remove(machine)
         except KeyError:
-            raise MachineError()
+            raise InternalError('Tried to remove a non existent machine.')
         
         machine.destroy()
     
-    def _getNextMachine(self, retry=False):
-        """
+    def _getNextMachine(self):
+        """ Internally used method to retrieve the machine where the next
+            container should be created.
         """
         try:
-            return self._iter.next()
-        except StopIteration:
-            if retry:
-                raise MachineError('There is no machine registered.')
-        except RuntimeError:
-            self._iter = iter(self._machines)
-        
-        return self._getNextMachine(True)
+            return min(self._machines, key=lambda m: m.active)
+        except ValueError:
+            raise MachineError('There is no free machine.')
     
     def createContainer(self, uid):
-        """
+        """ Select an appropriate machine and create a container.
+            
+            @param uid:         Unique ID which is used to identify the
+                                environment process when he connects to the
+                                Master.
+            @type  uid:         str
+            
+            @return:            New Container instance.
+            @rtype:             rce.master.machine.Container
         """
         return self._getNextMachine().createContainer(uid)
     
     def cleanUp(self):
-        """
+        """ Method should be called to destroy all machines.
         """
         for machine in self._machines.copy():
             self.destroyMachine(machine)
@@ -98,10 +120,19 @@ class LoadBalancer(object):
 
 
 class Machine(object):
-    """
+    """ Representation of a machine in which containers can be created. It
+        keeps track of all the containers running in the machine.
     """
     def __init__(self, ref, maxNr):
-        """
+        """ Initialize the Machine.
+            
+            @param ref:         Remote reference to the ContainerClient in the
+                                container process.
+            @type  ref:         twisted::RemoteReference
+            
+            @param maxNr:       The maximum number of container which are
+                                allowed in the machine.
+            @type  maxNr:       int
         """
         self._ref = ref
         self._maxNr = maxNr
@@ -109,8 +140,21 @@ class Machine(object):
         
         self._containers = set()
     
+    @property
+    def active(self):
+        """ The number of active containers in the machine. """
+        return len(self._containers)
+    
     def createContainer(self, uid):
-        """
+        """ Create a container.
+            
+            @param uid:         Unique ID which is used to identify the
+                                environment process when he connects to the
+                                Master.
+            @type  uid:         str
+            
+            @return:            New Container instance.
+            @rtype:             rce.master.machine.Container
         """
         if len(self._containers) > self._maxNr:
             raise MaxNumberExceeded('Can not create more containers in this '
@@ -131,7 +175,8 @@ class Machine(object):
         self._containers.remove(container)
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the machine and will take care
+            of deleting all circular references.
         """
         for container in self._containers.copy():
             container.destroy()
@@ -149,10 +194,13 @@ class Machine(object):
 
 
 class Container(Proxy):
-    """
+    """ Representation of an LXC container.
     """
     def __init__(self, machine):
-        """
+        """ Initialize the Container.
+            
+            @param machine:     Machine in which the container was created.
+            @type  machine:     rce.master.machine.Machine
         """
         super(Container, self).__init__()
         
@@ -160,7 +208,13 @@ class Container(Proxy):
         machine.registerContainer(self)
     
     def getAddress(self):
-        """
+        """ Get the address which should be used to connect to the environment
+            process for the cloud engine internal communication.
+            
+            @return:            twisted::IPv4Address which can be used to
+                                connect to the ServerFactory of the cloud
+                                engine internal communication protocol.
+            @rtype:             twisted::Deferred
         """
         d = self._getPort()
         d.addCallback(lambda port: IPv4Address('TCP', self._machine._ip, port))
@@ -171,7 +225,8 @@ class Container(Proxy):
         return self.obj.callRemote('getPort')
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the container and will take care
+            of deleting all circular references.
         """
         if self._machine:
             self._machine.unregisterContainer(self)

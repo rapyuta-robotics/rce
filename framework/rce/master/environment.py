@@ -40,10 +40,13 @@ from rce.master.network import Endpoint, Namespace
 
 
 class Node(Proxy):
-    """
+    """ Representation of a node (ROS process) inside a ROS environment.
     """
     def __init__(self, namespace):
-        """
+        """ Initialize the Node.
+            
+            @param namespace:   Namespace in which the node was created.
+            @type  namespace:   rce.master.network.Namespace
         """
         super(Node, self).__init__()
         
@@ -51,7 +54,8 @@ class Node(Proxy):
         namespace.registerNode(self)
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the node and will take care
+            of deleting all circular references.
         """
         self._namespace.unregisterNode(self)
         self._namespace = None
@@ -60,8 +64,6 @@ class Node(Proxy):
     
     @Proxy.destroyProxy
     def _destroy(self):
-        """
-        """
         try:
             self.obj.callRemote('destroy')
         except DeadReferenceError:
@@ -69,10 +71,13 @@ class Node(Proxy):
 
 
 class Parameter(Proxy):
-    """
+    """ Representation of a parameter inside a ROS environment.
     """
     def __init__(self, namespace):
-        """
+        """ Initialize the Parameter.
+            
+            @param namespace:   Namespace in which the parameter was created.
+            @type  namespace:   rce.master.network.Namespace
         """
         super(Parameter, self).__init__()
         
@@ -80,7 +85,8 @@ class Parameter(Proxy):
         namespace.registerParameter(self)
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the parameter and will take
+            care of deleting all circular references.
         """
         self._namespace.unregisterParameter(self)
         self._namespace = None
@@ -89,8 +95,6 @@ class Parameter(Proxy):
     
     @Proxy.destroyProxy
     def _destroy(self):
-        """
-        """
         try:
             self.obj.callRemote('destroy')
         except DeadReferenceError:
@@ -98,10 +102,14 @@ class Parameter(Proxy):
 
 
 class Environment(Namespace):
-    """
+    """ Representation of a namespace which has a ROS environment assigned and
+        is part of the cloud engine internal communication.
     """
     def __init__(self, endpoint):
-        """
+        """ Initialize the Environment.
+            
+            @param endpoint:    Endpoint in which the environment was created.
+            @type  endpoint:    rce.master.network.Endpoint
         """
         super(Environment, self).__init__(endpoint)
         
@@ -110,13 +118,42 @@ class Environment(Namespace):
     
     @Proxy.returnProxy(Node)
     def createNode(self, pkg, exe, args, name, nspace):
-        """
+        """ Create a node (ROS process) inside the environment.
+            
+            @param pkg:         Name of ROS package where the node can be
+                                found.
+            @type  pkg:         str
+
+            @param exe:         Name of executable (node) which should be
+                                launched.
+            @type  exe:         str
+            
+            @param args:        Additional arguments which should be used for
+                                the launch.
+            @type  args:        str
+            
+            @param name:        Name of the node under which the node should be
+                                launched.
+            @type  name:        str
+            
+            @param nspace:      Namespace in which the node should be started
+                                in the environment.
+            @type  nspace:      str
         """
         return self.obj.callRemote('createNode', pkg, exe, args, name, nspace)
     
     @Proxy.returnProxy(Parameter)
     def createParameter(self, name, value):
-        """
+        """ Create a parameter (in ROS parameter server) inside the
+            environment.
+            
+            @param name:        Name of the parameter which should be added.
+                                It is also used to identify the parameter in
+                                subsequent requests.
+            @type  name:        str
+            
+            @param value:       Value of the parameter which should be added.
+            @type  value:       str, int, float, bool, list
         """
         return self.obj.callRemote('createParameter', name, value)
     
@@ -137,7 +174,9 @@ class Environment(Namespace):
         self._parameters.remove(parameter)
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the environment and will take
+            care of destroying all objects owned by this Environment as well
+            as deleting all circular references.
         """
         for node in self._nodes.copy():
             node.destroy()
@@ -152,10 +191,18 @@ class Environment(Namespace):
 
 
 class EnvironmentEndpoint(Endpoint):
-    """
+    """ Representation of an endpoint which is a process that lives inside a
+        container and is part of the cloud engine internal communication.
     """
     def __init__(self, network, container):
-        """
+        """ Initialize the Environment Endpoint.
+            
+            @param network:     Network to which the endpoint belongs.
+            @type  network:     rce.master.network.Network
+            
+            @param container:   Container in which this environment endpoint
+                                lives.
+            @type  container:   rce.master.machine.Container
         """
         super(EnvironmentEndpoint, self).__init__(network)
         
@@ -163,7 +210,13 @@ class EnvironmentEndpoint(Endpoint):
     
     # TODO: At the moment single machine fix for getAddress
     def getAddress(self):
-        """
+        """ Get the address of the environment endpoint's internal
+            communication server.
+            
+            @return:            Address of the environment endpoint's internal
+                                communication server.
+                                (type: twisted.internet.address.IPv4Address)
+            @rtype:             twisted::Deferred
         """
         import settings
         d = self._getAddress()
@@ -173,23 +226,33 @@ class EnvironmentEndpoint(Endpoint):
     
     @Proxy.returnDeferred
     def _getAddress(self):
-        """
-        """
         return self.obj.broker.transport.getPeer()
     
 #    def getAddress(self):
-#        """
+#        """ Get the address of the environment endpoint's internal
+#            communication server.
+#            
+#            @return:            Address of the environment endpoint's internal
+#                                communication server.
+#                                (type: twisted.internet.address.IPv4Address)
+#            @rtype:             twisted::Deferred
 #        """
 #        return self._container.getAddress()
     
     @Proxy.returnProxy(Environment)
     def createNamespace(self):
-        """
+        """ Create a Environment object in the environment endpoint.
+            
+            @return:            New Environment instance.
+            @rtype:             rce.master.environment.Environment
+                                (subclass of rce.master.base.Proxy)
         """
         return self.obj.callRemote('createNamespace')
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the environment endpoint and
+            will take care of destroying all objects owned by this
+            EnvironmentEndpoint as well as deleting all circular references.
         """
         if self._container:
             self._container.destroy()

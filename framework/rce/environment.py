@@ -137,10 +137,10 @@ class Environment(Namespace):
 class EnvironmentClient(Endpoint):
     """
     """
-    def __init__(self, reactor):
+    def __init__(self, reactor, commPort):
         """
         """
-        Endpoint.__init__(self, reactor)
+        Endpoint.__init__(self, reactor, commPort)
         
         self._namespace = None
     
@@ -174,7 +174,7 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = EnvironmentClient(reactor)
+    client = EnvironmentClient(reactor, commPort)
     
     def terminate():
         reactor.callFromThread(client.terminate)

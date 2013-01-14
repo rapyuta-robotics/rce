@@ -38,94 +38,124 @@ from rce.master.network import Endpoint, Namespace
 from rce.master.base import Proxy
 
 
-class RelayError(Exception):
-    """
+class RobotProcessError(Exception):
+    """ Exception is raised if there is no free robot process.
     """
 
 
 class Distributor(object):
-    """
+    """ The Distributor is responsible for selecting the appropriate robot
+        process to create a websocket connection. It therefore also keeps track
+        of all the robot processes registered with the cloud engine.
+        
+        There should only one instance running in the Master process.
     """
     def __init__(self):
+        """ Initialize the Distributor.
         """
-        """
-        self._relays = set()
-        self._iter = iter(self._relays)
+        self._robots = set()
+        self._iter = iter(self._robots)
     
-    def registerRelay(self, relay):
-        """
-        """
-        assert relay not in self._relays
-        self._relays.add(relay)
+    def registerRobotProcess(self, robot):
+        assert robot not in self._robots
+        self._robots.add(robot)
     
-    def unregisterRelay(self, relay):
-        """
-        """
-        assert relay in self._relays
-        self._relays.remove(relay)
+    def unregisterRobotProcess(self, robot):
+        assert robot in self._robots
+        self._robots.remove(robot)
     
-    def getNextLocation(self, retry=False):
-        """
+    def getNextLocation(self):
+        """ Get the next endpoint running in an robot process to create a new
+            robot websocket connection.
+            
+            @return:            Next robot endpoint.
+            @rtype:             rce.master.robot.RobotEndpoint
+                                (subclass of rce.master.base.Proxy)
         """
         try:
-            return self._iter.next()
-        except StopIteration:
-            if retry:
-                raise RelayError('There is no relay registered.')
-        except RuntimeError:
-            self._iter = iter(self._relays)
-        
-        return self.getNextLocation(True)
+            return min(self._robots, key=lambda r: r.active)
+        except ValueError:
+            raise RobotProcessError('There is no free robot process.')
     
     def cleanUp(self):
-        """
-        """
-        assert len(self._relays) == 0
+        assert len(self._robots) == 0
 
 
 class Robot(Namespace):
-    """
+    """ Representation of a namespace which has a websocket connection from a
+        robot assigned and is part of the cloud engine internal communication.
     """
     def __init__(self, endpoint):
-        """
+        """ Initialize the Robot.
+            
+            @param endpoint:    Endpoint in which the robot was created.
+            @type  endpoint:    rce.master.network.Endpoint
         """
         super(Robot, self).__init__(endpoint)
     
     @Proxy.returnDeferred
     def getIP(self):
-        """
+        """ Get the IP address of the process in which the Robot lives.
+            
+            @return:            IP address of the process. (type: str)
+            @rtype:             twisted::Deferred
         """
         return self.obj.broker.transport.getPeer().host
 
 
 class RobotEndpoint(Endpoint):
-    """
+    """ Representation of an endpoint which is a process that acts as a server
+        for websocket connections from robots and is part of the cloud engine
+        internal communication.
     """
     def __init__(self, network, distributor):
-        """
+        """ Initialize the Environment Endpoint.
+            
+            @param network:     Network to which the endpoint belongs.
+            @type  network:     rce.master.network.Network
+            
+            @param distributor: Distributor which is responsible for assigning
+                                new robot websocket connections to robot
+                                endpoints.
+            @type  container:   rce.master.robot.Distributor
         """
         super(RobotEndpoint, self).__init__(network)
         
         self._distributor = distributor
-        distributor.registerRelay(self)
+        distributor.registerRobotProcess(self)
+    
+    @property
+    def active(self):
+        """ The number of active robot websocket connections in the
+            robot process.
+        """
+        return len(self._namespace)
     
     def getAddress(self):
-        """
+        """ Get the address of the robot endpoint's internal communication
+            server.
+            
+            @return:            Address of the robot endpoint's internal
+                                communication server.
+                                (type: twisted.internet.address.IPv4Address)
+            @rtype:             twisted::Deferred
         """
         return succeed(self.obj.broker.transport.getPeer())
     
     @Proxy.returnProxy(Robot)
-    def createNamespace(self, user, userID, robotID, key):
+    def createNamespace(self, user, robotID, key):
         """
         """
-        return self.obj.callRemote('createNamespace', user, userID,
+        return self.obj.callRemote('createNamespace', user, user.userID,
                                    robotID, key)
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the robot endpoint and will take
+            care of destroying all objects owned by this RobotEndpoint as well
+            as deleting all circular references.
         """
         if self._distributor:
-            self._distributor.unregisterRelay(self)
+            self._distributor.unregisterRobotProcess(self)
             self._distributor = None
             
             super(RobotEndpoint, self).destroy()

@@ -44,10 +44,12 @@ from rce.master.base import Proxy
 
 
 class Network(object):
-    """
+    """ The network is responsible for keeping track of all endpoints,
+        namespaces, and interfaces in the cloud engine. Additionally, it
+        provides the method to connect two interface.
     """
     def __init__(self):
-        """
+        """ Initialize the Network.
         """
         self._endpoints = {}
     
@@ -70,7 +72,14 @@ class Network(object):
             connections -= endedConnections
     
     def _getEndpointConnection(self, epA, epB):
-        """
+        """ Internally used method to get the connection between two endpoints.
+            
+            @param epX:         The endpoint which is part of the connection
+                                that should be retrieved.
+            @type  epX:         rce.master.network.Endpoint
+            
+            @return:            Connection between the two endpoints.
+            @rtype:             rce.master.network.EndpointConnection
         """
         if epA not in self._endpoints or epB not in self._endpoints:
             raise InternalError('Endpoint is not part of this network.')
@@ -96,7 +105,13 @@ class Network(object):
                 return connection
     
     def createConnection(self, interfaceA, interfaceB):
-        """
+        """ Create a connection between two interfaces.
+            
+            @param interfaceX:  The interface which should be connected.
+            @type  interfaceX:  rce.master.network.Interface
+            
+            @return:            Connection between the two interfaces.
+            @rtype:             rce.master.network.Connection
         """
         assert interfaceA != interfaceB
         
@@ -113,7 +128,8 @@ class Network(object):
         return Connection(pA_iA, pB_iB)
     
     def cleanUp(self):
-        """
+        """ Method should be called to destroy all machines and therefore all
+            namespaces and interfaces.
         """
         for endpoint in self._endpoints.keys():
             endpoint.destroy()
@@ -122,10 +138,14 @@ class Network(object):
 
 
 class Protocol(Proxy):
-    """
+    """ Representation of a protocol, which is part of the cloud engine
+        internal communication.
     """
     def __init__(self, endpoint):
-        """
+        """ Initialize the Protocol.
+            
+            @param endpoint:    Endpoint in which the protocol was created.
+            @type  endpoint:    rce.master.network.Endpoint
         """
         super(Protocol, self).__init__()
         
@@ -143,7 +163,9 @@ class Protocol(Proxy):
         self._connections.remove(connection)
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the protocol and will take care
+            of destroying all objects owned by this Protocol as well as
+            deleting all circular references.
         """
         self._endpoint.unregisterProtocol(self)
         self._endpoint = None
@@ -161,11 +183,223 @@ class Protocol(Proxy):
             pass
 
 
-class Endpoint(Proxy):
+class Interface(Proxy):
+    """ Representation of an interface, which is part of the cloud engine
+        internal communication.
     """
+    def __init__(self, namespace):
+        """ Initialize the Interface.
+            
+            @param namespace:   Namespace in which the interface was created.
+            @type  namespace:   rce.master.network.Namespace
+        """
+        super(Interface, self).__init__()
+        
+        self._endpoint = namespace.endpoint
+        self._endpoint.registerInterface(self)
+        
+        self._namespace = namespace
+        namespace.registerInterface(self)
+        
+        self._uid = None
+        
+        self._connections = set()
+    
+    @property
+    def UID(self):
+        """ Unique ID of the interface. """
+        assert self._uid is not None
+        return self._uid
+    
+    @UID.setter
+    def UID(self, uid):
+        assert self._uid is None
+        self._uid = uid
+    
+    @property
+    def endpoint(self):
+        """ Reference to endpoint to which this interface belongs. """
+        return self._endpoint
+    
+    def registerConnection(self, connection):
+        assert connection not in self._connections
+        self._connections.add(connection)
+    
+    def unregisterConnection(self, connection):
+        assert connection in self._connections
+        self._connections.remove(connection)
+    
+    def registerRemoteID(self, protocol, remoteID):
+        """ Register an interface (using its unique ID) with this interface,
+            which means that this and the indicated interface will be
+            connected.
+            
+            @param protocol:    Protocol which provides the connection to the
+                                other side, i.e. the other endpoint. (Could
+                                also be the loopback protocol which would mean
+                                that both interfaces are in the same endpoint.)
+            @type  protocol:    rce.master.network.Protocol
+            
+            @param remoteID:    Unique ID of the interface at the other side
+                                of the connection, i.e. in the other endpoint.
+            @type  remoteID:    uuid.UUID
+            
+            @return:            None.
+            @rtype:             twisted::Deferred
+        """
+        return self._registerRemoteID(protocol, remoteID)
+    
+    def unregisterRemoteID(self, protocol, remoteID):
+        """ Unregister an interface (using its unique ID) with this interface,
+            which means that this and the indicated interface will no longer
+            be connected.
+            
+            @param protocol:    Protocol which provides the connection to the
+                                other side, i.e. the other endpoint. (Could
+                                also be the loopback protocol which would mean
+                                that both interfaces are in the same endpoint.)
+            @type  protocol:    rce.master.network.Protocol
+            
+            @param remoteID:    Unique ID of the interface at the other side
+                                of the connection, i.e. in the other endpoint.
+            @type  remoteID:    uuid.UUID
+            
+            @return:            None.
+            @rtype:             twisted::Deferred
+        """
+        return self._unregisterRemoteID(protocol, remoteID)
+    
+    @Proxy.returnDeferred
+    def _registerRemoteID(self, protocol, remoteID):
+        def cb(protocol_, remoteID_):
+            return self.obj.callRemote('connect', protocol_.obj,
+                                       remoteID_.bytes)
+        
+        return protocol().addCallback(cb, remoteID)
+    
+    @Proxy.returnDeferred
+    def _unregisterRemoteID(self, protocol, remoteID):
+        def cb(protocol_, remoteID_):
+            return self.obj.callRemote('disconnect', protocol_.obj,
+                                       remoteID_.bytes)
+        
+        return protocol().addCallback(cb, remoteID)
+    
+    def destroy(self):
+        """ Method should be called to destroy the interface and will take care
+            of destroying all objects owned by this Interface as well as
+            deleting all circular references.
+        """
+        self._endpoint.unregisterInterface(self)
+        self._endpoint = None
+        
+        self._namespace.unregisterInterface(self)
+        self._namespace = None
+        
+        # Endpoint should destroy all connections
+        assert len(self._connections) == 0
+        
+        super(Interface, self).destroy()
+    
+    @Proxy.destroyProxy
+    def _destroy(self):
+        try:
+            self.obj.callRemote('destroy')
+        except DeadReferenceError:
+            pass
+
+
+class Namespace(Proxy):
+    """ Representation of a namespace, which is part of the cloud engine
+        internal communication.
+    """
+    def __init__(self, endpoint):
+        """ Initialize the Namespace.
+            
+            @param endpoint:    Endpoint in which the namespace was created.
+            @type  endpoint:    rce.master.network.Endpoint
+        """
+        super(Namespace, self).__init__()
+        
+        self._endpoint = endpoint
+        endpoint.registerNamespace(self)
+        
+        self._interfaces = set()
+    
+    @property
+    def endpoint(self):
+        """ Reference to the endpoint to which this namespace belongs. """
+        return self._endpoint
+    
+    def createInterface(self, iType, clsName, addr):
+        """ Create an Interface object in the namespace and therefore endpoint.
+            
+            @param iType:       Type of the interface encoded as an integer.
+                                Refer to rce.slave.interface.Types for more
+                                information.
+            @type  IType:       int
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @return:            New Interface instance.
+            @rtype:             rce.master.network.Interface
+                                (subclass of rce.master.base.Proxy)
+        """
+        uid = self._endpoint.getUID()
+        interface = self._createInterface(uid.bytes, iType, clsName, addr)
+        interface.UID = uid
+        return interface
+    
+    @Proxy.returnProxy(Interface)
+    def _createInterface(self, uid, iType, clsName, addr):
+        return self.obj.callRemote('createInterface', uid, iType, clsName, addr)
+    
+    def registerInterface(self, interface):
+        assert interface not in self._interfaces
+        self._interfaces.add(interface)
+    
+    def unregisterInterface(self, interface):
+        assert interface in self._interfaces
+        self._interfaces.remove(interface)
+    
+    def destroy(self):
+        """ Method should be called to destroy the namespace and will take care
+            of destroying all objects owned by this Namespace as well as
+            deleting all circular references.
+        """
+        for interface in self._interfaces.copy():
+            interface.destroy()
+        
+        assert len(self._interfaces) == 0
+        
+        self._endpoint.unregisterNamespace(self)
+        self._endpoint = None
+        
+        super(Namespace, self).destroy()
+    
+    @Proxy.destroyProxy
+    def _destroy(self):
+        try:
+            self.obj.callRemote('destroy')
+        except DeadReferenceError:
+            pass
+
+
+class Endpoint(Proxy):
+    """ Representation of an endpoint, which is a process which is part of the
+        cloud engine internal communication.
+        
+        This class is an abstract implementation, where some methods have to
+        be adapted.
     """
     def __init__(self, network):
-        """
+        """ Initialize the Endpoint.
+            
+            @param network:     Network to which the endpoint belongs.
+            @type  network:     rce.master.network.Network
         """
         super(Endpoint, self).__init__()
         
@@ -180,8 +414,21 @@ class Endpoint(Proxy):
         
         self._uids = set()
     
-    def getUID(self):
+    def getAddress(self):
+        """ Get the address of the endpoint's internal communication server.
+            
+            @return:            Address of the endpoint's internal
+                                communication server.
+                                (type: twisted.internet.address.IPv4Address)
+            @rtype:             twisted::Deferred
         """
+        raise NotImplementedError('Endpoint can not be used directly.')
+    
+    def getUID(self):
+        """ Get a ID which is unique within the endpoint.
+            
+            @return:            Unique ID (within the endpoint)
+            @rtype:             uuid.UUID
         """
         while 1:
             uid = uuid4()
@@ -191,18 +438,30 @@ class Endpoint(Proxy):
                 return uid
     
     def returnUID(self, uid):
-        """
+        """ Return a unique ID such that it could be reused again.
+            
+            @return:            Unique ID which should be returned.
+            @rtype:             uuid.UUID
         """
         assert uid in self._uids
         self._uids.remove(uid)
     
-    def createNamespace(self, *args, **kw):
+    def createNamespace(self):
+        """ Create a Namespace object in the endpoint.
+            
+            @return:            New namespace instance.
+            @rtype:             rce.master.namespace.Namespace
+                                (subclass of rce.master.base.Proxy)
         """
-        """
-        raise NotImplementedError()
+        raise NotImplementedError('Endpoint can not be used directly.')
     
     def getLoopback(self):
-        """
+        """ Get the 'loopback' protocol, which is a special protocol that is
+            used to connect two interfaces which are in the same endpoint.
+            
+            @return:            Loopback protocol.
+            @rtype:             rce.master.network.Protocol
+                                (subclass of rce.master.base.Proxy)
         """
         if not self._loopback:
             self._loopback = self._getLoopback()
@@ -211,13 +470,48 @@ class Endpoint(Proxy):
     
     @Proxy.returnDeferred
     def prepareConnection(self, connID, key, auth):
-        """
+        """ Prepare the endpoint for the connection attempt by adding the
+            necessary connection information to the remote process. When the
+            returned Deferred fires the endpoint is ready for the connection.
+            
+            @param connID:      Unique ID which is used to identify the
+                                connection and respond with the appropriate
+                                key.
+            @type  connID:      str
+            
+            @param key:         Key which is used by the other side to
+                                authenticate the endpoint.
+            @type  key:         str
+            
+            @param auth:        Authenticator which is used to validate the
+                                key from the other side.
+            @type  auth:        rce.master.network._ConnectionValidator
+            
+            @return:            None. Deferred fires as soon as the endpoint is
+                                ready for the connection attempt.
+            @rtype:             twisted::Deferred
         """
         return self.obj.callRemote('prepareConnection', connID, key, auth)
     
     @Proxy.returnDeferred
     def connect(self, connID, addr):
-        """
+        """ Tell the endpoint to connect to the given address using the
+            authentication details matching the given connection ID. This
+            means that the connection has to be first prepared using
+            'prepareConnection', before the actual command can be sent.
+            Only one side should get the 'connect' command, because the
+            receiver will be the client and not both sides can be the client.
+            
+            @param connID:      Unique ID which is used to identify the
+                                connection.
+            @type  connID:      str
+            
+            @param addr:        Address to which the endpoint should connect.
+                                It consists of an IP address and a port number.
+            @type  addr:        (str, int)
+            
+            @return:            None.
+            @rtype:             twisted::Deferred
         """
         return self.obj.callRemote('connect', connID, addr)
     
@@ -270,7 +564,19 @@ class Endpoint(Proxy):
             connections -= endedConnections
     
     def getInterfaceConnection(self, interface, protocol):
-        """
+        """ Get the connection between an interface and a protocol.
+            
+            @param interface:   Interface which belongs to this endpoint and
+                                which is on one side of the connection.
+            @type  interface:   rce.master.network.Interface
+            
+            @param protocol:    Protocol which belongs to this endpoint and
+                                which is on one side of the connection.
+            @type  protocol:    rce.master.network.Protocol
+            
+            @return:            Connection between the interface and the
+                                protocol.
+            @rtype:             rce.master.network.InterfaceConnection
         """
         try:
             connectionI = self._interfaces[interface]
@@ -297,7 +603,9 @@ class Endpoint(Proxy):
             return connection
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the endpoint and will take care
+            of destroying all objects owned by this Endpoint as well as
+            deleting all circular references.
         """
         # Protocols should be implicitly destroyed by the Network
         # Interfaces should be implicitly destroyed by the Namespaces
@@ -319,176 +627,47 @@ class Endpoint(Proxy):
         self.obj.broker.transport.loseConnection()
 
 
-class Interface(Proxy):
-    """
-    """
-    def __init__(self, namespace):
-        """
-        """
-        super(Interface, self).__init__()
-        
-        self._endpoint = namespace.endpoint
-        self._endpoint.registerInterface(self)
-        
-        self._namespace = namespace
-        namespace.registerInterface(self)
-        
-        self._uid = None
-        
-        self._connections = set()
-    
-    @property
-    def UID(self):
-        """ ... """
-        assert self._uid is not None
-        return self._uid
-    
-    @UID.setter
-    def UID(self, uid):
-        assert self._uid is None
-        self._uid = uid
-    
-    @property
-    def endpoint(self):
-        """ ... """
-        return self._endpoint
-    
-    def registerConnection(self, connection):
-        assert connection not in self._connections
-        self._connections.add(connection)
-    
-    def unregisterConnection(self, connection):
-        assert connection in self._connections
-        self._connections.remove(connection)
-    
-    def registerRemoteID(self, protocol, remoteID):
-        """
-        """
-        return self._registerRemoteID(protocol, remoteID)
-    
-    def unregisterRemoteID(self, protocol, remoteID):
-        """
-        """
-        return self._unregisterRemoteID(protocol, remoteID)
-    
-    @Proxy.returnDeferred
-    def _registerRemoteID(self, protocol, remoteID):
-        def cb(protocol_, remoteID_):
-            return self.obj.callRemote('connect', protocol_.obj,
-                                       remoteID_.bytes)
-        
-        return protocol().addCallback(cb, remoteID)
-    
-    @Proxy.returnDeferred
-    def _unregisterRemoteID(self, protocol, remoteID):
-        def cb(protocol_, remoteID_):
-            return self.obj.callRemote('disconnect', protocol_.obj,
-                                       remoteID_.bytes)
-        
-        return protocol().addCallback(cb, remoteID)
-    
-    def destroy(self):
-        """
-        """
-        self._endpoint.unregisterInterface(self)
-        self._endpoint = None
-        
-        self._namespace.unregisterInterface(self)
-        self._namespace = None
-        
-        # Endpoint should destroy all connections
-        assert len(self._connections) == 0
-        
-        super(Interface, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except DeadReferenceError:
-            pass
-
-
-class Namespace(Proxy):
-    """
-    """
-    def __init__(self, endpoint):
-        """
-        """
-        super(Namespace, self).__init__()
-        
-        self._endpoint = endpoint
-        endpoint.registerNamespace(self)
-        
-        self._interfaces = set()
-    
-    @property
-    def endpoint(self):
-        """ ... """
-        return self._endpoint
-    
-    def getAddress(self):
-        """
-        """
-        raise NotImplementedError()
-    
-    def createInterface(self, iType, msgType, addr):
-        """
-        """
-        uid = self._endpoint.getUID()
-        interface = self._createInterface(uid.bytes, iType, msgType, addr)
-        interface.UID = uid
-        return interface
-    
-    @Proxy.returnProxy(Interface)
-    def _createInterface(self, uid, iType, msgType, addr):
-        return self.obj.callRemote('createInterface', uid, iType, msgType, addr)
-    
-    def registerInterface(self, interface):
-        assert interface not in self._interfaces
-        self._interfaces.add(interface)
-    
-    def unregisterInterface(self, interface):
-        assert interface in self._interfaces
-        self._interfaces.remove(interface)
-    
-    def destroy(self):
-        """
-        """
-        for interface in self._interfaces.copy():
-            interface.destroy()
-        
-        assert len(self._interfaces) == 0
-        
-        self._endpoint.unregisterNamespace(self)
-        self._endpoint = None
-        
-        super(Namespace, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except DeadReferenceError:
-            pass
-
-
 class _ConnectionValidator(Referenceable):
-    """
+    """ Small helper to provide a callback to the endpoint to validate the
+        connection and to register the protocol who is responsible for the it.
     """
     def __init__(self, key):
-        """
+        """ Initialize the Connection Validator.
+            
+            @param key:         Key which is the correct.
+            @type  key:         str
         """
         self._key = key
         self._authenticated = Deferred()
     
     @property
     def result(self):
-        """ Get the deferred representing the result of the authentication. """
+        """ Get the result of the validation as soon as its available.
+            
+            @return:            Protocol instance which sent the validation
+                                request. (type: twisted::RemoteReference)
+            @rtype:             twisted::Deferred
+        """
+        # For now only one Deferred is used for the result as there is no
+        # reason to have a list here
         return self._authenticated
     
     def remote_verifyKey(self, key, protocol):
-        """
+        """ Verify that the provided key matches the correct value. This method
+            can be called only once, after which an error is raised.
+            
+            In case the key could be validated the protocol is registered with
+            the connection.
+            
+            @param key:         Key which should be validated.
+            @type  key:         str
+            
+            @param protocol:    Protocol who is responsible for the
+                                validation request and one partner of the
+                                new connection.
+            @type  protocol:    twisted::RemoteReference
+            
+            @return:            None
         """
         if self._authenticated.called:
             return Failure(InvalidKey('Only one guess is possible.'))
@@ -505,11 +684,18 @@ class _ConnectionValidator(Referenceable):
 
 
 class EndpointConnection(object):
-    """
+    """ Representation of a connection between two endpoints, where the two
+        endpoints are not the same.
     """
     def __init__(self, endpointA, endpointB):
+        """ Initialize the connection between the two endpoints.
+            The connection will be scheduled to be created here.
+            
+            @param endpointX:   Endpoint which is part of the new connection.
+            @type  endpointX:   rce.master.network.Endpoint
         """
-        """
+        assert endpointA != endpointB
+        
         # Register the endpoints and create Protocol proxies
         self._serverEndpoint = endpointA
         self._clientEndpoint = endpointB
@@ -543,6 +729,18 @@ class EndpointConnection(object):
         ready.addErrback(self._logError)
     
     def _getAddress(self, result):
+        """ Internally used method which is part of a callback chain.
+            Its task is to verify that both endpoints are ready for the
+            connection attempt. In case both signal readiness the address
+            of the designated server endpoint is retrieved.
+            
+            @param result:      Response of the DeferredList containing the
+                                Deferreds of the 'prepareConnection' calls.
+            
+            @return:            Address of the endpoint's internal
+                                communication server.
+            @rtype:             twisted.internet.address.IPv4Address
+        """
         ((serverReady, _), (clientReady, _)) = result
         
         if not (serverReady and clientReady):
@@ -554,15 +752,37 @@ class EndpointConnection(object):
         
         return self._serverEndpoint.getAddress()
     
-    def _connect(self, addr, connectionID):
-        return self._clientEndpoint.connect(connectionID,
-                                            (addr.host, addr.port))
+    def _connect(self, addr, connID):
+        """ Internally used method which is part of a callback chain.
+            Its task is to send the 'connect' command to the client.
+            
+            @param addr:        Address of the endpoint's internal
+                                communication server.
+            @rtype:             twisted.internet.address.IPv4Address
+            
+            @param connID:      Connection ID which is used to identify the
+                                appropriate authentication key.
+            @type  connID:      str
+            
+            @return:            None.
+            @rtype:             twisted::Deferred
+        """
+        return self._clientEndpoint.connect(connID, (addr.host, addr.port))
     
     def _connectPrepError(self, failure, authenticator):
+        """ Internally used method which is part of an errback chain.
+            Its task is to signal to the authenticator that the connection can
+            not be attempted by cancelling the Deferred.
+        """
         authenticator.cancel()
         return failure
     
     def _validate(self, result):
+        """ Internally used method which is part of a callback chain.
+            Its task is to verify that both sides of the connection could be
+            authenticated. In case both signal success the corresponding
+            protocols are registered.
+        """
         ((serverAuth, clientProtocol), (clientAuth, serverProtocol)) = result
         
         if not (serverAuth and clientAuth):
@@ -575,6 +795,8 @@ class EndpointConnection(object):
         self._clientProtocol.createRemoteObject(clientProtocol)
     
     def _logError(self, failure):
+        """ Internally used method to print out the errors for now...
+        """
         try:
             failure.printTraceback()
         except:
@@ -583,7 +805,16 @@ class EndpointConnection(object):
             print(failure.getErrorMessage())
     
     def getProtocol(self, endpoint):
-        """
+        """ Get the protocol which is part of this connection and belongs to
+            the given endpoint.
+            
+            @param endpoint:    Endpoint to which the protocol has to belong.
+            @type  endpoint:    rce.master.network.Endpoint
+            
+            @return:            Protocol which belongs to the endpoint and is
+                                part of this connection.
+            @rtype:             rce.master.network.Protocol
+                                (subclass of rce.master.base.Proxy)
         """
         if not (self._serverProtocol and self._serverEndpoint and
                 self._clientProtocol and self._clientEndpoint):
@@ -597,7 +828,9 @@ class EndpointConnection(object):
             raise InternalError('The endpoint is not part of this connection.')
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the endpoint connection and will
+            take care of destroying the participating protocols as well as
+            deleting all circular references.
         """
         self._serverProtocol.destroy()
         self._clientProtocol.destroy()
@@ -610,10 +843,19 @@ class EndpointConnection(object):
 
 
 class InterfaceConnection(object):
-    """
+    """ Representation of a connection between an interface and a protocol,
+        where both blong to the same endpoint.
     """
     def __init__(self, interface, protocol):
-        """
+        """ Initialize the interface-protocol connection.
+            
+            @param interface:   Interface which is on one side of the
+                                connection.
+            @type  interface:   rce.master.network.Interface
+            
+            @param protocol:    Protocol which is on one side of the
+                                connection.
+            @type  protocol:    rce.master.network.Protocol
         """
         assert protocol._endpoint == interface._endpoint
         
@@ -636,12 +878,18 @@ class InterfaceConnection(object):
         self._interface.unregisterRemoteID(self._protocol, remoteID)
     
     def getID(self):
-        """
+        """ Get the unique ID of the interface which is part of this
+            connection.
+            
+            @return:            Unique ID of the interface.
+            @rtype:             uuid.UUID
         """
         return self._interface.UID
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the interface-protocol
+            connection and will take care of destroying all objects owned by
+            this connection as well as deleting all circular references.
         """
         for user in self._users.copy():
             user.destroy()
@@ -656,12 +904,17 @@ class InterfaceConnection(object):
 
 
 class Connection(object):
-    """
+    """ Representation of a connection between two interfaces.
     """
     def __init__(self, connectionA, connectionB):
+        """ Initialize the connection, which is represented by two 
+            interface-protocol connections.
+            
+            @param connectionX: Interface-Protocol connection which is part
+                                of the connection.
+            @type  connectionX: rce.master.network.InterfaceConnection
         """
-        """
-        super(Connection, self).__init__()
+        assert connectionA != connectionB
         
         self._connectionA = connectionA
         connectionA.registerUser(self, connectionB.getID())
@@ -670,7 +923,8 @@ class Connection(object):
         connectionB.registerUser(self, connectionA.getID())
     
     def destroy(self):
-        """
+        """ Method should be called to destroy the connection and will
+            take care deleting all circular references.
         """
         if self._connectionA:
             self._connectionA.unregisterUser(self, self._connectionB.getID())

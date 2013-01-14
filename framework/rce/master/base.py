@@ -71,21 +71,22 @@ class _Destructor(object):
 class _RedirectedMethodBase(object):
     """
     """
-    def __init__(self, name):
-        self._name = name
+    def __init__(self, name, doc):
+        self.__name__ = name
+        self.__doc__ = doc
     
     def _makeProxy(self, instance):
         raise NotImplementedError()
     
     def _call(self, ref, (args, kw)):
-        return getattr(ref, self._name)(*args, **kw)
+        return getattr(ref, self.__name__)(*args, **kw)
     
     def _filter(self, failure, instance):
         if failure.check(DeadReferenceError, PBConnectionLost):
             instance.notify(failure)
         else:
             print('Received the following error message when calling {0} from '
-                  'class {1}: {2}'.format(self._name,
+                  'class {1}: {2}'.format(self.__name__,
                                           instance.__class__.__name__,
                                           failure.getErrorMessage()))
         
@@ -126,8 +127,8 @@ class _RedirectedMethodDeferred(_RedirectedMethodBase):
 class _RedirectedMethodProxy(_RedirectedMethodBase):
     """
     """
-    def __init__(self, name, proxyCls):
-        super(_RedirectedMethodProxy, self).__init__(name)
+    def __init__(self, name, doc, proxyCls):
+        super(_RedirectedMethodProxy, self).__init__(name, doc)
         self._proxyCls = proxyCls
     
     def _makeProxy(self, instance):
@@ -170,10 +171,13 @@ class ProxyMeta(type):
         for attrName, attr in dict.iteritems():
             if isinstance(attr, _DeferredMethod):
                 rmtDict[attrName] = attr.method
-                dict[attrName] = _RedirectedMethodDeferred(attrName)
+                dict[attrName] = _RedirectedMethodDeferred(attrName,
+                                                           attr.method.__doc__)
             elif isinstance(attr, _ProxyMethod):
                 rmtDict[attrName] = attr.method
-                dict[attrName] = _RedirectedMethodProxy(attrName, attr.cls)
+                dict[attrName] = _RedirectedMethodProxy(attrName,
+                                                        attr.method.__doc__,
+                                                        attr.cls)
             elif isinstance(attr, _Destructor):
                 if '__del__' in rmtDict:
                     raise TypeError("Class '{0}' can have only one "
