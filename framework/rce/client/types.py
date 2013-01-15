@@ -40,7 +40,7 @@
         
         DM      ROS Message
         
-        ST      Status message
+        ST      Status message (currently not used)
         ER      Error message
 """
 

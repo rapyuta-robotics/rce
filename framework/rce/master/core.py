@@ -167,7 +167,7 @@ class RoboEarthCloudEngine(object):
             robot process.
             
             @param user:        User instance under which the robot has logged
-                                in and will run.
+                                in and will run. (Owner of the robot)
             @type  user:        rce.master.user.User
                                 (subclass of twisted.spread.pb.Referenceable)
             

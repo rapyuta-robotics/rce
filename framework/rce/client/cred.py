@@ -38,12 +38,24 @@ from rce.client.interfaces import IRobotCredentials
 
 
 class RobotCredentials(object):
-    """
+    """ Robot credentials which are used to authenticate the websocket
+        connection from the robot to the cloud engine.
     """
     implements(IRobotCredentials)
     
     def __init__(self, userID, robotID, key):
-        """
+        """ Initialize the robot credentials.
+            
+            @param userID:      ID which is used to identify the owner of the
+                                robot.
+            @type  userID:      str
+            
+            @param robotID:     ID which is used to identify the robot.
+            @type  robotID:     str
+            
+            @param key:         Key which should used for the authentication
+                                of the user/robot.
+            @type  key:         str
         """
         self._userID = userID
         self._robotID = robotID
@@ -51,13 +63,22 @@ class RobotCredentials(object):
     
     @property
     def userID(self):
-        """ ... """
+        """ User ID of the robot owner. """
         return self._userID
     
     @property
     def robotID(self):
-        """ ... """
+        """ Robot ID to identify the robot. """
         return self._robotID
     
     def checkKey(self, key):
+        """ Check if the provided key matches the stored key which has been
+            received from the client.
+            
+            @param key:         True value of the key which should be used to
+                                verify the credentials.
+            @type  key:         str
+            
+            @return:            True if the key matches; False otherwise.
+        """
         return self._key == key

@@ -52,8 +52,7 @@ from autobahn.websocket import listenWS
 # Custom imports
 from rce.error import InternalError, DeadConnection
 from rce.client.interfaces import IRobot, IRobotCredentials
-from rce.client.protocol import RobotWebSocketProtocol, \
-    CloudEngineWebSocketFactory
+from rce.client.protocol import CloudEngineWebSocketFactory
 from rce.monitor.converter import PublisherConverter, SubscriberConverter, \
     ServiceClientConverter, ServiceProviderConverter, Forwarder
 from rce.slave.endpoint import Endpoint
@@ -61,7 +60,8 @@ from rce.slave.namespace import Namespace
 
 
 class Robot(Namespace):
-    """
+    """ Representation of a namespace in the robot process, which is part of
+        the cloud engine internal communication.
     """
     implements(IRobot)
     
@@ -70,7 +70,11 @@ class Robot(Namespace):
             Forwarder, Forwarder, Forwarder, Forwarder]
     
     def __init__(self, user):
-        """
+        """ Initialize the robot.
+            
+            @param user:        Remote reference to the User instance who owns
+                                this robot.
+            @type  user:        twisted.spread.pb.RemoteReference
         """
         self._user = user
         self._connection = None
@@ -81,7 +85,11 @@ class Robot(Namespace):
         self._connection.sendErrorMessage(failure.getTraceback())
     
     def createContainer(self, tag):
-        """
+        """ Create a new Container object.
+            
+            @param tag:         Tag which is used to identify the container
+                                in subsequent requests.
+            @type  tag:         str
         """
         try:
             d = self._user.callRemote('createContainer', tag)
@@ -91,7 +99,11 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def destroyContainer(self, tag):
-        """
+        """ Destroy a Container object.
+            
+            @param tag:         Tag which is used to identify the container
+                                which should be destroyed.
+            @type  tag:         str
         """
         try:
             d = self._user.callRemote('destroyContainer', tag)
@@ -101,7 +113,38 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def addNode(self, cTag, nTag, pkg, exe, args='', name='', namespace=''):
-        """
+        """ Add a node to a container / ROS environment.
+            
+            @param cTag:        Tag which is used to identify the container /
+                                ROS environment to which the node should be
+                                added.
+            @type  cTag:        str
+            
+            @param nTag:        Tag which is used to identify the node in
+                                subsequent requests.
+            @type  nTag:        str
+
+            @param pkg:         Name of ROS package where the node can be
+                                found.
+            @type  pkg:         str
+
+            @param exe:         Name of executable (node) which should be
+                                launched.
+            @type  exe:         str
+            
+            @param args:        Additional arguments which should be used for
+                                the launch. Can contain the directives
+                                $(find PKG) or $(env VAR). Other special
+                                characters as '$' or ';' are not allowed.
+            @type  args:        str
+            
+            @param name:        Name of the node under which the node should be
+                                launched.
+            @type  name:        str
+            
+            @param namespace:   Namespace in which the node should be started
+                                in the environment.
+            @type  namespace:   str
         """
         try:
             d = self._user.callRemote('addNode', cTag, nTag, pkg, exe, args,
@@ -112,7 +155,16 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def removeNode(self, cTag, nTag):
-        """
+        """ Remove a node from a container / ROS environment.
+            
+            @param cTag:        Tag which is used to identify the container /
+                                ROS environment from which the node should be
+                                removed.
+            @type  cTag:        str
+            
+            @param nTag:        Tag which is used to identify the ROS node
+                                which should removed.
+            @type  nTag:        str
         """
         try:
             d = self._user.callRemote('removeNode', cTag, nTag)
@@ -122,7 +174,36 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def addInterface(self, eTag, iTag, iType, clsName, addr=''):
-        """
+        """ Add an interface to an endpoint, i.e. a ROS environment or a 
+            Robot object.
+            
+            @param eTag:        Tag which is used to identify the endpoint to
+                                which the interface should be added; either
+                                a container tag or robot ID.
+            @type  eTag:        str
+                            
+            @param iTag:        Tag which is used to identify the interface in
+                                subsequent requests.
+            @type  iTag:        str
+            
+            @param iType:       Type of the interface. The type consists of a
+                                prefix and a suffix.
+                                 - Valid prefixes are:
+                                     ServiceClient, ServiceProvider,
+                                     Publisher, Subscriber
+                                 - Valid suffixes are:
+                                     Interface, Converter, Forwarder
+            @type  iType:       str
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param addr:        ROS name/address which the interface should
+                                use. Only necessary if the suffix of @param
+                                iType is 'Interface'.
+            @type  addr:        str
         """
         try:
             d = self._user.callRemote('addInterface', eTag, iTag, iType,
@@ -132,18 +213,43 @@ class Robot(Namespace):
         
         d.addErrback(self._reportError)
     
-    def removeInterface(self, iTag):
-        """
+    def removeInterface(self, eTag, iTag):
+        """ Remove an interface from an endpoint, i.e. a ROS environment or a 
+            Robot object.
+            
+            @param eTag:        Tag which is used to identify the endpoint from
+                                which the interface should be removed; either
+                                a container tag or robot ID.
+            @type  eTag:        str
+            
+            @param iTag:        Tag which is used to identify the interface
+                                which should be removed.
+            @type  iTag:        str
         """
         try:
-            d = self._user.callRemote('removeInterface', iTag)
+            d = self._user.callRemote('removeInterface', eTag, iTag)
         except DeadReferenceError:
             raise DeadConnection()
         
         d.addErrback(self._reportError)
     
     def addParameter(self, cTag, name, value):
-        """
+        """ Add a parameter to a container / ROS environment.
+            
+            @param cTag:        Tag which is used to identify the container /
+                                ROS environment to which the parameter should
+                                be added.
+            @type  cTag:        str
+            
+            @param name:        Name of the parameter which should be added.
+                                It is also used to identify the parameter in
+                                subsequent requests.
+            @type  name:        str
+            
+            @param value:       Value of the parameter which should be added.
+                                String values can contain the directives
+                                $(find PKG) or $(env VAR).
+            @type  value:       str, int, float, bool, list
         """
         try:
             d = self._user.callRemote('addParameter', cTag, name, value)
@@ -153,7 +259,15 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def removeParameter(self, cTag, name):
-        """
+        """ Remove a parameter from a container / ROS environment.
+            
+            @param cTag:        Tag which is used to identify the container /
+                                ROS environment from which the parameter should
+                                be removed.
+            @type  cTag:        str
+            
+            @param name:        Name of the parameter which should be removed.
+            @type  name:        str
         """
         try:
             d = self._user.callRemote('removeParameter', cTag, name)
@@ -163,7 +277,15 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def addConnection(self, tagA, tagB):
-        """
+        """ Create a connection between two interfaces.
+            
+            @param tagX:        Tag which is used to identify the interface
+                                which should be connected. It has to be of the
+                                form:
+                                    [endpoint tag]/[interface tag]
+                                For example:
+                                    testRobot/logPublisher
+            @type  tagX:        str
         """
         try:
             d = self._user.callRemote('addConnection', tagA, tagB)
@@ -173,7 +295,15 @@ class Robot(Namespace):
         d.addErrback(self._reportError)
     
     def removeConnection(self, tagA, tagB):
-        """
+        """ Destroy a connection between two interfaces.
+            
+            @param tagX:        Tag which is used to identify the interface
+                                which should be disconnected. It has to be of
+                                the form:
+                                    [endpoint tag]/[interface tag]
+                                For example:
+                                    testRobot/logPublisher
+            @type  tagX:        str
         """
         try:
             d = self._user.callRemote('removeConnection', tagA, tagB)
@@ -182,31 +312,98 @@ class Robot(Namespace):
         
         d.addErrback(self._reportError)
     
-    def receivedFromClient(self, iTag, msgType, msgID, msg):
-        """
+    def receivedFromClient(self, iTag, clsName, msgID, msg):
+        """ Process a data message which has been received from the robot
+            client and send the message to the appropriate interface.
+                            
+            @param iTag:        Tag which is used to identify the interface to
+                                which this message should be sent.
+            @type  iTag:        str
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param msgID:       Message ID which can be used to get a
+                                correspondence between request and response
+                                message for a service call.
+            @type  msgID:       str
+            
+            @param msg:         Message which should be sent. It has to be a
+                                JSON compatible dictionary where part or the
+                                complete message can be replaced by a StringIO
+                                instance which is interpreted as binary data.
+            @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
         try:
-            self._interfaces[iTag].receive(msgType, msgID, msg)
+            self._interfaces[iTag].receive(clsName, msgID, msg)
         except DeadReferenceError:
             raise DeadConnection()
     
     def sendToClient(self, iTag, msgType, msgID, msg):
+        """ Process a data message which has been received from an interface
+            send the message to the registered connection.
+                            
+            @param iTag:        Tag which is used to identify the interface
+                                from which this message was sent.
+            @type  iTag:        str
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param msgID:       Message ID which can be used to get a
+                                correspondence between request and response
+                                message for a service call.
+            @type  msgID:       str
+            
+            @param msg:         Message which should be sent. It has to be a
+                                JSON compatible dictionary where part or the
+                                complete message can be replaced by a StringIO
+                                instance which is interpreted as binary data.
+            @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
-        """
+        if not self._connection:
+            # TODO: What exactly?
+            return
+        
         self._connection.sendDataMessage(iTag, msgType, msgID, msg)
     
     def registerConnectionToRobot(self, connection):
-        """
+        """ Register the connection to the robot with this avatar.
+            
+            @param connection:  Connection which should be registered.
         """
         self._connection = connection
     
     def unregisterConnectionToRobot(self):
-        """
+        """ Unregister the connection to the robot with this avatar.
         """
         self._connection = None
     
     def remote_createInterface(self, uid, iType, msgType, addr):
-        """
+        """ Create an Interface object in the robot namespace and therefore in
+            the endpoint.
+            
+            @param uid:         Unique ID which is used to identify the
+                                interface in the internal communication.
+            @type  uid:         str
+            
+            @param iType:       Type of the interface encoded as an integer.
+                                Refer to rce.slave.interface.Types for more
+                                information.
+            @type  IType:       int
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @return:            New Interface instance.
+            @rtype:             rce.master.network.Interface
+                                (subclass of rce.master.base.Proxy)
         """
         return self._MAP[iType](self, UUID(bytes=uid), msgType, addr)
     
@@ -225,7 +422,9 @@ class Robot(Namespace):
         del self._interfaces[tag]
     
     def remote_destroy(self):
-        """
+        """ Method should be called to destroy the robot and will take care
+            of destroying all objects owned by this robot as well as
+            deleting all circular references.
         """
         if self._connection:
             self._connection.dropConnection()
@@ -237,23 +436,37 @@ class Robot(Namespace):
 
 
 class RobotClient(Endpoint):
-    """
+    """ Realm as well as Credentials Checker for the twisted cred system. It
+        is responsible for storing all robots (namespaces).
     """
     implements(IRealm, ICredentialsChecker)
     
     credentialInterfaces = (IRobotCredentials,)
     
     def __init__(self, reactor, commPort):
-        """
+        """ Initialize the Robot Client.
+            
+            @param reactor:     Reference to the twisted reactor used in this
+                                robot process.
+            @type  reactor:     twisted::reactor
+            
+            @param commPort:    Port where the server for the cloud engine
+                                internal communication will listen for incoming
+                                connections.
+            @type  commPort:    int
         """
         Endpoint.__init__(self, reactor, commPort)
         
         self._pendingRobots = {}
     
     def requestAvatar(self, avatarId, mind, *interfaces):
-        """ 
+        """ Returns an avatar for the websocket connection to the robot.
             
-            From IRealm.
+            Has to be implemented for twisted::IRealm.
+            
+            @return:            Avatar for websocket connection to the robot.
+                                (type: rce.robot.Robot)
+            @rtype:             twisted::Deferred
         """
         if IRobot not in interfaces:
             raise NotImplementedError('RobotClient only handles IRobot.')
@@ -266,7 +479,8 @@ class RobotClient(Endpoint):
         return IRobot, robot, robot.remote_destroy
     
     def _passwordMatch(self, matched, avatarId):
-        """
+        """ Internally used method to check whether the supplied key matched.
+            Return the avatar ID on success; otherwise return an error.
         """
         if matched:
             return avatarId
@@ -274,9 +488,13 @@ class RobotClient(Endpoint):
             return Failure(UnauthorizedLogin())
 
     def requestAvatarId(self, credentials):
-        """ 
+        """ Check if the supplied credentials are valid.
             
-            From ICredentialsChecker.
+            Has to be implemented for twisted::ICredentialsChecker.
+            
+            @return:            Avatar ID if the authentication is successful.
+                                (type: str)
+            @rtype:             twisted::Deferred
         """
         avatarId = (credentials.userID, credentials.robotID)
         
@@ -288,7 +506,25 @@ class RobotClient(Endpoint):
             return fail(UnauthorizedLogin())
     
     def remote_createNamespace(self, user, userID, robotID, key):
-        """
+        """ Create a Robot namespace.
+            
+            @param user:        User instance to which this namespace belongs
+                                and which provides the necessar callbacks for
+                                the Robot Avatar.
+            @type  user:        twisted.spread.pb.RemoteReference
+            
+            @param userID:      ID of the user which owns the robot.
+            @type  userID:      str
+            
+            @param robotID:     ID of the robot which has to be created.
+            @type  robotID:     str
+            
+            @param uid:         Key which will be used to authenticate the
+                                webscoket connection.
+            @type  uid:         str
+            
+            @return:            Reference to the newly created robot.
+            @rtype:             rce.robot.Robot
         """
         uid = (userID, robotID)
         
@@ -316,7 +552,7 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort):
     d.addErrback(_err)
     
     portal = Portal(client, (client,))
-    robot = CloudEngineWebSocketFactory(RobotWebSocketProtocol, portal,
+    robot = CloudEngineWebSocketFactory(portal,
                                         'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
     

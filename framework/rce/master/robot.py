@@ -144,7 +144,22 @@ class RobotEndpoint(Endpoint):
     
     @Proxy.returnProxy(Robot)
     def createNamespace(self, user, robotID, key):
-        """
+        """ Create a Namespace object in the endpoint.
+            
+            @param user:        User instance to which this namespace will
+                                belong.
+            @type  user:        rce.master.user.User
+            
+            @param robotID:     ID of the robot which has to be created.
+            @type  robotID:     str
+            
+            @param uid:         Key which will be used to authenticate the
+                                webscoket connection.
+            @type  uid:         str
+            
+            @return:            New Robot instance.
+            @rtype:             rce.master.robot.Robot
+                                (subclass of rce.master.base.Proxy)
         """
         return self.obj.callRemote('createNamespace', user, user.userID,
                                    robotID, key)

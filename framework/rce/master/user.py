@@ -152,7 +152,9 @@ class User(Referenceable):
             @type  exe:         str
             
             @param args:        Additional arguments which should be used for
-                                the launch.
+                                the launch. Can contain the directives
+                                $(find PKG) or $(env VAR). Other special
+                                characters as '$' or ';' are not allowed.
             @type  args:        str
             
             @param name:        Name of the node under which the node should be
@@ -205,6 +207,8 @@ class User(Referenceable):
             @type  name:        str
             
             @param value:       Value of the parameter which should be added.
+                                String values can contain the directives
+                                $(find PKG) or $(env VAR).
             @type  value:       str, int, float, bool, list
         """
         try:

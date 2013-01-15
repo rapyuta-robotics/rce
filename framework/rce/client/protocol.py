@@ -79,7 +79,9 @@ class MasterRobotAuthentication(Resource):
     def __init__(self, realm):
         """ Initialize the authentication resource.
             
-            # TODO: Add description
+            @param realm:       Realm of the cloud engine which provides the
+                                method to login a new user/robot.
+            @type  realm:       rce.master.core.RoboEarthCloudEngine
         """
         self._realm = realm
     
@@ -177,6 +179,12 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     """
     def __init__(self, portal):
         """ Initialize the Protocol.
+            
+            @param portal:      Portal which is responsible for the
+                                authentication of the websocket connection and
+                                which will provide an Avatar for the robot in
+                                the cloud engine.
+            @type  portal:      twisted.cred.portal.Portal
         """
         self._protal = portal
         self._assembler = MessageAssembler(self, settings.MSG_QUEUE_TIMEOUT)
@@ -333,8 +341,14 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                      "request. 'addInterfaces' is missing "
                                      'key: {0}'.format(e))
         
-        for iTag in data.pop('removeInterfaces', []):
-            self._avatar.removeInterface(iTag)
+        for conf in data.pop('removeInterfaces', []):
+            try:
+                self._avatar.removeInterface(conf['endpointTag'],
+                                             conf['interfaceTag'])
+            except KeyError as e:
+                raise InvalidRequest("Can not process 'ConfigureComponent' "
+                                     "request. 'removeInterfaces' is missing "
+                                     'key: {0}'.format(e))
         
         for param in data.pop('setParam', []):
             try:
@@ -396,6 +410,13 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     def onMessage(self, msg, binary):
         """ Method is called by the Autobahn engine when a message has been
             received from the client.
+            
+            @param msg:         Message which was received as a string.
+            @type  msg:         str
+            
+            @param binary:      Flag which is True if the message has binary
+                                format and False otherwise.
+            @type  binary:      bool
         """
         log.msg('WebSocket: Received new message from client. '
                 '(binary={0})'.format(binary))
@@ -416,11 +437,13 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     
     def sendMessage(self, msg):
         """ Internally used method to send a message to the robot.
-            (Should not be used from outside the Protocol)
+            
+            Should not be used from outside the Protocol; instead use the
+            methods 'sendDataMessage' or 'sendErrorMessage'.
             
             (Overwrites method from autobahn.websocket.WebSocketServerProtocol)
             
-            @param msg:     Message which should be sent
+            @param msg:     Message which should be sent.
         """
         uriBinary, msgURI = recursiveBinarySearch(msg)
         
@@ -430,15 +453,40 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             WebSocketServerProtocol.sendMessage(self,
                 binData[0] + binData[1].getvalue(), binary=True)
     
-    def sendDataMessage(self, iTag, msgType, msgID, msg):
-        """
+    def sendDataMessage(self, iTag, clsName, msgID, msg):
+        """ Callback for IRobot Avatar to send a data message to the robot
+            using this websocket connection.
+            
+            @param iTag:        Tag which is used to identify the interface
+                                from the message is sent.
+            @type  iTag:        str
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param msgID:       Message ID which can be used to get a
+                                correspondence between request and response
+                                message for a service call.
+            @type  msgID:       str
+            
+            @param msg:         Message which should be sent. It has to be a
+                                JSON compatible dictionary where part or the
+                                complete message can be replaced by a StringIO
+                                instance which is interpreted as binary data.
+            @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
         self.sendMessage({'type' : types.DATA_MESSAGE,
-                          'data' : {'iTag' : iTag, 'type' : msgType,
+                          'data' : {'iTag' : iTag, 'type' : clsName,
                                     'msgID' : msgID, 'msg' : msg}})
     
     def sendErrorMessage(self, msg):
-        """
+        """ Callback for IRobot Avatar to send an error message to the robot
+            using this websocket connection.
+            
+            @param msg:         Message which should be sent to the robot.
+            @type  msg:         str
         """
         self.sendMessage({'data' : msg, 'type' : types.ERROR})
     
@@ -459,18 +507,32 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the
         RoboEarth Cloud Engine.
     """
-    def __init__(self, protocolCls, manager, url, **kw):
+    def __init__(self, realm, url, **kw):
         """ Initialize the Factory.
+            
+            @param portal:      Portal which is responsible for the
+                                authentication of the websocket connection and
+                                which will provide an Avatar for the robot in
+                                the cloud engine.
+            @type  portal:      twisted.cred.portal.Portal
+            
+            @param url:         URL where the websocket server factory will
+                                listen for connections. For more information
+                                refer to the base class:
+                                    autobahn.websocket.WebSocketServerFactory
+            @type  url:         str
+            
+            @param kw:          Additional keyworded arguments will be passed
+                                to the __init__ of the base class.
         """
         WebSocketServerFactory.__init__(self, url, **kw)
         
-        self._protocolCls = protocolCls
-        self._manager = manager
+        self._realm = realm
     
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection
             attempt is made.
         """
-        p = self._protocolCls(self._manager)
+        p = RobotWebSocketProtocol(self._realm)
         p.factory = self
         return p
