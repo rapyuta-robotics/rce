@@ -38,49 +38,6 @@ from rce.master.network import Endpoint, Namespace
 from rce.master.base import Proxy
 
 
-class RobotProcessError(Exception):
-    """ Exception is raised if there is no free robot process.
-    """
-
-
-class Distributor(object):
-    """ The Distributor is responsible for selecting the appropriate robot
-        process to create a websocket connection. It therefore also keeps track
-        of all the robot processes registered with the cloud engine.
-        
-        There should only one instance running in the Master process.
-    """
-    def __init__(self):
-        """ Initialize the Distributor.
-        """
-        self._robots = set()
-        self._iter = iter(self._robots)
-    
-    def registerRobotProcess(self, robot):
-        assert robot not in self._robots
-        self._robots.add(robot)
-    
-    def unregisterRobotProcess(self, robot):
-        assert robot in self._robots
-        self._robots.remove(robot)
-    
-    def getNextLocation(self):
-        """ Get the next endpoint running in an robot process to create a new
-            robot websocket connection.
-            
-            @return:            Next robot endpoint.
-            @rtype:             rce.master.robot.RobotEndpoint
-                                (subclass of rce.master.base.Proxy)
-        """
-        try:
-            return min(self._robots, key=lambda r: r.active)
-        except ValueError:
-            raise RobotProcessError('There is no free robot process.')
-    
-    def cleanUp(self):
-        assert len(self._robots) == 0
-
-
 class Robot(Namespace):
     """ Representation of a namespace which has a websocket connection from a
         robot assigned and is part of the cloud engine internal communication.
@@ -129,7 +86,7 @@ class RobotEndpoint(Endpoint):
         """ The number of active robot websocket connections in the
             robot process.
         """
-        return len(self._namespace)
+        return len(self._namespaces)
     
     def getAddress(self):
         """ Get the address of the robot endpoint's internal communication

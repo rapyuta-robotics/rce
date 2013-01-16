@@ -50,20 +50,8 @@ class InvalidKey(Error):
     """
 
 
-class SerializationError(InternalError):
-    """ This error is used for all (de-)serialization errors of
-        internal messages.
-    """
-
-
 class MaxNumberExceeded(Error):
     """ Indicates that a quantity has exceeded an upper limit.
-    """
-
-
-class UserConstraintError(MaxNumberExceeded):
-    """ Error is raised when there are more active users than allowed in a
-        manager.
     """
 
 

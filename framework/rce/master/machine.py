@@ -30,18 +30,58 @@
 #     
 #     
 
-# twisted specific imports
-from twisted.internet.address import IPv4Address
-from twisted.spread.pb import DeadReferenceError
-
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
-from rce.master.base import Proxy
+from rce.master.container import Container
 
 
-class MachineError(Exception):
+class ContainerProcessError(Exception):
     """ Exception is raised if there is no free container process.
     """
+
+
+class RobotProcessError(Exception):
+    """ Exception is raised if there is no free robot process.
+    """
+
+
+class Distributor(object):
+    """ The Distributor is responsible for selecting the appropriate robot
+        process to create a websocket connection. It therefore also keeps track
+        of all the robot processes registered with the cloud engine.
+        
+        There should only one instance running in the Master process.
+    """
+    def __init__(self):
+        """ Initialize the Distributor.
+        """
+        self._robots = set()
+        self._iter = iter(self._robots)
+    
+    def registerRobotProcess(self, robot):
+        assert robot not in self._robots
+        self._robots.add(robot)
+    
+    def unregisterRobotProcess(self, robot):
+        assert robot in self._robots
+        self._robots.remove(robot)
+    
+    def getNextLocation(self):
+        """ Get the next endpoint running in an robot process to create a new
+            robot websocket connection.
+            
+            @return:            Next robot endpoint.
+            @rtype:             rce.master.robot.RobotEndpoint
+                                (subclass of rce.master.base.Proxy)
+        """
+        try:
+            return min(self._robots, key=lambda r: r.active)
+        except ValueError:
+            raise RobotProcessError('There is no free robot process.')
+    
+    def cleanUp(self):
+        assert len(self._robots) == 0
+
 
 
 class LoadBalancer(object):
@@ -95,7 +135,7 @@ class LoadBalancer(object):
         try:
             return min(self._machines, key=lambda m: m.active)
         except ValueError:
-            raise MachineError('There is no free machine.')
+            raise ContainerProcessError('There is no free container process.')
     
     def createContainer(self, uid):
         """ Select an appropriate machine and create a container.
@@ -191,54 +231,3 @@ class Machine(object):
     
     def __hash__(self):
         return hash(self._ip)
-
-
-class Container(Proxy):
-    """ Representation of an LXC container.
-    """
-    def __init__(self, machine):
-        """ Initialize the Container.
-            
-            @param machine:     Machine in which the container was created.
-            @type  machine:     rce.master.machine.Machine
-        """
-        super(Container, self).__init__()
-        
-        self._machine = machine
-        machine.registerContainer(self)
-    
-    def getAddress(self):
-        """ Get the address which should be used to connect to the environment
-            process for the cloud engine internal communication.
-            
-            @return:            twisted::IPv4Address which can be used to
-                                connect to the ServerFactory of the cloud
-                                engine internal communication protocol.
-            @rtype:             twisted::Deferred
-        """
-        d = self._getPort()
-        d.addCallback(lambda port: IPv4Address('TCP', self._machine._ip, port))
-        return d
-    
-    @Proxy.returnDeferred
-    def _getPort(self):
-        return self.obj.callRemote('getPort')
-    
-    def destroy(self):
-        """ Method should be called to destroy the container and will take care
-            of deleting all circular references.
-        """
-        if self._machine:
-            self._machine.unregisterContainer(self)
-            self._machine = None
-            
-            super(Container, self).destroy()
-        else:
-            print('machine.Container destroy() called multiple times...')
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except DeadReferenceError:
-            pass

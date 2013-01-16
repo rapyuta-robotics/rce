@@ -49,7 +49,9 @@ class ArgumentMixin(object):
         """ Initialize the argument mixin. It needs the manager instance as
             fist argument.
             
-            @param loader:    ...
+            @param loader:      Loader which can be used to import ROS
+                                resources.
+            @type  loader:      rce.util.loader.Loader
         """
         self._loader = loader
     
@@ -58,11 +60,7 @@ class ArgumentMixin(object):
             expression with corresponding package path.
         """
         path = self._loader.findPkgPath(match.group('pkg'))
-        
-        if ' ' in path:
-            return '"{0}"'.format(path)
-        else:
-            return path
+        return '"{0}"'.format(path) if ' ' in path else path
     
     def _replaceEnv(self, match):
         """ Internally used method to replace found matches of _RE_ENV regular

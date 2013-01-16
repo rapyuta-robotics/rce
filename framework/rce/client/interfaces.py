@@ -75,8 +75,8 @@ class IRobot(Interface):
             
             @param args:        Additional arguments which should be used for
                                 the launch. Can contain the directives
-                                $(find PKG) or $(env VAR). Other special
-                                characters as '$' or ';' are not allowed.
+                                $(find PKG) and/or $(env VAR). Other special
+                                characters such as '$' or ';' are not allowed.
             @type  args:        str
             
             @param name:        Name of the node under which the node should be
@@ -162,8 +162,8 @@ class IRobot(Interface):
             @type  name:        str
             
             @param value:       Value of the parameter which should be added.
-                                String values can contain the directives
-                                $(find PKG) or $(env VAR).
+                                Top-level string values can contain the
+                                directives $(find PKG) and/or $(env VAR).
             @type  value:       str, int, float, bool, list
         """
     

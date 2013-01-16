@@ -32,6 +32,7 @@
 
 # Python specific imports
 import zlib
+from uuid import uuid4
 
 try:
     from cStringIO import StringIO, InputType, OutputType
@@ -56,13 +57,30 @@ GZIP_LVL = settings.GZIP_LVL
 
 
 class _AbstractConverter(Interface):
-    """ Base class which is used to handle and monitor a converter.
+    """ Abstract base class which provides the basics for the robot-side
+        interfaces.
     """
-    def __init__(self, owner, uid, msgType, tag):
-        """ Initialize the Converter monitor.
+    def __init__(self, owner, uid, clsName, tag):
+        """ Initialize the robot-side Interface.
+            
+            @param owner:       Namespace to which this interface belongs.
+            @type  owner:       rce.robot.Robot
+            
+            @param uid:         Unique ID which is used to identify the
+                                interface in the internal communication.
+            @type  uid:         uuid.UUID
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param tag:         Unique ID which is used to identify the
+                                interface in the external communication.
+            @type  tag:         str
         """
         self._owner = owner
-        self._msgType = msgType
+        self._clsName = clsName
         self._tag = tag
         
         Interface.__init__(self, owner, uid)
@@ -71,13 +89,27 @@ class _AbstractConverter(Interface):
     def tag(self):
         """ Interface tag of the converter. """
         return self._tag
+    
+    def _receive(self, msg, msgID):
+        """ This method is used as a hook to send the message received from the
+            robot to the appropriate protocol.
+        """
+        raise NotImplementedError("The method '_receive' has to "
+                                  'be implemented.')
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        """ This method is used as a hook to send the message received from the
+            protocol to the robot.
+        """
+        raise NotImplementedError("The method '_sendToClient' has to "
+                                  'be implemented.')
 
 
 class _ConverterBase(_AbstractConverter):
-    """ Base class which is used to handle and monitor a converter.
+    """ Class which implements the basic functionality of a Converter.
     """
-    def __init__(self, owner, uid, msgType, tag):
-        _AbstractConverter.__init__(self, owner, uid, msgType)
+    def __init__(self, owner, uid, clsName, tag):
+        _AbstractConverter.__init__(self, owner, uid, clsName)
         
         self._converter = owner.converter
         
@@ -89,25 +121,25 @@ class _ConverterBase(_AbstractConverter):
     __init__.__doc__ = _AbstractConverter.__init__.__doc__
     
     def _loadClass(self, loader):
-        """ This method is used to load the necessary ROS message class
-            definition. And is called as last step in the constructor.
+        """ This method is used as a hook to load the necessary ROS class
+            for the interface. And is called as last step in the constructor.
             
             This method has to be overwritten!
             
             References to the loaded classes have to be stored in the instance
             attributes '_inputMsgCls' and '_outputMsgCls'.
-            If there is no reference stored to an attribute it is assumed that
-            the converter can not convert corresponding messages and and error
-            is raised.
+            If there is no reference stored, i.e. None, it is assumed that
+            the converter can not convert the messages in the given direction
+            and an error is raised.
         """
         raise NotImplementedError("The method 'loadClass' has to "
                                   'be implemented.')
     
-    def receive(self, msgType, msgID, msg):
+    def receive(self, clsName, msgID, msg):
         """ Convert a JSON encoded message into a ROS message.
             
-            @param msgType:     Message type of the received message.
-            @type  msgType:     str
+            @param clsName:     Message/Service type of the received message.
+            @type  clsName:     str
             
             @param msgID:       Identifier which is used to match request /
                                 response message.
@@ -116,17 +148,12 @@ class _ConverterBase(_AbstractConverter):
             @param msg:         JSON compatible message which should be
                                 processed.
             @type  msg:         dict
-            
-            @raise:         errors.InternalError if the Converter can not
-                            convert incoming messages or
-                            erors.InvalidRequest if the message can not be
-                            converted the message due to an invalid format
         """
         if not self._inputMsgCls:
             raise InternalError('This converter can not handle incoming'
                                 ' messages.')
         
-        if msgType != self._msgType:
+        if clsName != self._clsName:
             raise InvalidRequest('Sent message type does not match the used '
                                  'message type for this interface.')
         
@@ -139,21 +166,24 @@ class _ConverterBase(_AbstractConverter):
         msg.serialize(buf)
         msg = buf.getvalue()
         
-        self.received(msg, msgID)
+        self._receive(msg, msgID)
     
     def _send(self, msg, msgID, protocol, remoteID):
         """ Convert a ROS message into a JSON encoded message.
             
-            @param msg:     Received ROS message in serialized form.
-            @type  msg:     str
+            @param msg:         Received ROS message in serialized form.
+            @type  msg:         str
             
-            @param msgID:   Unique ID to identify the message.
-            @type  msgID:   str
+            @param msgID:       Unique ID to identify the message.
+            @type  msgID:       str
             
-            @raise:         errors.InternalError if the Converter can not
-                            convert outgoing messages or
-                            erors.InvalidRequest if the message can not be
-                            converted the message due to an invalid format
+            @param protocol:    Protocol instance through which the message
+                                was sent.
+            @type  protocol:    rce.slave.protocol._Protocol
+            
+            @param remoteID:    Unique ID of the Interface which sent the
+                                message.
+            @type  remoteID:    uuid.UUID
         """
         if not self._outputMsgCls:
             raise InternalError('This converter can not handle outgoing '
@@ -167,14 +197,21 @@ class _ConverterBase(_AbstractConverter):
         except (TypeError, ValueError) as e:
             raise InvalidRequest(str(e))
         
-        self._owner.sendToClient(self._tag, self._msgType, msgID, jsonMsg)
+        self._sendToClient(jsonMsg, msgID, protocol, remoteID)
 
 
 class ServiceClientConverter(_ConverterBase):
-    """ Class which is used to handle and monitor a Service Converter.
+    """ Class which is used as a Service-Client Converter.
     """
+    def __init__(self, owner, uid, clsName, tag):
+        _ConverterBase.__init__(self, owner, uid, clsName, tag)
+        
+        self._pendingRequests = {}
+    
+    __init__.__doc__ = _ConverterBase.__init__.__doc__
+    
     def _loadClass(self, loader):
-        args = self._msgType.split('/')
+        args = self._clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('srv type is not valid. Has to be of the '
@@ -183,13 +220,41 @@ class ServiceClientConverter(_ConverterBase):
         srvCls = loader.loadSrv(*args)
         self._inputMsgCls = srvCls._response_class
         self._outputMsgCls = srvCls._request_class
+    
+    def _receive(self, msg, msgID):
+        try:
+            msgID, protocol, remoteID = self._pendingRequests.pop(msgID)
+        except KeyError:
+            raise InvalidRequest('Service Client does not wait for a response '
+                                 'with message ID {0}.'.format(msgID))
+        
+        self.respond(msg, msgID, protocol, remoteID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        while 1:
+            uid = uuid4().hex
+            
+            if uid not in self._pendingRequests:
+                break
+        
+        self._pendingRequests[uid] = (msgID, protocol, remoteID)
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
 
 
 class ServiceProviderConverter(_ConverterBase):
-    """ Class which is used to handle and monitor a Service-Provider Converter.
+    """ Class which is used as a Service-Provider Converter.
     """
+    def remote_connect(self, protocol, remoteID):
+        if self._protocols:
+            raise InternalError('Can not register more than one interface '
+                                'at a time with a Service-Provider.')
+        
+        return _ConverterBase.remote_connect(self, protocol, remoteID)
+    
+    remote_connect.__doc__ = _ConverterBase.remote_connect.__doc__
+    
     def _loadClass(self, loader):
-        args = self._msgType.split('/')
+        args = self._clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('srv type is not valid. Has to be of the '
@@ -198,42 +263,60 @@ class ServiceProviderConverter(_ConverterBase):
         srvCls = loader.loadSrv(*args)
         self._inputMsgCls = srvCls._request_class
         self._outputMsgCls = srvCls._response_class
+    
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
 
 
 class PublisherConverter(_ConverterBase):
-    """ Class which is used to handle and monitor a Publisher Converter.
+    """ Class which is used as a Publisher Converter.
     """
     def _loadClass(self, loader):
-        args = self._msgType.split('/')
+        args = self._clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('msg type is not valid. Has to be of the '
                                  'from pkg/msg, i.e. std_msgs/Int8.')
         
         self._outputMsgCls = loader.loadMsg(*args)
+    
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
 
 
 class SubscriberConverter(_ConverterBase):
-    """ Class which is used to handle and monitor a Subscriber Converter.
+    """ Class which is used as a Subscriber Converter.
     """
     def _loadClass(self, loader):
-        args = self._msgType.split('/')
+        args = self._clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('msg type is not valid. Has to be of the '
                                  'from pkg/msg, i.e. std_msgs/Int8.')
         
         self._inputMsgCls = loader.loadMsg(*args)
+    
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
 
 
-class Forwarder(_AbstractConverter):
-    """ Class which is used to handle and monitor a forwarder.
+class _ForwarderBase(_AbstractConverter):
+    """ Class which implements the basic functionality of a Forwarder.
     """
-    def receive(self, msgType, msgID, msg):
-        """ Convert a JSON encoded message into a ROS message.
+    def receive(self, clsName, msgID, msg):
+        """ Unwrap and inflate a JSON encoded ROS message.
             
-            @param msgType:     Message type of the received message.
-            @type  msgType:     str
+            @param clsName:     Message/Service type of the received message.
+            @type  clsName:     str
             
             @param msgID:       Identifier which is used to match request /
                                 response message.
@@ -242,27 +325,101 @@ class Forwarder(_AbstractConverter):
             @param msg:         JSON compatible message which should be
                                 processed.
             @type  msg:         dict
-            
-            @raise:         erors.InvalidRequest if the message can not be
-                            forwarded the message due to an invalid format
         """
-        if msgType != self._msgType:
+        if clsName != self._clsName:
             raise InvalidRequest('Sent message type does not match the used '
                                  'message type for this interface.')
         
         if not _checkIsStringIO(msg):
             raise InvalidRequest('Sent message is not a binary message.')
         
-        self.received(zlib.decompress(msg.getvalue()), msgID)
+        self._receive(zlib.decompress(msg.getvalue()), msgID)
     
     def _send(self, msg, msgID, protocol, remoteID):
-        """ Convert a ROS message into a JSON encoded message.
+        """ Wrap and deflate a ROS message in a JSON encoded message.
             
-            @param msg:     Received ROS message in serialized form.
-            @type  msg:     str
+            @param msg:         Received ROS message in serialized form.
+            @type  msg:         str
             
-            @param msgID:   Unique ID to identify the message.
-            @type  msgID:   str
+            @param msgID:       Unique ID to identify the message.
+            @type  msgID:       str
+            
+            @param protocol:    Protocol instance through which the message
+                                was sent.
+            @type  protocol:    rce.slave.protocol._Protocol
+            
+            @param remoteID:    Unique ID of the Interface which sent the
+                                message.
+            @type  remoteID:    uuid.UUID
         """
-        self._owner.sendToClient(self._tag, self._msgType, msgID,
-                                 StringIO(zlib.compress(msg, GZIP_LVL)))
+        self._sendToClient(StringIO(zlib.compress(msg, GZIP_LVL)), msgID,
+                           protocol, remoteID)
+
+
+class ServiceClientForwarder(_ForwarderBase):
+    """ Class which is used as a Service-Client Forwarder.
+    """
+    def __init__(self, owner, uid, clsName, tag):
+        _ForwarderBase.__init__(self, owner, uid, clsName, tag)
+        
+        self._pendingRequests = {}
+    
+    __init__.__doc__ = _ForwarderBase.__init__.__doc__
+    
+    def _receive(self, msg, msgID):
+        try:
+            msgID, protocol, remoteID = self._pendingRequests.pop(msgID)
+        except KeyError:
+            raise InvalidRequest('Service Client does not wait for a response '
+                                 'with message ID {0}.'.format(msgID))
+        
+        self.respond(msg, msgID, protocol, remoteID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        while 1:
+            uid = uuid4().hex
+            
+            if uid not in self._pendingRequests:
+                break
+        
+        self._pendingRequests[uid] = (msgID, protocol, remoteID)
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+
+
+class ServiceProviderForwarder(_ForwarderBase):
+    """ Class which is used as a Service-Provider Forwarder.
+    """
+    def remote_connect(self, protocol, remoteID):
+        if self._protocols:
+            raise InternalError('Can not register more than one interface '
+                                'at a time with a Service-Provider.')
+        
+        return _ForwarderBase.remote_connect(self, protocol, remoteID)
+    
+    remote_connect.__doc__ = _ForwarderBase.remote_connect.__doc__
+    
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+
+
+class PublisherForwarder(_ForwarderBase):
+    """ Class which is used as a Publisher Forwarder.
+    """
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+
+
+class SubscriberForwarder(_ForwarderBase):
+    """ Class which is used as a Subscriber Forwarder.
+    """
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+    
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)

@@ -38,41 +38,85 @@ from twisted.spread.pb import Referenceable
 
 # Custom imports
 from rce.error import ConnectionError
-from rce.slave.protocol import Protocol, RCEInternalProtocol
+from rce.slave.protocol import Loopback, RCEInternalProtocol
 
 
 class Endpoint(Referenceable):
-    """
+    """ Abstract base class for an Endpoint in a slave process.
     """
     def __init__(self, reactor, commPort):
-        """
+        """ Initialize the Endpoint.
+            
+            @param reactor:     Reference to the twisted reactor used in this
+                                robot process.
+            @type  reactor:     twisted::reactor
+            
+            @param commPort:    Port where the server for the cloud engine
+                                internal communication will listen for incoming
+                                connections.
+            @type  commPort:    int
         """
         self._reactor = reactor
-        reactor.listenTCP(commPort, RCEInternalServerFactory(self))
+        reactor.listenTCP(commPort, _RCEInternalServerFactory(self))
         
-        self._loopback = Protocol()
+        self._loopback = None
         
         self._pendingConnections = {}
         self._protocols = set()
     
     def remote_createNamespace(self, *args, **kw):
+        """ Create a Namespace in this endpoint.
+            
+            Method has to be implemented!
+            
+            @return:            New Namespace instance.
+            @rtype:             rce.slave.namespace.Namespace
         """
-        """
-        raise NotImplementedError()
+        raise NotImplementedError("Method 'remote_createNamespace' has"
+                                  'to be implemented.')
     
     def remote_getLoopback(self):
+        """ Get the loopback protocol.
+            
+            @return:            Reference to the loopback protocol.
+            @rtype:             rce.slave.protocol.Loopback
         """
-        """
+        if not self._loopback:
+            self._loopback = Loopback()
+        
         return self._loopback
     
     def remote_prepareConnection(self, connID, key, auth):
-        """
+        """ Prepare the endpoint for the connection attempt by adding the
+            necessary connection information to the remote process.
+            
+            @param connID:      Unique ID which is used to identify the
+                                connection and respond with the appropriate
+                                key.
+            @type  connID:      str
+            
+            @param key:         Key which is sent to the other side to
+                                authenticate the endpoint.
+            @type  key:         str
+            
+            @param auth:        Authenticator which is used to validate the
+                                key received from the other side.
+            @type  auth:        twisted.spread.pb.RemoteReference
         """
         assert connID not in self._pendingConnections
         self._pendingConnections[connID] = [key, auth]
     
     def remote_connect(self, connID, addr):
-        """
+        """ Connect to the endpoint with the given address using the
+            connection information matching the received ID.
+            
+            @param connID:      Unique ID which is used to identify the tuple
+                                containing the connection information.
+            @type  connID:      str
+            
+            @param addr:        Address to which the endpoint should connect.
+                                It consists of an IP address and a port number.
+            @type  addr:        (str, int)
         """
         assert connID in self._pendingConnections
         
@@ -94,7 +138,23 @@ class Endpoint(Referenceable):
         #auth.callRemote('verifyKey', None, failure)
     
     def processInit(self, protocol, connID, remoteKey):
-        """
+        """ Callback for the RCE Internal Protocol which is called when the
+            protocol received an init message which has to be processed.
+            
+            @param protocol:    Protocol instance which received the init
+                                message.
+            @type  protocol:    rce.slave.protocol.RCEInternalProtocol
+            
+            @param connID:      Unique ID which is used to identify the
+                                connection.
+            @type  connID:      str
+            
+            @param remoteKey:   Key which was received from the other side to
+                                authenticate the endpoint.
+            @type  remoteKey:   str
+            
+            @return:            True if the connection should be accepted.
+            @rtype:             twisted::Deferred
         """
         try:
             key, auth = self._pendingConnections[connID]
@@ -126,7 +186,8 @@ class Endpoint(Referenceable):
         self._protocols.remove(protocol)
     
     def terminate(self):
-        """
+        """ Method should be called to destroy all protocols before the reactor
+            is stopped.
         """
         self._pendingConnections = {}
         
@@ -135,13 +196,16 @@ class Endpoint(Referenceable):
         
         assert len(self._protocols) == 0
         
-        self._loopback.remote_destroy()
-        self._loopback = None
+        if self._loopback:
+            self._loopback.remote_destroy()
+            self._loopback = None
         
         self._factory = None
 
 
-class RCEInternalServerFactory(ServerFactory):
+class _RCEInternalServerFactory(ServerFactory):
+    """ Server Factory for the cloud engine internal communication.
+    """
     def __init__(self, endpoint):
         self._endpoint = endpoint
     

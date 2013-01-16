@@ -42,15 +42,32 @@ import genpy
 from twisted.internet.threads import deferToThread
 
 # Custom imports
-from rce.error import InvalidRequest
+from rce.error import InvalidRequest, InternalError
 from rce.slave.interface import Interface
 
 
 class _ROSInterfaceBase(Interface):
+    """ Abstract base class which provides the basics for the ROS-side
+        interfaces.
     """
-    """
-    def __init__(self, owner, uid, msgType, addr):
-        """
+    def __init__(self, owner, uid, clsName, addr):
+        """ Initialize the ROS-side Interface.
+            
+            @param owner:       Namespace to which this interface belongs.
+            @type  owner:       rce.environment.Environment
+            
+            @param uid:         Unique ID which is used to identify the
+                                interface in the internal communication.
+            @type  uid:         uuid.UUID
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param addr:        ROS name/address which the interface should
+                                use.
+            @type  addr:        str
         """
         Interface.__init__(self, owner, uid)
         
@@ -58,16 +75,16 @@ class _ROSInterfaceBase(Interface):
 
 
 class ServiceClientInterface(_ROSInterfaceBase):
-    """ Class which is used to handle and monitor a service interface.
+    """ Class which is used as a Service-Client Interface.
     """
-    def __init__(self, owner, uid, msgType, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, msgType, addr)
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
         
-        args = msgType.split('/')
+        args = clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('Service type is not valid. Has to be of the '
-                                 'form pkg/msg, i.e. std_msgs/Int8.')
+                                 'form pkg/srv, i.e. std_srvs/Empty.')
         
         self._srvCls = owner.loader.loadSrv(*args)
         self._srvCls._request_class = rospy.AnyMsg
@@ -102,16 +119,16 @@ class ServiceClientInterface(_ROSInterfaceBase):
 
 
 class ServiceProviderInterface(_ROSInterfaceBase):
-    """ Represents a service-provider interface for a node.
+    """ Class which is used as a Service-Provider Interface.
     """
-    def __init__(self, owner, uid, msgType, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, msgType, addr)
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
         
-        args = msgType.split('/')
+        args = clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('Service type is not valid. Has to be of the '
-                                 'form pkg/msg, i.e. std_msgs/Int8.')
+                                 'form pkg/srv, i.e. std_srvs/Empty.')
         
         self._service = None
         self._pendingLock = Lock()
@@ -122,6 +139,15 @@ class ServiceProviderInterface(_ROSInterfaceBase):
         self._srvCls._response_class = rospy.AnyMsg
     
     __init__.__doc__ = _ROSInterfaceBase.__init__.__doc__
+    
+    def remote_connect(self, protocol, remoteID):
+        if self._protocols:
+            raise InternalError('Can not register more than one interface '
+                                'at a time with a Service-Provider.')
+        
+        return _ROSInterfaceBase.remote_connect(self, protocol, remoteID)
+    
+    remote_connect.__doc__ = _ROSInterfaceBase.remote_connect.__doc__
     
     def _start(self):
         self._service = rospy.Service(self._name, self._srvCls, self._callback)
@@ -162,13 +188,6 @@ class ServiceProviderInterface(_ROSInterfaceBase):
         with self._pendingLock:
             self._pending[msgID] = event
         
-        ###
-        ### TODO: Do this check somewhere else...
-        ###
-#        if len(self._conn) > 1:
-#            raise InternalError('Can not connect more than one interface to a '
-#                                'service-provider interface.')
-        
         self.received(request._buff, msgID)
         
         # Block execution here until the event is set, i.e. a response has
@@ -186,12 +205,12 @@ class ServiceProviderInterface(_ROSInterfaceBase):
 
 
 class PublisherInterface(_ROSInterfaceBase):
-    """ Represents a publisher interface for a node.
+    """ Class which is used as a Publisher Interface.
     """
-    def __init__(self, owner, uid, msgType, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, msgType, addr)
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
         
-        args = msgType.split('/')
+        args = clsName.split('/')
         
         if len(args) != 2:
             raise InvalidRequest('Message type is not valid. Has to be of the '
@@ -223,7 +242,7 @@ class PublisherInterface(_ROSInterfaceBase):
 
 
 class SubscriberInterface(_ROSInterfaceBase):
-    """ Represents a subscriber interface for a node.
+    """ Class which is used as a Subscriber Interface.
     """
     def _start(self):
         self._subscriber = rospy.Subscriber(self._name, rospy.AnyMsg,

@@ -54,7 +54,9 @@ from rce.error import InternalError, DeadConnection
 from rce.client.interfaces import IRobot, IRobotCredentials
 from rce.client.protocol import CloudEngineWebSocketFactory
 from rce.monitor.converter import PublisherConverter, SubscriberConverter, \
-    ServiceClientConverter, ServiceProviderConverter, Forwarder
+    ServiceClientConverter, ServiceProviderConverter, \
+    PublisherForwarder, SubscriberForwarder, \
+    ServiceClientForwarder, ServiceProviderForwarder
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
 
@@ -67,18 +69,27 @@ class Robot(Namespace):
     
     _MAP = [ServiceClientConverter, PublisherConverter,
             SubscriberConverter, ServiceProviderConverter,
-            Forwarder, Forwarder, Forwarder, Forwarder]
+            ServiceClientForwarder, PublisherForwarder,
+            SubscriberForwarder, ServiceProviderForwarder]
     
-    def __init__(self, user):
-        """ Initialize the robot.
+    def __init__(self, client, user):
+        """ Initialize the Robot.
+            
+            @param client:      Robot Client which is responsible for
+                                monitoring the robots in this process.
+            @type  client:      rce.robot.RobotClient
             
             @param user:        Remote reference to the User instance who owns
                                 this robot.
             @type  user:        twisted.spread.pb.RemoteReference
         """
+        self._client = client
+        client.registerRobot(self)
+        
         self._user = user
         self._connection = None
         
+        # The following replaces the call to Namespace.__init__()
         self._interfaces = {}
     
     def _reportError(self, failure):
@@ -134,8 +145,8 @@ class Robot(Namespace):
             
             @param args:        Additional arguments which should be used for
                                 the launch. Can contain the directives
-                                $(find PKG) or $(env VAR). Other special
-                                characters as '$' or ';' are not allowed.
+                                $(find PKG) and/or $(env VAR). Other special
+                                characters such as '$' or ';' are not allowed.
             @type  args:        str
             
             @param name:        Name of the node under which the node should be
@@ -247,8 +258,8 @@ class Robot(Namespace):
             @type  name:        str
             
             @param value:       Value of the parameter which should be added.
-                                String values can contain the directives
-                                $(find PKG) or $(env VAR).
+                                Top-level string values can contain the
+                                directives $(find PKG) and/or $(env VAR).
             @type  value:       str, int, float, bool, list
         """
         try:
@@ -383,7 +394,7 @@ class Robot(Namespace):
         """
         self._connection = None
     
-    def remote_createInterface(self, uid, iType, msgType, addr):
+    def remote_createInterface(self, uid, iType, msgType, tag):
         """ Create an Interface object in the robot namespace and therefore in
             the endpoint.
             
@@ -401,11 +412,15 @@ class Robot(Namespace):
                                 i.e. 'std_msgs/Int32'.
             @type  clsName:     str
             
+            @param tag:         Unique ID which is used to identify the
+                                interface in the external communication.
+            @type  tag:         str
+            
             @return:            New Interface instance.
             @rtype:             rce.master.network.Interface
                                 (subclass of rce.master.base.Proxy)
         """
-        return self._MAP[iType](self, UUID(bytes=uid), msgType, addr)
+        return self._MAP[iType](self, UUID(bytes=uid), msgType, tag)
     
     def registerInterface(self, interface):
         # "Special" method to account for 'dict' instead of standard 'set'
@@ -429,15 +444,19 @@ class Robot(Namespace):
         if self._connection:
             self._connection.dropConnection()
         
+        # The following replaces the call to Namespace.__init__()
         for interface in self._interfaces.values():
             interface.remote_destroy()
         
         assert len(self._interfaces) == 0
+        
+        self._client.unregisterRobot(self)
 
 
 class RobotClient(Endpoint):
-    """ Realm as well as Credentials Checker for the twisted cred system. It
-        is responsible for storing all robots (namespaces).
+    """ Realm as well as Credentials Checker for the twisted cred system which
+        is used for the connections to the robots. It is responsible for
+        storing all robots (namespaces).
     """
     implements(IRealm, ICredentialsChecker)
     
@@ -457,7 +476,16 @@ class RobotClient(Endpoint):
         """
         Endpoint.__init__(self, reactor, commPort)
         
+        self._robots = set()
         self._pendingRobots = {}
+    
+    def registerRobot(self, robot):
+        assert robot not in self._robots
+        self._robots.add(robot)
+    
+    def unregisterRobot(self, robot):
+        assert robot in self._robots
+        self._robots.remove(robot)
     
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns an avatar for the websocket connection to the robot.
@@ -531,9 +559,22 @@ class RobotClient(Endpoint):
         if uid in self._pendingRobots:
             raise InternalError('Can not create the same robot twice.')
         
-        robot = Robot(user)
+        robot = Robot(self, user)
         self._pendingRobots[uid] = key, robot
         return robot
+    
+    def terminate(self):
+        """ Method should be called to destroy all robots before the reactor
+            is stopped.
+        """
+        self._pendingRobots = {}
+        
+        for robot in self._robots.copy():
+            robot.remote_destroy()
+        
+        assert len(self._robots) == 0
+        
+        Endpoint.terminate(self)
 
 
 def main(reactor, cred, masterIP, masterPort, extPort, commPort):

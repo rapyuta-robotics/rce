@@ -77,7 +77,14 @@ class Interface(Referenceable):
     """
     """
     def __init__(self, owner, uid):
-        """
+        """ Initialize the Interface.
+            
+            @param owner:       
+            @param owner:       rce.slave.namespace.Namespace
+            
+            @param uid:         Unique ID which is used to identify the
+                                interface in the internal communication.
+            @type  uid:         uuid.UUID
         """
         self._owner = owner
         owner.registerInterface(self)
@@ -186,7 +193,7 @@ class Interface(Referenceable):
             
             @param protocol:    Protocol instance through which the message
                                 was sent.
-            @type  protocol:    rce.comm.protocol.Protocol
+            @type  protocol:    rce.slave.protocol._Protocol
             
             @param remoteID:    Unique ID of the Interface which sent the
                                 message.
@@ -233,7 +240,7 @@ class Interface(Referenceable):
             
             @param protocol:    Protocol instance to which the response should
                                 be sent.
-            @type  protocol:    rce.comm.protocol.Protocol
+            @type  protocol:    rce.slave.protocol._Protocol
             
             @param remoteID:    Unique ID of the Interface to which the
                                 response be sent.

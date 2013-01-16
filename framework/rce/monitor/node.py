@@ -48,7 +48,10 @@ from rce.monitor.common import ArgumentMixin
 
 
 class NodeProtocol(ProcessProtocol):
-    """
+    """ Node process protocol.
+        
+        It is used to monitor the health of a node and logging the stdout and
+        stderr to files.
     """
     def __init__(self, monitor, out, err):
         self._monitor = monitor
@@ -73,13 +76,38 @@ class NodeProtocol(ProcessProtocol):
 
 
 class Node(Referenceable, ArgumentMixin):
-    """
+    """ Representation of a ROS Node (process) inside an environment.
     """
     _STOP_ESCALATION = [('INT', 15), ('TERM', 2), ('KILL', None)]
     _LOG_DIR = '/opt/rce/data'#'/home/ros'
     
     def __init__(self, owner, pkg, exe, args, name, namespace):
-        """
+        """ Initialize and start the Node.
+            
+            @param owner:       Environment in which the node will be created.
+            @type  owner:       rce.environment.Environment
+
+            @param pkg:         Name of ROS package where the node can be
+                                found.
+            @type  pkg:         str
+
+            @param exe:         Name of executable (node) which should be
+                                launched.
+            @type  exe:         str
+            
+            @param args:        Additional arguments which should be used for
+                                the launch. Can contain the directives
+                                $(find PKG) and/or $(env VAR). Other special
+                                characters such as '$' or ';' are not allowed.
+            @type  args:        str
+            
+            @param name:        Name of the node under which the node should be
+                                launched.
+            @type  name:        str
+            
+            @param namespace:   Namespace in which the node should be started
+                                in the environment.
+            @type  namespace:   str
         """
         ArgumentMixin.__init__(self, owner.loader)
         
@@ -148,7 +176,7 @@ class Node(Referenceable, ArgumentMixin):
                     '{1}\ncmd = {2}'.format(self._name, exitCode, self._cmd))
     
     def remote_destroy(self):
-        """
+        """ Method should be called to stop/kill this node.
         """
         if self._owner:
             self._owner.unregisterNode(self)

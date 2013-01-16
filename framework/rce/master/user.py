@@ -535,10 +535,7 @@ class Robot(_Wrapper):
             raise InvalidRequest("Can not use the same interface tag '{0}' "
                                  'in the same robot twice.'.format(iTag))
         
-        if iType.endswith('Forwarder'):
-            modifier = 4
-        else:
-            modifier = 0
+        modifier = 4 if iType.endswith('Forwarder') else 0
         
         try:
             iType = Types.encode(iType)

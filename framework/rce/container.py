@@ -100,7 +100,17 @@ class RCEContainer(Referenceable):
     def __init__(self, client, nr, uid):
         """ Initialize the deployment container.
             
-            # TODO: Add description
+            @param client:      Container client which is responsible for
+                                monitoring the containers in this machine.
+            @type  client:      rce.container.ContainerClient
+            
+            @param nr:          Unique number which will be used for the IP
+                                address and the hostname of the container.
+            @type  nr:          int
+            
+            @param uid:         Unique ID which is used by the environment
+                                process to login to the Master.
+            @type  uid:         str
         """
         # Store the references
         self._client = client
@@ -133,7 +143,8 @@ class RCEContainer(Referenceable):
         os.mkdir(rosDir)
         
         self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name)
+                                    self._confDir, self._name,
+                                    '10.0.3.{0}'.format(nr))
         
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -170,8 +181,6 @@ class RCEContainer(Referenceable):
     
     def start(self):
         """ Method which starts the container.
-            
-            @return:        # TODO: Add description
         """
         return self._container.start(self._name)
     
@@ -192,10 +201,10 @@ class RCEContainer(Referenceable):
         return response
     
     def remote_destroy(self):
-        """ Method which can be called remotely and stops the container.
-            
-            @return:        # TODO: Add description
+        """ Method should be called to destroy the container.
         """
+        # TODO: Check what happens if the Deferred 'self._terminating' is
+        #       used multiple times...
         if not self._terminating:
             if self._container:
                 self._terminating = self._container.stop(self._name)
@@ -207,10 +216,44 @@ class RCEContainer(Referenceable):
 
 
 class ContainerClient(Referenceable):
+    """ Container client is responsible for the creation and destruction of
+        containers in a machine.
+        
+        There can be only one Container Client per machine.
     """
-    """
-    def __init__(self, reactor, masterIP, rootfsDir, confDir, dataDir, srcDir, pkgDir):
-        """
+    def __init__(self, reactor, masterIP, rootfsDir, confDir, dataDir,
+                 srcDir, pkgDir):
+        """ Initialize the Container Client.
+            
+            @param reactor:     Reference to the twisted reactor.
+            @type  reactor:     twisted::reactor
+            
+            @param masterIP:    IP address of the Master process.
+            @type  masterIP:    str
+            
+            @param rootfsDir:   Filesystem path to the root directory of the
+                                container filesystem.
+            @type  rootfsDir:   str
+            
+            @param confDir:     Filesystem path to the directory where
+                                container configuration files should be stored.
+            @type  confDir:     str
+            
+            @param dataDir:     Filesystem path to the directory where
+                                temporary data of a container should be stored.
+            @type  dataDir:     str
+            
+            @param srcDir:      Filesystem path to the directory where the
+                                source of the cloud engine is located.
+            @type  srcDir:      str
+            
+            @param pkgDir:      Filesystem paths to the package directories
+                                as a list of tuples where each tuple contains
+                                the path to the directory in the host machine
+                                and the path to the directory to which the
+                                host directory will be bound in the container
+                                filesystem (without the @param rootfsDir).
+            @type  pkgDir:      [(str, str)]
         """
         self._reactor = reactor
         self._masterIP = masterIP
@@ -275,7 +318,15 @@ class ContainerClient(Referenceable):
         return self._masterIP
     
     def remote_createContainer(self, uid):
-        """
+        """ Create a new Container.
+            
+            @param uid:         Unique ID which the environment process inside
+                                the container needs to login to the Master
+                                process.
+            @type  uid:         str
+            
+            @return:            New Container instance.
+            @rtype:             rce.container.RCEContainer
         """
         try:
             nr = self._nrs.pop()
@@ -294,7 +345,8 @@ class ContainerClient(Referenceable):
         self._containers.remove(container)
     
     def returnNr(self, nr):
-        """
+        """ Callback for Container to return a container number when it is
+            no longer in use such that it can be reused.
         """
         if nr in self._nrs:
             raise InternalError('Number was never rented out.')
@@ -302,7 +354,7 @@ class ContainerClient(Referenceable):
         self._nrs.add(nr)
     
     def _cleanPackageDir(self, *_):
-        """
+        """ Internally used method to clean-up the container filesystem.
         """
         for _, path in self._pkgDir:
             os.rmdir(os.path.join(self._rootfs, path))
@@ -310,7 +362,8 @@ class ContainerClient(Referenceable):
         assert len(self._containers) == 0
     
     def terminate(self):
-        """
+        """ Method should be called to terminate all running containers before
+            the reactor is stopped.
         """
         deferreds = []
         

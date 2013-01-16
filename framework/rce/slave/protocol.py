@@ -43,19 +43,59 @@ from twisted.spread.pb import Referenceable
 from rce.error import InternalError
 
 
-class Protocol(Referenceable):
-    """
+class _Protocol(Referenceable):
+    """ Abstract base class for a internal Protocol which interacts with the
+        Endpoint, Namespace, and Interfaces in a slave process.
     """
     def __init__(self):
+        """ Initialize the _Protocol.
+        """
         self._receivers = {}
     
     def sendMessage(self, interface, msg, msgID, remoteID=None):
+        """ Send a message received from an Interface to the other side.
+            
+            @param interface:   Interface which wants to send the message.
+            @type  interface:   rce.slave.interface.Interface
+            
+            @param msg:         Message which should be sent.
+            @type  msg:         str
+            
+            @param msgID:       Unique ID which can be used to find a
+                                correspondence between request / response
+                                message.
+            @type  msgID:       uuid.UUID
+            
+            @param remoteID:    If the remote ID is supplied than only this
+                                Interface will receive the message, regardless
+                                of additional interfaces which might be
+                                registered.
+            @type  remoteID:    uuid.UUID
         """
-        """
-        self.messageReceived(interface.UID, msg, msgID, remoteID)
+        raise NotImplementedError("Method 'sendMessage' has to be "
+                                  'implemented.')
     
     def messageReceived(self, remoteID, msg, msgID, destID=None):
-        """
+        """ Protocol internal method used to send a received message to the
+            stored receivers.
+            
+            @param remoteID:    Unique ID of the Interface on the other side
+                                which sent the message.
+            @type  remoteID:    uuid.UUID
+            
+            @param msg:         Message which was received.
+            @type  msg:         str
+            
+            @param msgID:       Unique ID which can be used to find a
+                                correspondence between request / response
+                                message.
+            @type  msgID:       uuid.UUID
+            
+            @param destID:      If the dest ID is supplied than only this
+                                Interface will receive the message, regardless
+                                of additional interfaces which might be
+                                registered.
+            @type  destID:      uuid.UUID
         """
         if remoteID not in self._receivers:
             log.msg('Received message dropped, because there is no interface '
@@ -71,7 +111,15 @@ class Protocol(Referenceable):
                 interface.send(msg, msgID, self, remoteID)
     
     def registerConnection(self, interface, remoteID):
-        """
+        """ Register the connection between the local Interface and the remote
+            Interface such that the two interfaces can communicate with each
+            other.
+            
+            @param interface:   Reference to the local Interface.
+            @type  interface:   rce.slave.interface.Interface
+            
+            @param remoteID:    Unique ID of the remote Interface.
+            @type  remoteID:    uuid.UUID
         """
         if remoteID not in self._receivers:
             self._receivers[remoteID] = set()
@@ -81,7 +129,15 @@ class Protocol(Referenceable):
         self._receivers[remoteID].add(interface)
     
     def unregisterConnection(self, interface, remoteID):
-        """
+        """ Unregister the connection between the local Interface and the
+            remote Interface such that the two interfaces can no longer
+            communicate with each other.
+            
+            @param interface:   Reference to the local Interface.
+            @type  interface:   rce.slave.interface.Interface
+            
+            @param remoteID:    Unique ID of the remote Interface.
+            @type  remoteID:    uuid.UUID
         """
         assert remoteID in self._receivers
         receivers = self._receivers[remoteID]
@@ -93,7 +149,9 @@ class Protocol(Referenceable):
             del self._receivers[remoteID]
     
     def remote_destroy(self):
-        """
+        """ Method should be called to destroy the protocol and will take care
+            of destroying all connections of this Protocol as well as
+            deleting all circular references.
         """
         if self._receivers:
             for interface in reduce(set.union, self._receivers.itervalues()):
@@ -102,7 +160,17 @@ class Protocol(Referenceable):
             self._receivers = None
 
 
-class RCEInternalProtocol(Int32StringReceiver, Protocol):
+class Loopback(_Protocol):
+    """ Special Protocol 'Loopback' which can be used to connect Interfaces
+        which are in the same Endpoint.
+    """
+    def sendMessage(self, interface, msg, msgID, remoteID=None):
+        self.messageReceived(interface.UID, msg, msgID, remoteID)
+    
+    sendMessage.__doc__ = _Protocol.sendMessage.__doc__
+
+
+class RCEInternalProtocol(Int32StringReceiver, _Protocol):
     """
     """
     _MSG_ID_STRUCT = struct.Struct('!B')
@@ -112,7 +180,7 @@ class RCEInternalProtocol(Int32StringReceiver, Protocol):
     def __init__(self, endpoint):
         """
         """
-        Protocol.__init__(self)
+        _Protocol.__init__(self)
         
         self._endpoint = endpoint
         endpoint.registerProtocol(self)
@@ -178,8 +246,6 @@ class RCEInternalProtocol(Int32StringReceiver, Protocol):
         self.sendString(connID + key)
     
     def sendMessage(self, interface, msg, msgID, remoteID=None):
-        """
-        """
         assert self._initialized
         
         uid = interface.UID.bytes
@@ -200,10 +266,13 @@ class RCEInternalProtocol(Int32StringReceiver, Protocol):
         
         self.sendString(''.join((flag, rmtID, uid, idLen, msgID, msg)))
     
+    sendMessage.__doc__ = _Protocol.sendMessage.__doc__
+    
     def connectionLost(self, reason):
+        """ Method is called by the twisted framework when the connection is
+            lost.
         """
-        """
-        Protocol.remote_destroy(self)
+        _Protocol.remote_destroy(self)
         
         if self._endpoint:
             self._endpoint.unregisterProtocol(self)

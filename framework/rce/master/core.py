@@ -47,10 +47,11 @@ from twisted.web.server import Site
 # Custom imports
 from rce.error import InternalError
 from rce.client.protocol import MasterRobotAuthentication
-from rce.master.machine import LoadBalancer
+from rce.master.machine import LoadBalancer, ContainerProcessError, \
+    Distributor, RobotProcessError
 from rce.master.network import Network
 from rce.master.environment import EnvironmentEndpoint
-from rce.master.robot import Distributor, RobotEndpoint
+from rce.master.robot import RobotEndpoint
 from rce.master.user import User
 
 
@@ -91,7 +92,7 @@ class RoboEarthCloudEngine(object):
         self._pendingContainer = {}
     
     def requestAvatar(self, avatarId, mind, *interfaces):
-        """ Returns avatar for slave processes of the cloud engine.
+        """ Returns Avatar for slave processes of the cloud engine.
             
             Implementation for IRealm
         """
@@ -182,7 +183,12 @@ class RoboEarthCloudEngine(object):
             @rtype:             rce.master.robot.Robot
                                 (subclass of rce.master.base.Proxy)
         """
-        location = self._distributor.getNextLocation()
+        try:
+            location = self._distributor.getNextLocation()
+        except RobotProcessError:
+            # TODO: What should we do here?
+            raise InternalError('Robot can not be created.')
+        
         return location.createNamespace(user, robotID, uid)
     
     def createContainer(self):
@@ -199,7 +205,12 @@ class RoboEarthCloudEngine(object):
             if uid not in self._pendingContainer:
                 break
         
-        container = self._balancer.createContainer(uid)
+        try:
+            container = self._balancer.createContainer(uid)
+        except ContainerProcessError:
+            # TODO: What should we do here?
+            raise InternalError('Container can not be created.')
+        
         endpoint = EnvironmentEndpoint(self._network, container)
         self._pendingContainer[uid] = endpoint
         return endpoint.createNamespace()

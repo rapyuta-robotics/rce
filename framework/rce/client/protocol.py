@@ -36,7 +36,7 @@ import json
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from StringIO import StringIO #@UnusedImport
 
 # twisted specific imports
 from twisted.python import log

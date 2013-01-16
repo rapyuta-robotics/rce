@@ -541,10 +541,13 @@ class _Connection(object):
         
         if msgType == types.ERROR:
             print('Received error message: {0}'.format(data))
-        elif msgType == types.STATUS:
-            print('Received status message: {0}'.format(data))
+#        elif msgType == types.STATUS:
+#            print('Received status message: {0}'.format(data))
         elif msgType == types.DATA_MESSAGE:
             self._processDataMessage(data)
+        else:
+            print('Received message with unknown message type: '
+                  '{0}'.format(msgType))
     
     def _processDataMessage(self, dataMsg):
         """ Internally used message to process a Data Message.

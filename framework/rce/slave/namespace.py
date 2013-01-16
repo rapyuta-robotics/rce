@@ -35,9 +35,11 @@ from twisted.spread.pb import Referenceable
 
 
 class Namespace(Referenceable):
-    """
+    """ Abstract base class for a Namespace in a slave process.
     """
     def __init__(self):
+        """ Initialize the Namespace.
+        """
         self._interfaces = set()
     
     def registerInterface(self, interface):
@@ -49,12 +51,21 @@ class Namespace(Referenceable):
         self._interfaces.remove(interface)
     
     def remote_createInterface(self, uid, iType, msgType, addr):
+        """ Create an Interface in this namespace and therefore in the
+            endpoint.
+            
+            Method has to be implemented!
+            
+            @return:            New Interface instance.
+            @rtype:             rce.slave.interface.Interface
         """
-        """
-        raise NotImplementedError()
+        raise NotImplementedError("Method 'remote_createInterface' has"
+                                  'to be implemented.')
     
     def remote_destroy(self):
-        """
+        """ Method should be called to destroy the namespace and will take care
+            of destroying all interfaes owned by this namespace as well as
+            deleting all circular references.
         """
         for interface in self._interfaces.copy():
             interface.remote_destroy()

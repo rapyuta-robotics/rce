@@ -50,14 +50,14 @@ lxc.utsname = {hostname}
 
 lxc.tty = 4
 lxc.pts = 1024
-lxc.rootfs = {rootfs}
+lxc.rootfs = {fs}
 lxc.mount = {fstab}
 
 lxc.network.type = veth
 lxc.network.flags = up
 lxc.network.name = eth0
 lxc.network.link = lxcbr0
-lxc.network.ipv4 = 0.0.0.0
+lxc.network.ipv4 = {ip}
 
 lxc.cgroup.devices.deny = a
 # /dev/null and zero
@@ -96,7 +96,7 @@ class ContainerError(Exception):
 class Container(object):
     """ Class representing a single container.
     """
-    def __init__(self, reactor, rootfs, conf, hostname):
+    def __init__(self, reactor, rootfs, conf, hostname, ip):
         """ Initialize the Container.
             
             @param reactor:     Reference to the twisted::reactor
@@ -110,13 +110,19 @@ class Container(object):
                                 files for the container should be stored.
             @type  conf:        str
             
-            # TODO: Add description
+            @param hostname:    Host name of the container.
+            @type  hostname:    str
+            
+            @param ip:          IP address which the container should use.
+                                Use '0.0.0.0' for DHCP.
+            @type  ip:          str
         """
         self._reactor = reactor
         self._rootfs = rootfs
         self._conf = pjoin(conf, 'config')
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
+        self._ip = ip
         
         checkPath(conf, 'Container Configuration')
         
@@ -144,22 +150,16 @@ class Container(object):
                             or not.
             @type  ro:      bool
         """
-        if ro:
-            roAdd = ',ro'
-        else:
-            roAdd = ''
-        
         self._fstabExt.append(_FSTAB_BIND.format(srcDir=src,
                                                  fsDir=pjoin(self._rootfs, fs),
-                                                 ro=roAdd))
+                                                 ro=',ro' if ro else ''))
     
     def _setup(self):
         """ Setup necessary files.
         """
         with open(self._conf, 'w') as f:
-            f.write(_CONFIG.format(hostname=self._hostname,
-                                   rootfs=self._rootfs,
-                                   fstab=self._fstab))
+            f.write(_CONFIG.format(hostname=self._hostname, fs=self._rootfs,
+                                   fstab=self._fstab, ip=self._ip))
         
         with open(self._fstab, 'w') as f:
             f.write(_FSTAB_BASE.format(

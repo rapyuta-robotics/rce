@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     /home/dominique/rce/framework/rce/monitor/parameter.py
+#     parameter.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -43,10 +43,21 @@ from rce.monitor.common import ArgumentMixin
 
 
 class Parameter(Referenceable, ArgumentMixin):
-    """
+    """ Representation of a Parameter inside an environment.
     """
     def __init__(self, owner, name, value):
-        """
+        """ Add the Parameter to the parameter server.
+            
+            @param owner:       Environment in which the node will be created.
+            @type  owner:       rce.environment.Environment
+            
+            @param name:        Name of the parameter which should be added.
+            @type  name:        str
+            
+            @param value:       Value of the parameter which should be added.
+                                Top-level string values can contain the
+                                directives $(find PKG) and/or $(env VAR).
+            @type  value:       str, int, float, bool, list
         """
         self._registered = False
         
@@ -71,7 +82,8 @@ class Parameter(Referenceable, ArgumentMixin):
                                 '{0}'.format(e))
     
     def remote_destroy(self):
-        """
+        """ Method should be called to delete the Parameter from the parameter
+            server.
         """
         if self._owner:
             self._owner.unregisterParameter(self)
