@@ -73,7 +73,7 @@ class Robot(Namespace):
             ServiceClientForwarder, PublisherForwarder,
             SubscriberForwarder, ServiceProviderForwarder]
     
-    def __init__(self, client, user):
+    def __init__(self, client, user, status):
         """ Initialize the Robot.
             
             @param client:      Robot Client which is responsible for
@@ -586,7 +586,7 @@ class RobotClient(Endpoint):
         else:
             return fail(UnauthorizedLogin())
     
-    def remote_createNamespace(self, user, userID, robotID, key):
+    def remote_createNamespace(self, user, userID, robotID, status, key):
         """ Create a Robot namespace.
             
             @param user:        User instance to which this namespace belongs
@@ -600,6 +600,11 @@ class RobotClient(Endpoint):
             @param robotID:     ID of the robot which has to be created.
             @type  robotID:     str
             
+            @param status:      Object providing callbacks to send the status
+                                of the connection between the robot and the
+                                cloud engine back to the Master.
+            @type  status:      twisted.spread.pb.RemoteReference
+            
             @param uid:         Key which will be used to authenticate the
                                 webscoket connection.
             @type  uid:         str
@@ -612,7 +617,7 @@ class RobotClient(Endpoint):
         if uid in self._pendingRobots:
             raise InternalError('Can not create the same robot twice.')
         
-        robot = Robot(self, user)
+        robot = Robot(self, user, status)
         self._pendingRobots[uid] = key, robot
         return robot
     
