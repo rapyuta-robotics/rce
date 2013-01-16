@@ -32,7 +32,7 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
-from twisted.spread.pb import DeadReferenceError
+from twisted.spread.pb import DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.master.base import Proxy
@@ -66,7 +66,7 @@ class Node(Proxy):
     def _destroy(self):
         try:
             self.obj.callRemote('destroy')
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             pass
 
 
@@ -97,7 +97,7 @@ class Parameter(Proxy):
     def _destroy(self):
         try:
             self.obj.callRemote('destroy')
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             pass
 
 

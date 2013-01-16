@@ -44,7 +44,8 @@ from twisted.internet.defer import fail, maybeDeferred
 from twisted.cred.error import UnauthorizedLogin
 from twisted.cred.checkers import ICredentialsChecker
 from twisted.cred.portal import IRealm, Portal
-from twisted.spread.pb import PBClientFactory, DeadReferenceError
+from twisted.spread.pb import PBClientFactory, \
+    DeadReferenceError, PBConnectionLost
 
 # Autobahn specific imports
 from autobahn.websocket import listenWS
@@ -104,7 +105,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('createContainer', tag)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -118,7 +119,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('destroyContainer', tag)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -160,7 +161,7 @@ class Robot(Namespace):
         try:
             d = self._user.callRemote('addNode', cTag, nTag, pkg, exe, args,
                                       name, namespace)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -179,7 +180,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('removeNode', cTag, nTag)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -219,7 +220,7 @@ class Robot(Namespace):
         try:
             d = self._user.callRemote('addInterface', eTag, iTag, iType,
                                       clsName, addr)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -239,7 +240,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('removeInterface', eTag, iTag)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -264,7 +265,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('addParameter', cTag, name, value)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -282,7 +283,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('removeParameter', cTag, name)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -300,7 +301,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('addConnection', tagA, tagB)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -318,7 +319,7 @@ class Robot(Namespace):
         """
         try:
             d = self._user.callRemote('removeConnection', tagA, tagB)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
         d.addErrback(self._reportError)
@@ -349,7 +350,7 @@ class Robot(Namespace):
         """
         try:
             self._interfaces[iTag].receive(clsName, msgID, msg)
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
     
     def sendToClient(self, iTag, msgType, msgID, msg):
@@ -388,11 +389,13 @@ class Robot(Namespace):
             @param connection:  Connection which should be registered.
         """
         self._connection = connection
+        self._client.connectionEstablished(self)
     
     def unregisterConnectionToRobot(self):
         """ Unregister the connection to the robot with this avatar.
         """
         self._connection = None
+        self._client.connectionLost(self)
     
     def remote_createInterface(self, uid, iType, msgType, tag):
         """ Create an Interface object in the robot namespace and therefore in
@@ -449,6 +452,7 @@ class Robot(Namespace):
             interface.remote_destroy()
         
         assert len(self._interfaces) == 0
+        assert self._connection is None
         
         self._client.unregisterRobot(self)
 
@@ -461,6 +465,8 @@ class RobotClient(Endpoint):
     implements(IRealm, ICredentialsChecker)
     
     credentialInterfaces = (IRobotCredentials,)
+    
+    RECONNECT_TIMEOUT = 10
     
     def __init__(self, reactor, commPort):
         """ Initialize the Robot Client.
@@ -478,14 +484,61 @@ class RobotClient(Endpoint):
         
         self._robots = set()
         self._pendingRobots = {}
+        self._deathCandidates = {}
     
     def registerRobot(self, robot):
         assert robot not in self._robots
         self._robots.add(robot)
+        
+        # Add the robot also to the death list
+        assert robot not in self._deathCandidates
+        deathCall = self._reactor.callLater(self.RECONNECT_TIMEOUT,
+                                            self._killRobot, robot)
+        self._deathCandidates[robot] = deathCall
     
     def unregisterRobot(self, robot):
         assert robot in self._robots
         self._robots.remove(robot)
+        
+        # Remove the robot also from the death list
+        deathCall = self._deathCandidates.pop(robot, None)
+        
+        if deathCall:
+            deathCall.cancel()
+    
+    def _killRobot(self, robot):
+        """ Internally used method to destroy a robot whose reconnect timeout
+            was reached.
+            
+            @param robot:       Robot which should be destroyed.
+            @type  robot:       rce.robot.Robot
+        """
+        assert robot in self._deathCandidates
+        del self._deathCandidates[robot]
+        robot.remote_destroy()
+    
+    def connectionLost(self, robot):
+        """ Method is used by the Robot to signal to the client that he lost
+            the connection and should be marked for destruction.
+            
+            @param robot:       Robot which should be added to death list.
+            @type  robot:       rce.robot.Robots
+        """
+        assert robot not in self._deathCandidates
+        deathCall = self._reactor.callLater(self.RECONNECT_TIMEOUT,
+                                            self._killRobot, robot)
+        self._deathCandidates[robot] = deathCall
+    
+    def connectionEstablished(self, robot):
+        """ Method is used by the Robot to signal to the client that he has
+            a connection again and should be removed from the list of marked
+            robots.
+            
+            @param robot:       Robot which should be removed from death list.
+            @type  robot:       rce.robot.Robots
+        """
+        assert robot in self._deathCandidates
+        self._deathCandidates.pop(robot).cancel()
     
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns an avatar for the websocket connection to the robot.
@@ -573,6 +626,7 @@ class RobotClient(Endpoint):
             robot.remote_destroy()
         
         assert len(self._robots) == 0
+        assert len(self._deathCandidates) == 0
         
         Endpoint.terminate(self)
 

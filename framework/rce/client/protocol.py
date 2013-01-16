@@ -57,7 +57,6 @@ from rce.client import types
 from rce.client.interfaces import IRobot
 from rce.client.assembler import recursiveBinarySearch, MessageAssembler
 from rce.client.cred import RobotCredentials
-import settings
 
 
 _MIN_VERSION = '20130101'  # Minimal required version of the client
@@ -104,16 +103,13 @@ class MasterRobotAuthentication(Resource):
                                            'in request.'.format(name)))
         
         version = version[0]
-        userID = userID[0]
-        robotID = robotID[0]
-        password = password[0]
         
         if version < _MIN_VERSION:
             return fail(_VersionError('Client version is insufficient. '
                                       'Minimal version is '
                                       "'{0}'.".format(_MIN_VERSION)))
         
-        d = self._realm.requestUser(userID, robotID, password)
+        d = self._realm.requestUser(userID[0], robotID[0], password[0])
         d.addCallback(lambda result: (result, version))
         return d
     
@@ -177,6 +173,8 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the
         robot manager.
     """
+    MSG_QUEUE_TIMEOUT = 60
+    
     def __init__(self, portal):
         """ Initialize the Protocol.
             
@@ -187,7 +185,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             @type  portal:      twisted.cred.portal.Portal
         """
         self._protal = portal
-        self._assembler = MessageAssembler(self, settings.MSG_QUEUE_TIMEOUT)
+        self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
         self._logout = None
     
