@@ -48,7 +48,7 @@ class _Protocol(Referenceable):
         Endpoint, Namespace, and Interfaces in a slave process.
     """
     def __init__(self):
-        """ Initialize the _Protocol.
+        """ Initialize the Protocol.
         """
         self._receivers = {}
     
@@ -171,14 +171,18 @@ class Loopback(_Protocol):
 
 
 class RCEInternalProtocol(Int32StringReceiver, _Protocol):
-    """
+    """ Protocol which is used to connect Endpoints such that Interfaces in
+        different Endpoint are able to communicate.
     """
     _MSG_ID_STRUCT = struct.Struct('!B')
     _TRUE = struct.pack('!?', True)
     _FALSE = struct.pack('!?', False)
     
     def __init__(self, endpoint):
-        """
+        """ Initialize the Protocol.
+            
+            @param endpoint:    Endpoint for which this Protocol is created.
+            @type  endpoint:    rce.slave.endpoint.Endpoint
         """
         _Protocol.__init__(self)
         
@@ -189,7 +193,11 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
         self.stringReceived = self._initReceived
     
     def _initReceived(self, msg):
-        """
+        """ Internally used method process a complete string message as long as
+            the connection is not yet initialized.
+            
+            @param msg:         Message which was received.
+            @type  msg:         str
         """
         if len(msg) != 32:
             log.msg('Protocol Error: iInit message has invalid format.')
@@ -208,7 +216,11 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
         self.transport.loseConnection()
     
     def _messageReceived(self, msg):
-        """
+        """ Internally used method process a complete string message after
+            the connection has been initialized.
+            
+            @param msg:         Message which was received.
+            @type  msg:         str
         """
         if len(msg) < 17:
             self.transport.loseConnection()
@@ -238,7 +250,15 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
         self.messageReceived(remoteID, buffer(msg, offset), msgID, destID)
     
     def sendInit(self, connID, key):
-        """
+        """ Send an init message to the other side.
+            
+            @param connID:      Unique ID which is used to identify the
+                                connection.
+            @type  connID:      str
+            
+            @param key:         Key which should be sent with the init message
+                                to authenticate this endpoint.
+            @type  key:         str
         """
         assert len(connID) == 16
         assert len(key) == 16
@@ -279,7 +299,8 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
             self._endpoint = None
     
     def remote_destroy(self):
-        """
+        """ Method should be called to destroy the connection and the protocol.
+            It also takes care of any circular references.
         """
         self.transport.loseConnection()
     

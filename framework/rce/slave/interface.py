@@ -42,7 +42,7 @@ from rce.error import InternalError
 
 
 class Types(object):
-    """
+    """ Available Interface types.
     """
     SERVICE_CLIENT = 0
     SERVICE_PROVIDER = 3
@@ -52,6 +52,14 @@ class Types(object):
     
     @staticmethod
     def encode(typename):
+        """ Encode an Interface type in string form as as an int.
+            
+            @param typename:    Interface type which should be encoded.
+            @type  typename:    str
+            
+            @return:            Encoded Interface type.
+            @rtype:             int
+        """
         if typename.startswith(Types._NAMES[1]):
             return Types.PUBLISHER
         elif typename.startswith(Types._NAMES[2]):
@@ -65,21 +73,37 @@ class Types(object):
     
     @staticmethod
     def decode(typenr):
+        """ Decode an Interface type in int form as as a string.
+            
+            @param typenr:      Encoded Interface type which should be decoded.
+            @type  typenr:      int
+            
+            @return:            Interface type.
+            @rtype:             str
+        """
         assert 0 <= typenr < 4
         return Types._NAMES[typenr]
     
     @staticmethod
-    def connectable(a, b):
-        return a+b == 3
+    def connectable(iTypeA, iTypeB):
+        """ Check if the two Interfaces are connectable.
+            
+            @param iTypeX:      Encoded Interface type.
+            @type  iTypeX:      int
+            
+            @return:            True, if they are connectable; False otherwise.
+            @rtype:             bool
+        """
+        return iTypeA+iTypeB == 3
 
 
 class Interface(Referenceable):
-    """
+    """ Abstract base class for an Interface in a slave process.
     """
     def __init__(self, owner, uid):
         """ Initialize the Interface.
             
-            @param owner:       
+            @param owner:       Namespace for which the Interface is created.
             @param owner:       rce.slave.namespace.Namespace
             
             @param uid:         Unique ID which is used to identify the
@@ -96,12 +120,15 @@ class Interface(Referenceable):
     
     @property
     def UID(self):
-        """
-        """
+        """ Unique ID of the interface. """
         return self._uid
     
     def unregisterProtocol(self, protocol):
-        """
+        """ Callback for the protocol to inform the interface that the
+            protocol has died and should no longer be used.
+            
+            @param protocol:    Protocol which should be unregistered.
+            @type  protocol:    rce.slave.protocol._Protocol
         """
         assert protocol in self._protocols
         del self._protocols[protocol]
@@ -110,7 +137,15 @@ class Interface(Referenceable):
             self.stop()
     
     def remote_connect(self, protocol, remoteID):
-        """
+        """ Connect this interface to another interface using a local protocol.
+            
+            @param protocol:    Protocol instance which should be used to
+                                establish the connection.
+            @type  protocol:    rce.slave.protocol._Protocol
+            
+            @param remoteID:    Unique ID of the interface to which this
+                                interface should be connected.
+            @type  remoteID:    str
         """
         if not self._protocols:
             self.start()
@@ -126,7 +161,15 @@ class Interface(Referenceable):
         protocol.registerConnection(self, remoteID)
     
     def remote_disconnect(self, protocol, remoteID):
-        """
+        """ Disconnect this interface from another interface.
+            
+            @param protocol:    Protocol instance which was used for the
+                                connection.
+            @type  protocol:    rce.slave.protocol._Protocol
+            
+            @param remoteID:    Unique ID of the interface from which this
+                                interface should be disconnected.
+            @type  remoteID:    str
         """
         remoteID = UUID(bytes=remoteID)
         
@@ -142,7 +185,8 @@ class Interface(Referenceable):
             self.stop()
     
     def remote_destroy(self):
-        """
+        """ Method should be called to destroy the interface and will take care
+            of deleting all circular references.
         """
         self.stop()
         
@@ -153,9 +197,9 @@ class Interface(Referenceable):
     def start(self):
         """ This method is used to setup the interface.
 
-            Don't overwrite this method; instead overwrite the method _start.
+            Don't overwrite this method; instead overwrite the hook _start.
 
-            @raise:     errors.InternalError if the interface can not be
+            @raise:     rce.error.InternalError if the interface can not be
                         started.
         """
         if self._ready:
@@ -167,7 +211,7 @@ class Interface(Referenceable):
     def stop(self):
         """ This method is used to stop the interface.
 
-            Don't overwrite this method; instead overwrite the method _stop.
+            Don't overwrite this method; instead overwrite the hook _stop.
         """
         if not self._ready:
             return

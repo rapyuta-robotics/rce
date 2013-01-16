@@ -179,7 +179,7 @@ class Protocol(Proxy):
     def _destroy(self):
         try:
             self.obj.callRemote('destroy')
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             pass
 
 
@@ -305,7 +305,7 @@ class Interface(Proxy):
     def _destroy(self):
         try:
             self.obj.callRemote('destroy')
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             pass
 
 
@@ -384,7 +384,7 @@ class Namespace(Proxy):
     def _destroy(self):
         try:
             self.obj.callRemote('destroy')
-        except DeadReferenceError:
+        except (DeadReferenceError, PBConnectionLost):
             pass
 
 
