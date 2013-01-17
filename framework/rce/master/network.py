@@ -36,7 +36,8 @@ from uuid import uuid4
 # twisted specific imports
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, DeferredList
-from twisted.spread.pb import Referenceable, DeadReferenceError
+from twisted.spread.pb import Referenceable, \
+    DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError, ConnectionError, InvalidKey
@@ -174,13 +175,6 @@ class Protocol(Proxy):
         assert len(self._connections) == 0
         
         super(Protocol, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except (DeadReferenceError, PBConnectionLost):
-            pass
 
 
 class Interface(Proxy):
@@ -247,7 +241,7 @@ class Interface(Proxy):
             @return:            None.
             @rtype:             twisted::Deferred
         """
-        return self._registerRemoteID(protocol, remoteID)
+        return protocol().addCallback(self._remoteID, remoteID, 'connect')
     
     def unregisterRemoteID(self, protocol, remoteID):
         """ Unregister an interface (using its unique ID) with this interface,
@@ -267,23 +261,10 @@ class Interface(Proxy):
             @return:            None.
             @rtype:             twisted::Deferred
         """
-        return self._unregisterRemoteID(protocol, remoteID)
+        return protocol().addCallback(self._remoteID, remoteID, 'disconnect')
     
-    @Proxy.returnDeferred
-    def _registerRemoteID(self, protocol, remoteID):
-        def cb(protocol_, remoteID_):
-            return self.obj.callRemote('connect', protocol_.obj,
-                                       remoteID_.bytes)
-        
-        return protocol().addCallback(cb, remoteID)
-    
-    @Proxy.returnDeferred
-    def _unregisterRemoteID(self, protocol, remoteID):
-        def cb(protocol_, remoteID_):
-            return self.obj.callRemote('disconnect', protocol_.obj,
-                                       remoteID_.bytes)
-        
-        return protocol().addCallback(cb, remoteID)
+    def _remoteID(self, protocol, remoteID, name):
+        return self.callRemote(name, Deferred, protocol, remoteID.bytes)
     
     def destroy(self):
         """ Method should be called to destroy the interface and will take care
@@ -300,13 +281,6 @@ class Interface(Proxy):
         assert len(self._connections) == 0
         
         super(Interface, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except (DeadReferenceError, PBConnectionLost):
-            pass
 
 
 class Namespace(Proxy):
@@ -349,13 +323,10 @@ class Namespace(Proxy):
                                 (subclass of rce.master.base.Proxy)
         """
         uid = self._endpoint.getUID()
-        interface = self._createInterface(uid.bytes, iType, clsName, addr)
+        interface = self.callRemote('createInterface', Interface, uid.bytes,
+                                    iType, clsName, addr)
         interface.UID = uid
         return interface
-    
-    @Proxy.returnProxy(Interface)
-    def _createInterface(self, uid, iType, clsName, addr):
-        return self.obj.callRemote('createInterface', uid, iType, clsName, addr)
     
     def registerInterface(self, interface):
         assert interface not in self._interfaces
@@ -379,13 +350,6 @@ class Namespace(Proxy):
         self._endpoint = None
         
         super(Namespace, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except (DeadReferenceError, PBConnectionLost):
-            pass
 
 
 class Endpoint(Proxy):
@@ -464,11 +428,10 @@ class Endpoint(Proxy):
                                 (subclass of rce.master.base.Proxy)
         """
         if not self._loopback:
-            self._loopback = self._getLoopback()
+            self._loopback = self.callRemote('getLoopback', Protocol)
         
         return self._loopback
     
-    @Proxy.returnDeferred
     def prepareConnection(self, connID, key, auth):
         """ Prepare the endpoint for the connection attempt by adding the
             necessary connection information to the remote process. When the
@@ -491,9 +454,9 @@ class Endpoint(Proxy):
                                 ready for the connection attempt.
             @rtype:             twisted::Deferred
         """
-        return self.obj.callRemote('prepareConnection', connID, key, auth)
+        return self.callRemote('prepareConnection', Deferred, connID, key,
+                               auth)
     
-    @Proxy.returnDeferred
     def connect(self, connID, addr):
         """ Tell the endpoint to connect to the given address using the
             authentication details matching the given connection ID. This
@@ -513,11 +476,7 @@ class Endpoint(Proxy):
             @return:            None.
             @rtype:             twisted::Deferred
         """
-        return self.obj.callRemote('connect', connID, addr)
-    
-    @Proxy.returnProxy(Protocol)
-    def _getLoopback(self):
-        return self.obj.callRemote('getLoopback')
+        return self.callRemote('connect', Deferred, connID, addr)
     
     def registerNamespace(self, namespace):
         assert namespace not in self._namespaces
@@ -621,10 +580,6 @@ class Endpoint(Proxy):
         assert len(self._namespaces) == 0
         
         super(Endpoint, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        self.obj.broker.transport.loseConnection()
 
 
 class _ConnectionValidator(Referenceable):
@@ -791,8 +746,8 @@ class EndpointConnection(object):
             return Failure(InternalError('Connection could not be '
                                          'authenticated.'))
         
-        self._serverProtocol.createRemoteObject(serverProtocol)
-        self._clientProtocol.createRemoteObject(clientProtocol)
+        self._serverProtocol.registerRemoteReference(serverProtocol)
+        self._clientProtocol.registerRemoteReference(clientProtocol)
     
     def _logError(self, failure):
         """ Internally used method to print out the errors for now...

@@ -50,14 +50,14 @@ class Robot(Namespace):
         """
         super(Robot, self).__init__(endpoint)
     
-    @Proxy.returnDeferred
     def getIP(self):
         """ Get the IP address of the process in which the Robot lives.
             
             @return:            IP address of the process. (type: str)
             @rtype:             twisted::Deferred
         """
-        return self.obj.broker.transport.getPeer().host
+        return self().addCallback(lambda remote:
+                                  remote.broker.transport.getPeer().host)
 
 
 class RobotEndpoint(Endpoint):
@@ -88,18 +88,17 @@ class RobotEndpoint(Endpoint):
         """
         return len(self._namespaces)
     
-    def getAddress(self):
-        """ Get the address of the robot endpoint's internal communication
-            server.
-            
-            @return:            Address of the robot endpoint's internal
-                                communication server.
-                                (type: twisted.internet.address.IPv4Address)
-            @rtype:             twisted::Deferred
-        """
-        return succeed(self.obj.broker.transport.getPeer())
+#    def getAddress(self):
+#        """ Get the address of the robot endpoint's internal communication
+#            server.
+#            
+#            @return:            Address of the robot endpoint's internal
+#                                communication server.
+#                                (type: twisted.internet.address.IPv4Address)
+#            @rtype:             twisted::Deferred
+#        """
+#        return succeed(self.obj.broker.transport.getPeer())
     
-    @Proxy.returnProxy(Robot)
     def createNamespace(self, user, robotID, key):
         """ Create a Namespace object in the endpoint.
             
@@ -118,8 +117,8 @@ class RobotEndpoint(Endpoint):
             @rtype:             rce.master.robot.Robot
                                 (subclass of rce.master.base.Proxy)
         """
-        return self.obj.callRemote('createNamespace', user, user.userID,
-                                   robotID, key)
+        return self.callRemote('createNamespace', Robot, user,
+                               user.userID, robotID, key)
     
     def destroy(self):
         """ Method should be called to destroy the robot endpoint and will take

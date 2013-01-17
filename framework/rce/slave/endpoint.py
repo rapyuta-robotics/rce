@@ -186,21 +186,29 @@ class Endpoint(Referenceable):
         self._protocols.remove(protocol)
     
     def terminate(self):
-        """ Method should be called to destroy all protocols before the reactor
-            is stopped.
+        """ Method should be called to terminate the endpoint before the
+            reactor is stopped.
+            
+            @return:            Deferred which fires as soon as the client is
+                                ready to stop the reactor.
+            @rtype:             twisted::Deferred
         """
         self._pendingConnections = {}
         
         for protocol in self._protocols.copy():
             protocol.remote_destroy()
         
-        assert len(self._protocols) == 0
-        
         if self._loopback:
             self._loopback.remote_destroy()
             self._loopback = None
         
         self._factory = None
+    
+    def check(self):
+        """ Method should be called to verify if the endpoint has terminated
+            properly after the reactor has stopped.
+        """
+        assert len(self._protocols) == 0
 
 
 class _RCEInternalServerFactory(ServerFactory):

@@ -109,13 +109,13 @@ class RoboEarthCloudEngine(object):
             print('Connection to Container process established.')
         elif avatarId == 'robot':
             endpoint = RobotEndpoint(self._network, self._distributor)
-            endpoint.createRemoteObject(mind)
+            endpoint.registerRemoteReference(mind)
             avatar = Avatar() # TODO: At the moment does nothing
             detach = lambda: endpoint.destroy()
             print('Connection to Robot process established.')
         elif avatarId == 'environment':
             endpoint = self._pendingContainer.pop(mind[1])
-            endpoint.createRemoteObject(mind[0])
+            endpoint.registerRemoteReference(mind[0])
             avatar = Avatar() # TODO: At the moment does nothing
             detach = lambda: endpoint.destroy()
             print('Connection to Environment process established.')

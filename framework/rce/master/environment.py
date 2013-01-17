@@ -37,6 +37,7 @@ from twisted.spread.pb import DeadReferenceError, PBConnectionLost
 # Custom imports
 from rce.master.base import Proxy
 from rce.master.network import Endpoint, Namespace
+import settings
 
 
 class Node(Proxy):
@@ -61,13 +62,6 @@ class Node(Proxy):
         self._namespace = None
         
         super(Node, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except (DeadReferenceError, PBConnectionLost):
-            pass
 
 
 class Parameter(Proxy):
@@ -92,13 +86,6 @@ class Parameter(Proxy):
         self._namespace = None
         
         super(Parameter, self).destroy()
-    
-    @Proxy.destroyProxy
-    def _destroy(self):
-        try:
-            self.obj.callRemote('destroy')
-        except (DeadReferenceError, PBConnectionLost):
-            pass
 
 
 class Environment(Namespace):
@@ -116,7 +103,6 @@ class Environment(Namespace):
         self._nodes = set()
         self._parameters = set()
     
-    @Proxy.returnProxy(Node)
     def createNode(self, pkg, exe, args, name, nspace):
         """ Create a node (ROS process) inside the environment.
             
@@ -140,9 +126,9 @@ class Environment(Namespace):
                                 in the environment.
             @type  nspace:      str
         """
-        return self.obj.callRemote('createNode', pkg, exe, args, name, nspace)
+        return self.callRemote('createNode', Node, pkg, exe, args, name,
+                               nspace)
     
-    @Proxy.returnProxy(Parameter)
     def createParameter(self, name, value):
         """ Create a parameter (in ROS parameter server) inside the
             environment.
@@ -155,7 +141,7 @@ class Environment(Namespace):
             @param value:       Value of the parameter which should be added.
             @type  value:       str, int, float, bool, list
         """
-        return self.obj.callRemote('createParameter', name, value)
+        return self.callRemote('createParameter', Parameter, name, value)
     
     def registerNode(self, node):
         assert node not in self._nodes
@@ -218,15 +204,9 @@ class EnvironmentEndpoint(Endpoint):
                                 (type: twisted.internet.address.IPv4Address)
             @rtype:             twisted::Deferred
         """
-        import settings
-        d = self._getAddress()
-        d.addCallback(lambda addr: IPv4Address('TCP', addr.host,
-                                               settings.RCE_INTERNAL_PORT))
-        return d
-    
-    @Proxy.returnDeferred
-    def _getAddress(self):
-        return self.obj.broker.transport.getPeer()
+        return self().addCallback(lambda remote:
+                                  IPv4Address('TCP', remote.broker.transport.getPeer().host,
+                                              settings.RCE_INTERNAL_PORT))
     
 #    def getAddress(self):
 #        """ Get the address of the environment endpoint's internal
@@ -239,7 +219,6 @@ class EnvironmentEndpoint(Endpoint):
 #        """
 #        return self._container.getAddress()
     
-    @Proxy.returnProxy(Environment)
     def createNamespace(self):
         """ Create a Environment object in the environment endpoint.
             
@@ -247,7 +226,7 @@ class EnvironmentEndpoint(Endpoint):
             @rtype:             rce.master.environment.Environment
                                 (subclass of rce.master.base.Proxy)
         """
-        return self.obj.callRemote('createNamespace')
+        return self.callRemote('createNamespace', Environment)
     
     def destroy(self):
         """ Method should be called to destroy the environment endpoint and

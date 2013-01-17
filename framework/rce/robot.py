@@ -40,7 +40,7 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python import log
 from twisted.python.failure import Failure
-from twisted.internet.defer import fail, maybeDeferred
+from twisted.internet.defer import succeed, fail, maybeDeferred, DeferredList
 from twisted.cred.error import UnauthorizedLogin
 from twisted.cred.checkers import ICredentialsChecker
 from twisted.cred.portal import IRealm, Portal
@@ -85,8 +85,6 @@ class Robot(Namespace):
             @type  user:        twisted.spread.pb.RemoteReference
         """
         self._client = client
-        client.registerRobot(self)
-        
         self._user = user
         self._connection = None
         
@@ -482,13 +480,13 @@ class RobotClient(Endpoint):
         """
         Endpoint.__init__(self, reactor, commPort)
         
-        self._robots = set()
+        self._robots = {}
         self._pendingRobots = {}
         self._deathCandidates = {}
     
-    def registerRobot(self, robot):
+    def _registerRobot(self, robot, status):
         assert robot not in self._robots
-        self._robots.add(robot)
+        self._robots[robot] = status
         
         # Add the robot also to the death list
         assert robot not in self._deathCandidates
@@ -498,13 +496,15 @@ class RobotClient(Endpoint):
     
     def unregisterRobot(self, robot):
         assert robot in self._robots
-        self._robots.remove(robot)
         
-        # Remove the robot also from the death list
+        # First remove the robot from the death list if necessary
         deathCall = self._deathCandidates.pop(robot, None)
         
         if deathCall:
             deathCall.cancel()
+        
+        # Unregister the robot
+        del self._robots[robot]
     
     def _killRobot(self, robot):
         """ Internally used method to destroy a robot whose reconnect timeout
@@ -513,9 +513,10 @@ class RobotClient(Endpoint):
             @param robot:       Robot which should be destroyed.
             @type  robot:       rce.robot.Robot
         """
+        assert robot in self._robots
         assert robot in self._deathCandidates
         del self._deathCandidates[robot]
-        robot.remote_destroy()
+        #self._robots[robot].callRemote('remove')
     
     def connectionLost(self, robot):
         """ Method is used by the Robot to signal to the client that he lost
@@ -589,6 +590,9 @@ class RobotClient(Endpoint):
     def remote_createNamespace(self, user, userID, robotID, key):
         """ Create a Robot namespace.
             
+            @param status:
+            @type  status:      twisted.spread.pb.RemoteReference
+            
             @param user:        User instance to which this namespace belongs
                                 and which provides the necessar callbacks for
                                 the Robot Avatar.
@@ -613,22 +617,32 @@ class RobotClient(Endpoint):
             raise InternalError('Can not create the same robot twice.')
         
         robot = Robot(self, user)
+        self._registerRobot(robot, None)
         self._pendingRobots[uid] = key, robot
         return robot
     
     def terminate(self):
-        """ Method should be called to destroy all robots before the reactor
+        """ Method should be called to terminate the client before the reactor
             is stopped.
+            
+            @return:            Deferred which fires as soon as the client is
+                                ready to stop the reactor.
+            @rtype:             twisted::Deferred
         """
         self._pendingRobots = {}
         
-        for robot in self._robots.copy():
-            robot.remote_destroy()
-        
+        dl = DeferredList([robot.remote_destroy()
+                           for robot in self._robots.copy()])
+        return dl.addBoth(lambda _: Endpoint.terminate(self))
+    
+    def check(self):
+        """ Method should be called to verify if the client has terminated
+            properly after the reactor has stopped.
+        """
         assert len(self._robots) == 0
         assert len(self._deathCandidates) == 0
         
-        Endpoint.terminate(self)
+        Endpoint.check(self)
 
 
 def main(reactor, cred, masterIP, masterPort, extPort, commPort):
@@ -643,7 +657,7 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort):
     
     client = RobotClient(reactor, commPort)
     d = factory.login(cred, client)
-    d.addCallback(lambda ref: setattr(client, '__ref', ref))
+    d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
     
     portal = Portal(client, (client,))
@@ -652,4 +666,5 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort):
     listenWS(robot)
     
     reactor.addSystemEventTrigger('before', 'shutdown', client.terminate)
+    reactor.addSystemEventTrigger('after', 'shutdown', client.check)
     reactor.run()
