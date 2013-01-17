@@ -64,3 +64,9 @@ class DeadConnection(Exception):
     """ Error is raised to signal to the client protocol that the connection
         is dead.
     """
+
+
+class AlreadyDead(Exception):
+    """ Exception is raised when a death notifier callback is registered with
+        an already dead object.
+    """

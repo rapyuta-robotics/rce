@@ -37,8 +37,7 @@ from uuid import uuid4
 from twisted.spread.pb import Referenceable
 
 # Custom imports
-from rce.error import InvalidRequest
-from rce.master.base import AlreadyDead
+from rce.error import InvalidRequest, AlreadyDead
 from rce.slave.interface import Types
 from rce.util.name import isLegalName
 
@@ -337,7 +336,9 @@ class User(Referenceable):
         if key in self._connections:
             raise InvalidRequest('Can not add the same connection twice.')
         
-        self._connections[key] = self._realm.createConnection(ifA.obj, ifB.obj)
+        connection = self._realm.createConnection(ifA.obj, ifB.obj)
+        self._connections[key] = connection
+        connection.notifyOnDeath(self._connectionDied)
         
         # TODO: Return some info about success/failure of request
     
@@ -360,6 +361,7 @@ class User(Referenceable):
                 raise InvalidRequest('Can not disconnect two unconnected '
                                      'interfaces.')
         
+        connection.dontNotifyOnDeath(self._connectionDied)
         connection.destroy()
         
         # TODO: Return some info about success/failure of request
@@ -393,13 +395,23 @@ class User(Referenceable):
             print('Received notification for dead Robot, '
                   'but User is already destroyed.')
     
+    def _connectionDied(self, connection):
+        if self._connections:
+            for key, value in self._connections.iteritems():
+                if value == connection:
+                    del self._connections[key]
+                    break
+        else:
+            print('Received notification for dead Connection, '
+                  'but User is already destroyed.')
+    
     def destroy(self):
         """ Method should be called to destroy the user and will take care of
             destroying all objects owned by this User as well as deleting all
             circular references.
         """
-#        for connection in self._connections.itervalues():
-#            connection.dontNotifyOnDeath(self._connectionDied)
+        for connection in self._connections.itervalues():
+            connection.dontNotifyOnDeath(self._connectionDied)
         
         for container in self._containers.itervalues():
             container.dontNotifyOnDeath(self._containerDied)

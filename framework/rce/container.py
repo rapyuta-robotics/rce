@@ -40,7 +40,8 @@ pjoin = os.path.join
 # twisted specific imports
 from twisted.python import log
 from twisted.internet.defer import DeferredList, succeed
-from twisted.spread.pb import Referenceable, PBClientFactory
+from twisted.spread.pb import Referenceable, PBClientFactory, \
+    DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
@@ -97,12 +98,16 @@ end script
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
     """
-    def __init__(self, client, nr, uid):
+    def __init__(self, client, status, nr, uid):
         """ Initialize the deployment container.
             
             @param client:      Container client which is responsible for
                                 monitoring the containers in this machine.
             @type  client:      rce.container.ContainerClient
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the container's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param nr:          Unique number which will be used for the IP
                                 address and the hostname of the container.
@@ -116,6 +121,7 @@ class RCEContainer(Referenceable):
         self._client = client
         client.registerContainer(self)
         
+        self._status = status
         self._nr = nr
         self._name = 'C{0}'.format(nr)
         self._terminating = None
@@ -203,14 +209,20 @@ class RCEContainer(Referenceable):
     def remote_destroy(self):
         """ Method should be called to destroy the container.
         """
-        # TODO: Check what happens if the Deferred 'self._terminating' is
-        #       used multiple times...
         if not self._terminating:
             if self._container:
                 self._terminating = self._container.stop(self._name)
                 self._terminating.addBoth(self._destroy)
             else:
                 self._terminating = succeed(None)
+        
+        if self._status:
+            try:
+                self._status.callRemote('died')
+            except (DeadReferenceError, PBConnectionLost):
+                pass
+            
+            self._status = None
         
         return self._terminating
 
@@ -317,8 +329,12 @@ class ContainerClient(Referenceable):
         """ IP address of master process. """
         return self._masterIP
     
-    def remote_createContainer(self, uid):
+    def remote_createContainer(self, status, uid):
         """ Create a new Container.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the container's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param uid:         Unique ID which the environment process inside
                                 the container needs to login to the Master
@@ -333,7 +349,7 @@ class ContainerClient(Referenceable):
         except KeyError:
             raise MaxNumberExceeded('Can not manage any additional container.')
         
-        container = RCEContainer(self, nr, uid)
+        container = RCEContainer(self, status, nr, uid)
         return container.start().addCallback(lambda _: container)
     
     def registerContainer(self, container):
@@ -392,7 +408,7 @@ def main(reactor, cred, masterIP, masterPort, rootfsDir, confDir, dataDir,
     client = ContainerClient(reactor, masterIP, rootfsDir, confDir, dataDir,
                              srcDir, pkgDir)
     d = factory.login(cred, client)
-    d.addCallback(lambda ref: setattr(client, '__ref', ref))
+    d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
     
     reactor.addSystemEventTrigger('before', 'shutdown', client.terminate)

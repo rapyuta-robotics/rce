@@ -30,26 +30,40 @@
 #     
 #     
 
-# Python specific imports
-from weakref import WeakSet
-
 # twisted specific imports
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, succeed, fail
-from twisted.spread.pb import RemoteReference, \
+from twisted.spread.pb import RemoteReference, Referenceable, \
     DeadReferenceError, PBConnectionLost
 
+# Custom imports
+from rce.error import AlreadyDead
 
-class AlreadyDead(Exception):
-    """ Exception is raised when a death notifier callback is registered with
-        an already dead proxy.
+
+class Status(Referenceable):
     """
+    """
+    def __init__(self, proxy):
+        """
+        """
+        self._proxy = proxy
+        proxy._registerStatus(self)
+    
+    def remote_died(self):
+        """
+        """
+        if self._proxy:
+            self._proxy.destroy()
+    
+    def cancel(self):
+        """
+        """
+        self._proxy = None
 
 
 class Proxy(object):
     """ 
     """
-    
     def __init__(self, *args, **kw):
         """ Initialize the Proxy.
         """
@@ -57,12 +71,18 @@ class Proxy(object):
         
         self.__obj = None
         self.__failure = None
-        self.__refs = WeakSet()
+        self.__status = None
         
         self.__cbs = set()
         self.__pending = []
     
-    def callRemote(self, _name, _returnType, *args, **kw):
+    def _registerStatus(self, status):
+        """
+        """
+        assert self.__status is None
+        self.__status = status
+    
+    def callRemote(self, _name, *args, **kw):
         """
         """
         if self.__failure is not None:
@@ -73,28 +93,15 @@ class Proxy(object):
         else:
             d = succeed(self.__obj)
         
-        d.addCallback(self.__call, _name, (args, kw))
-        d.addErrback(self.__filter)
-        
-        if issubclass(_returnType, Deferred):
-            cb = lambda result, deferred: deferred.callback(result)
-            eb = lambda failure, deferred: deferred.callback(failure)
-        elif issubclass(_returnType, Proxy):
-            cb = lambda result, proxy: proxy.registerRemoteReference(result)
-            eb = lambda failure, proxy: proxy.registerFailureObject(failure)
-        else:
-            raise TypeError('Unknown return type: {0}'.format(_returnType))
-        
-        proxy = _returnType(self)
-        d.addCallbacks(cb, eb, callbackArgs=(proxy,), errbackArgs=(proxy,))
-        return proxy
+        d.addCallback(lambda ref: ref.callRemote(_name, *args, **kw))
+        d.addErrback(self.__filter, _name)
+        return d
     
-    def registerRemoteReference(self, obj):
+    def callback(self, obj):
         """ Register the remote reference which provides the necessary methods
             for this Proxy.
             
-            Only one of the method 'registerRemoteReference' or
-            'registerFailureObject' can be called once!
+            Exactly one call can be made to either 'callback' or 'errback'!
             
             @param obj:         Remote reference which should be registered.
             @type  obj:         twisted.spread.pb.RemoteReference
@@ -110,12 +117,11 @@ class Proxy(object):
         
         self.__pending = None
     
-    def registerFailureObject(self, f):
+    def errback(self, f):
         """ Register a failure object which was received during the creation
             of the object in the remote process.
             
-            Only one of the method 'registerRemoteReference' or
-            'registerFailureObject' can be called once!
+            Exactly one call can be made to either 'callback' or 'errback'!
             
             @param f:           Failure object which should be registered.
             @type  f:           twisted.python.failure.Failure
@@ -177,13 +183,7 @@ class Proxy(object):
         """
         self.__destroy()
     
-    def __call(self, ref, name, (args, kw)):
-        """ Internally used method which is used as a callback to call the
-            method of the referenced remote object.
-        """
-        return ref.callRemote(name, *args, **kw)
-    
-    def __filter(self, failure):
+    def __filter(self, failure, name):
         """ Internally used method which is used as an errback to check the
             failure for errors indicating that the Proxy is dead.
         """
@@ -191,8 +191,7 @@ class Proxy(object):
             self.__notify(failure)
         else:
             print('Received the following error message when calling {0} from '
-                  'class {1}: {2}'.format(self.__name__,
-                                          self.__class__.__name__,
+                  'class {1}: {2}'.format(name, self.__class__.__name__,
                                           failure.getErrorMessage()))
         
         return failure
@@ -207,8 +206,11 @@ class Proxy(object):
         if self.__obj:
             self.__obj.dontNotifyOnDisconnect(self.__disconnected)
         
+        if self.__status:
+            self.__status.cancel()
+        
         self.__failure = failure
-        self.__obj = ()
+        self.__status = None
         
         if self.__pending is not None:
             for pending in self.__pending:
@@ -222,10 +224,17 @@ class Proxy(object):
         self.__cbs = None
     
     def __destroy(self):
-        self.__notify(Failure(DeadReferenceError('Reference is deleted.')))
+        self.__notify(Failure(DeadReferenceError('Referenced object is '
+                                                 'dead.')))
+        
+        if self.__obj:
+            try:
+                self.__obj.callRemote('destroy')
+            except DeadReferenceError, PBConnectionLost:
+                pass
+            
+        self.__obj = None
     
     def __disconnected(self, _):
-        self.__notify(Failure(DeadReferenceError('Reference is dead.')))
-    
-    def __del__(self):
-        self.__destroy()
+        self.__notify(Failure(DeadReferenceError('Broker is disconnected.')))
+        self.__obj = None

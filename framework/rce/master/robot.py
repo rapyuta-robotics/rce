@@ -30,12 +30,9 @@
 #     
 #     
 
-# twisted specific imports
-from twisted.internet.defer import succeed
-
 # Custom imports
 from rce.master.network import Endpoint, Namespace
-from rce.master.base import Proxy
+from rce.master.base import Status
 
 
 class Robot(Namespace):
@@ -117,8 +114,11 @@ class RobotEndpoint(Endpoint):
             @rtype:             rce.master.robot.Robot
                                 (subclass of rce.master.base.Proxy)
         """
-        return self.callRemote('createNamespace', Robot, user,
-                               user.userID, robotID, key)
+        robot = Robot(self)
+        status = Status(robot)
+        self.callRemote('createNamespace', status, user, user.userID, robotID,
+                        key).chainDeferred(robot)
+        return robot
     
     def destroy(self):
         """ Method should be called to destroy the robot endpoint and will take

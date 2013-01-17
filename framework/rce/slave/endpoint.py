@@ -64,10 +64,15 @@ class Endpoint(Referenceable):
         self._pendingConnections = {}
         self._protocols = set()
     
-    def remote_createNamespace(self, *args, **kw):
-        """ Create a Namespace in this endpoint.
+    def remote_createNamespace(self, status, *args, **kw):
+        """ Remote callable method to create a namespace in this endpoint.
             
             Method has to be implemented!
+            
+            @param status:      Reference to status object in Master which is
+                                used to inform the Master of the death of the
+                                namespace.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @return:            New Namespace instance.
             @rtype:             rce.slave.namespace.Namespace
@@ -86,7 +91,7 @@ class Endpoint(Referenceable):
         
         return self._loopback
     
-    def remote_prepareConnection(self, connID, key, auth):
+    def remote_prepareConnection(self, connID, key, auth, status):
         """ Prepare the endpoint for the connection attempt by adding the
             necessary connection information to the remote process.
             
@@ -102,9 +107,14 @@ class Endpoint(Referenceable):
             @param auth:        Authenticator which is used to validate the
                                 key received from the other side.
             @type  auth:        twisted.spread.pb.RemoteReference
+            
+            @param status:      Status object which the endpoint can use to
+                                inform the Master of the status of the protocol
+                                which will be created for the connection.
+            @type  status:      twisted.spread.pb.RemoteReference
         """
         assert connID not in self._pendingConnections
-        self._pendingConnections[connID] = [key, auth]
+        self._pendingConnections[connID] = [key, auth, status]
     
     def remote_connect(self, connID, addr):
         """ Connect to the endpoint with the given address using the
@@ -123,7 +133,7 @@ class Endpoint(Referenceable):
         # Retrieve the key which should be sent and replace it with None to
         # indicate that the key has already been sent
         info = self._pendingConnections[connID]
-        key, auth = info
+        key, auth, _ = info
         info[0] = None
         
         client = ClientCreator(self._reactor, RCEInternalProtocol, self)
@@ -157,10 +167,12 @@ class Endpoint(Referenceable):
             @rtype:             twisted::Deferred
         """
         try:
-            key, auth = self._pendingConnections[connID]
+            key, auth, status = self._pendingConnections[connID]
         except KeyError:
             return fail(Failure(ConnectionError('Connection was not '
                                                 'expected.')))
+        
+        protocol.registerStatus(status)
         
         try:
             if key:
@@ -197,18 +209,16 @@ class Endpoint(Referenceable):
         
         for protocol in self._protocols.copy():
             protocol.remote_destroy()
+        # Can not check here, because protocols are unregistered when the
+        # connection is lost and remote_destroy only requests to lose the
+        # connection
+        #assert len(self._protocols) == 0
         
         if self._loopback:
             self._loopback.remote_destroy()
             self._loopback = None
         
         self._factory = None
-    
-    def check(self):
-        """ Method should be called to verify if the endpoint has terminated
-            properly after the reactor has stopped.
-        """
-        assert len(self._protocols) == 0
 
 
 class _RCEInternalServerFactory(ServerFactory):

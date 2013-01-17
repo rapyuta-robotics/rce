@@ -39,7 +39,8 @@ from uuid import uuid4
 from twisted.python import log
 from twisted.internet.error import ProcessExitedAlready
 from twisted.internet.protocol import ProcessProtocol
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, \
+    DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InvalidRequest
@@ -81,11 +82,15 @@ class Node(Referenceable, ArgumentMixin):
     _STOP_ESCALATION = [('INT', 15), ('TERM', 2), ('KILL', None)]
     _LOG_DIR = '/opt/rce/data'#'/home/ros'
     
-    def __init__(self, owner, pkg, exe, args, name, namespace):
+    def __init__(self, owner, status, pkg, exe, args, name, namespace):
         """ Initialize and start the Node.
             
             @param owner:       Environment in which the node will be created.
             @type  owner:       rce.environment.Environment
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the node's status.
+            @type  status:      twisted.spread.pb.RemoteReference
 
             @param pkg:         Name of ROS package where the node can be
                                 found.
@@ -113,6 +118,8 @@ class Node(Referenceable, ArgumentMixin):
         
         owner.registerNode(self)
         self._owner = owner
+        
+        self._status = status
         self._reactor = owner.reactor
         self._call = None
         
@@ -174,15 +181,23 @@ class Node(Referenceable, ArgumentMixin):
         if exitCode:
             log.msg('Node ({0}) terminated with exit code: '
                     '{1}\ncmd = {2}'.format(self._name, exitCode, self._cmd))
+        
+        if self._owner:
+            self._owner.unregisterNode(self)
+            self._owner = None
+        
+        if self._status:
+            try:
+                self._status.callRemote('died')
+            except (DeadReferenceError, PBConnectionLost):
+                pass
+            
+            self._status = None
     
     def remote_destroy(self):
         """ Method should be called to stop/kill this node.
         """
-        if self._owner:
-            self._owner.unregisterNode(self)
-            self._owner = None
-            
-            self._destroy()
+        self._destroy()
     
     def _destroy(self, lvl=0):
         if not self._protocol:

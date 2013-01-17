@@ -32,7 +32,6 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
-from twisted.internet.defer import Deferred
 
 # Custom imports
 from rce.master.base import Proxy
@@ -61,7 +60,7 @@ class Container(Proxy):
                                 engine internal communication protocol.
             @rtype:             twisted::Deferred
         """
-        d = self.callRemote('getPort', Deferred)
+        d = self.callRemote('getPort')
         d.addCallback(lambda port: IPv4Address('TCP', self._machine._ip, port))
         return d
     

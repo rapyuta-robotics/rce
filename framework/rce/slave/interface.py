@@ -35,7 +35,8 @@ from uuid import UUID
 
 # twisted specific imports
 from twisted.python import log
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, \
+    DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError
@@ -100,11 +101,15 @@ class Types(object):
 class Interface(Referenceable):
     """ Abstract base class for an Interface in a slave process.
     """
-    def __init__(self, owner, uid):
+    def __init__(self, owner, status, uid):
         """ Initialize the Interface.
             
             @param owner:       Namespace for which the Interface is created.
             @param owner:       rce.slave.namespace.Namespace
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the interface's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -113,6 +118,7 @@ class Interface(Referenceable):
         self._owner = owner
         owner.registerInterface(self)
         
+        self._status = status
         self._uid = uid
         self._protocols = {}
         
@@ -193,6 +199,14 @@ class Interface(Referenceable):
         if self._owner:
             self._owner.unregisterInterface(self)
             self._owner = None
+        
+        if self._status:
+            try:
+                self._status.callRemote('died')
+            except (DeadReferenceError, PBConnectionLost):
+                pass
+            
+            self._status = None
     
     def start(self):
         """ This method is used to setup the interface.

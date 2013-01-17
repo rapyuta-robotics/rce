@@ -32,10 +32,9 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
-from twisted.spread.pb import DeadReferenceError, PBConnectionLost
 
 # Custom imports
-from rce.master.base import Proxy
+from rce.master.base import Proxy, Status
 from rce.master.network import Endpoint, Namespace
 import settings
 
@@ -126,8 +125,11 @@ class Environment(Namespace):
                                 in the environment.
             @type  nspace:      str
         """
-        return self.callRemote('createNode', Node, pkg, exe, args, name,
-                               nspace)
+        node = Node(self)
+        status = Status(node)
+        self.callRemote('createNode', status, pkg, exe, args, name,
+                        nspace).chainDeferred(node)
+        return node
     
     def createParameter(self, name, value):
         """ Create a parameter (in ROS parameter server) inside the
@@ -141,7 +143,11 @@ class Environment(Namespace):
             @param value:       Value of the parameter which should be added.
             @type  value:       str, int, float, bool, list
         """
-        return self.callRemote('createParameter', Parameter, name, value)
+        parameter = Parameter(self)
+        status = Status(parameter)
+        self.callRemote('createParameter', status, name,
+                        value).chainDeferred(parameter)
+        return parameter
     
     def registerNode(self, node):
         assert node not in self._nodes
@@ -226,7 +232,10 @@ class EnvironmentEndpoint(Endpoint):
             @rtype:             rce.master.environment.Environment
                                 (subclass of rce.master.base.Proxy)
         """
-        return self.callRemote('createNamespace', Environment)
+        environment = Environment(self)
+        status = Status(environment)
+        self.callRemote('createNamespace', status).chainDeferred(environment)
+        return environment
     
     def destroy(self):
         """ Method should be called to destroy the environment endpoint and

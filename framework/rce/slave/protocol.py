@@ -36,8 +36,10 @@ from uuid import UUID
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.defer import succeed
 from twisted.protocols.basic import Int32StringReceiver
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, \
+    DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError
@@ -50,7 +52,18 @@ class _Protocol(Referenceable):
     def __init__(self):
         """ Initialize the Protocol.
         """
+        self._status = None
         self._receivers = {}
+    
+    def registerStatus(self, status):
+        """ Register status observer for the Master process.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the interface's status.
+            @type  status:      twisted.spread.pb.RemoteReference
+        """
+        assert self._status is None
+        self._status = status
     
     def sendMessage(self, interface, msg, msgID, remoteID=None):
         """ Send a message received from an Interface to the other side.
@@ -158,6 +171,14 @@ class _Protocol(Referenceable):
                 interface.unregisterProtocol(self)
             
             self._receivers = None
+        
+        if self._status:
+            try:
+                return self._status.callRemote('died')
+            except (DeadReferenceError, PBConnectionLost):
+                return succeed(None)
+            
+            self._status = None
 
 
 class Loopback(_Protocol):

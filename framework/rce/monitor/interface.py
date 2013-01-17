@@ -50,11 +50,15 @@ class _ROSInterfaceBase(Interface):
     """ Abstract base class which provides the basics for the ROS-side
         interfaces.
     """
-    def __init__(self, owner, uid, clsName, addr):
+    def __init__(self, owner, status, uid, clsName, addr):
         """ Initialize the ROS-side Interface.
             
             @param owner:       Namespace to which this interface belongs.
             @type  owner:       rce.environment.Environment
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the interface's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -69,7 +73,7 @@ class _ROSInterfaceBase(Interface):
                                 use.
             @type  addr:        str
         """
-        Interface.__init__(self, owner, uid)
+        Interface.__init__(self, owner, status, uid)
         
         self._name = addr
 
@@ -77,8 +81,8 @@ class _ROSInterfaceBase(Interface):
 class ServiceClientInterface(_ROSInterfaceBase):
     """ Class which is used as a Service-Client Interface.
     """
-    def __init__(self, owner, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
+    def __init__(self, owner, status, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
         
         args = clsName.split('/')
         
@@ -121,8 +125,8 @@ class ServiceClientInterface(_ROSInterfaceBase):
 class ServiceProviderInterface(_ROSInterfaceBase):
     """ Class which is used as a Service-Provider Interface.
     """
-    def __init__(self, owner, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
+    def __init__(self, owner, status, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
         
         args = clsName.split('/')
         
@@ -207,8 +211,8 @@ class ServiceProviderInterface(_ROSInterfaceBase):
 class PublisherInterface(_ROSInterfaceBase):
     """ Class which is used as a Publisher Interface.
     """
-    def __init__(self, owner, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
+    def __init__(self, owner, status, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
         
         args = clsName.split('/')
         

@@ -32,6 +32,7 @@
 
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
+from rce.master.base import Status
 from rce.master.container import Container
 
 
@@ -81,7 +82,6 @@ class Distributor(object):
     
     def cleanUp(self):
         assert len(self._robots) == 0
-
 
 
 class LoadBalancer(object):
@@ -201,9 +201,9 @@ class Machine(object):
                                     'machine.')
         
         container = Container(self)
-        d = self._ref.callRemote('createContainer', uid)
-        d.addCallback(lambda result: container.createRemoteObject(result))
-        d.addErrback(lambda failure: container.registerFailureObject(failure))
+        status = Status(container)
+        self._ref.callRemote('createContainer', status,
+                             uid).chainDeferred(container)
         return container
     
     def registerContainer(self, container):

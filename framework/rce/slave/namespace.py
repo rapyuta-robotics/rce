@@ -31,15 +31,21 @@
 #     
 
 # twisted specific imports
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, \
+    DeadReferenceError, PBConnectionLost
 
 
 class Namespace(Referenceable):
     """ Abstract base class for a Namespace in a slave process.
     """
-    def __init__(self):
+    def __init__(self, status):
         """ Initialize the Namespace.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the namespace's status.
+            @type  status:      twisted.spread.pb.RemoteReference
         """
+        self._status = status
         self._interfaces = set()
     
     def registerInterface(self, interface):
@@ -50,11 +56,14 @@ class Namespace(Referenceable):
         assert interface in self._interfaces
         self._interfaces.remove(interface)
     
-    def remote_createInterface(self, uid, iType, msgType, addr):
-        """ Create an Interface in this namespace and therefore in the
-            endpoint.
+    def remote_createInterface(self, status, *args, **kw):
+        """ Remote callable method to create an interface in this namespace.
             
             Method has to be implemented!
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the interface's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @return:            New Interface instance.
             @rtype:             rce.slave.interface.Interface
@@ -71,3 +80,11 @@ class Namespace(Referenceable):
             interface.remote_destroy()
             
         assert len(self._interfaces) == 0
+        
+        if self._status:
+            try:
+                self._status.callRemote('died')
+            except (DeadReferenceError, PBConnectionLost):
+                pass
+            
+            self._status = None

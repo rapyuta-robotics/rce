@@ -58,12 +58,16 @@ class Environment(Namespace):
     _MAP = [ServiceClientInterface, PublisherInterface,
             SubscriberInterface, ServiceProviderInterface]
     
-    def __init__(self, client, reactor):
+    def __init__(self, client, status, reactor):
         """ Initialize the Environment.
             
             @param client:      Environment Client which is responsible for
                                 monitoring the environment in this process.
             @type  client:      rce.robot.EnvironmentClient
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the environment's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param reactor:     Reference to the twisted reactor used in this
                                 robot process.
@@ -78,7 +82,7 @@ class Environment(Namespace):
         self._nodes = set()
         self._parameters = set()
         
-        Namespace.__init__(self)
+        Namespace.__init__(self, status)
     
     @property
     def reactor(self):
@@ -114,9 +118,13 @@ class Environment(Namespace):
         assert interface in self._interfaces
         self._interfaces.remove(interface)
     
-    def remote_createNode(self, pkg, exe, args, name, namespace):
+    def remote_createNode(self, status, pkg, exe, args, name, namespace):
         """ Create a Node object in the environment namespace and
             therefore in the endpoint.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the node's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param pkg:         Name of ROS package where the node can be
                                 found.
@@ -138,11 +146,15 @@ class Environment(Namespace):
                                 in the environment.
             @type  namespace:   str
         """
-        return Node(self, pkg, exe, args, name, namespace)
+        return Node(self, status, pkg, exe, args, name, namespace)
     
-    def remote_createParameter(self, name, value):
+    def remote_createParameter(self, status, name, value):
         """ Create a Parameter object in the environment namespace and
             therefore in the endpoint.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the parameter's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param name:        Name of the parameter which should be added.
             @type  name:        str
@@ -150,11 +162,15 @@ class Environment(Namespace):
             @param value:       Value of the parameter which should be added.
             @type  value:       str, int, float, bool, list
         """
-        return Parameter(self, name, value)
+        return Parameter(self, status, name, value)
     
-    def remote_createInterface(self, uid, iType, clsName, addr):
+    def remote_createInterface(self, status, uid, iType, clsName, addr):
         """ Create an Interface object in the environment namespace and
             therefore in the endpoint.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the interface's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -174,7 +190,7 @@ class Environment(Namespace):
                                 use.
             @type  addr:        str
         """
-        return self._MAP[iType](self, UUID(bytes=uid), clsName, addr)
+        return self._MAP[iType](self, status, UUID(bytes=uid), clsName, addr)
     
     def remote_destroy(self):
         """ Method should be called to destroy the environment and will take
@@ -187,7 +203,10 @@ class Environment(Namespace):
         for parameter in self._parameters.copy():
             parameter.remote_destroy()
         
-        assert len(self._nodes) == 0
+        # Can not check here, because nodes are unregistered when the
+        # node (process) exits and remote_destroy only requests to stop the
+        # node (process)
+        #assert len(self._nodes) == 0
         assert len(self._parameters) == 0
         
         Namespace.remote_destroy(self)
@@ -223,8 +242,12 @@ class EnvironmentClient(Endpoint):
         assert self._environment == environment
         self._environment = None
     
-    def remote_createNamespace(self):
+    def remote_createNamespace(self, status):
         """ Create the Environment namespace.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the environment's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @return:            The new Environment namespace instance.
             @rtype:             rce.environment.Environment
@@ -233,7 +256,7 @@ class EnvironmentClient(Endpoint):
             raise InternalError('The environment can have only one namespace '
                                 'at a time.')
         
-        return Environment(self, self._reactor)
+        return Environment(self, status, self._reactor)
     
     def terminate(self):
         """ Method should be called to destroy the client and will take
@@ -270,7 +293,7 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
         terminate()
     
     d = factory.login(cred, (client, uid))
-    d.addCallback(lambda ref: setattr(client, '__ref', ref))
+    d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
     
     reactor.run(installSignalHandlers=False)

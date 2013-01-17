@@ -40,7 +40,7 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python import log
 from twisted.python.failure import Failure
-from twisted.internet.defer import succeed, fail, maybeDeferred, DeferredList
+from twisted.internet.defer import fail, maybeDeferred
 from twisted.cred.error import UnauthorizedLogin
 from twisted.cred.checkers import ICredentialsChecker
 from twisted.cred.portal import IRealm, Portal
@@ -73,22 +73,29 @@ class Robot(Namespace):
             ServiceClientForwarder, PublisherForwarder,
             SubscriberForwarder, ServiceProviderForwarder]
     
-    def __init__(self, client, user):
+    def __init__(self, client, status, user):
         """ Initialize the Robot.
             
             @param client:      Robot Client which is responsible for
                                 monitoring the robots in this process.
             @type  client:      rce.robot.RobotClient
             
+            @param status:      Status observer which is used to inform the
+                                Master of the robot's status.
+            @type  status:      twisted.spread.pb.RemoteReference
+            
             @param user:        Remote reference to the User instance who owns
                                 this robot.
             @type  user:        twisted.spread.pb.RemoteReference
         """
         self._client = client
+        client.registerRobot(self)
+        
         self._user = user
         self._connection = None
         
         # The following replaces the call to Namespace.__init__()
+        self._status = status
         self._interfaces = {}
     
     def _reportError(self, failure):
@@ -395,9 +402,13 @@ class Robot(Namespace):
         self._connection = None
         self._client.connectionLost(self)
     
-    def remote_createInterface(self, uid, iType, msgType, tag):
+    def remote_createInterface(self, status, uid, iType, msgType, tag):
         """ Create an Interface object in the robot namespace and therefore in
             the endpoint.
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the interface's status.
+            @type  status:      twisted.spread.pb.RemoteReference
             
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -421,7 +432,7 @@ class Robot(Namespace):
             @rtype:             rce.master.network.Interface
                                 (subclass of rce.master.base.Proxy)
         """
-        return self._MAP[iType](self, UUID(bytes=uid), msgType, tag)
+        return self._MAP[iType](self, status, UUID(bytes=uid), msgType, tag)
     
     def registerInterface(self, interface):
         # "Special" method to account for 'dict' instead of standard 'set'
@@ -444,15 +455,24 @@ class Robot(Namespace):
         """
         if self._connection:
             self._connection.dropConnection()
-        
-        # The following replaces the call to Namespace.__init__()
-        for interface in self._interfaces.values():
-            interface.remote_destroy()
-        
-        assert len(self._interfaces) == 0
         assert self._connection is None
         
-        self._client.unregisterRobot(self)
+        if self._client:
+            self._client.unregisterRobot(self)
+            self._client = None
+        
+        # The following replaces the call to Namespace.destroy()
+        for interface in self._interfaces.values():
+            interface.remote_destroy()
+        assert len(self._interfaces) == 0
+        
+        if self._status:
+            try:
+                self._status.callRemote('died')
+            except (DeadReferenceError, PBConnectionLost):
+                pass
+            
+            self._status = None
 
 
 class RobotClient(Endpoint):
@@ -480,13 +500,13 @@ class RobotClient(Endpoint):
         """
         Endpoint.__init__(self, reactor, commPort)
         
-        self._robots = {}
+        self._robots = set()
         self._pendingRobots = {}
         self._deathCandidates = {}
     
-    def _registerRobot(self, robot, status):
+    def registerRobot(self, robot):
         assert robot not in self._robots
-        self._robots[robot] = status
+        self._robots.add(robot)
         
         # Add the robot also to the death list
         assert robot not in self._deathCandidates
@@ -504,7 +524,7 @@ class RobotClient(Endpoint):
             deathCall.cancel()
         
         # Unregister the robot
-        del self._robots[robot]
+        self._robots.remove(robot)
     
     def _killRobot(self, robot):
         """ Internally used method to destroy a robot whose reconnect timeout
@@ -516,7 +536,7 @@ class RobotClient(Endpoint):
         assert robot in self._robots
         assert robot in self._deathCandidates
         del self._deathCandidates[robot]
-        #self._robots[robot].callRemote('remove')
+        robot.remote_destroy()
     
     def connectionLost(self, robot):
         """ Method is used by the Robot to signal to the client that he lost
@@ -587,10 +607,11 @@ class RobotClient(Endpoint):
         else:
             return fail(UnauthorizedLogin())
     
-    def remote_createNamespace(self, user, userID, robotID, key):
+    def remote_createNamespace(self, status, user, userID, robotID, key):
         """ Create a Robot namespace.
             
-            @param status:
+            @param status:      Status observer which is used to inform the
+                                Master of the robot's status.
             @type  status:      twisted.spread.pb.RemoteReference
             
             @param user:        User instance to which this namespace belongs
@@ -616,8 +637,7 @@ class RobotClient(Endpoint):
         if uid in self._pendingRobots:
             raise InternalError('Can not create the same robot twice.')
         
-        robot = Robot(self, user)
-        self._registerRobot(robot, None)
+        robot = Robot(self, status, user)
         self._pendingRobots[uid] = key, robot
         return robot
     
@@ -631,18 +651,16 @@ class RobotClient(Endpoint):
         """
         self._pendingRobots = {}
         
-        dl = DeferredList([robot.remote_destroy()
-                           for robot in self._robots.copy()])
-        return dl.addBoth(lambda _: Endpoint.terminate(self))
-    
-    def check(self):
-        """ Method should be called to verify if the client has terminated
-            properly after the reactor has stopped.
-        """
-        assert len(self._robots) == 0
-        assert len(self._deathCandidates) == 0
+        for call in self._deathCandidates.itervalues():
+            call.cancel()
         
-        Endpoint.check(self)
+        self._deathCandidates = {}
+        
+        for robot in self._robots.copy():
+            robot.remote_destroy()
+        assert len(self._robots) == 0
+        
+        Endpoint.terminate(self)
 
 
 def main(reactor, cred, masterIP, masterPort, extPort, commPort):
@@ -666,5 +684,4 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort):
     listenWS(robot)
     
     reactor.addSystemEventTrigger('before', 'shutdown', client.terminate)
-    reactor.addSystemEventTrigger('after', 'shutdown', client.check)
     reactor.run()
