@@ -57,6 +57,7 @@ from rce.client import types
 from rce.client.interfaces import IRobot
 from rce.client.assembler import recursiveBinarySearch, MessageAssembler
 from rce.client.cred import RobotCredentials
+import settings
 
 
 _MIN_VERSION = '20130101'  # Minimal required version of the client
@@ -113,13 +114,13 @@ class MasterRobotAuthentication(Resource):
         d.addCallback(lambda result: (result, version))
         return d
     
-    def _processGETResp(self, (response, version), request):
+    def _processGETResp(self, ((key, ip), version), request):
         """ Internally used method to process a response to a GET request from
             the realm.
         """
-        msg = {'key' : response[0],
-               'url' : 'ws://{0}:9010/'.format(response[1])}
-    
+        msg = {'key' : key, 'url' : 'ws://{0}:{1}/'.format(ip,
+                                                           settings.WS_PORT)}
+        
         if version != _CUR_VERSION:
             msg['current'] = _CUR_VERSION
         

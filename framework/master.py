@@ -36,6 +36,7 @@ from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
 
 # Custom imports
 from rce.master.core import main
+import settings
 
 
 # Credentials checkers used in the cloud engine
@@ -47,4 +48,4 @@ intCred = InMemoryUsernamePasswordDatabaseDontUse(robot='robot',
 
 
 # Run main function
-main(reactor, intCred, extCred, 8080, 9000)
+main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT)

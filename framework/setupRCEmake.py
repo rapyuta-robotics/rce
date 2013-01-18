@@ -43,7 +43,7 @@ import subprocess
 
 # Custom imports
 import settings
-from util.path import processPackagePaths
+from rce.util.path import processPackagePaths
 
 
 _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']

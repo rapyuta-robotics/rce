@@ -53,6 +53,7 @@ from rce.master.network import Network
 from rce.master.environment import EnvironmentEndpoint
 from rce.master.robot import RobotEndpoint
 from rce.master.user import User
+from rce.util.network import getIP
 
 
 class RoboEarthCloudEngine(object):
@@ -149,20 +150,17 @@ class RoboEarthCloudEngine(object):
                                 websocket connection and the IP address of
                                 responsible robot process as a tuple.
             @rtype:             twisted::Deferred
-            
         """
+        # Check if the credentials are correct
         d = self._checker.requestAvatarId(UsernamePassword(userID, password))
-        d.addCallback(self._userAuthenticated, robotID)
+        
+        # Create the robot
+        d.addCallback(lambda uID: self._getUser(uID).createRobot(robotID))
+        
+        # Change the IP address if it is equal to 'localhost'
+        d.addCallback(lambda (key, ip): (key, getIP('eth0'))
+                                        if ip == '127.0.0.1' else (key, ip))
         return d
-    
-    def _userAuthenticated(self, userID, robotID):
-        """ Internally used method which is used as a Deferred callback to
-            retrieve the User object based on the User ID and create a new
-            Robot object matching the robotID.
-            Returns a Deferred which fires with the authentication key and
-            IP address for websocket login.
-        """
-        return self._getUser(userID).createRobot(robotID)
     
     def createRobot(self, user, robotID, uid):
         """ Callback for User instance to create a new Robot object in a

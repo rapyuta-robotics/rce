@@ -54,5 +54,7 @@ cred = UsernamePassword('environment', 'environment')
 
 
 # Run main function
-main(reactor, cred, '10.0.3.1', 8080, settings.RCE_INTERNAL_PORT, sys.argv[2])
-#main(reactor, cred, sys.argv[1], 8080, settings.RCE_INTERNAL_PORT, sys.argv[2])
+main(reactor, cred, '10.0.3.1', settings.MASTER_PORT,
+     settings.RCE_INTERNAL_PORT, sys.argv[2])
+#main(reactor, cred, '10.0.3.1', settings.MASTER_PORT,
+#     settings.RCE_INTERNAL_PORT, sys.argv[2])
