@@ -41,28 +41,39 @@ from rce.error import AlreadyDead
 
 
 class Status(Referenceable):
-    """
+    """ Status observer which the objects in the slave processes can used to
+        report status changes back to the Master.
     """
     def __init__(self, proxy):
-        """
+        """ Initialize the status observer.
+            
+            @param proxy:       Proxy which should be informed of status
+                                changes.
+            @type  proxy:       rce.master.base.Proxy
         """
         self._proxy = proxy
         proxy._registerStatus(self)
     
     def remote_died(self):
-        """
+        """ Method which can be used by the slave objects to report that they
+            have died and should be removed from the Master.
         """
         if self._proxy:
             self._proxy.destroy()
     
     def cancel(self):
-        """
+        """ Method which is used by the Proxy to inform the status observer
+            that he does no longer want any information about status changes.
         """
         self._proxy = None
 
 
 class Proxy(object):
-    """ 
+    """ The Proxy should be used to represent an object from a slave process in
+        the Master.
+        It provides the same methods as the twisted.spread.pb.RemoteReference.
+        Additionally, the Proxy is callable to get a Deferred which fires as
+        soon as the RemoteReference or a Failure is present.
     """
     def __init__(self, *args, **kw):
         """ Initialize the Proxy.
@@ -77,13 +88,33 @@ class Proxy(object):
         self.__pending = []
     
     def _registerStatus(self, status):
-        """
+        """ Method should only be used by a Status instance to register itself
+            with the proxy.
         """
         assert self.__status is None
         self.__status = status
     
     def callRemote(self, _name, *args, **kw):
-        """
+        """ Make a call to the RemoteReference and return the result as a
+            Deferred.
+            
+            For more information refer to twisted.spread.pb.RemoteReference.
+            
+            @param _name:       Name of the method which should be called.
+                                The prefix 'remote_' will be added to the name
+                                in the remote object to select the mehtod which
+                                should be called. 
+            @type  _name:       str
+            
+            @param *args:       Positional arguments which will be passed to
+                                the remote method.
+            
+            @param **kw:        Keyworded arguments which will be passed to the
+                                remote method.
+            
+            @return:            Deferred which will fire with the result of the
+                                call or a Failure if there was a problem.
+            @rtype:             twisted::Deferred
         """
         if self.__failure is not None:
             d = fail(self.__failure)

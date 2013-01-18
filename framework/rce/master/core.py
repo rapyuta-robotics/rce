@@ -66,6 +66,7 @@ class RoboEarthCloudEngine(object):
     """
     implements(IRealm)
     
+    # CONFIG
     MAX_ROBOTS = 10
     MAX_CONTAINER = 10
     LOAD_BALANCER_CLS = LoadBalancer
@@ -211,9 +212,9 @@ class RoboEarthCloudEngine(object):
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')
         
-        endpoint = EnvironmentEndpoint(self._network, container)
+        endpoint = EnvironmentEndpoint(self._network)
         self._pendingContainer[uid] = endpoint
-        return endpoint.createNamespace()
+        return endpoint.createNamespace(), container
     
     def createConnection(self, interfaceA, interfaceB):
         """ Callback for User instance to create a new connection between two

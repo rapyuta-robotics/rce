@@ -186,19 +186,13 @@ class EnvironmentEndpoint(Endpoint):
     """ Representation of an endpoint which is a process that lives inside a
         container and is part of the cloud engine internal communication.
     """
-    def __init__(self, network, container):
+    def __init__(self, network):
         """ Initialize the Environment Endpoint.
             
             @param network:     Network to which the endpoint belongs.
             @type  network:     rce.master.network.Network
-            
-            @param container:   Container in which this environment endpoint
-                                lives.
-            @type  container:   rce.master.machine.Container
         """
         super(EnvironmentEndpoint, self).__init__(network)
-        
-        self._container = container
     
     # TODO: At the moment single machine fix for getAddress
     def getAddress(self):
@@ -236,17 +230,3 @@ class EnvironmentEndpoint(Endpoint):
         status = Status(environment)
         self.callRemote('createNamespace', status).chainDeferred(environment)
         return environment
-    
-    def destroy(self):
-        """ Method should be called to destroy the environment endpoint and
-            will take care of destroying all objects owned by this
-            EnvironmentEndpoint as well as deleting all circular references.
-        """
-        if self._container:
-            self._container.destroy()
-            self._container = None
-            
-            super(EnvironmentEndpoint, self).destroy()
-        else:
-            print('environment.EnvironmentEndpoint destroy() called '
-                  'multiple times...')

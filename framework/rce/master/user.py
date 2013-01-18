@@ -108,7 +108,7 @@ class User(Referenceable):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
         
-        container = Container(self._realm.createContainer())
+        container = Container(*self._realm.createContainer())
         self._containers[tag] = container
         container.notifyOnDeath(self._containerDied)
         
@@ -501,12 +501,14 @@ class Robot(_Wrapper):
                                 wrapped.
             @type  namespace:   rce.master.robot.Robot
             
-            @param key:
+            @param key:         Key which is used by the robot to authenticate
+                                the connection between the robot and the cloud
+                                engine.
+            @type  key:         str
         """
         super(Robot, self).__init__(namespace)
         
         self._key = key
-        
         self._interfaces = {}
     
     def getConnectInfo(self):
@@ -615,14 +617,20 @@ class Container(_Wrapper):
     """ Wrapper for a Container object. The underlying object is a Environment
         namespace.
     """
-    def __init__(self, namespace):
+    def __init__(self, namespace, container):
         """ Initialize the Container wrapper.
             
             @param namespace:   Namespace of the Container object which should
                                 be wrapped.
             @type  namespace:   rce.master.environment.Environment
+            
+            @param container:   Reference to Container.
+            @type  container:   rce.master.machine.Container
         """
         super(Container, self).__init__(namespace)
+        
+        self._container = container
+        container.notifyOnDeath(self._containerDied)
         
         self._nodes = {}
         self._parameters = {}
@@ -783,6 +791,15 @@ class Container(_Wrapper):
             raise InvalidRequest('Can not get a non existent interface '
                                  "'{0}' from the container.".format(iTag))
     
+    def _containerDied(self, container):
+        if self._container:
+            assert container == self._container
+            self._container = None
+            self.destroy()
+        else:
+            print('Received notification for dead Container, '
+                  'but Container is already destroyed.')
+    
     def _nodeDied(self, node):
         if self._nodes:
             for key, value in self._nodes.iteritems():
@@ -830,6 +847,10 @@ class Container(_Wrapper):
         self._nodes = None
         self._parameters = None
         self._interfaces = None
+        
+        if self._container:
+            self._container.dontNotifyOnDeath(self._containerDied)
+            self._container.destroy()
         
         super(Container, self).destroy()
 

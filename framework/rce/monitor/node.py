@@ -79,6 +79,7 @@ class NodeProtocol(ProcessProtocol):
 class Node(Referenceable, ArgumentMixin):
     """ Representation of a ROS Node (process) inside an environment.
     """
+    # CONFIG
     _STOP_ESCALATION = [('INT', 15), ('TERM', 2), ('KILL', None)]
     _LOG_DIR = '/opt/rce/data'#'/home/ros'
     

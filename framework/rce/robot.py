@@ -455,7 +455,10 @@ class Robot(Namespace):
         """
         if self._connection:
             self._connection.dropConnection()
-        assert self._connection is None
+        # Can not check here, because connection is unregistered when the
+        # connection is lost and dropConnection only requests to lose the
+        # connection
+        #assert self._connection is None
         
         if self._client:
             self._client.unregisterRobot(self)
@@ -484,6 +487,7 @@ class RobotClient(Endpoint):
     
     credentialInterfaces = (IRobotCredentials,)
     
+    # CONFIG
     RECONNECT_TIMEOUT = 10
     
     def __init__(self, reactor, commPort):

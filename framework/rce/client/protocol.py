@@ -173,6 +173,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the
         robot manager.
     """
+    # CONFIG
     MSG_QUEUE_TIMEOUT = 60
     
     def __init__(self, portal):
