@@ -400,7 +400,9 @@ class Robot(Namespace):
         """ Unregister the connection to the robot with this avatar.
         """
         self._connection = None
-        self._client.connectionLost(self)
+        
+        if self._client:
+            self._client.connectionLost(self)
     
     def remote_createInterface(self, status, uid, iType, msgType, tag):
         """ Create an Interface object in the robot namespace and therefore in

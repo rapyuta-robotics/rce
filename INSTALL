@@ -38,14 +38,14 @@ Installation
 
 3.  Setup the container filesystem
 
-    1.  Run setupContainer.bash to generate a 12.04 container for LXC
+    1.  Run container.bash to generate a 12.04 container for LXC
           cd /opt/rce/setup
           sudo bash container.bash --path=/opt/rce/container
             n.b. You may set the ubuntu mirror to the one near you
     
-    2.  Enter container
-            cd /opt/rce/framework
-            sudo ./rcemake
+    2.  Enter container filesystem
+          cd /opt/rce/framework
+          sudo ./rcemake
     
         Inside the container do the following steps:
         (all commands require super user privileges)
@@ -60,16 +60,19 @@ Installation
             For test nodes:
               apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
-        4.  Add users
+        4.  Install twisted
+			  apt-get install python-twisted-core
+        
+        5.  Add users
               adduser ros
               adduser --disabled-password --disabled-login --home /opt/rce/data rce
     
-        5.  Add files and directories
+        6.  Add files and directories
               mkdir /opt/rce/src
               touch /etc/init/rceComm.conf
               touch /etc/init/rceLauncher.conf
     
-        6.  Either change root password or disable root login
+        7.  Either change root password or disable root login
             For changing the password:
               passwd
             For disabling the root login:
@@ -77,10 +80,10 @@ Installation
                 (Can also be done from the host machine;
                 To activate the login again replace root:!:... with root:x:...)
     
-        7.  Leave the container (make sure you are in the container when running in a cloud)
+        8.  Leave the container filesystem
               exit
 
-    8.  Copy setup, make, and upstart script to container
+    9.  Copy setup, make, and upstart script to container
           sudo cp /opt/rce/setup/setup.sh /opt/rce/container/rootfs/opt/rce/
           sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
 
@@ -95,7 +98,7 @@ Installation
       sudo easy_install AutoBahn
 
 6.  Apply patch to Autobahn library
-      sudo patch [???] /opt/rce/setup/websocket.patch
+      sudo patch [path to Autobahn library]/autobahn/websocket.py /opt/rce/setup/websocket.patch
 
 7.  Install libraries needed for Custom Converters
       sudo apt-get install python-imaging
@@ -114,3 +117,19 @@ Post Installation
 2.  Copy upstart scripts and adjust appropriately
       sudo cp /opt/rce/setup/rce-master.conf /etc/init/
       sudo cp /opt/rce/setup/rce-machine.conf /etc/init/
+
+3.  Make all the ROS packages
+	
+    1.  Enter container filesystem
+          cd /opt/rce/framework
+          sudo ./rcemake
+    
+    2.  Setup environment
+          . /opt/rce/setup.sh
+    
+    3.  Make the ROS packages:
+          - rosmake to compile packages
+          - apt-get to install using the package manager
+    
+    4.  Leave the container filesystem
+          exit
