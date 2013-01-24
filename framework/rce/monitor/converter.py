@@ -113,7 +113,7 @@ class _ConverterBase(_AbstractConverter):
     """ Class which implements the basic functionality of a Converter.
     """
     def __init__(self, owner, status, uid, clsName, tag):
-        _AbstractConverter.__init__(self, owner, status, uid, clsName)
+        _AbstractConverter.__init__(self, owner, status, uid, clsName, tag)
         
         self._converter = owner.converter
         
