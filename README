@@ -2,7 +2,8 @@ Content of git respository
 ==========================
 
 - framework:
-    The core files of the RoboEarth Cloud Engine.		
+    The core files of the RoboEarth Cloud Engine.
+    (Tested with ROS fuerte & groovy)
 
 - setup:
     Setup files and utilities that are referenced from the INSTALL file.
@@ -19,6 +20,7 @@ Content of git respository
 - pyrce:
     Python client for the RoboEarth Cloud Engine.
     ROS client for the RoboEarth Cloud Engine.
+    (Tested with ROS fuerte & groovy)
 
 - jsrce:
     HTML/Javascript client.
