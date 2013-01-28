@@ -61,7 +61,7 @@ Installation
               apt-get install ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
         
         4.  Install twisted
-			  apt-get install python-twisted-core
+              apt-get install python-twisted-core
         
         5.  Add users
               adduser ros
