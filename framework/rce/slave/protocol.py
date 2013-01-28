@@ -195,6 +195,9 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
     """ Protocol which is used to connect Endpoints such that Interfaces in
         different Endpoint are able to communicate.
     """
+    # CONFIG
+    MAX_LENGTH = 1000000  # Maximal message length in bytes
+    
     _MSG_ID_STRUCT = struct.Struct('!B')
     _TRUE = struct.pack('!?', True)
     _FALSE = struct.pack('!?', False)
