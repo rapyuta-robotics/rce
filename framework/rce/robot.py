@@ -366,6 +366,10 @@ class Robot(Namespace):
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
+        # TODO: What should we do, if the interface exists, but there are no
+        #       connections?
+        #       For now the message is just dropped, which is fatal it it is a
+        #       service call, i.e. the caller will wait forever for a response
         try:
             self._interfaces[iTag].receive(clsName, msgID, msg)
         except (DeadReferenceError, PBConnectionLost):
@@ -396,7 +400,9 @@ class Robot(Namespace):
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
         if not self._connection:
-            # TODO: What exactly?
+            # TODO: What should we do here?
+            #       One solution would be to queue the messages here for some
+            #       time...
             return
         
         self._connection.sendDataMessage(iTag, msgType, msgID, msg)
