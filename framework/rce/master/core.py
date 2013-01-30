@@ -68,6 +68,7 @@ class RoboEarthCloudEngine(object):
     implements(IRealm)
     
     # CONFIG
+    EXT_IF = 'eth0'  # TODO: External interface might not be 'eth0'
     MAX_ROBOTS = 10
     MAX_CONTAINER = 10
     LOAD_BALANCER_CLS = LoadBalancer
@@ -92,6 +93,8 @@ class RoboEarthCloudEngine(object):
         
         self._users = {}
         self._pendingContainer = {}
+        
+        self._extIP = None
     
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns Avatar for slave processes of the cloud engine.
@@ -132,6 +135,12 @@ class RoboEarthCloudEngine(object):
         
         return self._users[userID]
     
+    def _getExtIP(self):
+        if self._extIP is None:
+            self._extIP = getIP(self.EXT_IF)
+        
+        return self._extIP
+    
     def requestUser(self, userID, robotID, password):
         """ Callback for client protocol to initialize the connection by
             authenticating himself and announcing the robot's ID.
@@ -158,7 +167,7 @@ class RoboEarthCloudEngine(object):
         d.addCallback(lambda uID: self._getUser(uID).createRobot(robotID))
         
         # Change the IP address if it is equal to 'localhost'
-        d.addCallback(lambda (key, ip): (key, getIP('eth0'))
+        d.addCallback(lambda (key, ip): (key, self._getExtIP())
                                         if ip == '127.0.0.1' else (key, ip))
         return d
     
@@ -175,7 +184,7 @@ class RoboEarthCloudEngine(object):
             @type  robotID:     str
             
             @param uid:         Key which will be used to authenticate the
-                                webscoket connection.
+                                websocket connection.
             @type  uid:         str
             
             @return:            New Robot instance.
