@@ -34,7 +34,7 @@
 import os
 
 # Custom imports
-from rce.util.name import checkName
+from rce.util.name import isLegalName
 
 
 def checkPath(path, description):
@@ -78,7 +78,7 @@ def checkExe(folder, exe):
         raise ValueError("'{0}' is not a executable.".format(exe))
 
 
-def processPackagePaths(paths):
+def processPkgPath(paths):
     """ Utility function to process the attribute ROOT_PKG_DIR from settings.
         
         @param paths:       List of attribute ROOT_PKG_DIR from settings.py
@@ -89,6 +89,8 @@ def processPackagePaths(paths):
                             destination path which can than be used to
                             extend the fstab file for the container creation.
         @rtype:             [(str, str)]
+        
+        @raise:             ValueError
     """
     pkgDir = []
     usedNames = set()
@@ -99,13 +101,15 @@ def processPackagePaths(paths):
         if not name:
             name = os.path.basename(path)
         
-        checkName(name)
+        if not isLegalName(name):
+            raise ValueError("'{0}' is not a legal name.".format(name))
         
         if name in usedNames:
             raise ValueError("Package name '{0}' is not "
                              'unique.'.format(name))
         
         usedNames.add(name)
+        # TODO: Contains container specific configuration: 'opt/rce/packages'
         pkgDir.append((path, os.path.join('opt/rce/packages', name)))
     
     return pkgDir

@@ -256,7 +256,7 @@ class Loader(object):
                 raise ResourceNotFound('Can not import {0}.{1} of ROS package '
                                        '{2}: There is a module candidate for '
                                        'whose directory I have insufficient '
-                                       '0permissions.')
+                                       'permissions.')
             
             raise ResourceNotFound('Can not import {0}.{1} of ROS package '
                                    '{2}: {1}'.format(clsType, cls, pkg, e))

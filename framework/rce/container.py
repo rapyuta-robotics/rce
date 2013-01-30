@@ -46,7 +46,7 @@ from twisted.spread.pb import Referenceable, PBClientFactory, \
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
-from rce.util.path import processPackagePaths, checkPath, checkExe
+from rce.util.path import processPkgPath, checkPath, checkExe
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
@@ -286,7 +286,7 @@ class ContainerClient(Referenceable):
         #checkExe(self._srcDir, 'launcher.py')
         
         # Process ROS package paths
-        self._pkgDir = processPackagePaths(pkgDir)
+        self._pkgDir = processPkgPath(pkgDir)
         
         for _, path in self._pkgDir:
             os.mkdir(os.path.join(self._rootfs, path))

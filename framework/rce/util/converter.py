@@ -32,7 +32,7 @@
 
 # Python specific imports
 import time
-import datetime
+from datetime import datetime
 
 try:
     from cStringIO import StringIO, InputType, OutputType
@@ -47,8 +47,9 @@ except ImportError:
         return isinstance(obj, StringIO)
 
 # ROS specific imports
-import genpy.message
-import rospy.rostime
+from genmsg.names import package_resource_name
+from genpy.message import Message
+from rospy.rostime import Duration, Time
 
 # Custom imports
 from rce.error import InternalError
@@ -63,7 +64,7 @@ class _DurationConverter(object):
         """ Generate a rospy.rostime.Duration instance based on the given data
             which should be a string representation of a float.
         """
-        return rospy.rostime.Duration.from_sec(float(data))
+        return Duration.from_sec(float(data))
 
     def encode(self, rosMsg):
         """ Transform the rospy.rostime.Duration instance to a float.
@@ -85,24 +86,21 @@ class _TimeConverter(object):
             data = data[:data.index('+')]
 
         try:
-            dt = datetime.datetime(year=int(data[0:4]),
-                                   month=int(data[5:7]),
-                                   day=int(data[8:10]),
-                                   hour=int(data[11:13]),
-                                   minute=int(data[14:16]),
-                                   second=int(data[17:19]),
-                                   microsecond=int(data[20:]))
+            dt = datetime(year=int(data[0:4]), month=int(data[5:7]),
+                          day=int(data[8:10]), hour=int(data[11:13]),
+                          minute=int(data[14:16]), second=int(data[17:19]),
+                          microsecond=int(data[20:]))
         except ValueError:
-            return rospy.rostime.Time()
+            return Time()
 
-        return rospy.rostime.Time.from_sec(time.mktime(dt.timetuple()))
+        return Time.from_sec(time.mktime(dt.timetuple()))
 
     def encode(self, rosMsg):
         """ Transform the rospy.rostime.Time instance to a string of the form
             'YYYY-MM-DDTHH:MM:SS.mmmmmm' (ISO 8601).
         """
         try:
-            dt = datetime.datetime.fromtimestamp(rosMsg.to_sec())
+            dt = datetime.fromtimestamp(rosMsg.to_sec())
         except AttributeError:
             raise TypeError('Received object is not a Time instance.')
 
@@ -147,7 +145,8 @@ class Converter(object):
     def addCustomConverter(self, converter):
         """ Register a new custom Converter.
             
-            @raise:     errors.InternalError, util.interfaces.InterfaceError
+            @raise:     rce.error.InternalError,
+                        rce.util.interfaces.InterfaceError
         """
         verifyClass(IROSConverter, converter)
         
@@ -156,14 +155,14 @@ class Converter(object):
                                 'message type "{0}".'.format(
                                     converter.MESSAGE_TYPE))
         
-        args = converter.MESSAGE_TYPE.split('/')
-        
-        if len(args) != 2:
+        try:
+            pkg, name = package_resource_name(converter.MESSAGE_TYPE)
+        except ValueError:
             raise InternalError('msg type is not valid. Has to be of the from '
                                 'pkg/msg, i.e. std_msgs/Int8.')
         
         self._customTypes[converter.MESSAGE_TYPE] = (converter,
-            self._loader.loadMsg(*args))
+            self._loader.loadMsg(pkg, name))
     
     def removeCustomConverter(self, msgType):
         """ Unregister a custom Converter.
@@ -236,7 +235,7 @@ class Converter(object):
 
             @raise:     TypeError, ValueError
         """
-        if not isinstance(rosMsg, genpy.message.Message):
+        if not isinstance(rosMsg, Message):
             raise TypeError('Given rosMsg object is not an instance of '
                             'genpy.message.Message.')
         

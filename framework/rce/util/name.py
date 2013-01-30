@@ -53,16 +53,3 @@ def isLegalName(name):
     
     m = _NAME_RE.match(name)
     return m is not None and m.group(0) == name
-
-
-def checkName(name):
-    """ Check if the name is legal, i.e. if it starts with an ASCII char
-        followed by alphanumeric chars or '_'.
-        
-        @param name:    Name which should be checked.
-        @type  name:    str
-        
-        @raise:         ValueError if the name is not legal.
-    """
-    if not isLegalName(name):
-        raise ValueError("'{0}' is not a legal name.".format(name))

@@ -55,4 +55,4 @@ cred = UsernamePassword('robot', 'robot')
 
 # Run main function
 main(reactor, cred, sys.argv[1], settings.MASTER_PORT, settings.WS_PORT,
-     settings.RCE_INTERNAL_PORT)
+     settings.RCE_INTERNAL_PORT, settings.ROOT_PKG_DIR)

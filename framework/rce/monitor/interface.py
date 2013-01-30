@@ -35,11 +35,12 @@ from threading import Event, Lock
 from uuid import uuid4
 
 # ROS specific imports
+from genmsg.names import package_resource_name
+from genpy.message import Message
 import rospy
-import genpy
 
 # twisted specific imports
-from twisted.internet.threads import deferToThread
+from twisted.internet.threads import deferToThreadPool
 
 # Custom imports
 from rce.error import InvalidRequest, InternalError
@@ -84,20 +85,23 @@ class ServiceClientInterface(_ROSInterfaceBase):
     def __init__(self, owner, status, uid, clsName, addr):
         _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
         
-        args = clsName.split('/')
-        
-        if len(args) != 2:
+        try:
+            pkg, name = package_resource_name(clsName)
+        except ValueError:
             raise InvalidRequest('Service type is not valid. Has to be of the '
                                  'form pkg/srv, i.e. std_srvs/Empty.')
         
-        self._srvCls = owner.loader.loadSrv(*args)
+        self._srvCls = owner.loader.loadSrv(pkg, name)
         self._srvCls._request_class = rospy.AnyMsg
         self._srvCls._response_class = rospy.AnyMsg
+        
+        self._reactor = owner.reactor
 
     __init__.__doc__ = _ROSInterfaceBase.__init__.__doc__
     
     def _send(self, msg, msgID, protocol, remoteID):
-        d = deferToThread(self._threadedCall, msg)
+        d = deferToThreadPool(self._reactor, self._reactor.getThreadPool(),
+                              self._threadedCall, msg)
         d.addCallback(self._respond, msgID, protocol, remoteID)
         d.addErrback(self._errHandler)
     
@@ -128,9 +132,9 @@ class ServiceProviderInterface(_ROSInterfaceBase):
     def __init__(self, owner, status, uid, clsName, addr):
         _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
         
-        args = clsName.split('/')
-        
-        if len(args) != 2:
+        try:
+            pkg, name = package_resource_name(clsName)
+        except ValueError:
             raise InvalidRequest('Service type is not valid. Has to be of the '
                                  'form pkg/srv, i.e. std_srvs/Empty.')
         
@@ -138,7 +142,7 @@ class ServiceProviderInterface(_ROSInterfaceBase):
         self._pendingLock = Lock()
         self._pending = {}
         
-        self._srvCls = owner.loader.loadSrv(*args)
+        self._srvCls = owner.loader.loadSrv(pkg, name)
         self._srvCls._request_class = rospy.AnyMsg
         self._srvCls._response_class = rospy.AnyMsg
     
@@ -201,7 +205,7 @@ class ServiceProviderInterface(_ROSInterfaceBase):
         with self._pendingLock:
             response = self._pending.pop(msgID, None)
         
-        if not isinstance(response, genpy.message.Message):
+        if not isinstance(response, Message):
             # TODO: Change exception?
             raise rospy.ROSInterruptException('Interrupted.')
         
@@ -214,13 +218,13 @@ class PublisherInterface(_ROSInterfaceBase):
     def __init__(self, owner, status, uid, clsName, addr):
         _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
         
-        args = clsName.split('/')
-        
-        if len(args) != 2:
+        try:
+            pkg, name = package_resource_name(clsName)
+        except ValueError:
             raise InvalidRequest('Message type is not valid. Has to be of the '
                                  'form pkg/msg, i.e. std_msgs/Int8.')
         
-        self._msgCls = owner.loader.loadMsg(*args)
+        self._msgCls = owner.loader.loadMsg(pkg, name)
 
     __init__.__doc__ = _ROSInterfaceBase.__init__.__doc__
     

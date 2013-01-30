@@ -34,6 +34,9 @@
 import sys
 from uuid import UUID
 
+# ROS specific imports
+from rospkg.environment import get_ros_paths
+
 # zope specific imports
 from zope.interface import implements
 
@@ -60,6 +63,9 @@ from rce.monitor.converter import PublisherConverter, SubscriberConverter, \
     ServiceClientForwarder, ServiceProviderForwarder
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
+from rce.util.converter import Converter
+from rce.util.loader import Loader
+from rce.util.path import processPkgPath
 
 
 class Robot(Namespace):
@@ -97,6 +103,13 @@ class Robot(Namespace):
         # The following replaces the call to Namespace.__init__()
         self._status = status
         self._interfaces = {}
+    
+    @property
+    def converter(self):
+        """ Reference to the message converter used by the Converter
+            interfaces.
+        """
+        return self._client.converter
     
     def _reportError(self, failure):
         self._connection.sendErrorMessage(failure.getTraceback())
@@ -492,7 +505,7 @@ class RobotClient(Endpoint):
     # CONFIG
     RECONNECT_TIMEOUT = 10
     
-    def __init__(self, reactor, commPort):
+    def __init__(self, reactor, commPort, converter):
         """ Initialize the Robot Client.
             
             @param reactor:     Reference to the twisted reactor used in this
@@ -503,12 +516,26 @@ class RobotClient(Endpoint):
                                 internal communication will listen for incoming
                                 connections.
             @type  commPort:    int
+            
+            @param converter:   Converter which takes care of converting the
+                                messages from JSON to ROS message and vice
+                                versa.
+            @type  converter:   rce.util.converter.Converter
         """
         Endpoint.__init__(self, reactor, commPort)
+        
+        self._converter = converter
         
         self._robots = set()
         self._pendingRobots = {}
         self._deathCandidates = {}
+    
+    @property
+    def converter(self):
+        """ Reference to the message converter used by the Converter
+            interfaces.
+        """
+        return self._converter
     
     def registerRobot(self, robot):
         assert robot not in self._robots
@@ -669,7 +696,7 @@ class RobotClient(Endpoint):
         Endpoint.terminate(self)
 
 
-def main(reactor, cred, masterIP, masterPort, extPort, commPort):
+def main(reactor, cred, masterIP, masterPort, extPort, commPort, pkgPath):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -679,7 +706,12 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort):
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = RobotClient(reactor, commPort)
+    rosPath = []
+    for path in get_ros_paths() + [p for p, _ in processPkgPath(pkgPath)]:
+        if path not in rosPath:
+            rosPath.append(path)
+    
+    client = RobotClient(reactor, commPort, Converter(Loader(rosPath)))
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
