@@ -88,20 +88,16 @@ class MasterRobotAuthentication(Resource):
     def _processGETReq(self, args):
         """ Internally used method to process a GET request.
         """
+        # First check if the version is ok
         try:
             version = args['version']
-            userID = args['userID']
-            robotID = args['robotID']
-            password = args['password']
         except KeyError as e:
             return fail(InvalidRequest('Request is missing parameter: '
                                        '{0}'.format(e)))
         
-        for name, param in [('version', version), ('userID', userID),
-                            ('robotID', robotID), ('password', password)]:
-            if len(param) != 1:
-                return fail(InvalidRequest("Parameter '{0}' has to be unique "
-                                           'in request.'.format(name)))
+        if len(version) != 1:
+            return fail(InvalidRequest("Parameter 'version' has to be unique "
+                                       'in request.'))
         
         version = version[0]
         
@@ -109,6 +105,21 @@ class MasterRobotAuthentication(Resource):
             return fail(_VersionError('Client version is insufficient. '
                                       'Minimal version is '
                                       "'{0}'.".format(_MIN_VERSION)))
+        
+        # Version is ok, now the GET request can be processed
+        try:
+            userID = args['userID']
+            robotID = args['robotID']
+            password = args['password']
+        except KeyError as e:
+            return fail(InvalidRequest('Request is missing parameter: '
+                                       '{0}'.format(e)))
+        
+        for name, param in [('userID', userID), ('robotID', robotID),
+                            ('password', password)]:
+            if len(param) != 1:
+                return fail(InvalidRequest("Parameter '{0}' has to be unique "
+                                           'in request.'.format(name)))
         
         d = self._realm.requestUser(userID[0], robotID[0], password[0])
         d.addCallback(lambda result: (result, version))
