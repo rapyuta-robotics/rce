@@ -37,7 +37,7 @@ class StringMsg
 {
 	public:
 		StringMsg(const std::string &data) :
-			_data(data)
+				_data(data)
 		{
 		}
 
@@ -94,15 +94,16 @@ class Manager
 
 Manager::Manager(const std::string url, const std::string userID,
 		const std::string robotID) :
-	_robotID(robotID)
+		_robotID(robotID)
 {
 	std::cout << "Version: " << CLIENT_VERSION << std::endl;
 	std::cout << "Create client..." << std::endl;
-	rce::Client client(userID, robotID);
+	// TODO: For now the userID is also used as password
+	rce::Client client(userID, userID, robotID);
 
 	std::cout << "Connect to Cloud..." << std::endl;
-	client.connect(url, rce::ConnectCallback(boost::bind(&Manager::connectCB,
-			this, _1)));
+	client.connect(url,
+			rce::ConnectCallback(boost::bind(&Manager::connectCB, this, _1)));
 }
 
 void Manager::msgCB(const rce::Client::Value &msg)
@@ -113,15 +114,18 @@ void Manager::msgCB(const rce::Client::Value &msg)
 
 void Manager::connectCB(rce::ClientPtr client)
 {
-	client->addInterface(_robotID, "stringEchoReqCpp",
-			rce::CONVERTER_SUBSCRIBER, "std_msgs/String", "");
-	client->addInterface(_robotID, "stringEchoRespCpp",
-			rce::CONVERTER_PUBLISHER, "std_msgs/String", "");
-	client->addConnection("strEchoTopicReqInterface", "stringEchoReqCpp");
-	client->addConnection("strEchoTopicRespInterface", "stringEchoRespCpp");
+	const std::string MSG_TYPE = "std_msgs/String";
+	const std::string REQ = "stringEchoReq";
+	const std::string RESP = "stringEchoResp";
+	const std::string CONTAINER_ID = "cTag_01";
 
-	_p = client->publisher("stringEchoReqCpp", "std_msgs/String");
-	_s = client->subscriber("stringEchoRespCpp", "std_msgs/String",
+	client->addInterface(_robotID, REQ, rce::CONVERTER_SUBSCRIBER, MSG_TYPE);
+	client->addInterface(_robotID, RESP, rce::CONVERTER_PUBLISHER, MSG_TYPE);
+	client->addConnection(CONTAINER_ID, REQ, _robotID, REQ);
+	client->addConnection(CONTAINER_ID, RESP, _robotID, RESP);
+
+	_p = client->publisher(REQ, MSG_TYPE);
+	_s = client->subscriber(RESP, MSG_TYPE,
 			rce::MsgCallback(boost::bind(&Manager::msgCB, this, _1)));
 
 	loop();
@@ -132,7 +136,7 @@ void Manager::loop()
 	int counter = 0;
 	char *buf = new char[100];
 
-	while(true)
+	while (true)
 	{
 		sleep(5);
 		sprintf(buf, "rce++ Publisher/Subscriber test message (%d)", counter++);
@@ -151,10 +155,10 @@ int main(int argc, char **argv)
 		std::cout << "Usage: test [RCE IP]" << std::endl;
 		return 0;
 	}
-	
+
 	std::ostringstream url;
 	url << "http://" << argv[1] << ":9000/";
-	
+
 	Manager(url.str(), "testUser", "testRobotCpp");
 	std::cout << "leaving main..." << std::endl;
 	return 0;

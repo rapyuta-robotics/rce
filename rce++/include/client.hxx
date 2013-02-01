@@ -37,7 +37,7 @@
 #include "types.hxx"
 #include "handler.hxx"
 
-#define CLIENT_VERSION "20121113"
+#define CLIENT_VERSION "20130131"
 
 namespace rce
 {
@@ -62,7 +62,7 @@ class ClientException: public std::runtime_error
 {
 	public:
 		ClientException(const std::string &e) :
-			std::runtime_error::runtime_error(e)
+				std::runtime_error::runtime_error(e)
 		{
 		}
 };
@@ -71,15 +71,15 @@ template<class Client>
 class InterfaceBase_impl
 {
 	public:
-		InterfaceBase_impl(const typename Client::RobotPtr_t handler,
+		InterfaceBase_impl(const typename Client::ProtocolPtr_t protocol,
 				const typename Client::String tag,
 				const typename Client::String type) :
-			_handler(handler), _tag(tag), _type(type)
+				_protocol(protocol), _tag(tag), _type(type)
 		{
 		}
 
 	protected:
-		const typename Client::RobotPtr_t _handler;
+		const typename Client::ProtocolPtr_t _protocol;
 
 		const typename Client::String _tag;
 		const typename Client::String _type;
@@ -90,17 +90,21 @@ template<class Client>
 class ReceiverInterface_impl: public InterfaceBase_impl<Client>
 {
 	public:
-		ReceiverInterface_impl(const typename Client::RobotPtr_t handler,
+		ReceiverInterface_impl(const typename Client::ProtocolPtr_t protocol,
 				const typename Client::String tag,
 				const typename Client::String type,
 				const typename Client::MsgCallback_t cb) :
-			InterfaceBase_impl<Client> (handler, tag, type), _cb(cb)
+				InterfaceBase_impl<Client>(protocol, tag, type), _cb(cb)
 		{
 		}
 
 		virtual void receive(const typename Client::String &type,
 				const typename Client::Value &msg,
 				const typename Client::String &msgID) = 0;
+
+		virtual ~ReceiverInterface_impl()
+		{
+		}
 
 	protected:
 		const typename Client::MsgCallback_t _cb;
@@ -115,19 +119,19 @@ class ServiceClient_impl: public ReceiverInterface_impl<Client>
 		typedef std::vector<_CallbackRef_t> _CallbackRefVector_t;
 
 	public:
-		ServiceClient_impl(const typename Client::RobotPtr_t handler,
+		ServiceClient_impl(const typename Client::ProtocolPtr_t protocol,
 				const typename Client::String tag,
 				const typename Client::String srvType,
 				const typename Client::MsgCallback_t cb) :
-			ReceiverInterface_impl<Client> (handler, tag, srvType, cb)
+				ReceiverInterface_impl<Client>(protocol, tag, srvType, cb)
 		{
-			ReceiverInterface_impl<Client>::_handler.registerInterface(
+			ReceiverInterface_impl<Client>::_protocol.registerInterface(
 					ReceiverInterface_impl<Client>::_tag, this);
 		}
 
 		~ServiceClient_impl()
 		{
-			ReceiverInterface_impl<Client>::_handler.unregisterInterface(
+			ReceiverInterface_impl<Client>::_protocol.unregisterInterface(
 					ReceiverInterface_impl<Client>::_tag, this);
 		}
 
@@ -152,10 +156,10 @@ template<class Client>
 class Publisher_impl: public InterfaceBase_impl<Client>
 {
 	public:
-		Publisher_impl(const typename Client::RobotPtr_t handler,
+		Publisher_impl(const typename Client::ProtocolPtr_t protocol,
 				const typename Client::String tag,
 				const typename Client::String msgType) :
-			InterfaceBase_impl<Client> (handler, tag, msgType)
+				InterfaceBase_impl<Client>(protocol, tag, msgType)
 		{
 		}
 
@@ -169,13 +173,13 @@ template<class Client>
 class Subscriber_impl: public ReceiverInterface_impl<Client>
 {
 	public:
-		Subscriber_impl(const typename Client::RobotPtr_t handler,
+		Subscriber_impl(const typename Client::ProtocolPtr_t protocol,
 				const typename Client::String tag,
 				const typename Client::String msgType,
 				const typename Client::MsgCallback_t cb) :
-			ReceiverInterface_impl<Client> (handler, tag, msgType, cb)
+				ReceiverInterface_impl<Client>(protocol, tag, msgType, cb)
 		{
-			ReceiverInterface_impl<Client>::_handler->registerInterface(
+			ReceiverInterface_impl<Client>::_protocol->registerInterface(
 					ReceiverInterface_impl<Client>::_tag, this);
 		}
 
@@ -188,7 +192,11 @@ class Subscriber_impl: public ReceiverInterface_impl<Client>
 				const typename Client::Value &msg,
 				const typename Client::String &msgID);
 
-		void unsubscribe();
+		void unsubscribe()
+		{
+			ReceiverInterface_impl<Client>::_protocol->unregisterInterface(
+					ReceiverInterface_impl<Client>::_tag, this);
+		}
 };
 
 template<class Config>
@@ -216,8 +224,8 @@ class Client_impl
 
 		typedef boost::function<void(ClientPtr_t client)> ConnectCallback_t;
 
-		typedef RobotHandler_impl<Client_impl> Robot_t;
-		typedef boost::shared_ptr<Robot_t> RobotPtr_t;
+		typedef Protocol_impl<Client_impl> Protocol_t;
+		typedef boost::shared_ptr<Protocol_t> ProtocolPtr_t;
 
 	private:
 		typedef websocketpp::client::handler::ptr _HandlerPtr_t;
@@ -227,9 +235,11 @@ class Client_impl
 		typedef std::vector<_BinaryIn_t> _BinaryInVector_t;
 
 	public:
-		Client_impl(const String userID, const String robotID) :
-			_userID(userID), _robotID(robotID), _connecting(false), _handler(
-					RobotPtr_t()), _endpoint(_WebsocketClientPtr_t())
+		Client_impl(const String userID, const String password,
+				const String robotID) :
+				_userID(userID), _password(password), _robotID(robotID), _connecting(
+						false), _protocol(ProtocolPtr_t()), _endpoint(
+						_WebsocketClientPtr_t())
 		{
 			if (!_initialized)
 			{
@@ -263,13 +273,17 @@ class Client_impl
 				const bool value) const;
 		void removeParameter(const String &cTag, const String &name) const;
 		void
-				addInterface(const String &eTag, const String &iTag,
-						const interface_t iType, const String &iCls,
-						const String &addr) const;
-		void removeInterface(const String &iTag) const;
+		addInterface(const String &eTag, const String &iTag,
+				const interface_t iType, const String &iCls,
+				const String &addr = "") const;
+		void removeInterface(const String &eTag, const String &iTag) const;
 
 		void addConnection(const String &iTag1, const String &iTag2) const;
+		void addConnection(const String &eTag1, const String &iTag1,
+				const String &eTag2, const String &iTag2) const;
 		void removeConnection(const String &iTag1, const String &iTag2) const;
+		void removeConnection(const String &eTag1, const String &iTag1,
+				const String &eTag2, const String &iTag2) const;
 
 		ServiceClientPtr_t service(const String &iTag, const String &srvType,
 				const MsgCallback_t &cb);
@@ -282,17 +296,18 @@ class Client_impl
 				std::string &key);
 
 		void addParameter(const String &cTag, const String &name,
-				const String &paramType, const Value &value) const;
+				const Value &value) const;
 		void configComponent(const String &type, const Value &component) const;
 		void configConnection(const String &type, const String &iTag1,
 				const String &iTag2) const;
 
 		const String _userID;
+		const String _password;
 		const String _robotID;
 
 		bool _connecting;
 		ConnectCallback_t _cb;
-		RobotPtr_t _handler;
+		ProtocolPtr_t _protocol;
 		boost::thread _connectedCB;
 		_WebsocketClientPtr_t _endpoint;
 
@@ -340,11 +355,12 @@ template<class Client>
 void ServiceClient_impl<Client>::call(const typename Client::Value &msg,
 		const typename Client::MsgCallback_t &cb)
 {
-	typename Client::String uid = generateUUID<typename Client::String> ();
+	typename Client::String uid = generateUUID<typename Client::String>();
 
 	_callbacks.push_back(_CallbackRef_t(uid, cb));
-	ReceiverInterface_impl<Client>::_handler->send(ReceiverInterface_impl<
-			Client>::_tag, ReceiverInterface_impl<Client>::_type, msg, uid);
+	ReceiverInterface_impl<Client>::_protocol->send(
+			ReceiverInterface_impl<Client>::_tag,
+			ReceiverInterface_impl<Client>::_type, msg, uid);
 }
 
 template<class Client>
@@ -375,9 +391,9 @@ void ServiceClient_impl<Client>::receive(const typename Client::String &type,
 template<class Client>
 void Publisher_impl<Client>::publish(const typename Client::Value &msg)
 {
-	InterfaceBase_impl<Client>::_handler->send(
-			InterfaceBase_impl<Client>::_tag,
-			InterfaceBase_impl<Client>::_type, msg, "nil");
+	InterfaceBase_impl<Client>::_protocol->send(
+			InterfaceBase_impl<Client>::_tag, InterfaceBase_impl<Client>::_type,
+			msg, "nil");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -390,13 +406,6 @@ void Subscriber_impl<Client>::receive(const typename Client::String &type,
 		throw ClientException("Received Message with invalid type.");
 
 	ReceiverInterface_impl<Client>::_cb(msg);
-}
-
-template<class Client>
-void Subscriber_impl<Client>::unsubscribe()
-{
-	ReceiverInterface_impl<Client>::_handler->unregisterInterface(
-			ReceiverInterface_impl<Client>::_tag, this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -497,8 +506,8 @@ void Client_impl<Config>::connectMaster(const std::string &url,
 	Value urlVal = json_spirit::find_value<Object, String>(message, "url");
 	Value curVal = json_spirit::find_value<Object, String>(message, "current");
 
-	if (keyVal.type() != json_spirit::str_type || urlVal.type()
-			!= json_spirit::str_type)
+	if (keyVal.type() != json_spirit::str_type
+			|| urlVal.type() != json_spirit::str_type)
 		throw ClientException(
 				"Received message from Master Manager has invalid JSON format.");
 
@@ -524,14 +533,15 @@ void Client_impl<Config>::connect(const std::string &url,
 	if (_connecting)
 		throw ClientException("Already a connection attempt in progress.");
 
-	if (_handler && _endpoint)
+	if (_protocol && _endpoint)
 		throw ClientException("Already a valid connection available.");
-	
+
 	_cb = cb;
 
 #ifdef DEBUG
 	std::cout << "Start connection with:" << std::endl;
 	std::cout << "    userID: " << _userID << std::endl;
+	std::cout << "    password: " << _password << std::endl;
 	std::cout << "    robotID: " << _robotID << std::endl;
 #endif
 
@@ -542,8 +552,8 @@ void Client_impl<Config>::connect(const std::string &url,
 	std::string key;
 
 	std::ostringstream mStream;
-	mStream << url << "?userID=" << _userID << "&robotID=" << _robotID
-			<< "&version=" << CLIENT_VERSION;
+	mStream << url << "?userID=" << _userID << "&password=" << _password
+			<< "&robotID=" << _robotID << "&version=" << CLIENT_VERSION;
 	connectMaster(mStream.str(), robotURL, key);
 
 #ifdef DEBUG
@@ -552,8 +562,8 @@ void Client_impl<Config>::connect(const std::string &url,
 	std::cout << "    key: " << key << std::endl;
 #endif
 
-	_handler = RobotPtr_t(new Robot_t(_robotID, ClientPtr_t(this)));
-	_HandlerPtr_t robotHandler(_handler);
+	_protocol = ProtocolPtr_t(new Protocol_t(ClientPtr_t(this)));
+	_HandlerPtr_t robotHandler(_protocol);
 	_endpoint = _WebsocketClientPtr_t(new _WebsocketClient_t(robotHandler));
 	_connecting = false;
 
@@ -569,7 +579,7 @@ void Client_impl<Config>::connect(const std::string &url,
 	rStream << robotURL << "?userID=" << _userID << "&robotID=" << _robotID
 			<< "&key=" << key;
 	_endpoint->connect(rStream.str());
-	_endpoint->run();	// Blocking call
+	_endpoint->run(); // Blocking call
 }
 
 template<class Config>
@@ -582,7 +592,7 @@ template<class Config>
 void Client_impl<Config>::disconnect()
 {
 	_endpoint->reset();
-	_handler = RobotPtr_t();
+	_protocol = ProtocolPtr_t();
 	_endpoint = _WebsocketClientPtr_t();
 }
 
@@ -592,7 +602,7 @@ void Client_impl<Config>::createContainer(const String &cTag) const
 	Object data;
 	Config::add(data, "containerTag", cTag);
 
-	this->send(RCE_CREATE_CONTAINER, data);
+	_protocol->send(RCE_CREATE_CONTAINER, data);
 }
 
 template<class Config>
@@ -601,7 +611,7 @@ void Client_impl<Config>::destroyContainer(const String &cTag) const
 	Object data;
 	Config::add(data, "containerTag", cTag);
 
-	this->send(RCE_DESTROY_CONTAINER, data);
+	_protocol->send(RCE_DESTROY_CONTAINER, data);
 }
 
 template<class Config>
@@ -622,7 +632,8 @@ void Client_impl<Config>::addNode(const String &cTag, const String &nTag,
 }
 
 template<class Config>
-void Client_impl<Config>::removeNode(const String &cTag, const String &nTag) const
+void Client_impl<Config>::removeNode(const String &cTag,
+		const String &nTag) const
 {
 	Object component;
 	Config::add(component, "containerTag", cTag);
@@ -635,39 +646,38 @@ template<class Config>
 inline void Client_impl<Config>::addParameter(const String &cTag,
 		const String &name, const int value) const
 {
-	this->addParameter(cTag, name, "int", Value(value));
+	this->addParameter(cTag, name, Value(value));
 }
 
 template<class Config>
 inline void Client_impl<Config>::addParameter(const String &cTag,
 		const String &name, const String &value) const
 {
-	this->addParameter(cTag, name, "str", Value(value));
+	this->addParameter(cTag, name, Value(value));
 }
 
 template<class Config>
 inline void Client_impl<Config>::addParameter(const String &cTag,
 		const String &name, const double value) const
 {
-	this->addParameter(cTag, name, "float", Value(value));
+	this->addParameter(cTag, name, Value(value));
 }
 
 template<class Config>
 inline void Client_impl<Config>::addParameter(const String &cTag,
 		const String &name, const bool value) const
 {
-	this->addParameter(cTag, name, "bool", Value(value));
+	this->addParameter(cTag, name, Value(value));
 }
 
 template<class Config>
 void Client_impl<Config>::addParameter(const String &cTag, const String &name,
-		const String &paramType, const Value &value) const
+		const Value &value) const
 {
 	Object component;
 	Config::add(component, "containerTag", cTag);
 	Config::add(component, "name", name);
 	Config::add(component, "value", value);
-	Config::add(component, "paramType", paramType);
 
 	this->configComponent("setParam", Value(component));
 }
@@ -749,9 +759,13 @@ void Client_impl<Config>::addInterface(const String &eTag, const String &iTag,
 }
 
 template<class Config>
-void Client_impl<Config>::removeInterface(const String &iTag) const
+void Client_impl<Config>::removeInterface(const String &eTag,
+		const String &iTag) const
 {
-	this->configComponent("removeInterfaces", Value(iTag));
+	Object component;
+	Config::add(component, "endpointTag", eTag);
+	Config::add(component, "interfaceTag", iTag);
+	this->configComponent("removeInterfaces", Value(component));
 }
 
 template<class Config>
@@ -764,7 +778,14 @@ void Client_impl<Config>::configComponent(const String &type,
 	Object data;
 	Config::add(data, type, array);
 
-	_handler->send(RCE_CONFIGURE_COMPONENT, data);
+	_protocol->send(RCE_CONFIGURE_COMPONENT, data);
+}
+
+template<class Config>
+inline void Client_impl<Config>::addConnection(const String &eTag1,
+		const String &iTag1, const String &eTag2, const String &iTag2) const
+{
+	this->configConnection("connect", eTag1 + "/" + iTag1, eTag2 + "/" + iTag2);
 }
 
 template<class Config>
@@ -772,6 +793,14 @@ inline void Client_impl<Config>::addConnection(const String &iTag1,
 		const String &iTag2) const
 {
 	this->configConnection("connect", iTag1, iTag2);
+}
+
+template<class Config>
+inline void Client_impl<Config>::removeConnection(const String &eTag1,
+		const String &iTag1, const String &eTag2, const String &iTag2) const
+{
+	this->configConnection("disconnect", eTag1 + "/" + iTag1,
+			eTag2 + "/" + iTag2);
 }
 
 template<class Config>
@@ -795,28 +824,28 @@ void Client_impl<Config>::configConnection(const String &type,
 	Object data;
 	Config::add(data, type, array);
 
-	_handler->send(RCE_CONFIGURE_CONNECTION, data);
+	_protocol->send(RCE_CONFIGURE_CONNECTION, data);
 }
 
 template<class Config>
 typename Client_impl<Config>::ServiceClientPtr_t Client_impl<Config>::service(
 		const String &iTag, const String &srvType, const MsgCallback_t &cb)
 {
-	return ServiceClientPtr_t(new ServiceClient_t(_handler, iTag, srvType, cb));
+	return ServiceClientPtr_t(new ServiceClient_t(_protocol, iTag, srvType, cb));
 }
 
 template<class Config>
 typename Client_impl<Config>::PublisherPtr_t Client_impl<Config>::publisher(
 		const String &iTag, const String &msgType)
 {
-	return PublisherPtr_t(new Publisher_t(_handler, iTag, msgType));
+	return PublisherPtr_t(new Publisher_t(_protocol, iTag, msgType));
 }
 
 template<class Config>
 typename Client_impl<Config>::SubscriberPtr_t Client_impl<Config>::subscriber(
 		const String &iTag, const String &msgType, const MsgCallback_t &cb)
 {
-	return SubscriberPtr_t(new Subscriber_t(_handler, iTag, msgType, cb));
+	return SubscriberPtr_t(new Subscriber_t(_protocol, iTag, msgType, cb));
 }
 
 } /* namespace rce */
