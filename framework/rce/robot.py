@@ -111,6 +111,11 @@ class Robot(Namespace):
         """
         return self._client.converter
     
+    @property
+    def loader(self):
+        """ Reference to ROS components loader. """
+        return self._client.loader
+    
     def _reportError(self, failure):
         self._connection.sendErrorMessage(failure.getTraceback())
     
@@ -511,7 +516,7 @@ class RobotClient(Endpoint):
     # CONFIG
     RECONNECT_TIMEOUT = 10
     
-    def __init__(self, reactor, commPort, converter):
+    def __init__(self, reactor, commPort, loader, converter):
         """ Initialize the Robot Client.
             
             @param reactor:     Reference to the twisted reactor used in this
@@ -523,6 +528,10 @@ class RobotClient(Endpoint):
                                 connections.
             @type  commPort:    int
             
+            @param loader:      Object which is used to load python modules
+                                from ROS packages.
+            @type  loader:      rce.util.loader.Loader
+            
             @param converter:   Converter which takes care of converting the
                                 messages from JSON to ROS message and vice
                                 versa.
@@ -531,6 +540,7 @@ class RobotClient(Endpoint):
         Endpoint.__init__(self, reactor, commPort)
         
         self._converter = converter
+        self._loader = loader
         
         self._robots = set()
         self._pendingRobots = {}
@@ -542,6 +552,11 @@ class RobotClient(Endpoint):
             interfaces.
         """
         return self._converter
+    
+    @property
+    def loader(self):
+        """ Reference to ROS components loader. """
+        return self._loader
     
     def registerRobot(self, robot):
         assert robot not in self._robots
@@ -702,7 +717,8 @@ class RobotClient(Endpoint):
         Endpoint.terminate(self)
 
 
-def main(reactor, cred, masterIP, masterPort, extPort, commPort, pkgPath):
+def main(reactor, cred, masterIP, masterPort, extPort, commPort, pkgPath,
+         customConverters):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -717,7 +733,18 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort, pkgPath):
         if path not in rosPath:
             rosPath.append(path)
     
-    client = RobotClient(reactor, commPort, Converter(Loader(rosPath)))
+    loader = Loader(rosPath)
+    converter = Converter(loader)
+    
+    for customConverter in customConverters:
+        # Get correct path/name of the converter
+        module, className = customConverter.rsplit('.', 1)
+
+        # Load the converter
+        mod = __import__(module, fromlist=[className])
+        converter.addCustomConverter(getattr(mod, className))
+    
+    client = RobotClient(reactor, commPort, loader, converter)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)

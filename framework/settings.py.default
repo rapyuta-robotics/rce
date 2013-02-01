@@ -38,7 +38,7 @@
 
 # Custom JSON/ROS messages converters
 CONVERTER_CLASSES = (
-	'util.converters.image.ImageConverter',
+	'rce.util.converters.image.ImageConverter',
 )
 
 # Compression level used for communication

@@ -372,8 +372,8 @@ class User(Referenceable):
         elif tag in self._containers:
             return self._containers[tag]
         else:
-            raise InvalidRequest('There is no endpoint with tag '
-                                 '{0}.'.format(tag))
+            raise InvalidRequest('Can not get a non existent endpoint '
+                                 "'{0}'.".format(tag))
     
     def _containerDied(self, container):
         if self._robots:
