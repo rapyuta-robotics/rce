@@ -123,6 +123,7 @@ class Container(object):
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
         self._ip = ip
+        self._machine_bind_port = str(int(self._ip.slpit('.')[-1])+8700)
         
         checkPath(conf, 'Container Configuration')
         
@@ -192,6 +193,14 @@ class Container(object):
             def cb(retVal):
                 if retVal == 0:
                     deferred.callback('Container successfully started.')
+                    try:
+                        bind_dfrd = getProcessValue('/sbin/iptables'
+                                      ('-t', 'nat',
+                                       '-A', 'PREROUTING',
+                                       '-p', 'tcp', 
+                                       '--dport', self._machine_bind_port
+                                       '-j', 'DNAT' ,
+                                       '--to-destination' ,self._ip))
                 else:
                     e = ContainerError('Container could not be started: '
                                        'Received exit code {0} from '
