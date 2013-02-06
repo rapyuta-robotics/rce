@@ -54,7 +54,11 @@ cred = UsernamePassword('environment', 'environment')
 
 
 # Run main function
-main(reactor, cred, '10.0.3.1', settings.MASTER_PORT,
+if sys.argv[1] in ('localhost', '127.0.0.1'):
+    master_ip = '10.0.3.1'
+else:
+    master_ip = sys.argv[1]
+main(reactor, cred, master_ip, settings.MASTER_PORT,
      settings.RCE_INTERNAL_PORT, sys.argv[2])
 #main(reactor, cred, '10.0.3.1', settings.MASTER_PORT,
 #     settings.RCE_INTERNAL_PORT, sys.argv[2])
