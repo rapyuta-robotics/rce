@@ -32,6 +32,7 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
+from twisted.internet.defer import DeferredList, succeed
 
 # Custom imports
 from rce.master.base import Proxy, Status
@@ -194,8 +195,25 @@ class EnvironmentEndpoint(Endpoint):
         """
         super(EnvironmentEndpoint, self).__init__(network)
         
-        self._nr = nr
+        self._nr = None
+        self._pendingNR = set()
+        
+        nr.addCallback(self._setNr)
     
+    def _setNr(self, nr):
+        self._nr = nr
+        
+        for d in self._pendingNR:
+           d.callback(nr)
+    
+    def _get_NR(self):
+        if self._nr is not None:
+            return succeed(self._nr)
+        
+        d = Deferred()
+        self._pendingNr.add(d)
+        return d    
+
     # TODO: At the moment single machine fix for getAddress
     def getAddress(self):
         """ Get the address of the environment endpoint's internal
@@ -206,29 +224,15 @@ class EnvironmentEndpoint(Endpoint):
                                 (type: twisted.internet.address.IPv4Address)
             @rtype:             twisted::Deferred
         """
-        def getnr(remote):
-            return self._nr.addCallback(lambda nr: (remote, nr))
-        
-        def getip((remote, nr)):
-            #print self._nr,':NR'
-            host = remote.broker.transport.getPeer().host
+        def cb(result): # result = ((_, nr), (_, remote))
+            host = result[1][1].broker.transport.getPeer().host
             if host.startswith('10.0.3'):
                 ip = IPv4Address('TCP', host, settings.RCE_INTERNAL_PORT)
             else:    
-                ip = IPv4Address('TCP', host, int(nr)+8700)
+                ip = IPv4Address('TCP', host, int(result[0][1])+8700)
             return ip
-        return self().addCallback(getnr).addCallback(getip)
-    
-#    def getAddress(self):
-#        """ Get the address of the environment endpoint's internal
-#            communication server.
-#            
-#            @return:            Address of the environment endpoint's internal
-#                                communication server.
-#                                (type: twisted.internet.address.IPv4Address)
-#            @rtype:             twisted::Deferred
-#        """
-#        return self._container.getAddress()
+        
+        return DeferredList([self._get_NR(), self()], fireOnOneErrback=True).addCallback(cb)
     
     def createNamespace(self):
         """ Create a Environment object in the environment endpoint.

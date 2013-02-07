@@ -34,6 +34,7 @@
 import os
 import sys
 import shutil
+from subprocess import call
 
 pjoin = os.path.join
 
@@ -139,6 +140,8 @@ class RCEContainer(Referenceable):
         self._nr = nr
         self._name = 'C{0}'.format(nr)
         self._terminating = None
+        self._port = str(8700+int(self._nr))
+        self._forwarding_rule = '/sbin/iptables -t nat -{action} PREROUTING -p tcp --dport {port} -j DNAT --to-destination 10.0.3.{nr}:10030'
 
         # Create the directories for the container
         self._confDir = pjoin(client.confDir, self._name)
@@ -208,7 +211,11 @@ class RCEContainer(Referenceable):
     def start(self):
         """ Method which starts the container.
         """
+        call(self._forwarding_rule.format(action='A',nr=self._nr,port=self._port).split(' '))
         return self._container.start(self._name)
+        
+
+        
 
     def _destroy(self, response):
         """ Internally used method to clean up after the container has been
@@ -243,7 +250,7 @@ class RCEContainer(Referenceable):
                 pass
 
             self._status = None
-
+        call(self._forwarding_rule.format(action='D',nr=self._nr,port=self._port).split(' '))    
         return self._terminating
 
 
