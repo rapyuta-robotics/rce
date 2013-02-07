@@ -370,7 +370,7 @@ class ContainerClient(Referenceable):
             raise MaxNumberExceeded('Can not manage any additional container.')
 
         container = RCEContainer(self, status, nr, uid)
-        return container.start().addCallback(lambda _: container)
+        return container.start().addCallback(lambda _: (container,nr))
 
     def registerContainer(self, container):
         assert container not in self._containers

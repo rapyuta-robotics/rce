@@ -32,6 +32,7 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
+from twisted.internet.defer import Deferred, succeed
 
 # Custom imports
 from rce.master.base import Proxy
@@ -48,9 +49,28 @@ class Container(Proxy):
         """
         super(Container, self).__init__()
         
+        self._pendingNr = set()
+        self._nr = None
         self._machine = machine
         machine.registerContainer(self)
-    
+
+    def callback(self, obj):
+        super(Container, self).callback(obj[0])
+        self._nr = obj[1]
+        
+        for d in self._pendingNr:
+            d.callback(self._nr)
+        
+        self._pendingNr = None
+
+    def getNR(self):
+        if self._nr is not None:
+            return succeed(self._nr)
+        
+        d = Deferred()
+        self._pendingNr.add(d)
+        return d        
+        
     def getAddress(self):
         """ Get the address which should be used to connect to the environment
             process for the cloud engine internal communication.

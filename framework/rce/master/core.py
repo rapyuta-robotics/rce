@@ -219,7 +219,7 @@ class RoboEarthCloudEngine(object):
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')
         
-        endpoint = EnvironmentEndpoint(self._network)
+        endpoint = EnvironmentEndpoint(self._network, container.getNR())
         self._pendingContainer[uid] = endpoint
         return endpoint.createNamespace(), container
     

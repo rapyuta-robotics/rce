@@ -186,13 +186,15 @@ class EnvironmentEndpoint(Endpoint):
     """ Representation of an endpoint which is a process that lives inside a
         container and is part of the cloud engine internal communication.
     """
-    def __init__(self, network):
+    def __init__(self, network, nr):
         """ Initialize the Environment Endpoint.
             
             @param network:     Network to which the endpoint belongs.
             @type  network:     rce.master.network.Network
         """
         super(EnvironmentEndpoint, self).__init__(network)
+        
+        self._nr = nr
     
     # TODO: At the moment single machine fix for getAddress
     def getAddress(self):
@@ -204,9 +206,18 @@ class EnvironmentEndpoint(Endpoint):
                                 (type: twisted.internet.address.IPv4Address)
             @rtype:             twisted::Deferred
         """
-        return self().addCallback(lambda remote:
-                                  IPv4Address('TCP', remote.broker.transport.getPeer().host,
-                                              settings.RCE_INTERNAL_PORT))
+        def getnr(remote):
+            return self._nr.addCallback(lambda nr: (remote, nr))
+        
+        def getip((remote, nr)):
+            #print self._nr,':NR'
+            host = remote.broker.transport.getPeer().host
+            if host.startswith('10.0.3'):
+                ip = IPv4Address('TCP', host, settings.RCE_INTERNAL_PORT)
+            else:    
+                ip = IPv4Address('TCP', host, int(nr)+8700)
+            return ip
+        return self().addCallback(getnr).addCallback(getip)
     
 #    def getAddress(self):
 #        """ Get the address of the environment endpoint's internal
