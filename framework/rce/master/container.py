@@ -32,6 +32,7 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
+from twisted.internet.defer import Deferred, succeed
 
 # Custom imports
 from rce.master.base import Proxy
@@ -50,19 +51,44 @@ class Container(Proxy):
         
         self._machine = machine
         machine.registerContainer(self)
+        
+        self._pending = set()
+        self._address = None
     
     def getAddress(self):
         """ Get the address which should be used to connect to the environment
-            process for the cloud engine internal communication.
+            process for the cloud engine internal communication. The method
+            gets the address only once and caches the address for subsequent
+            calls.
             
             @return:            twisted::IPv4Address which can be used to
                                 connect to the ServerFactory of the cloud
                                 engine internal communication protocol.
             @rtype:             twisted::Deferred
         """
-        d = self.callRemote('getPort')
-        d.addCallback(lambda port: IPv4Address('TCP', self._machine._ip, port))
-        return d
+        if self._address is None:
+            if not self._pending:
+                # This is the first time this method is called dispatch a call
+                # to fetch the address
+                def cb(result):
+                    self._address = result
+                    
+                    for p in self._pending:
+                        p.callback(result)
+                    
+                    self._pending = None
+                
+                addr = self.callRemote('getPort')
+                addr.addCallback(lambda port: IPv4Address('TCP',
+                                                          self._machine.IP,
+                                                          port))
+                addr.addBoth(cb)
+            
+            d = Deferred()
+            self._pending.add(d)
+            return d
+        
+        return succeed(self._address)
     
     def destroy(self):
         """ Method should be called to destroy the container and will take care
@@ -74,4 +100,4 @@ class Container(Proxy):
             
             super(Container, self).destroy()
         else:
-            print('machine.Container destroy() called multiple times...')
+            print('container.Container destroy() called multiple times...')

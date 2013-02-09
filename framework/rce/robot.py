@@ -64,6 +64,7 @@ from rce.monitor.converter import PublisherConverter, SubscriberConverter, \
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
 from rce.util.converter import Converter
+from rce.util.network import getIP
 from rce.util.loader import Loader
 from rce.util.path import processPkgPath
 
@@ -516,7 +517,7 @@ class RobotClient(Endpoint):
     # CONFIG
     RECONNECT_TIMEOUT = 10
     
-    def __init__(self, reactor, commPort, loader, converter):
+    def __init__(self, reactor, commPort, extIF, extPort, loader, converter):
         """ Initialize the Robot Client.
             
             @param reactor:     Reference to the twisted reactor used in this
@@ -524,9 +525,18 @@ class RobotClient(Endpoint):
             @type  reactor:     twisted::reactor
             
             @param commPort:    Port where the server for the cloud engine
-                                internal communication will listen for incoming
-                                connections.
+                                internal communication is listening for
+                                incoming connections.
             @type  commPort:    int
+            
+            @param extIF:       Name of network interface used for the external
+                                communication.
+            @type  extIF:       str
+            
+            @param extPort:     Port where the server for the external
+                                communication is listening for websocket
+                                connections.
+            @type  extPort:     int
             
             @param loader:      Object which is used to load python modules
                                 from ROS packages.
@@ -539,6 +549,7 @@ class RobotClient(Endpoint):
         """
         Endpoint.__init__(self, reactor, commPort)
         
+        self._extAddress = '{0}:{1}'.format(getIP(extIF), extPort)
         self._converter = converter
         self._loader = loader
         
@@ -695,6 +706,16 @@ class RobotClient(Endpoint):
         self._pendingRobots[uid] = key, robot
         return robot
     
+    def remote_getWebsocketAddress(self):
+        """ Get the address of the websocket server running in this process.
+            
+            @return:            Address which can be used to connect to the
+                                cloud engine using a websocket connection. The
+                                address has the form [IP]:[port]
+            @rtype:             str
+        """
+        return self._extAddress
+    
     def terminate(self):
         """ Method should be called to terminate the client before the reactor
             is stopped.
@@ -717,8 +738,8 @@ class RobotClient(Endpoint):
         Endpoint.terminate(self)
 
 
-def main(reactor, cred, masterIP, masterPort, extPort, commPort, pkgPath,
-         customConverters):
+def main(reactor, cred, masterIP, masterPort, extIF, extPort, commPort,
+         pkgPath, customConverters):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -744,7 +765,7 @@ def main(reactor, cred, masterIP, masterPort, extPort, commPort, pkgPath,
         mod = __import__(module, fromlist=[className])
         converter.addCustomConverter(getattr(mod, className))
     
-    client = RobotClient(reactor, commPort, loader, converter)
+    client = RobotClient(reactor, commPort, extIF, extPort, loader, converter)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)

@@ -37,15 +37,23 @@ import shutil
 
 pjoin = os.path.join
 
+try:
+    import iptc
+except ImportError:
+    print 'python-iptables could not be imported.'
+    print '    see: http://github.com/ldx/python-iptables'
+    exit(1)
+
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.defer import DeferredList, succeed
+from twisted.internet.defer import  DeferredList, succeed
 from twisted.spread.pb import Referenceable, PBClientFactory, \
     DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
+from rce.util.network import getIP
 from rce.util.path import processPkgPath, checkPath, checkExe
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
@@ -90,8 +98,22 @@ script
     . /opt/rce/setup.sh
     
     # start launcher
-    ###start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
+    start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
 end script
+"""
+
+_NETWORK_INTERFACES = """
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address {{ip}}
+    netmask 255.255.255.0
+    network {network}.0
+    broadcast {network}.255
+    gateway {network}.1
+    dns-nameservers {network}.1 127.0.0.1
 """
 
 
@@ -148,9 +170,13 @@ class RCEContainer(Referenceable):
         os.mkdir(rceDir)
         os.mkdir(rosDir)
         
+        # Create network variables
+        ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
+        self._address = '{0}:{1}'.format(ip, client.envPort)
+        self._fwdPort = str(nr + 8700)
+        
         self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name,
-                                    '10.0.3.{0}'.format(nr))
+                                    self._confDir, self._name, ip)
         
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -171,8 +197,11 @@ class RCEContainer(Referenceable):
         self._container.extendFstab(client.srcDir, 'opt/rce/src', True)
         self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
                                     'etc/init/rceComm.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
-                                    'etc/init/rceLauncher.conf', True)
+        # TODO: For the moment there is no upstart launcher.
+#        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
+#                                    'etc/init/rceLauncher.conf', True)
+        self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
+                                    'etc/network/interfaces', False)
         
         for srcPath, destPath in client.pkgDirIter:
             self._container.extendFstab(srcPath, destPath, True)
@@ -182,13 +211,55 @@ class RCEContainer(Referenceable):
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          uid=uid))
         
-        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
-            f.write(_UPSTART_LAUNCHER)
+        # TODO: For the moment there is no upstart launcher.
+#        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
+#            f.write(_UPSTART_LAUNCHER)
+        
+        # Setup network
+        with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
+            f.write(client.getNetworkConfigTemplate().format(ip=ip))
     
     def start(self):
         """ Method which starts the container.
         """
+        # can raise iptc.xtables.XTablesError
+        self._remoteRule = iptc.Rule()
+        self._remoteRule.protocol = 'tcp'
+        m = self._remoteRule.create_match('tcp')
+        m.dport = self._fwdPort
+        t = self._remoteRule.create_target('DNAT')
+        t.to_destination = self._address
+        
+        self._localRule = iptc.Rule()
+        self._localRule.protocol = 'tcp'
+        self._localRule.out_interface = 'lo'
+        m = self._localRule.create_match('tcp')
+        m.dport = self._fwdPort
+        t = self._localRule.create_target('DNAT')
+        t.to_destination = self._address
+    
+        self._client.prerouting.insert_rule(self._remoteRule)
+        self._client.output.insert_rule(self._localRule)
+        
         return self._container.start(self._name)
+    
+    def remote_getPort(self):
+        """ Get the port which can be used together with the host IP address
+            to reach connect with the container.
+            
+            @return:            Port number of host machine which will be
+                                forwarded to the container.
+            @rtype:             int
+        """
+        return int(self._fwdPort)
+    
+    def _stop(self):
+        """ Method which stops the container.
+        """
+        self._client.prerouting.delete_rule(self._remoteRule)
+        self._client.output.delete_rule(self._localRule)
+        
+        return self._container.stop(self._name)
     
     def _destroy(self, response):
         """ Internally used method to clean up after the container has been
@@ -211,7 +282,7 @@ class RCEContainer(Referenceable):
         """
         if not self._terminating:
             if self._container:
-                self._terminating = self._container.stop(self._name)
+                self._terminating = self._stop()
                 self._terminating.addBoth(self._destroy)
             else:
                 self._terminating = succeed(None)
@@ -233,8 +304,8 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, rootfsDir, confDir, dataDir,
-                 srcDir, pkgDir):
+    def __init__(self, reactor, masterIP, bridge, envPort, rootfsDir, confDir,
+                 dataDir, srcDir, pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:     Reference to the twisted reactor.
@@ -242,6 +313,16 @@ class ContainerClient(Referenceable):
             
             @param masterIP:    IP address of the Master process.
             @type  masterIP:    str
+            
+            @param bridge:      Name of the bridge interfaces used for the
+                                container network.
+            @type  bridge:      str
+            
+            @param envPort:     Port where the environment process running
+                                inside the container is listening for
+                                connections to other endpoints. (Used for
+                                port forwarding.)
+            @type  envPort:     int
             
             @param rootfsDir:   Filesystem path to the root directory of the
                                 container filesystem.
@@ -268,7 +349,14 @@ class ContainerClient(Referenceable):
             @type  pkgDir:      [(str, str)]
         """
         self._reactor = reactor
-        self._masterIP = masterIP
+        self._envPort = envPort
+        
+        bridgeIP = getIP(bridge)
+        
+        if masterIP in ('localhost', '127.0.0.1'):
+            self._masterIP = bridgeIP
+        else:
+            self._masterIP = masterIP
         
         self._rootfs = rootfsDir
         self._confDir = confDir
@@ -293,11 +381,27 @@ class ContainerClient(Referenceable):
         
         self._nrs = set(range(100, 200))
         self._containers = set()
+        
+        # Network configuration
+        self._network = bridgeIP[:bridgeIP.rfind('.')]
+        self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
+        
+        # Common iptables references
+        nat = iptc.Table(iptc.Table.NAT)
+        self._prerouting = iptc.Chain(nat, 'PREROUTING')
+        self._output = iptc.Chain(nat, 'OUTPUT')
     
     @property
     def reactor(self):
         """ Reference to twisted::reactor. """
         return self._reactor
+    
+    @property
+    def envPort(self):
+        """ Port where the environment process running inside the container is
+            for new connections.
+        """
+        return self._envPort
     
     @property
     def rootfs(self):
@@ -328,6 +432,36 @@ class ContainerClient(Referenceable):
     def masterIP(self):
         """ IP address of master process. """
         return self._masterIP
+    
+    @property
+    def prerouting(self):
+        """ Reference to iptables' chain PREROUTING of the table NAT. """
+        return self._prerouting
+    
+    @property
+    def output(self):
+        """ Reference to iptables' chain OUTPUT of the table NAT. """
+        return self._output
+    
+    def getNetworkAddress(self):
+        """ Get the network's IP address without the last byte as a string.
+            
+            @return:            The network's IP address, e.g. '10.0.3'.
+            @rtype:             str
+        """
+        return self._network
+    
+    def getNetworkConfigTemplate(self):
+        """ Get the template which is used to generate the network
+            configuration file '/etc/network/interfaces'. The template contains
+            the format field {ip} which has to be used to assign the correct
+            IP address to the container.
+            
+            @return:            Network configration template containing the
+                                format field {ip}.
+            @rtype:             str
+        """
+        return self._networkConf
     
     def remote_createContainer(self, status, uid):
         """ Create a new Container.
@@ -394,8 +528,8 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPort, rootfsDir, confDir, dataDir,
-         srcDir, pkgDir):
+def main(reactor, cred, masterIP, masterPort, bridgeIF, envPort, rootfsDir,
+         confDir, dataDir, srcDir, pkgDir):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -405,8 +539,8 @@ def main(reactor, cred, masterIP, masterPort, rootfsDir, confDir, dataDir,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = ContainerClient(reactor, masterIP, rootfsDir, confDir, dataDir,
-                             srcDir, pkgDir)
+    client = ContainerClient(reactor, masterIP, bridgeIF, envPort, rootfsDir,
+                             confDir, dataDir, srcDir, pkgDir)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)

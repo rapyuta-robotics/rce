@@ -55,3 +55,16 @@ def getIP(ifname):
         0x8915,  # SIOCGIFADDR
         struct.pack('256s', ifname[:15])
     )[20:24])
+
+
+def isLocalhost(ip):
+    """ Check if the IP address matches the loopback address.
+        
+        @param ip:          IP address which should be checked
+        @type  ip:          str
+        
+        @return:            True if the address is the loopback address;
+                            False otherwise.
+        @rtype:             bool
+    """
+    return ip in ('127.0.0.1', 'localhost')

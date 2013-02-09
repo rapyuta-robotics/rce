@@ -69,7 +69,7 @@ if interface.HAS_ROS:
     from rce.util.loader import Loader
 
 
-_VERSION = '20130101'  # Client version
+_VERSION = '20130210'  # Client version
 
 
 class ConnectionError(Exception):
@@ -460,31 +460,33 @@ class _Connection(object):
         self._sendMessage({'type':types.CONFIGURE_COMPONENT,
                            'data':{'removeInterfaces':[interface]}})
     
-    def addConnection(self, iTag1, iTag2):
+    def addConnection(self, tag1, tag2):
         """ Create a connection.
             
-            @param iTagX:       One of the interfaces which should be
-                                connected.
-            @type  iTagX:       str
+            @param tagX:        One of the interfaces which should be
+                                connected. The tag has to be of the form
+                                    [endpoint tag]/[interface tag]
+            @type  tagX:        str
         """
         print('Request creation of connection between interface "{0}" and '
-              '"{1}".'.format(iTag1, iTag2))
+              '"{1}".'.format(tag1, tag2))
         self._sendMessage({'type':types.CONFIGURE_CONNECTION,
-                           'data':{'connect':[{'tagA':iTag1,
-                                               'tagB':iTag2}]}})
+                           'data':{'connect':[{'tagA':tag1,
+                                               'tagB':tag2}]}})
     
-    def removeConnection(self, iTag1, iTag2):
+    def removeConnection(self, tag1, tag2):
         """ Destroy a connection.
             
-            @param iTagX:       One of the interfaces which should be
-                                disconnected.
-            @type  iTagX:       str
+            @param tagX:        One of the interfaces which should be
+                                disconnected. The tag has to be of the form
+                                    [endpoint tag]/[interface tag]
+            @type  tagX:        str
         """
         print('Request destruction of connection between interface "{0}" and '
-              '"{1}".'.format(iTag1, iTag2))
+              '"{1}".'.format(tag1, tag2))
         self._sendMessage({'type':types.CONFIGURE_CONNECTION,
-                           'data':{'disconnect':[{'tagA':iTag1,
-                                                  'tagB':iTag2}]}})
+                           'data':{'disconnect':[{'tagA':tag1,
+                                                  'tagB':tag2}]}})
     
     def registerInterface(self, iTag, iface, unique):
         """ Callback for Interface.

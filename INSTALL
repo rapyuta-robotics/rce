@@ -103,14 +103,20 @@ Installation
 7.  Apply patch to Autobahn library
       sudo patch [path to Autobahn library]/autobahn/websocket.py /opt/rce/setup/websocket.patch
 
-8.  Install libraries needed for Custom Converters
+8.  Install python biding for iptables
+      cd
+      git clone http://github.com/ldx/python-iptables
+      cd python-iptables
+      sudo python setup.py install
+
+9.  Install libraries needed for Custom Converters
       sudo apt-get install python-imaging
 
-9.  Create necessary folders holding temporary data of containers
+10. Create necessary folders holding temporary data of containers
       sudo mkdir /opt/rce/container/data
       sudo mkdir /opt/rce/container/config
 
-10. Copy upstart scripts and adjust appropriately (at the moment not available)
+11. Copy upstart scripts and adjust appropriately (at the moment not available)
       #sudo cp /opt/rce/setup/rce-master.conf /etc/init/
       #sudo cp /opt/rce/setup/rce-machine.conf /etc/init/
 

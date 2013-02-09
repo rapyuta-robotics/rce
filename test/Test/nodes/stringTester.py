@@ -109,8 +109,8 @@ class TestCenter(object):
         self._counter = 0
         self._times = []
         self._event = Event()
-        self._pub = rospy.Publisher('{0}Req'.format(name), String, latch=True)
-        rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
+        self._pub = rospy.Publisher('{0}Req'.format(name), String)
+        sub = rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
         self._req()
         
         if (not self._event.wait(self.TIMEOUT) or
@@ -120,6 +120,7 @@ class TestCenter(object):
             times = self._times[:]
         
         self._pub = None
+        sub.unregister()
         return times
     
     def runTest(self, req):

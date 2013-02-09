@@ -76,7 +76,7 @@ class User(Referenceable):
                                 object which should be created.
             @type  robotID:     str
             
-            @return:            The authentication key and IP address which are
+            @return:            The authentication key and address which are
                                 used for the websocket connection.
             @rtype:             twisted::Deferred
         """
@@ -515,11 +515,13 @@ class Robot(_Wrapper):
         """ Get the information necessary to the robot to establish a websocket
             connection.
             
-            @return:            The authentication key and IP address which are
+            @return:            The authentication key and address which are
                                 used for the websocket connection.
             @rtype:             twisted::Deferred          
         """
-        return self._obj.getIP().addCallback(lambda ip: (self._key, ip))
+        d = self._obj.getWebsocketAddress()
+        d.addCallback(lambda addr: (self._key, addr))
+        return d
     
     def addInterface(self, iTag, iType, clsName):
         """ Add an interface to the Robot object.
@@ -625,7 +627,7 @@ class Container(_Wrapper):
             @type  namespace:   rce.master.environment.Environment
             
             @param container:   Reference to Container.
-            @type  container:   rce.master.machine.Container
+            @type  container:   rce.master.container.Container
         """
         super(Container, self).__init__(namespace)
         

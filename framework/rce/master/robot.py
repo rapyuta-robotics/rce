@@ -30,9 +30,13 @@
 #     
 #     
 
+# twisted specific imports
+from twisted.internet.address import IPv4Address
+
 # Custom imports
 from rce.master.network import Endpoint, Namespace
 from rce.master.base import Status
+from rce.util.network import isLocalhost
 
 
 class Robot(Namespace):
@@ -47,14 +51,16 @@ class Robot(Namespace):
         """
         super(Robot, self).__init__(endpoint)
     
-    def getIP(self):
-        """ Get the IP address of the process in which the Robot lives.
+    def getWebsocketAddress(self):
+        """ Get the address which can be used to connect to this robot
+            namespace.
             
-            @return:            IP address of the process. (type: str)
+            @return:            Address of the endpoint containing the robot
+                                namespace. The address has the form
+                                    [IP]:[port] (type: str)
             @rtype:             twisted::Deferred
         """
-        return self().addCallback(lambda remote:
-                                  remote.broker.transport.getPeer().host)
+        return self._endpoint.getWebsocketAddress()
 
 
 class RobotEndpoint(Endpoint):
@@ -62,7 +68,7 @@ class RobotEndpoint(Endpoint):
         for websocket connections from robots and is part of the cloud engine
         internal communication.
     """
-    def __init__(self, network, distributor):
+    def __init__(self, network, distributor, root, port):
         """ Initialize the Environment Endpoint.
             
             @param network:     Network to which the endpoint belongs.
@@ -72,11 +78,21 @@ class RobotEndpoint(Endpoint):
                                 new robot websocket connections to robot
                                 endpoints.
             @type  container:   rce.master.robot.Distributor
+            
+            @param root:        Reference to top level of data structure.
+            @type  root:        rce.master.core.RoboEarthCloudEngine
+            
+            @param port:        Port where the robot process is listening for
+                                connections to other endpoints.
+            @type  port:        int
         """
         super(RobotEndpoint, self).__init__(network)
         
         self._distributor = distributor
         distributor.registerRobotProcess(self)
+        
+        self._root = root
+        self._port = port
     
     @property
     def active(self):
@@ -85,16 +101,31 @@ class RobotEndpoint(Endpoint):
         """
         return len(self._namespaces)
     
-#    def getAddress(self):
-#        """ Get the address of the robot endpoint's internal communication
-#            server.
-#            
-#            @return:            Address of the robot endpoint's internal
-#                                communication server.
-#                                (type: twisted.internet.address.IPv4Address)
-#            @rtype:             twisted::Deferred
-#        """
-#        return succeed(self.obj.broker.transport.getPeer())
+    def getAddress(self):
+        """ Get the address of the robot endpoint's internal communication
+            server.
+            
+            @return:            Address of the robot endpoint's internal
+                                communication server.
+                                (type: twisted.internet.address.IPv4Address)
+            @rtype:             twisted::Deferred
+        """
+        def cb(remote):
+            ip = remote.broker.transport.getPeer().host
+            ip = self._root.getInternalIP() if isLocalhost(ip) else ip
+            return IPv4Address('TCP', ip, self._port)
+        
+        return self().addCallback(cb)
+    
+    def getWebsocketAddress(self):
+        """ Get the address which can be used to connect to the robot
+            namespaces which belong to this endpoint.
+            
+            @return:            Address of the endpoint process. The address
+                                has the form [IP]:[port] (type: str)
+            @rtype:             twisted::Deferred
+        """
+        return self.callRemote('getWebsocketAddress')
     
     def createNamespace(self, user, robotID, key):
         """ Create a Namespace object in the endpoint.

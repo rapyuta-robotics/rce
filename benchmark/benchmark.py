@@ -89,7 +89,7 @@ class RemoteTest(TestBase):
         self._srv = None
     
     def _activate(self):
-        self._srv = self._conn.service('testConv', 'Test/StringTest',
+        self._srv = self._conn.service('tester', 'Test/StringTest',
                                        self._process)
     
     def _deactivate(self):
@@ -133,8 +133,7 @@ class LocalServiceTest(LocalTest):
         self._srv = None
     
     def _activate(self):
-        self._srv = self._conn.service('testStringSrvConv', 'Test/StringEcho',
-                                       self._resp)
+        self._srv = self._conn.service('test', 'Test/StringEcho', self._resp)
     
     def _deactivate(self):
         self._srv = None
@@ -161,9 +160,9 @@ class LocalTopicTest(LocalTest):
         self._sub = None
     
     def _activate(self):
-        self._pub = self._conn.publisher('testStringTopicReqConv',
+        self._pub = self._conn.publisher('testReqTopic',
                                          'std_msgs/String')
-        self._sub = self._conn.subscriber('testStringTopicRespConv',
+        self._sub = self._conn.subscriber('testRespTopic',
                                           'std_msgs/String', self._resp)
     
     def _deactivate(self):
@@ -187,18 +186,20 @@ class LocalTopicTest(LocalTest):
 
 class Benchmark(object):
     TYPES = [('service', 'red'), ('topic', 'blue')]
-    REMOTE_TESTS = [('N-to-N', ':', 'stringEcho'), ('C-to-C-1', '--', 'local')]#,
-                    #('C-to-C-2', '-', 'remote')]
+    REMOTE_TESTS = [('N-to-N', ':', 'stringEcho'), ('C-to-C-1', '--', 'local'),
+                    ('C-to-C-2', '-', 'remote')]
     LOCAL_TEST = ('R-to-C', '-.', '')
     
-    
-    def __init__(self, runs, conn, reactor):
+    def __init__(self, runs, conn, robot, reactor):
         self._runs = runs
         self._sizes = [3, 10, 50, 100, 500, 1000, 5000,
                        10000, 50000, 100000, 500000]
         
         self._conn = conn
+        self._robot = robot
         self._reactor = reactor
+        
+        self._cTag = ['m1c1', 'm2c1', 'm1c2', 'm2c2']
         
         self._tests = []
         
@@ -220,104 +221,129 @@ class Benchmark(object):
                     self.LOCAL_TEST[1], color, self._sizes))
     
     def run(self, _):
-        print('Create containers...')
-        
-        for cTag in ['m1c1', 'm2c1', 'm1c2']:
-            self._conn.createContainer(cTag)
-        
-        self._reactor.callLater(30, self._setup)
-    
-    def _setup(self):
         print('Setup environments...')
         
-        for cTag in ['m1c1', 'm2c1', 'm1c2']:
+        ### Add containers
+        for cTag in self._cTag:
+            self._conn.createContainer(cTag)
+        
+        ### Add the nodes
+        for cTag in self._cTag:
             self._conn.addNode(cTag, 'strEcho', 'Test', 'stringEcho.py')
         
-        self._conn.addNode('m1c1', 'strTester', 'Test', 'stringTester.py')
+        self._conn.addNode(self._cTag[0], 'strTester', 'Test',
+                           'stringTester.py')
         
+        ### Add interfaces and connections
         # Connections Robot - StringTester
-        self._conn.addInterface('testRobot', 'testConv',
-                                'ServiceProviderConverter', 'Test/StringTest')
-        self._conn.addInterface('m1c1', 'testInrfc', 'ServiceInterface',
-                                'Test/StringTest', 'stringTest')
-        self._conn.addConnection('testConv', 'testInrfc')
+        tag = 'tester'
+        cls = 'Test/StringTest'
+        self._conn.addInterface(self._cTag[0], tag, 'ServiceClientInterface',
+                                cls, 'stringTest')
+        self._conn.addInterface(self._robot, tag, 'ServiceProviderConverter',
+                                cls)
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._robot, tag))
         
-        self._conn.addInterface('testRobot', 'testDataConv',
-                                'SubscriberConverter', 'Test/StringData')
-        self._conn.addInterface('m1c1', 'testDataInrfc', 'PublisherInterface',
-                                'Test/StringData', 'stringData')
-        self._conn.addConnection('testDataConv', 'testDataInrfc')
+        tag = 'testerData'
+        cls = 'Test/StringData'
+        self._conn.addInterface(self._cTag[0], tag, 'PublisherInterface',
+                                cls, 'stringData')
+        self._conn.addInterface(self._robot, tag, 'SubscriberConverter',
+                                cls)
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._robot, tag))
         
         # Connections StringTester - StringEcho (service)
-        self._conn.addInterface('m1c2', 'testLocalSrvRecv', 'ServiceInterface',
-                                'Test/StringEcho', 'stringEchoService')
-        self._conn.addInterface('m1c1', 'testLocalSrvSend',
-                                'ServiceProviderInterface', 'Test/StringEcho',
-                                'localService')
-        self._conn.addConnection('testLocalSrvRecv', 'testLocalSrvSend')
+        tag = 'testLocal'
+        cls = 'Test/StringEcho'
+        self._conn.addInterface(self._cTag[0], tag, 'ServiceProviderInterface',
+                                cls, 'localService')
+        self._conn.addInterface(self._cTag[2], tag, 'ServiceClientInterface',
+                                cls, 'stringEchoService')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._cTag[2], tag))
         
-        self._conn.addInterface('m2c1', 'testRemoteSrvRecv',
-                                'ServiceInterface', 'Test/StringEcho',
-                                'stringEchoService')
-        self._conn.addInterface('m1c1', 'testRemoteSrvSend',
-                                'ServiceProviderInterface', 'Test/StringEcho',
-                                'remoteService')
-        self._conn.addConnection('testRemoteSrvRecv', 'testRemoteSrvSend')
+        tag = 'testRemote'
+        cls = 'Test/StringEcho'
+        self._conn.addInterface(self._cTag[0], tag, 'ServiceProviderInterface',
+                                cls, 'remoteService')
+        self._conn.addInterface(self._cTag[1], tag, 'ServiceClientInterface',
+                                cls, 'stringEchoService')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._cTag[1], tag))
         
         # Connections StringTester - StringEcho (topic)
-        self._conn.addInterface('m1c1', 'testLocalRespSend',
-                                'PublisherInterface', 'std_msgs/String',
-                                'stringEchoResp')
+        tag = 'testResp'
+        cls = 'std_msgs/String'
+        self._conn.addInterface(self._cTag[0], tag, 'PublisherInterface',
+                                cls, 'stringEchoResp')
         
-        self._conn.addInterface('m1c2', 'testLocalRespRecv',
-                                'SubscriberInterface', 'std_msgs/String',
-                                'stringEchoResp')
-        self._conn.addConnection('testLocalRespRecv', 'testLocalRespSend')
+        self._conn.addInterface(self._cTag[1], tag, 'SubscriberInterface',
+                                cls, 'stringEchoResp')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._cTag[1], tag))
         
-        self._conn.addInterface('m2c1', 'testRemoteRespRecv',
-                                'SubscriberInterface', 'std_msgs/String',
-                                'stringEchoResp')
-        self._conn.addConnection('testRemoteRespRecv', 'testLocalRespSend')
+        self._conn.addInterface(self._cTag[2], tag, 'SubscriberInterface',
+                                cls, 'stringEchoResp')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._cTag[2], tag))
         
-        self._conn.addInterface('m1c2', 'testLocalReqSend',
-                                'PublisherInterface', 'std_msgs/String',
-                                'stringEchoReq')
-        self._conn.addInterface('m1c1', 'testLocalReqRecv',
-                                'SubscriberInterface', 'std_msgs/String',
-                                'localReq')
-        self._conn.addConnection('testLocalReqRecv', 'testLocalReqSend')
+        self._conn.addInterface(self._robot, tag, 'SubscriberConverter',
+                                cls)
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._robot, tag))
         
-        self._conn.addInterface('m2c1', 'testRemoteReqSend',
-                                'PublisherInterface', 'std_msgs/String',
-                                'stringEchoReq')
-        self._conn.addInterface('m1c1', 'testRemoteReqRecv',
-                                'SubscriberInterface', 'std_msgs/String',
-                                'remoteReq')
-        self._conn.addConnection('testRemoteReqRecv', 'testRemoteReqSend')
+        tag = 'testLocalReq'
+        cls = 'std_msgs/String'
+        self._conn.addInterface(self._cTag[0], tag, 'SubscriberInterface',
+                                cls, 'localReq')
+        self._conn.addInterface(self._cTag[2], tag, 'PublisherInterface',
+                                cls, 'stringEchoReq')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._cTag[2], tag))
+        
+        tag = 'testRemoteReq'
+        cls = 'std_msgs/String'
+        self._conn.addInterface(self._cTag[0], tag, 'SubscriberInterface',
+                                cls, 'remoteReq')
+        self._conn.addInterface(self._cTag[1], tag, 'PublisherInterface',
+                                cls, 'stringEchoReq')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[0], tag),
+                                 '{0}/{1}'.format(self._cTag[1], tag))
         
         # Connections Robot - StringEcho (service)
-        self._conn.addInterface('testRobot', 'testStringSrvConv',
-                                'ServiceProviderConverter', 'Test/StringEcho')
-        self._conn.addInterface('m1c1', 'testStringSrvInrfc',
-                                'ServiceInterface', 'Test/StringEcho',
-                                'stringEchoService')
-        self._conn.addConnection('testStringSrvConv', 'testStringSrvInrfc')
+        tag = 'test'
+        cls = 'Test/StringEcho'
+        self._conn.addInterface(self._cTag[3], tag, 'ServiceClientInterface',
+                                cls, 'remoteService')
+        self._conn.addInterface(self._robot, tag, 'ServiceProviderConverter',
+                                cls, 'stringEchoService')
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[3], tag),
+                                 '{0}/{1}'.format(self._robot, tag))
         
         # Connections Robot - StringEcho (topic)
-        self._conn.addInterface('testRobot', 'testStringTopicReqConv',
-                                'SubscriberConverter', 'std_msgs/String')
-        self._conn.addConnection('testLocalReqSend',
-                                 'testStringTopicReqConv')
+        tag = 'testReqTopic'
+        cls = 'std_msgs/String'
+        self._conn.addInterface(self._cTag[3], tag, 'PublisherInterface',
+                                cls, 'stringEchoReq')
+        self._conn.addInterface(self._robot, tag, 'SubscriberConverter',
+                                cls)
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[3], tag),
+                                 '{0}/{1}'.format(self._robot, tag))
+        tag = 'testRespTopic'
+        cls = 'std_msgs/String'
+        self._conn.addInterface(self._cTag[3], tag, 'SubscriberInterface',
+                                cls, 'stringEchoResp')
+        self._conn.addInterface(self._robot, tag, 'PublisherConverter',
+                                cls)
+        self._conn.addConnection('{0}/{1}'.format(self._cTag[3], tag),
+                                 '{0}/{1}'.format(self._robot, tag))
         
-        self._conn.addInterface('testRobot', 'testStringTopicRespConv',
-                                'PublisherConverter', 'std_msgs/String')
-        self._conn.addConnection('testLocalRespRecv',
-                                 'testStringTopicRespConv')
-        
-        self._reactor.callLater(5, self._load)
+        self._reactor.callLater(20, self._load)
     
     def _load(self):
-        self._conn.publisher('testDataConv', 'Test/StringData').publish(
+        self._conn.publisher('testerData', 'Test/StringData').publish(
             {'size' : self._sizes})
         
         if self._tests:
@@ -349,7 +375,7 @@ class Benchmark(object):
             f.write('\n')
             f.write('\n'.join(str(test) for test in self._tests))
         
-        for cTag in ['m1c1', 'm2c1', 'm1c2']:
+        for cTag in self._cTag:
             self._conn.destroyContainer(cTag)
         
         self._reactor.callLater(2, self._reactor.stop)
@@ -372,13 +398,15 @@ def _get_argparse():
     
 
 def main(reactor, passes, ip):
-    connection = Connection('testUser', 'testRobot', reactor)
-    benchmark = Benchmark(passes, connection, reactor)
+    user = 'testUser'
+    robot = 'testRobot'
+    connection = Connection(user, robot, user, reactor)
+    benchmark = Benchmark(passes, connection, robot, reactor)
     
     print('Connect...')
     deferred = Deferred()
     deferred.addCallback(benchmark.run)
-    connection.connect('ws://{0}:9000/'.format(ip), deferred)
+    connection.connect('http://{0}:9000/'.format(ip), deferred)
     
     reactor.run()
 
