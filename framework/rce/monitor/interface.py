@@ -77,6 +77,7 @@ class _ROSInterfaceBase(Interface):
         Interface.__init__(self, owner, status, uid)
         
         self._name = addr
+        self._reactor = owner.reactor
 
 
 class ServiceClientInterface(_ROSInterfaceBase):
@@ -94,8 +95,6 @@ class ServiceClientInterface(_ROSInterfaceBase):
         self._srvCls = owner.loader.loadSrv(pkg, name)
         self._srvCls._request_class = rospy.AnyMsg
         self._srvCls._response_class = rospy.AnyMsg
-        
-        self._reactor = owner.reactor
 
     __init__.__doc__ = _ROSInterfaceBase.__init__.__doc__
     
@@ -196,7 +195,7 @@ class ServiceProviderInterface(_ROSInterfaceBase):
         with self._pendingLock:
             self._pending[msgID] = event
         
-        self.received(request._buff, msgID)
+        self._reactor.callFromThread(self.received, request._buff, msgID)
         
         # Block execution here until the event is set, i.e. a response has
         # arrived
@@ -261,4 +260,4 @@ class SubscriberInterface(_ROSInterfaceBase):
         self._subscriber = None
 
     def _callback(self, msg):
-        self.received(msg._buff, uuid4().hex)
+        self._reactor.callFromThread(self.received, msg._buff, uuid4().hex)

@@ -225,6 +225,7 @@ class RCEContainer(Referenceable):
         # can raise iptc.xtables.XTablesError
         self._remoteRule = iptc.Rule()
         self._remoteRule.protocol = 'tcp'
+        self._remoteRule.dst = self._client.internalIP
         m = self._remoteRule.create_match('tcp')
         m.dport = self._fwdPort
         t = self._remoteRule.create_target('DNAT')
@@ -233,6 +234,7 @@ class RCEContainer(Referenceable):
         self._localRule = iptc.Rule()
         self._localRule.protocol = 'tcp'
         self._localRule.out_interface = 'lo'
+        self._localRule.dst = self._client.internalIP
         m = self._localRule.create_match('tcp')
         m.dport = self._fwdPort
         t = self._localRule.create_target('DNAT')
@@ -304,8 +306,8 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, bridge, envPort, rootfsDir, confDir,
-                 dataDir, srcDir, pkgDir):
+    def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, rootfsDir,
+                 confDir, dataDir, srcDir, pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:     Reference to the twisted reactor.
@@ -314,9 +316,13 @@ class ContainerClient(Referenceable):
             @param masterIP:    IP address of the Master process.
             @type  masterIP:    str
             
-            @param bridge:      Name of the bridge interfaces used for the
+            @param intIF:       Name of the network interface used for the
+                                internal network.
+            @type  intIF:       str
+            
+            @param bridgeIF:    Name of the bridge interface used for the
                                 container network.
-            @type  bridge:      str
+            @type  bridgeIF:    str
             
             @param envPort:     Port where the environment process running
                                 inside the container is listening for
@@ -349,9 +355,10 @@ class ContainerClient(Referenceable):
             @type  pkgDir:      [(str, str)]
         """
         self._reactor = reactor
+        self._internalIP = getIP(intIF)
         self._envPort = envPort
         
-        bridgeIP = getIP(bridge)
+        bridgeIP = getIP(bridgeIF)
         
         if masterIP in ('localhost', '127.0.0.1'):
             self._masterIP = bridgeIP
@@ -395,6 +402,11 @@ class ContainerClient(Referenceable):
     def reactor(self):
         """ Reference to twisted::reactor. """
         return self._reactor
+    
+    @property
+    def internalIP(self):
+        """ IP address of this process in the internal network. """
+        return self._internalIP
     
     @property
     def envPort(self):
@@ -528,8 +540,8 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPort, bridgeIF, envPort, rootfsDir,
-         confDir, dataDir, srcDir, pkgDir):
+def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
+         rootfsDir, confDir, dataDir, srcDir, pkgDir):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -539,8 +551,8 @@ def main(reactor, cred, masterIP, masterPort, bridgeIF, envPort, rootfsDir,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = ContainerClient(reactor, masterIP, bridgeIF, envPort, rootfsDir,
-                             confDir, dataDir, srcDir, pkgDir)
+    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort,
+                             rootfsDir, confDir, dataDir, srcDir, pkgDir)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)

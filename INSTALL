@@ -34,7 +34,7 @@ Installation
       sudo git clone https://github.com/IDSCETHZurich/rce.git rce
 
 2.  Copy settings file and adjust appropriately
-      sudo cp /opt/rce/framework.settings.py.default /opt/rce/framework.settings.py
+      sudo cp /opt/rce/framework/settings.py.default /opt/rce/framework/settings.py
 
 3.  Install the linux-container requirements
       sudo apt-get install lxc debootstrap
