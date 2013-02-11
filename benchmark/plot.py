@@ -47,6 +47,9 @@ def main(fileNames, ylog, remote, plotStyle):
             benchmark = map(json.loads, f.readlines())
         
         for test in benchmark:
+            if 'service' in test['label']:
+                continue
+            
             if not remote and test['label'].endswith('R-to-C'):
                 continue
             
