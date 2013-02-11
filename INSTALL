@@ -90,6 +90,10 @@ Installation
           sudo cp /opt/rce/setup/setup.sh /opt/rce/container/rootfs/opt/rce/
           sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
 
+    10. Create necessary folders holding temporary data of containers
+          sudo mkdir /opt/rce/container/data
+          sudo mkdir /opt/rce/container/config
+
 5.  Install ROS in the container host
       sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
       wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
@@ -112,11 +116,7 @@ Installation
 9.  Install libraries needed for Custom Converters
       sudo apt-get install python-imaging
 
-10. Create necessary folders holding temporary data of containers
-      sudo mkdir /opt/rce/container/data
-      sudo mkdir /opt/rce/container/config
-
-11. Copy upstart scripts and adjust appropriately (at the moment not available)
+10. Copy upstart scripts and adjust appropriately (at the moment not available)
       #sudo cp /opt/rce/setup/rce-master.conf /etc/init/
       #sudo cp /opt/rce/setup/rce-machine.conf /etc/init/
 

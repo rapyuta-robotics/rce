@@ -316,9 +316,9 @@ class Benchmark(object):
         tag = 'test'
         cls = 'Test/StringEcho'
         self._conn.addInterface(self._cTag[3], tag, 'ServiceClientInterface',
-                                cls, 'remoteService')
-        self._conn.addInterface(self._robot, tag, 'ServiceProviderConverter',
                                 cls, 'stringEchoService')
+        self._conn.addInterface(self._robot, tag, 'ServiceProviderConverter',
+                                cls)
         self._conn.addConnection('{0}/{1}'.format(self._cTag[3], tag),
                                  '{0}/{1}'.format(self._robot, tag))
         

@@ -79,18 +79,18 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 # restrict capabilities
 #   can't use: lxc.cap.drop = sys_admin
 #   see: man capabilities for more information
-lxc.cap.drop = audit_control
-lxc.cap.drop = audit_write
-lxc.cap.drop = mac_admin
-lxc.cap.drop = mac_override
-lxc.cap.drop = mknod
-lxc.cap.drop = setfcap
-lxc.cap.drop = setpcap
-lxc.cap.drop = sys_boot
-lxc.cap.drop = sys_chroot
-lxc.cap.drop = sys_module
-lxc.cap.drop = sys_rawio
-lxc.cap.drop = sys_time
+#lxc.cap.drop = audit_control
+#lxc.cap.drop = audit_write
+#lxc.cap.drop = mac_admin
+#lxc.cap.drop = mac_override
+#lxc.cap.drop = mknod
+#lxc.cap.drop = setfcap
+#lxc.cap.drop = setpcap
+#lxc.cap.drop = sys_boot
+#lxc.cap.drop = sys_chroot
+#lxc.cap.drop = sys_module
+#lxc.cap.drop = sys_rawio
+#lxc.cap.drop = sys_time
 """
 
 
