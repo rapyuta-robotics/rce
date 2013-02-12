@@ -9,8 +9,7 @@ Content of git respository
     Setup files and utilities that are referenced from the INSTALL file.
 
 - benchmark:
-    Client-side scripts, data, and plots for a simple communication benchmark. 
-    << outdated >> 
+    Client-side scripts, data, and plots for a simple communication benchmark.
 
 - test:
     ROS packages which can be used with the framework. Contains server-side
