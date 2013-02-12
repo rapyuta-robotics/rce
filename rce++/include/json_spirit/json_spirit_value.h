@@ -34,12 +34,11 @@ namespace json_spirit
     class Binary_impl
     {
     public:
-        
         typedef typename Config::String_type String_type;
         typedef typename String_type::const_pointer Const_str_ptr;  // eg const char*
         
         Binary_impl();
-        Binary_impl( Const_str_ptr      value );
+        Binary_impl( Const_str_ptr      value, const unsigned int len );
         Binary_impl( const String_type& value );
 
         Binary_impl( const Binary_impl& other );
@@ -255,7 +254,8 @@ namespace json_spirit
 	{}
 
     template< class Config >
-    Binary_impl< Config >::Binary_impl( Const_str_ptr value ) : v_( String_type( value ) )
+    Binary_impl< Config >::Binary_impl( Const_str_ptr value, const unsigned int len ) :
+		v_( String_type( value, len ) )
 	{
 			generateUUID();
 	}

@@ -1,13 +1,3 @@
 FAQ file of the RoboEarth Cloud Engine
 --------------------------------------
-Q1.	Client can not connect, because userID/robotID is already used.
-A1.	Wait a minute. userID/robotID pairs are not immediately removed,
-	but stored for a reconnection attempt. (Client does not support
-	this yet.)
 
-Q2.	Container can not be created, because tag is in use in Container
-	Manager.
-A2.	Occurs when a Container is started and immediately removed, before
-	the Container Manager has finished the starting procedure which
-	results in the error that the Container can not be removed and the
-	tag is blocked.

@@ -5,3 +5,5 @@
 */.project
 */.pydevproject
 */.cproject
+.metadata/
+.svn/

@@ -6,10 +6,10 @@ TS1.	Have a look at FAQ.
 TS2.	Where do I find the logs ?
 	The framework logs can be found:
 		Currently flushed to the sys.stdout and you can pipe it to a file if needed or
-		modifiy framework/master.py, framework/relay.py, or framework/container.py to
+		modifiy framework/master.py, framework/robot.py, or framework/container.py to
 		change output permanently to a file.
 		
-	Container level logs can be found inside (Container name corresponds to internal commID):
+	Container level logs can be found inside:
 		/opt/rce/container/data/<container-name>/ros/launcher.log   # Launcher process
 		/opt/rce/container/data/<container-name>/rce/env.log        # Environment process
 

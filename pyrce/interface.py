@@ -146,7 +146,7 @@ class _Service(object):
         if self._subscribed:
             self._conn.unregisterInterface(self._iTag, self)
             self._subscribed = False
-            print('ServiceClient to RCE Interface "{0}" is '
+            print('Service Client to RCE Interface "{0}" is '
                   'down.'.format(self._iTag))
 
 

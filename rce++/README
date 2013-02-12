@@ -1,13 +1,48 @@
-Dependency:
-    websocketpp - https://github.com/zaphoyd/websocketpp
+rce++ is a header only client with dependencies on binary boost libraries.
+
+Dependencies:
+    websocketpp - http://github.com/zaphoyd/websocketpp
     
     Requires:
-        boost library 1.xx
+      - boost library 1.xx
         
-        - successfully compiled and linked with 1.51
-        - default boost library 1.46 of ubuntu 11.10 is insufficient
+        - successfully compiled and linked with 1.52
+        - default boost library 1.46 of ubuntu 12.04 is insufficient
+	
+      - curl library
+      
+          sudo apt-get install libcurl4-openssl-dev
 
-Linking:
+Necessary libaries to link against:
     LDLIBS=-lwebsocketpp -lboost_system -lboost_date_time -lboost_regex -lboost_random -lboost_thread
-    
-    
+
+Test the client:
+    To the test rce++ client:
+      1. Build the test application (configure Makefile appropiately)
+      
+           cd test
+           make
+      
+      2. Use the ROS client (pyrce/ros.py) to setup the container for
+         the rce++ test (ROS client needs a working ROS environment).
+         
+           cd ../pyrce
+           ./ros.py ../test/ros.cfg
+      
+      3. Run the test application
+      
+           cd ../rce++/test
+           ./test [IP addres of cloud engine]
+         
+         You should send and receive "Hello World!" messages which can
+         be checked using the command
+         
+           rostopic echo /stringEchoReq
+         
+         to check what is sent and the command
+         
+           rostopic echo /stringEchoResp
+         
+         to check was is received from the cloud engine.
+      
+      

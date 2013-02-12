@@ -30,6 +30,12 @@
 #     
 #     
 
+# Check if the script is run as super-user
+if [ $(id -u) -ne 0 ]; then
+	echo "rcemake has to be run as super-user."
+	exit
+fi
+
 ROOTFS=$(./setupRCEmake.py up)
 
 if [ $? -eq 0 ]; then

@@ -1,0 +1,62 @@
+Server-side
+===========
+
+Assuming that the cloud engine was successfully installed in the suggested
+directories one can use the following commands to start the cloud engine.
+
+The first step is to start the Master process
+    /opt/rce/framework/master.py
+
+The second step is to start the Robot and Container processes as needed. It is
+important to note that for each machine there can be only one Container process
+as well as only one Robot process (planned to allow more than one Robot process
+per machine in the future).
+    /opt/rce/framework/robot.py [IP address of Master process]
+    sudo /opt/rce/framework/container.py [IP address of Master process]
+
+Note: The Robot process needs a properly set-up ROS environment
+      (i.e. run /opt/rce/fuerte/setup.sh )
+
+Client-side
+===========
+
+As an example on how to use the RoboEarth Cloud Engine from the perspective of
+the client-side a short example using the ROS client in the following.
+
+The first step is to set up the ROS environment
+    . /opt/ros/fuerte/setup.sh
+    ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/opt/rce/test
+    roscore
+
+Now, the system is ready to launch the ROS client using the configuration file
+'debug.cfg'.
+Note: Modify the url of the configuration file according to your settings.
+    cd /opt/rce/pyrce
+    ./ros.py ../test/debug.cfg
+
+After a few seconds the Cloud Engine should be ready to receive messages. The
+Master process should report (to stdout for now) the following line 'Connection
+to Environment process established.', after which the Cloud Engine is ready. To
+test the connection different can be tested:
+
+- Test Service
+    $ rosservice call /stringEchoService "Hello World"
+    data: Hello World
+
+- Test Publisher/Subscriber
+    $ rostopic echo /stringEchoResp &
+    $ rostopic pub -r 1 /stringEchoReq std_msgs/String "Hello World"
+    data: Hello World
+    ---
+    data: Hello World
+    ---
+    ...
+
+- Test Parameter Server (returned values can be modified by editing the
+  configuration file 'debug.cfg')
+    $ rosservice call /parameterTest
+    msg: int:   99
+    str:   Hello World
+    float: 3.14
+    bool:  True
+    array: ['one', 2, 'three', 'true']

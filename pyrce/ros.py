@@ -113,7 +113,7 @@ class Environment(object):
         self._reactor.callLater(1, self._reactor.callFromThread,
                                 self._reactor.stop)
 
-    
+
 def main(config, reactor):
     rospy.init_node('RCE_ROS_Client', anonymous=True)
     
@@ -125,7 +125,8 @@ def main(config, reactor):
         print('Configuration is missing the key {0}.'.format(e))
         return 1
     
-    conn = ROSConnection(userID, robotID, reactor)
+    # TODO: Add password at some point instead of just using userID as passwd
+    conn = ROSConnection(userID, robotID, userID, reactor)
     env = Environment(reactor, conn, config)
     
     deferred = Deferred()
@@ -152,6 +153,7 @@ def _get_argparse():
                         type=FileType('r'))
 
     return parser
+
 
 if __name__ == '__main__':
     from twisted.internet import reactor

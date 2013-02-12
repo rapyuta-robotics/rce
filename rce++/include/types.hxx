@@ -30,8 +30,6 @@
 #ifndef TYPES_HXX_
 #define TYPES_HXX_
 
-#define RCE_INIT "IN"
-
 #define RCE_CREATE_CONTAINER "CC"
 #define RCE_DESTROY_CONTAINER "DC"
 

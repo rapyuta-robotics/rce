@@ -38,21 +38,21 @@ from autobahn.websocket import WebSocketClientFactory, \
 import sys                          ### TODO:
 sys.path.append('../framework')     ### TEMPORARY FIX
 
-from client.assembler import MessageAssembler
+from rce.client.assembler import MessageAssembler
 
 
 class RCERobotProtocol(WebSocketClientProtocol):
     """ WebSocket client protocol which is used to communicate with the Robot
         Manager.
     """
-    def __init__(self, connection):
+    def __init__(self, conn):
         """ Initialize the protocol.
-            
-            @param connection:      Connection instance which provides callback
-                                    functions.
-            @type  connection:      pyrce.connection._Connection
+                                
+            @param conn:        Connection instance which provides callback
+                                functions.
+            @type  conn:        pyrce.connection._Connection
         """
-        self._connection = connection
+        self._connection = conn
         self._assembler = MessageAssembler(self, 60)
         self._registered = False
     
@@ -97,18 +97,18 @@ class RCERobotFactory(WebSocketClientFactory):
     """ WebSocket protocol factory which is used for the communication with the
         Robot Manager.
     """
-    def __init__(self, url, connection):
+    def __init__(self, url, conn):
         """ Initialize the factory.
             
-            @param url:             URL of the Robot Manager.
-            @type  url:             str
+            @param url:         URL of the Robot Manager.
+            @type  url:         str
             
-            @param connection:      Connection instance which provides callback
-                                    functions.
-            @type  connection:      pyrce.connection._Connection
+            @param conn:        Connection instance which provides callback
+                                functions.
+            @type  conn:        pyrce.connection._Connection
         """
         WebSocketClientFactory.__init__(self, url)
-        self._connection = connection
+        self._connection = conn
     
     def buildProtocol(self, addr):
         """ This method is called by twisted when a new connection should be

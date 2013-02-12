@@ -30,6 +30,7 @@
 #ifndef UTIL_HXX_
 #define UTIL_HXX_
 
+#include <sstream>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -40,23 +41,22 @@ namespace rce
 template<class String>
 String generateUUID()
 {
-	String uid;
-	uid.reserve(32);
-
-	boost::uuids::uuid uuid = boost::uuids::random_generator()();
 	std::basic_ostringstream<typename String::value_type> os;
-	os << uuid;
-	String uid_raw = os.str();
+	typename String::const_pointer uid_raw;
+	typename String::value_type uid[32];
 
-	for (std::size_t i = 0; i < 36; ++i)
+	os << boost::uuids::random_generator()();
+	uid_raw = os.str().data();
+
+	for (int i = 0, j = 0; i < 36; ++i)
 	{
 		if (i == 8 || i == 13 || i == 18 || i == 23)
 			continue;
 
-		uid += uid_raw;
+		uid[j++] = uid_raw[i];
 	}
 
-	return uid;
+	return String(uid, 32);
 }
 
 } /* namespace rce */
