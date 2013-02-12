@@ -19,10 +19,6 @@ Content of git respository
     Python and ROS client for the RoboEarth Cloud Engine.
     (Tested with ROS fuerte & groovy)
 
-- jsrce:
-    HTML/Javascript client.
-    << outdated >>
-
 - rce++:
     C++ client for the RoboEarth Cloud Engine.
 

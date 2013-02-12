@@ -29,7 +29,8 @@ The first step is to set up the ROS environment
     roscore
 
 Now, the system is ready to launch the ROS client using the configuration file
-'debug.cfg'
+'debug.cfg'.
+Note: Modify the url of the configuration file according to your settings.
     cd /opt/rce/pyrce
     ./ros.py ../test/debug.cfg
 
