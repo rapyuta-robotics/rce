@@ -68,6 +68,15 @@ RCE_INTERNAL_PORT = 10030
 ###                                 ###
 #######################################
 
+# Name of network interface used for the external communication
+EXT_IF = 'eth0'
+
+# Name of network interface used for the internal communication
+INT_IF = 'eth1'
+
+# Name of network interface used for the container network
+BRIDGE_IF = 'lxcbr0'
+
 # Dictionary where the root of the container file system is located
 ROOTFS = '/opt/rce/container/rootfs'
 

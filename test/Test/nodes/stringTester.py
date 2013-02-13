@@ -55,6 +55,8 @@ class TestCenter(object):
         self._pub = None
         self._str = None
         self._time = None
+        
+        rospy.Subscriber('stringEchoResp', String, self._resp)
     
     def registerData(self, data):
         self._data = data.size
@@ -110,12 +112,11 @@ class TestCenter(object):
         self._times = []
         self._event = Event()
         self._pub = rospy.Publisher('{0}Req'.format(name), String, latch=True)
-        rospy.Subscriber('stringEchoResp'.format(name), String, self._resp)
         self._req()
         
         if (not self._event.wait(self.TIMEOUT) or
                 len(self._times) != len(self._data)):
-            times = [-1.0]*len(self._data)
+            times = [-1.0-1.0*len(self._times)]*len(self._data)
         else:
             times = self._times[:]
         

@@ -34,7 +34,7 @@ Installation
       sudo git clone https://github.com/IDSCETHZurich/rce.git rce
 
 2.  Copy settings file and adjust appropriately
-      sudo cp /opt/rce/framework.settings.py.default /opt/rce/framework.settings.py
+      sudo cp /opt/rce/framework/settings.py.default /opt/rce/framework/settings.py
 
 3.  Install the linux-container requirements
       sudo apt-get install lxc debootstrap
@@ -90,6 +90,10 @@ Installation
           sudo cp /opt/rce/setup/setup.sh /opt/rce/container/rootfs/opt/rce/
           sudo cp /opt/rce/setup/rce.conf /opt/rce/container/rootfs/etc/init/
 
+    10. Create necessary folders holding temporary data of containers
+          sudo mkdir /opt/rce/container/data
+          sudo mkdir /opt/rce/container/config
+
 5.  Install ROS in the container host
       sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
       wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
@@ -103,12 +107,14 @@ Installation
 7.  Apply patch to Autobahn library
       sudo patch [path to Autobahn library]/autobahn/websocket.py /opt/rce/setup/websocket.patch
 
-8.  Install libraries needed for Custom Converters
-      sudo apt-get install python-imaging
+8.  Install python biding for iptables
+      cd
+      git clone http://github.com/ldx/python-iptables
+      cd python-iptables
+      sudo python setup.py install
 
-9.  Create necessary folders holding temporary data of containers
-      sudo mkdir /opt/rce/container/data
-      sudo mkdir /opt/rce/container/config
+9.  Install libraries needed for Custom Converters
+      sudo apt-get install python-imaging
 
 10. Copy upstart scripts and adjust appropriately (at the moment not available)
       #sudo cp /opt/rce/setup/rce-master.conf /etc/init/

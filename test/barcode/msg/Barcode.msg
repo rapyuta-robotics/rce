@@ -1,2 +1,0 @@
-string   gtin
-string   type

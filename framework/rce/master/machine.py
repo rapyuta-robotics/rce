@@ -34,6 +34,7 @@
 from rce.error import InternalError, MaxNumberExceeded
 from rce.master.base import Status
 from rce.master.container import Container
+from rce.util.network import isLocalhost
 
 
 class ContainerProcessError(Exception):
@@ -91,9 +92,14 @@ class LoadBalancer(object):
         
         There should only one instance running in the Master process.
     """
-    def __init__(self):
+    def __init__(self, root):
         """ Initialize the Load Balancer.
+            
+            @param root:        Reference to top level of data structure.
+            @type  root:        rce.master.core.RoboEarthCloudEngine
         """
+        self._root = root
+        
         self._machines = set()
     
     def createMachine(self, ref, maxNr):
@@ -111,7 +117,7 @@ class LoadBalancer(object):
             @return:            New Machine instance.
             @rtype:             rce.master.machine.Machine
         """
-        machine = Machine(ref, maxNr)
+        machine = Machine(ref, maxNr, self._root)
         self._machines.add(machine)
         return machine
     
@@ -146,7 +152,7 @@ class LoadBalancer(object):
             @type  uid:         str
             
             @return:            New Container instance.
-            @rtype:             rce.master.machine.Container
+            @rtype:             rce.master.container.Container
         """
         return self._getNextMachine().createContainer(uid)
     
@@ -163,7 +169,7 @@ class Machine(object):
     """ Representation of a machine in which containers can be created. It
         keeps track of all the containers running in the machine.
     """
-    def __init__(self, ref, maxNr):
+    def __init__(self, ref, maxNr, root):
         """ Initialize the Machine.
             
             @param ref:         Remote reference to the ContainerClient in the
@@ -173,10 +179,15 @@ class Machine(object):
             @param maxNr:       The maximum number of container which are
                                 allowed in the machine.
             @type  maxNr:       int
+            
+            @param root:        Reference to top level of data structure.
+            @type  root:        rce.master.core.RoboEarthCloudEngine
         """
         self._ref = ref
         self._maxNr = maxNr
-        self._ip = ref.broker.transport.getPeer().host
+        
+        ip = ref.broker.transport.getPeer().host
+        self._ip = root.getInternalIP() if isLocalhost(ip) else ip
         
         self._containers = set()
     
@@ -184,6 +195,12 @@ class Machine(object):
     def active(self):
         """ The number of active containers in the machine. """
         return len(self._containers)
+    
+    @property
+    def IP(self):
+        """ The IP address used for the internal communication of the machine.
+        """
+        return self._ip
     
     def createContainer(self, uid):
         """ Create a container.
@@ -194,7 +211,7 @@ class Machine(object):
             @type  uid:         str
             
             @return:            New Container instance.
-            @rtype:             rce.master.machine.Container
+            @rtype:             rce.master.container.Container
         """
         if len(self._containers) > self._maxNr:
             raise MaxNumberExceeded('Can not create more containers in this '

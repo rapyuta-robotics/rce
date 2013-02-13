@@ -276,6 +276,7 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     log.startLogging(f)
     
     rospy.init_node('RCE_Master')
+    print 'connect to ', masterIP, masterPort
     
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)

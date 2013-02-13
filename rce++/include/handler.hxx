@@ -98,7 +98,6 @@ class Protocol_impl: public websocketpp::client::handler
 		void processData(const typename Client::Object &data);
 		void processStatus(const typename Client::String &data);
 		void processError(const typename Client::String &data);
-		void processInit(const typename Client::Object &data);
 
 		void send(const std::string &message, bool binary);
 
@@ -324,14 +323,6 @@ void Protocol_impl<Client>::processMessage(const typename Client::Object &msg)
 
 		this->processError(data.get_str());
 	}
-	else if (dataType == RCE_INIT)
-	{
-		if (data.type() != json_spirit::obj_type)
-			throw ProtocolException(
-					"Received a message from Cloud Engine with invalid type for field 'data'.");
-
-		this->processInit(data.get_obj());
-	}
 	else
 		throw ProtocolException(
 				"Received a message from Cloud Engine with invalid type: "
@@ -391,11 +382,6 @@ template<class Client>
 void Protocol_impl<Client>::processError(const typename Client::String &data)
 {
 	std::cout << data << std::endl;
-}
-
-template<class Client>
-void Protocol_impl<Client>::processInit(const typename Client::Object &data)
-{
 }
 
 template<class Client>

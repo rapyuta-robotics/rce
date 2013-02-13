@@ -30,13 +30,9 @@
 #     
 #     
 
-# twisted specific imports
-from twisted.internet.address import IPv4Address
-
 # Custom imports
 from rce.master.base import Proxy, Status
 from rce.master.network import Endpoint, Namespace
-import settings
 
 
 class Node(Proxy):
@@ -186,15 +182,19 @@ class EnvironmentEndpoint(Endpoint):
     """ Representation of an endpoint which is a process that lives inside a
         container and is part of the cloud engine internal communication.
     """
-    def __init__(self, network):
+    def __init__(self, network, container):
         """ Initialize the Environment Endpoint.
             
             @param network:     Network to which the endpoint belongs.
             @type  network:     rce.master.network.Network
+            
+            @param container:   Container in which the enpoint is living.
+            @type  container:   rce.master.container.Container
         """
         super(EnvironmentEndpoint, self).__init__(network)
+        
+        self._container = container
     
-    # TODO: At the moment single machine fix for getAddress
     def getAddress(self):
         """ Get the address of the environment endpoint's internal
             communication server.
@@ -204,20 +204,7 @@ class EnvironmentEndpoint(Endpoint):
                                 (type: twisted.internet.address.IPv4Address)
             @rtype:             twisted::Deferred
         """
-        return self().addCallback(lambda remote:
-                                  IPv4Address('TCP', remote.broker.transport.getPeer().host,
-                                              settings.RCE_INTERNAL_PORT))
-    
-#    def getAddress(self):
-#        """ Get the address of the environment endpoint's internal
-#            communication server.
-#            
-#            @return:            Address of the environment endpoint's internal
-#                                communication server.
-#                                (type: twisted.internet.address.IPv4Address)
-#            @rtype:             twisted::Deferred
-#        """
-#        return self._container.getAddress()
+        return self._container.getAddress()
     
     def createNamespace(self):
         """ Create a Environment object in the environment endpoint.
@@ -230,3 +217,12 @@ class EnvironmentEndpoint(Endpoint):
         status = Status(environment)
         self.callRemote('createNamespace', status).chainDeferred(environment)
         return environment
+    
+    def destroy(self):
+        """ Method should be called to destroy the endpoint and will take care
+            of destroying all objects owned by this Endpoint as well as
+            deleting all circular references.
+        """
+        self._container = None
+        
+        super(EnvironmentEndpoint, self).destroy()

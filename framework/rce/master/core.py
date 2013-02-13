@@ -68,13 +68,12 @@ class RoboEarthCloudEngine(object):
     implements(IRealm)
     
     # CONFIG
-    EXT_IF = 'eth0'  # TODO: External interface might not be 'eth0'
     MAX_ROBOTS = 10
     MAX_CONTAINER = 10
     LOAD_BALANCER_CLS = LoadBalancer
     DISTRIBUTOR_CLS = Distributor
     
-    def __init__(self, reactor, checker):
+    def __init__(self, reactor, checker, intIF, port):
         """ Initialize the RoboEarth Cloud Engine realm.
             
             @param reactor:     Twisted reactor used in this process.
@@ -83,18 +82,28 @@ class RoboEarthCloudEngine(object):
             @param checker:     Login checker which authenticates the User when
                                 an initial request is received.
             @type  checker:     twisted.cred.checkers.ICredentialsChecker
+            
+            @param intIF:       Name of network interface used for internal
+                                communication.
+            @type  intIF:       str
+            
+            @param port:        Port where the robot process is listening for
+                                connections to other endpoints.
+            @type  port:        int
         """
         self._reactor = reactor
         self._checker = checker
+        self._intIF = intIF
+        self._port = port
         
         self._network = Network()
-        self._balancer = self.LOAD_BALANCER_CLS()
+        self._balancer = self.LOAD_BALANCER_CLS(self)
         self._distributor = self.DISTRIBUTOR_CLS()
         
         self._users = {}
         self._pendingContainer = {}
         
-        self._extIP = None
+        self._intIP = None
     
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns Avatar for slave processes of the cloud engine.
@@ -113,7 +122,8 @@ class RoboEarthCloudEngine(object):
             detach = lambda: self._balancer.destroyMachine(machine)
             print('Connection to Container process established.')
         elif avatarId == 'robot':
-            endpoint = RobotEndpoint(self._network, self._distributor)
+            endpoint = RobotEndpoint(self._network, self._distributor, self,
+                                     self._port)
             endpoint.callback(mind)
             avatar = Avatar() # TODO: At the moment does nothing
             detach = lambda: endpoint.destroy()
@@ -135,11 +145,17 @@ class RoboEarthCloudEngine(object):
         
         return self._users[userID]
     
-    def _getExtIP(self):
-        if self._extIP is None:
-            self._extIP = getIP(self.EXT_IF)
+    def getInternalIP(self):
+        """ Get the IP address of the network interface used for the internal
+            communication.
+            
+            @return:            IP address of the network interface.
+            @rtype:             str
+        """
+        if self._intIP is None:
+            self._intIP = getIP(self._intIF)
         
-        return self._extIP
+        return self._intIP
     
     def requestUser(self, userID, robotID, password):
         """ Callback for client protocol to initialize the connection by
@@ -166,9 +182,6 @@ class RoboEarthCloudEngine(object):
         # Create the robot
         d.addCallback(lambda uID: self._getUser(uID).createRobot(robotID))
         
-        # Change the IP address if it is equal to 'localhost'
-        d.addCallback(lambda (key, ip): (key, self._getExtIP())
-                                        if ip == '127.0.0.1' else (key, ip))
         return d
     
     def createRobot(self, user, robotID, uid):
@@ -203,9 +216,10 @@ class RoboEarthCloudEngine(object):
         """ Callback for User instance to create a new Container object in a
             container process.
             
-            @return:            New Container instance.
-            @rtype:             rce.master.machine.Container
-                                (subclass of rce.master.base.Proxy)
+            @return:            New Namespace and Container instance.
+            @rtype:             (rce.master.environment.Environment,
+                                 rce.master.container.Container)
+                                (subclasses of rce.master.base.Proxy)
         """
         while 1:
             uid = uuid4().hex
@@ -219,7 +233,7 @@ class RoboEarthCloudEngine(object):
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')
         
-        endpoint = EnvironmentEndpoint(self._network)
+        endpoint = EnvironmentEndpoint(self._network, container)
         self._pendingContainer[uid] = endpoint
         return endpoint.createNamespace(), container
     
@@ -251,10 +265,11 @@ class RoboEarthCloudEngine(object):
         self._distributor.cleanUp()
 
 
-def main(reactor, interalCred, externalCred, internalPort, externalPort):
+def main(reactor, interalCred, externalCred, internalPort, externalPort,
+         intIF, commPort):
     log.startLogging(sys.stdout)
     
-    rce = RoboEarthCloudEngine(reactor, externalCred)
+    rce = RoboEarthCloudEngine(reactor, externalCred, intIF, commPort)
     
     # Internal communication
     p = Portal(rce, (interalCred,))

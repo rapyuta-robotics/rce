@@ -60,6 +60,7 @@ cred = UsernamePassword('container', 'container')
 
 
 # Run main function
-main(reactor, cred, sys.argv[1], settings.MASTER_PORT, settings.ROOTFS,
+main(reactor, cred, sys.argv[1], settings.MASTER_PORT, settings.INT_IF,
+     settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, settings.ROOTFS,
      settings.CONF_DIR, settings.DATA_DIR, settings.ROOT_SRC_DIR,
      settings.ROOT_PKG_DIR)
