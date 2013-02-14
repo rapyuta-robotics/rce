@@ -83,7 +83,7 @@ class Namespace(Referenceable):
         
         if self._status:
             try:
-                self._status.callRemote('died')
+                self._status.callRemote('died').addErrback(lambda _ : None)
             except (DeadReferenceError, PBConnectionLost):
                 pass
             

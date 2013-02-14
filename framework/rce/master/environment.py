@@ -224,5 +224,5 @@ class EnvironmentEndpoint(Endpoint):
             deleting all circular references.
         """
         self._container = None
-        
+        print('Destroying Connection to Environment Process.')
         super(EnvironmentEndpoint, self).destroy()

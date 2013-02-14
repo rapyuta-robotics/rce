@@ -128,6 +128,7 @@ class LoadBalancer(object):
             @type  machine:     rce.master.machine.Machine
         """
         try:
+            print('Destroying Connection to Container Process.')
             self._machines.remove(machine)
         except KeyError:
             raise InternalError('Tried to remove a non existent machine.')

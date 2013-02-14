@@ -522,7 +522,7 @@ class Interface(Proxy):
             @return:            None.
             @rtype:             twisted::Deferred
         """
-        return protocol().addCallback(self._remoteID, remoteID, 'disconnect')
+        return protocol().addCallback(self._remoteID, remoteID, 'disconnect').addErrback(lambda _ : None)
     
     def _remoteID(self, protocol, remoteID, name):
         return self.callRemote(name, protocol, remoteID.bytes)
