@@ -116,8 +116,7 @@ class RoboEarthCloudEngine(object):
         # There are three possible roles (=avatarId):
         #     'container', 'robot', and 'environment'
         if avatarId == 'container':
-            machine = mind.callRemote('getMaxNr').addCallback(
-                lambda  maxNr: self._balancer.createMachine(mind, maxNr))
+            machine = self._balancer.createMachine(mind[0], mind[1])
             avatar = Avatar() # TODO: At the moment does nothing
             detach = lambda: self._balancer.destroyMachine(machine)
             print('Connection to Container process established.')
