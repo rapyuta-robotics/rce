@@ -307,7 +307,7 @@ class ContainerClient(Referenceable):
         There can be only one Container Client per machine.
     """
     def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, rootfsDir,
-                 confDir, dataDir, srcDir, pkgDir):
+                 confDir, dataDir, srcDir, pkgDir, maxNr):
         """ Initialize the Container Client.
             
             @param reactor:     Reference to the twisted reactor.
@@ -369,6 +369,7 @@ class ContainerClient(Referenceable):
         self._confDir = confDir
         self._dataDir = dataDir
         self._srcDir = srcDir
+        self._maxNr = maxNr
         
         # Validate directory paths
         checkPath(self._confDir, 'Configuration')
@@ -474,6 +475,14 @@ class ContainerClient(Referenceable):
             @rtype:             str
         """
         return self._networkConf
+    
+    def remote_getMaxNr(self):
+        """ Get the maximum number of containers supported by this instance a Container Client
+            
+            @return:            The maximum containers supported.
+            @rtype:             int
+        """
+        return self._maxNr
     
     def remote_createContainer(self, status, uid):
         """ Create a new Container.

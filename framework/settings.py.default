@@ -67,6 +67,8 @@ RCE_INTERNAL_PORT = 10030
 ###        Machine settings         ###
 ###                                 ###
 #######################################
+# Maximum containers supported on this machine (Default : 10)
+MAX_CONTAINER = 10
 
 # Name of network interface used for the external communication
 EXT_IF = 'eth0'

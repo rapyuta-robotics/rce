@@ -41,8 +41,8 @@ if os.getuid() != 0:
           'user.'.format(os.path.basename(sys.argv[0])))
     exit(1)
 
-if len(sys.argv) != 2:
-    print('Usage: {0} [masterIP]'.format(os.path.basename(sys.argv[0])))
+if len(sys.argv) < 2:
+    print('Usage: {0} [masterIP] [maxContainers]'.format(os.path.basename(sys.argv[0])))
     exit(1)
 
 
@@ -57,10 +57,10 @@ import settings
 
 # Credentials which should be used to login to Master process
 cred = UsernamePassword('container', 'container')
-
+maxNr = int(sys.argv[2]) if sys.argv[2] else settings.MAX_CONTAINER
 
 # Run main function
 main(reactor, cred, sys.argv[1], settings.MASTER_PORT, settings.INT_IF,
      settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, settings.ROOTFS,
      settings.CONF_DIR, settings.DATA_DIR, settings.ROOT_SRC_DIR,
-     settings.ROOT_PKG_DIR)
+     settings.ROOT_PKG_DIR, maxNr)
