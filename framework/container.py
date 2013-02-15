@@ -57,10 +57,12 @@ import settings
 
 # Credentials which should be used to login to Master process
 cred = UsernamePassword('container', 'container')
-try :
-    maxNr = int(sys.argv[2])
-except IndexError:
-    maxNr = settings.MAX_CONTAINER
+
+try:
+    maxNr = int(sys.argv[2]) if(len(sys.argv) == 3) else settings.MAX_CONTAINER
+except ValueError:
+    print('Usage: {0} [masterIP] [Max Number of Containers]'.format(os.path.basename(sys.argv[0])))
+    exit(1)
 
 # Run main function
 main(reactor, cred, sys.argv[1], settings.MASTER_PORT, settings.INT_IF,

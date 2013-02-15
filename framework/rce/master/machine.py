@@ -139,9 +139,11 @@ class LoadBalancer(object):
             container should be created.
         """
         try:
-            return min(self._machines, key=lambda m: m.active)
+            return max(self._machines, key=lambda m: (m.capacity - m.active))
         except ValueError:
             raise ContainerProcessError('There is no free container process.')
+        except MaxNumberExceeded:
+            raise ContainerProcessError('You have run out of your container capacity.')
     
     def createContainer(self, uid):
         """ Select an appropriate machine and create a container.
@@ -197,6 +199,11 @@ class Machine(object):
         return len(self._containers)
     
     @property
+    def capacity(self):
+        """ The number of active containers in the machine. """
+        return self._maxNr
+    
+    @property
     def IP(self):
         """ The IP address used for the internal communication of the machine.
         """
@@ -213,7 +220,7 @@ class Machine(object):
             @return:            New Container instance.
             @rtype:             rce.master.container.Container
         """
-        if len(self._containers) > self._maxNr:
+        if len(self._containers) >= self._maxNr:
             raise MaxNumberExceeded('Can not create more containers in this '
                                     'machine.')
         
