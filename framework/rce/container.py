@@ -102,6 +102,7 @@ script
 end script
 """
 
+
 _NETWORK_INTERFACES = """
 auto lo
 iface lo inet loopback
@@ -541,7 +542,7 @@ class ContainerClient(Referenceable):
 
 
 def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
-         rootfsDir, confDir, dataDir, srcDir, pkgDir):
+         rootfsDir, confDir, dataDir, srcDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -553,7 +554,8 @@ def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
     
     client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort,
                              rootfsDir, confDir, dataDir, srcDir, pkgDir)
-    d = factory.login(cred, client)
+    
+    d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
     

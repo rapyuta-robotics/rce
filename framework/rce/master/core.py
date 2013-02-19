@@ -69,7 +69,6 @@ class RoboEarthCloudEngine(object):
     
     # CONFIG
     MAX_ROBOTS = 10
-    MAX_CONTAINER = 10
     LOAD_BALANCER_CLS = LoadBalancer
     DISTRIBUTOR_CLS = Distributor
     
@@ -117,7 +116,7 @@ class RoboEarthCloudEngine(object):
         # There are three possible roles (=avatarId):
         #     'container', 'robot', and 'environment'
         if avatarId == 'container':
-            machine = self._balancer.createMachine(mind, self.MAX_CONTAINER)
+            machine = self._balancer.createMachine(mind[0], mind[1])
             avatar = Avatar() # TODO: At the moment does nothing
             detach = lambda: self._balancer.destroyMachine(machine)
             print('Connection to Container process established.')
