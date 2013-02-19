@@ -223,6 +223,6 @@ class EnvironmentEndpoint(Endpoint):
             of destroying all objects owned by this Endpoint as well as
             deleting all circular references.
         """
-        self._container = None
         print('Destroying Connection to Environment Process.')
+        self._container = None
         super(EnvironmentEndpoint, self).destroy()

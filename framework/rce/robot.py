@@ -497,8 +497,12 @@ class Robot(Namespace):
         assert len(self._interfaces) == 0
         
         if self._status:
+            def eb(failure):
+                if not failure.check(PBConnectionLost):
+                    log.err(failure)
+            
             try:
-                self._status.callRemote('died').addErrback(lambda _ : None)
+                self._status.callRemote('died').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
             

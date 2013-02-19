@@ -173,8 +173,12 @@ class _Protocol(Referenceable):
             self._receivers = None
         
         if self._status:
+            def eb(failure):
+                if not failure.check(PBConnectionLost):
+                    log.err(failure)
+            
             try:
-                return self._status.callRemote('died')
+                return self._status.callRemote('died').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 return succeed(None)
             

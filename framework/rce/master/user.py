@@ -114,7 +114,10 @@ class User(Referenceable):
         self._containers[tag] = container
         container.notifyOnDeath(self._containerDied)
         
-        return DeferredList([namespace(), remote_container()], fireOnOneErrback=True, consumeErrors=True).addCallback(lambda _ : 'Success')
+        m = 'Container {0} successfully created.'.format(tag)
+        d = DeferredList([namespace(), remote_container()],
+                         fireOnOneErrback=True, consumeErrors=True)
+        return d.addCallback(lambda _: m)
     
     def remote_destroyContainer(self, tag):
         """ Destroy a Container object.

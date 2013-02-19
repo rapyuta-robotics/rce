@@ -31,6 +31,7 @@
 #     
 
 # twisted specific imports
+from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, succeed, fail
 from twisted.spread.pb import RemoteReference, Referenceable, \
@@ -255,12 +256,16 @@ class Proxy(object):
         self.__cbs = None
     
     def __destroy(self):
-        self.__notify(Failure(DeadReferenceError('Referenced object '+self.__class__.__name__+' is '
-                                                 'dead.')))
+        m = 'Referenced object {0} dead.'.format(self.__class__.__name__)
+        self.__notify(Failure(DeadReferenceError(m)))
         
         if self.__obj:
+            def eb(failure):
+                if not failure.check(PBConnectionLost):
+                    log.err(failure)
+            
             try:
-                self.__obj.callRemote('destroy').addErrback(lambda _ : None)
+                self.__obj.callRemote('destroy').addErrback(eb)
             except DeadReferenceError, PBConnectionLost:
                 pass
             

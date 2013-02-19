@@ -105,8 +105,12 @@ class Parameter(Referenceable, ArgumentMixin):
             self._owner = None
         
         if self._status:
+            def eb(failure):
+                if not failure.check(PBConnectionLost):
+                    log.err(failure)
+            
             try:
-                self._status.callRemote('died')
+                self._status.callRemote('died').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
             

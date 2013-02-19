@@ -133,6 +133,7 @@ class LoadBalancer(object):
         except KeyError:
             raise InternalError('Tried to remove a non existent machine.')
         
+        print('Destroying Connection to Container Process.')
         machine.destroy()
     
     def _getNextMachine(self):

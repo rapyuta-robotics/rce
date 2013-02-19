@@ -157,9 +157,9 @@ class RobotEndpoint(Endpoint):
             as deleting all circular references.
         """
         if self._distributor:
+            print('Destroying Connection to Robot Process.')
             self._distributor.unregisterRobotProcess(self)
             self._distributor = None
-            print('Destroying Connection to Robot Process.')
             super(RobotEndpoint, self).destroy()
         else:
             print('robot.RobotEndpoint destroy() called multiple times...')

@@ -36,7 +36,7 @@ from uuid import uuid4
 # twisted specific imports
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, DeferredList
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError, ConnectionError, InvalidKey, AlreadyDead
@@ -522,7 +522,13 @@ class Interface(Proxy):
             @return:            None.
             @rtype:             twisted::Deferred
         """
-        return protocol().addCallback(self._remoteID, remoteID, 'disconnect').addErrback(lambda _ : None)
+        def eb(failure):
+            failure.trap(PBConnectionLost)
+        
+        d = protocol()
+        d.addCallback(self._remoteID, remoteID, 'disconnect')
+        d.addErrback(eb)
+        return d
     
     def _remoteID(self, protocol, remoteID, name):
         return self.callRemote(name, protocol, remoteID.bytes)
