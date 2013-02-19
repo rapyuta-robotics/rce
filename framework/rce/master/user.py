@@ -35,6 +35,7 @@ from uuid import uuid4
 
 # twisted specific imports
 from twisted.spread.pb import Referenceable
+from twisted.internet.defer import DeferredList
 
 # Custom imports
 from rce.error import InvalidRequest, AlreadyDead
@@ -108,11 +109,12 @@ class User(Referenceable):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
         
-        container = Container(*self._realm.createContainer())
+        namespace, remote_container = self._realm.createContainer()
+        container = Container(namespace, remote_container)
         self._containers[tag] = container
         container.notifyOnDeath(self._containerDied)
         
-        # TODO: Return some info about success/failure of request
+        return DeferredList([namespace(), remote_container()], fireOnOneErrback=True, consumeErrors=True).addCallback(lambda _ : 'Success')
     
     def remote_destroyContainer(self, tag):
         """ Destroy a Container object.

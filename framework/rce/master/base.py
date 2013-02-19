@@ -255,12 +255,12 @@ class Proxy(object):
         self.__cbs = None
     
     def __destroy(self):
-        self.__notify(Failure(DeadReferenceError('Referenced object is '
+        self.__notify(Failure(DeadReferenceError('Referenced object '+self.__class__.__name__+' is '
                                                  'dead.')))
         
         if self.__obj:
             try:
-                self.__obj.callRemote('destroy')
+                self.__obj.callRemote('destroy').addErrback(lambda _ : None)
             except DeadReferenceError, PBConnectionLost:
                 pass
             

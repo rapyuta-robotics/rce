@@ -159,7 +159,7 @@ class RobotEndpoint(Endpoint):
         if self._distributor:
             self._distributor.unregisterRobotProcess(self)
             self._distributor = None
-            
+            print('Destroying Connection to Robot Process.')
             super(RobotEndpoint, self).destroy()
         else:
             print('robot.RobotEndpoint destroy() called multiple times...')
