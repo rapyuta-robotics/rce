@@ -177,8 +177,16 @@ class LocalTopicTest(LocalTest):
             self._done()
             return
         
-        self._str = ''.join(random.choice(string.lowercase)
-                            for _ in xrange(self._sizes[count]))
+        if self._sizes[count] > 10:
+            sample = ''.join(random.choice(string.lowercase)
+                             for _ in xrange(10))
+            rep = int(self._sizes[count]/10)
+            tail = 'A'*(self._sizes[count] % 10)
+            
+            self._str = sample*rep+tail
+        else:
+            self._str = ''.join(random.choice(string.lowercase)
+                                for _ in xrange(self._sizes[count]))
         
         self._time = time.time()
         self._pub.publish({'data' : self._str})
@@ -194,6 +202,8 @@ class Benchmark(object):
         self._runs = runs
         self._sizes = [3, 10, 50, 100, 500, 1000, 5000,
                        10000, 50000, 100000, 500000]
+        #self._sizes = [3, 10, 100, 1000, 10000, 100000, 500000,
+        #               1000000, 5000000, 10000000]
         
         self._conn = conn
         self._robot = robot

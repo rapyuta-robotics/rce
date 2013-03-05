@@ -74,7 +74,14 @@ class TestCenter(object):
         serviceFunc = rospy.ServiceProxy(name, StringEcho)
         
         for size in self._data:
-            s = ''.join(random.choice(string.lowercase) for _ in xrange(size))
+            if size > 10:
+                sample = ''.join(random.choice(string.lowercase)
+                                 for _ in xrange(10))
+                s = sample*int(size/10)+'A'*(size % 10)
+            else:
+                s = ''.join(random.choice(string.lowercase)
+                            for _ in xrange(size))
+            
             start = time.time()
             response = serviceFunc(s)
             end = time.time()
@@ -90,8 +97,17 @@ class TestCenter(object):
         if self._counter >= len(self._data):
             self._event.set()
         else:
-            self._str = ''.join(random.choice(string.lowercase)
-                                for _ in xrange(self._data[self._counter]))
+            if self._data[self._counter] > 10:
+                sample = ''.join(random.choice(string.lowercase)
+                                 for _ in xrange(10))
+                rep = int(self._data[self._counter]/10)
+                tail = 'A'*(self._data[self._counter] % 10)
+                
+                self._str = sample*rep+tail
+            else:
+                self._str = ''.join(random.choice(string.lowercase)
+                                    for _ in xrange(self._data[self._counter]))
+            
             self._time = time.time()
             self._pub.publish(self._str)
     
