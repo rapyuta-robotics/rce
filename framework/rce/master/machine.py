@@ -29,7 +29,7 @@
 #     \author/s: Dominique Hunziker 
 #     
 #     
-
+from collections import Counter
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
 from rce.master.base import Status
@@ -136,16 +136,28 @@ class LoadBalancer(object):
         print('Destroying Connection to Container Process.')
         machine.destroy()
     
-    def _getNextMachine(self):
+    def _getNextMachine(self, userID):
         """ Internally used method to retrieve the machine where the next
             container should be created.
+            
+            @param userID:        UserID of the user who created the container.
+            @type  userID:        str
         """
+        candidates  = [machine for machine in self._machines if machine._users[userID]]
         try:
-            return max(self._machines, key=lambda m: (m.capacity - m.active))
-        except ValueError:
+            machine = max(candidates, key=lambda m: m.availability)
+        except ValueError: 
+            try:
+                machine = max(self._machines, key=lambda m: m.availability)
+            except ValueError:
+                raise ContainerProcessError('There is no free container process.')
+        
+        if machine.availability:
+            return machine
+        else:
             raise ContainerProcessError('There is no free container process.')
     
-    def createContainer(self, uid):
+    def createContainer(self, uid, userID):
         """ Select an appropriate machine and create a container.
             
             @param uid:         Unique ID which is used to identify the
@@ -153,10 +165,13 @@ class LoadBalancer(object):
                                 Master.
             @type  uid:         str
             
+            @param userID:        UserID of the user who created the container.
+            @type  userID:        str
+            
             @return:            New Container instance.
             @rtype:             rce.master.container.Container
         """
-        return self._getNextMachine().createContainer(uid)
+        return self._getNextMachine(userID).createContainer(uid, userID)
     
     def cleanUp(self):
         """ Method should be called to destroy all machines.
@@ -192,6 +207,7 @@ class Machine(object):
         self._ip = root.getInternalIP() if isLocalhost(ip) else ip
         
         self._containers = set()
+        self._users = Counter()
     
     @property
     def active(self):
@@ -204,12 +220,17 @@ class Machine(object):
         return self._maxNr
     
     @property
+    def availability(self):
+        """ The number of available containers in the machine. """
+        return self._maxNr - len(self._containers)
+    
+    @property
     def IP(self):
         """ The IP address used for the internal communication of the machine.
         """
         return self._ip
     
-    def createContainer(self, uid):
+    def createContainer(self, uid, userID):
         """ Create a container.
             
             @param uid:         Unique ID which is used to identify the
@@ -217,14 +238,18 @@ class Machine(object):
                                 Master.
             @type  uid:         str
             
+            @param userID:        UserID of the user who created the container.
+            @type  userID:        str
+            
             @return:            New Container instance.
             @rtype:             rce.master.container.Container
         """
+        # This check is now not necessary but may be useful from the point of view of debugging and catching errors in the load balancer
         if len(self._containers) >= self._maxNr:
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
         
-        container = Container(self)
+        container = Container(self, userID)
         status = Status(container)
         self._ref.callRemote('createContainer', status,
                              uid).chainDeferred(container)
@@ -233,10 +258,18 @@ class Machine(object):
     def registerContainer(self, container):
         assert container not in self._containers
         self._containers.add(container)
-    
+        self._users[container._userID] += 1
+        
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
+        self._users[container._userID] -= 1
+        
+    def getStats(self):
+        return self._ref.callRemote('getStats')
+    
+    def getContainerStats(self):
+        return self._ref.callRemote()
     
     def destroy(self):
         """ Method should be called to destroy the machine and will take care

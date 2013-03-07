@@ -41,20 +41,24 @@ from rce.master.base import Proxy
 class Container(Proxy):
     """ Representation of an LXC container.
     """
-    def __init__(self, machine):
+    def __init__(self, machine, userID):
         """ Initialize the Container.
             
             @param machine:     Machine in which the container was created.
             @type  machine:     rce.master.machine.Machine
+            
+            @param userID:        UserID of the user who created the container.
+            @type  userID:        'str'
         """
         super(Container, self).__init__()
+        self._userID = userID
         
         self._machine = machine
         machine.registerContainer(self)
         
         self._pending = set()
         self._address = None
-    
+
     def getAddress(self):
         """ Get the address which should be used to connect to the environment
             process for the cloud engine internal communication. The method
@@ -89,7 +93,7 @@ class Container(Proxy):
             return d
         
         return succeed(self._address)
-    
+
     def destroy(self):
         """ Method should be called to destroy the container and will take care
             of deleting all circular references.

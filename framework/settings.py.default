@@ -30,6 +30,7 @@
 #
 #
 
+# TODO : Make this non stationary , add commands to console to modify these settings
 #######################################
 ###                                 ###
 ###          RCE settings           ###
@@ -134,3 +135,23 @@ ROOT_SRC_DIR = '/opt/rce/framework'
 #   - If 'unique name' is None or an empty string the basename of
 #     'filesystem path' is used as name
 ROOT_PKG_DIR = [('/opt/rce/test', 'rce_test')]
+
+
+#######################################
+###                                 ###
+###        Admin Cred Settings      ###
+###                                 ###
+#######################################
+
+# The file used the RoboEarth Cloud Engine to save and record authentication for users
+# Remember that the user running master must have write privileges to write to this file. 
+def prepare_conf():
+    """ Helper function to build the basic conf dirs
+    TODO: Expand this similar class to parse the entire settings file so as to store it in the user accessible dir
+    """
+    import os
+    path=(os.path.join((os.getenv('HOME'),'.rce')))
+    os.makedirs(path)
+    return os.path.join(path,creds)
+#PASSWORD_FILE = prep_conf()
+PASSWORD_FILE = ''

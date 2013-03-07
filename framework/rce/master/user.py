@@ -43,6 +43,7 @@ from rce.slave.interface import Types
 from rce.util.name import isLegalName
 
 
+
 class User(Referenceable):
     """ Represents a User. It has references to all objects the User is
         currently using and all requests from the outside will be going through
@@ -109,7 +110,7 @@ class User(Referenceable):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
         
-        namespace, remote_container = self._realm.createContainer()
+        namespace, remote_container = self._realm.createContainer(self._userID)
         container = Container(namespace, remote_container)
         self._containers[tag] = container
         container.notifyOnDeath(self._containerDied)

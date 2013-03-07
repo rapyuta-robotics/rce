@@ -53,8 +53,11 @@ from rce.master.network import Network
 from rce.master.environment import EnvironmentEndpoint
 from rce.master.robot import RobotEndpoint
 from rce.master.user import User
+from rce.master.console import Console
 from rce.util.network import getIP
 
+class CredException(Exception):
+    pass
 
 class RoboEarthCloudEngine(object):
     """ Realm for the twisted cred system. It is responsible for storing all
@@ -68,9 +71,9 @@ class RoboEarthCloudEngine(object):
     implements(IRealm)
     
     # CONFIG
-    MAX_ROBOTS = 10
     LOAD_BALANCER_CLS = LoadBalancer
     DISTRIBUTOR_CLS = Distributor
+    CONSOLE_CLS = Console
     
     def __init__(self, reactor, checker, intIF, port):
         """ Initialize the RoboEarth Cloud Engine realm.
@@ -98,6 +101,7 @@ class RoboEarthCloudEngine(object):
         self._network = Network()
         self._balancer = self.LOAD_BALANCER_CLS(self)
         self._distributor = self.DISTRIBUTOR_CLS()
+        self._console = self.CONSOLE_CLS(self)
         
         self._users = {}
         self._pendingContainer = {}
@@ -211,9 +215,12 @@ class RoboEarthCloudEngine(object):
         
         return location.createNamespace(user, robotID, uid)
     
-    def createContainer(self):
+    def createContainer(self, userID):
         """ Callback for User instance to create a new Container object in a
             container process.
+            
+            @param userID:        UserID of the user who created the container.
+            @type  userID:        str
             
             @return:            New Namespace and Container instance.
             @rtype:             (rce.master.environment.Environment,
@@ -227,7 +234,7 @@ class RoboEarthCloudEngine(object):
                 break
         
         try:
-            container = self._balancer.createContainer(uid)
+            container = self._balancer.createContainer(uid, userID)
         except ContainerProcessError:
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')

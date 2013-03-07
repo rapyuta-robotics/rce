@@ -528,6 +528,11 @@ class ContainerClient(Referenceable):
         
         assert len(self._containers) == 0
     
+    def remote_getStats(self):
+        """ Method used to poll cgroups and get relevant info for the user
+        """
+        pass
+        
     def terminate(self):
         """ Method should be called to terminate all running containers before
             the reactor is stopped.
@@ -543,6 +548,8 @@ class ContainerClient(Referenceable):
             return deferredList
         else:
             self._cleanPackageDir()
+    
+    
 
 
 def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
