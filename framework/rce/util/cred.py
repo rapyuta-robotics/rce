@@ -75,9 +75,7 @@ class RCECredChecker:
                 print('Settings variable PASSWORD_FILE not set')
                 exit()
         
-        try:
-            open(self.filename,'w').close()
-        except IOError:
+        if not os.access(os.path.dirname(self.filename), os.W_OK):
             print('The user lacks privileges to access/modify the password file.')
             exit()
         
@@ -134,6 +132,10 @@ class RCECredChecker:
     def addUser(self, username, password, provision= False):
         if not (self.pass_validator(password) or provision):
             raise CredentialError(password_fail)
+        if provision:
+            with open(self.filename, 'a') as f :
+                f.writelines((':'.join((username,self.hash(password)))+'\n'))
+            return True
         try: 
             self.getUser(username)
             raise CredentialError('Given user already exists')
