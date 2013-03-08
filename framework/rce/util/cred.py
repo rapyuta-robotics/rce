@@ -132,7 +132,7 @@ class RCECredChecker:
 
 
     def addUser(self, username, password, provision= False):
-        if not self.pass_validator(password) or provision:
+        if not (self.pass_validator(password) or provision):
             raise CredentialError(password_fail)
         try: 
             self.getUser(username)
