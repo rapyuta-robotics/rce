@@ -34,6 +34,7 @@
 import sys
 from uuid import uuid4
 from multiprocessing.managers import SyncManager
+from collections import defaultdict
 
 #zope specific imports
 from zope.interface import implements
@@ -42,7 +43,45 @@ from zope.interface import implements
 from twisted.internet import defer
 from twisted.cred.portal import IRealm, Portal
 from twisted.spread.pb import IPerspective, PBServerFactory, Avatar
+
+#rce specific imports
 from rce.error import InternalError
+
+
+class InterfaceConnection2way(dict):
+    def __init__(self, d=None):
+        dict.__init__(self)
+        self.d1 = defaultdict(list)
+        self.d2 = defaultdict(list)
+
+    def __getitem__(self, key):
+        try:
+            return self.d1.get(key)
+        except KeyError:
+            return self.d2(key)
+
+    def __setitem__(self, key, val):
+        self.d1[key].append(val)
+        self.d2[val].append(key)
+
+    def key(self, val):
+        return self.d2[val]
+
+    def keys(self, val):
+        return self.d2.keys()
+
+    def iterkeys(self, val):
+        return self.d2.iterkeys()
+
+    def get(self, key):
+        return self.d1[key]
+
+    def values(self, key):
+        return self.d1.values()
+
+    def itervalues(self, key):
+        return self.d1.itervalues()
+
 
 class UnauthorisedLogon(Exception):
     """ Exception to be raised when the user login fails
@@ -221,7 +260,7 @@ class Console(object):
         @return:               Counter containing the users and the number of containers they are running .
         @rtype:                List collections.Counter
         """
-        return machine._users
+        return machine._users.keys()
     
     def _list_userID(self):
         """ Gets a list of all users that are logged into the Cloud Engine
@@ -232,42 +271,44 @@ class Console(object):
         """
         return self._root._users.keys()
 
-        
-    #TODO : Please read
-    # The rest of the methods to be used are here.
-    # It is the responsibility of the implementor to use the right parameters and handle any exceptions
-    # most dict methods will return None as the use the standard get method and will not raise TypeErrors
-    def _get_user(self, username, password):
-        """ This method will return the reference to the user with the passed
-        credentials 
-        
-        @param username:         Username of the user who wishes to login
-        @type  username:         str
-        
-        @param username:         Password of the user who wishes to login
-        @type  username:         str
-        
-        @return:                 User logged into the cloud engine.
-        @rtype:                  rce.master.user.User
+    def _admin_add_user(self, username, password):
+        """ Add a user to the RoboEarth Cloud Engine
+
+        @param username:         Username of the user to be added
+        @type username:         str
+
+        @param password:        Password of the user to be added
+        @type  passowrd:        str
+
+        @return:            Results to True if succeeded  .
+        @rtype:             boolean
         """
-        d = self._checker.requestAvatarId(username, password) #TODO , needs to be fixed depending on the implementation decided
-        
-        d.addCallback(lambda uID: self._getUser(uID))
-        d.addErrback(lambda failure : failure.raiseException(UnauthorisedLogon))
-        # It is the responsibility of the method implementing this to handle this exception and relay the appropriate info to the user terminal
-        return d
-    
-    def _get_user_byID(self, userID):
-        """Gets a User given the usedID
-        
-        @param userID:          userID of the user you wish to fetch
-        @type  userID:          str
-        
-        @return:                User logged into the cloud engine.
-        @rtype:                 rce.master.user.User
-        
+        self._root._checker.addUser(username, password)
+
+    def _admin_remove_user(self, username, password):
+        """ Remove a user to the RoboEarth Cloud Engine
+
+        @param username:         Username of the user to be removed
+        @type username:         str
+
+        @return:            Results to True if succeeded  .
+        @rtype:             boolean
         """
-        return self._root._users.get(userID)
+        self._root._checker.removeUser(username)
+
+    def _admin_user_passwd(self, username, password):
+        """ Add a user to the RoboEarth Cloud Engine
+
+        @param username:         Username of the user to be added
+        @type username:         str
+
+        @param password:        Password of the user to be added
+        @type  passowrd:        str
+
+        @return:            Results to True if succeeded  .
+        @rtype:             boolean
+        """
+        self._root._checker.passwd(username, password)
     
     def _list_user_robots(self, user):
         """ Retrieve a list of all the robots owned by the user.
@@ -346,3 +387,38 @@ class Console(object):
         
         """
         return user._connection.get(hash_key)
+
+
+    # TODO : Please read
+    # The above functions expose a bunch of basic objects form the cloud engine , the rest of these methods use the exposed objects in convenient wrappers ,
+    # feel free to edit and modify these as required alternatively one could use the above to generate the required behavior.
+
+    def generate_user_graph(self, user):
+        """Generates a multidict representation of the users connect graph across the cloud engine.
+        Useful for visualizing and debugging a users activities and connections.
+        """
+        #build the physical container graph
+        def get_containmer_tree(tag):
+            container = self._retrieve_container_byTag(user, tag)
+            nodes = container._nodes.keys()
+            parameters = container._parameters.keys()
+            interfaces = container._interfaces.keys()
+            return {tag:{'nodes':nodes,'parameters':parameters,
+                         'interfaces':interfaces}}
+
+        machines = defaultdict(list)
+        for tag,container in user._containers.iteritems():
+            machines[container._machine.IP].append(get_containmer_tree(tag))
+
+        #build the robots graph
+        robots = {}
+        for uuid,robot in user._robots.iteritems():
+            robots[uuid] =  robot._interfaces.keys()
+        # build the connections map
+        connections = InterfaceConnection2way()
+        for connection in user._connections.itervalues():
+            connections[connection._connectionA._interface._uid] = \
+                                 connection._connectionB._interface._uid
+
+        return {'userID':user._userID,'network':machines,
+                'robots':robots, 'connections': connections}

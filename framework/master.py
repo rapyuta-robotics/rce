@@ -36,12 +36,13 @@ from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
 
 # Custom imports
 from rce.master.core import main
+from rce.util.cred import RCECredChecker
 import settings
 
 
 # Credentials checkers used in the cloud engine
 # TODO: At the moment only one user available and Password database in memory
-extCred = InMemoryUsernamePasswordDatabaseDontUse(admin='admin')
+extCred = RCECredChecker(settings.PASSWORD_FILE)
 intCred = InMemoryUsernamePasswordDatabaseDontUse(robot='robot',
                                                   container='container',
                                                   environment='environment')
