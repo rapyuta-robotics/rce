@@ -1,0 +1,11 @@
+container -s c100
+container -s c101
+node start -c c100 -n paramTest -p Test -e paramTest.py -a argument
+parameter add -c c100 -n str -v Hello
+parameter add -c c100 -n int -v 99
+parameter add -c c100 -n float -v 3.14
+parameter add -c c100 -n bool -v true
+parameter add -c c100 -n array -v '["one", 2, "three", "true"]'
+interface add -e c100 -i parameterTest -t ServiceClientInterface -c Test/ParameterTest -a parameterTest
+interface add -e c101 -i parameterTest -t ServiceProviderInterface -c Test/ParameterTest -a parameterTest
+connection add -1 c100/parameterTest -2 c101/parameterTest

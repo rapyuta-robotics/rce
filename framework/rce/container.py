@@ -79,6 +79,25 @@ script
 end script
 """
 
+_UPSTART_ROSAPI = """
+# description
+author "Mayank Singh"
+description "ROS API - Framework to query ROS specific information"
+
+# start/stop conditions
+start on (started rce and net-device-up IFACE=eth0)
+stop on stopping rce
+
+kill timeout 5
+
+script
+    # setup environment
+    . /opt/rce/setup.sh
+
+    #start rosapi node
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/rosproxy.py
+end script
+"""
 
 _UPSTART_LAUNCHER = """
 # description
@@ -174,7 +193,9 @@ class RCEContainer(Referenceable):
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
         self._address = '{0}:{1}'.format(ip, client.envPort)
+        self._rosproxyaddress = '{0}:{1}'.format(ip, client.rosproxyPort)
         self._fwdPort = str(nr + 8700)
+        self._rosproxyfwdPort = str(nr + 10700)
         
         self._container = Container(client.reactor, client.rootfs,
                                     self._confDir, self._name, ip)
@@ -201,6 +222,9 @@ class RCEContainer(Referenceable):
         # TODO: For the moment there is no upstart launcher.
 #        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
 #                                    'etc/init/rceLauncher.conf', True)
+        self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
+                                    'etc/init/rceRosapi.conf', True)
+        
         self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
                                     'etc/network/interfaces', False)
         
@@ -212,6 +236,9 @@ class RCEContainer(Referenceable):
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          uid=uid))
         
+        with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
+            f.write(_UPSTART_ROSAPI)
+
         # TODO: For the moment there is no upstart launcher.
 #        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
 #            f.write(_UPSTART_LAUNCHER)
@@ -224,6 +251,7 @@ class RCEContainer(Referenceable):
         """ Method which starts the container.
         """
         # can raise iptc.xtables.XTablesError
+        #add remote rule
         self._remoteRule = iptc.Rule()
         self._remoteRule.protocol = 'tcp'
         self._remoteRule.dst = self._client.internalIP
@@ -232,6 +260,7 @@ class RCEContainer(Referenceable):
         t = self._remoteRule.create_target('DNAT')
         t.to_destination = self._address
         
+        #add local(loopback) rule
         self._localRule = iptc.Rule()
         self._localRule.protocol = 'tcp'
         self._localRule.out_interface = 'lo'
@@ -240,10 +269,33 @@ class RCEContainer(Referenceable):
         m.dport = self._fwdPort
         t = self._localRule.create_target('DNAT')
         t.to_destination = self._address
-    
+
         self._client.prerouting.insert_rule(self._remoteRule)
         self._client.output.insert_rule(self._localRule)
         
+        
+        #rules for rosproxy
+        #add remote rule
+        self._rosremoteRule = iptc.Rule()
+        self._rosremoteRule.protocol = 'tcp'
+        self._rosremoteRule.dst = self._client.internalIP
+        m = self._rosremoteRule.create_match('tcp')
+        m.dport = self._rosproxyfwdPort
+        t = self._rosremoteRule.create_target('DNAT')
+        t.to_destination = self._rosproxyaddress
+        
+        #add local(loopback) rule
+        self._roslocalRule = iptc.Rule()
+        self._roslocalRule.protocol = 'tcp'
+        self._roslocalRule.out_interface = 'lo'
+        self._roslocalRule.dst = self._client.internalIP
+        m = self._roslocalRule.create_match('tcp')
+        m.dport = self._rosproxyfwdPort
+        t = self._roslocalRule.create_target('DNAT')
+        t.to_destination = self._rosproxyaddress
+
+        self._client.prerouting.insert_rule(self._rosremoteRule)
+        self._client.output.insert_rule(self._roslocalRule)
         return self._container.start(self._name)
     
     def remote_getPort(self):
@@ -255,12 +307,14 @@ class RCEContainer(Referenceable):
             @rtype:             int
         """
         return int(self._fwdPort)
-    
+
     def _stop(self):
         """ Method which stops the container.
         """
         self._client.prerouting.delete_rule(self._remoteRule)
         self._client.output.delete_rule(self._localRule)
+        self._client.prerouting.delete_rule(self._rosremoteRule)
+        self._client.output.delete_rule(self._roslocalRule)
         
         return self._container.stop(self._name)
     
@@ -311,8 +365,8 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, rootfsDir,
-                 confDir, dataDir, srcDir, pkgDir):
+    def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, 
+                 rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:     Reference to the twisted reactor.
@@ -362,6 +416,7 @@ class ContainerClient(Referenceable):
         self._reactor = reactor
         self._internalIP = getIP(intIF)
         self._envPort = envPort
+        self._rosproxyPort = rosproxyPort
         
         bridgeIP = getIP(bridgeIF)
         
@@ -383,6 +438,7 @@ class ContainerClient(Referenceable):
         
         # Validate executable paths
         checkExe(self._srcDir, 'environment.py')
+        checkExe(self._srcDir, 'rosproxy.py')
         #checkExe(self._srcDir, 'launcher.py')
         
         # Process ROS package paths
@@ -420,6 +476,13 @@ class ContainerClient(Referenceable):
         """
         return self._envPort
     
+    @property
+    def rosproxyPort(self):
+        """ Port where the environment process running inside the container is
+            for new connections.
+        """
+        return self._rosproxyPort
+
     @property
     def rootfs(self):
         """ Host filesystem path of container filesystem root directory. """
@@ -508,6 +571,7 @@ class ContainerClient(Referenceable):
         self._containers.add(container)
     
     def unregisterContainer(self, container):
+        print 'containers', self._containers
         assert container in self._containers
         self._containers.remove(container)
     
@@ -545,8 +609,8 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
-         rootfsDir, confDir, dataDir, srcDir, pkgDir, maxNr):
+def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort, 
+         rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -556,8 +620,9 @@ def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort,
-                             rootfsDir, confDir, dataDir, srcDir, pkgDir)
+    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort, 
+                             rosproxyPort, rootfsDir, confDir, dataDir, srcDir, 
+                             pkgDir)
     
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))

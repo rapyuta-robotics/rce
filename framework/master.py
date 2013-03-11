@@ -41,7 +41,7 @@ import settings
 
 # Credentials checkers used in the cloud engine
 # TODO: At the moment only one user available and Password database in memory
-extCred = InMemoryUsernamePasswordDatabaseDontUse(testUser='testUser')
+extCred = InMemoryUsernamePasswordDatabaseDontUse(admin='admin')
 intCred = InMemoryUsernamePasswordDatabaseDontUse(robot='robot',
                                                   container='container',
                                                   environment='environment')

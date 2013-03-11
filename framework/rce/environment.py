@@ -32,6 +32,8 @@
 
 # Python specific imports
 from uuid import UUID
+from multiprocessing.managers import SyncManager
+from time import sleep
 
 # ROS specific imports
 import rospy
@@ -49,6 +51,7 @@ from rce.monitor.interface import PublisherInterface, SubscriberInterface, \
     ServiceClientInterface, ServiceProviderInterface
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
+from rce.master.console import ROSProxyClient, ROSProxyServer
 
 
 class Environment(Namespace):
@@ -191,7 +194,7 @@ class Environment(Namespace):
             @type  addr:        str
         """
         return self._MAP[iType](self, status, UUID(bytes=uid), clsName, addr)
-    
+        
     def remote_destroy(self):
         """ Method should be called to destroy the environment and will take
             care of destroying all objects owned by this Environment as well
@@ -218,7 +221,7 @@ class EnvironmentClient(Endpoint):
     """ Environment client is responsible for the cloud engine components
         inside a container.
     """
-    def __init__(self, reactor, commPort):
+    def __init__(self, reactor, commPort, shared_dict):
         """ Initialize the Environment Client.
             
             @param reactor:     Reference to the twisted reactor used in this
@@ -233,6 +236,7 @@ class EnvironmentClient(Endpoint):
         Endpoint.__init__(self, reactor, commPort)
         
         self._environment = None
+        self._allowedUsersforROSProxy = shared_dict
     
     def registerEnvironment(self, environment):
         assert self._environment is None
@@ -257,7 +261,11 @@ class EnvironmentClient(Endpoint):
                                 'at a time.')
         
         return Environment(self, status, self._reactor)
-    
+
+    def remote_addUsertoROSProxy(self, UserID, Key):
+        self._allowedUsersforROSProxy.update([(UserID, Key)])
+        print self._allowedUsersforROSProxy
+        
     def terminate(self):
         """ Method should be called to destroy the client and will take
             care of destroying the Environment as well as deleting all
@@ -270,7 +278,6 @@ class EnvironmentClient(Endpoint):
         
         Endpoint.terminate(self)
 
-
 def main(reactor, cred, masterIP, masterPort, commPort, uid):
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
@@ -281,7 +288,9 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = EnvironmentClient(reactor, commPort)
+    dict_server = ROSProxyServer('', 5000, 'dummypassword')
+    shared_dict = ROSProxyClient('', 5000, 'dummypassword')
+    client = EnvironmentClient(reactor, commPort, shared_dict.get_dict())
     
     def terminate():
         reactor.callFromThread(client.terminate)
@@ -292,11 +301,11 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     def _err(reason):
         print(reason)
         terminate()
-    
+
     d = factory.login(cred, (client, uid))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
-    
+
     reactor.run(installSignalHandlers=False)
     
     f.close()

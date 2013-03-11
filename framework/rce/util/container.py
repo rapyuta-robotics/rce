@@ -202,9 +202,9 @@ class Container(object):
         
         try:
             dfrd = getProcessValue('/usr/bin/lxc-start',
-                                   ('-n', name, '-f', self._conf, '-d'),
+                                   ('-n', name, '-f', self._conf, '-d'), # '-o', 
+                                    #'/usr/bin/lxc.debug', '-l', 'DEBUG'),
                                    env=os.environ, reactor=self._reactor)
-            
             def cb(retVal):
                 if retVal == 0:
                     deferred.callback('Container successfully started.')

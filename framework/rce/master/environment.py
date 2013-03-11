@@ -145,6 +145,9 @@ class Environment(Namespace):
                         value).chainDeferred(parameter)
         return parameter
     
+    def getAddress(self):
+        return self._endpoint.getAddress()
+        
     def registerNode(self, node):
         assert node not in self._nodes
         self._nodes.add(node)
@@ -161,6 +164,9 @@ class Environment(Namespace):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
     
+    def registerconsole(self, userID, key):
+        self._endpoint.registerconsole(userID, key)
+        
     def destroy(self):
         """ Method should be called to destroy the environment and will take
             care of destroying all objects owned by this Environment as well
@@ -218,6 +224,12 @@ class EnvironmentEndpoint(Endpoint):
         self.callRemote('createNamespace', status).chainDeferred(environment)
         return environment
     
+    def registerconsole(self, userID, key):
+        self.callRemote('addUsertoROSProxy', userID, key)
+    
+    def unregisterconsole(self, userID, key):
+        self.callRemote('removeUserfromROSProxy', userID)
+
     def destroy(self):
         """ Method should be called to destroy the endpoint and will take care
             of destroying all objects owned by this Endpoint as well as

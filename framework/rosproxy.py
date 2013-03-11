@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     paramTest.py
+#     rosproxy.py
 #     
-#     This file is part of the RoboEarth Cloud Engine test.
+#     This file is part of the RoboEarth Cloud Engine framework.
 #     
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
@@ -12,7 +12,7 @@
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
 #     
-#     Copyright 2012 RoboEarth
+#     Copyright 2013 RoboEarth
 #     
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -26,34 +26,20 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #     
-#     \author/s: Dominique Hunziker 
+#     \author/s: Mayank Singh
 #     
 #     
 
+# Before we start to import everything check if we have the right amount of
+# arguments
 import sys
 
-import roslib; roslib.load_manifest('Test')
-import rospy
+# twisted specific imports
+from twisted.internet import reactor
 
-from Test.srv import ParameterTest
+# Custom imports
+from rce.rosproxy import main
+import settings
 
-
-def callback(arg):
-    msg = 'int:   {0}\nstr:   {1}\nfloat: {2}\nbool:  {3}'#\narray: {4}'
-    return msg.format(rospy.get_param('int'), rospy.get_param('str'),
-                      rospy.get_param('float'), rospy.get_param('bool'))#,
-                      #rospy.get_param('array'))
-
-
-def parameter_test_server(arg):
-    rospy.init_node('parameter_test_server')
-    rospy.Service('parameterTest', ParameterTest, lambda req: callback(arg))
-    rospy.spin()
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print('Usage: paramTest.py [arg]')
-        exit(1)
-    
-    parameter_test_server(sys.argv[1])
+# Run main function
+main(reactor, settings.ROS_PROXY_PORT)

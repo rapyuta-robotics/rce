@@ -35,7 +35,8 @@ from uuid import uuid4
 
 # twisted specific imports
 from twisted.spread.pb import Referenceable
-from twisted.internet.defer import DeferredList
+from twisted.internet.defer import DeferredList, succeed
+from twisted.internet.address import IPv4Address
 
 # Custom imports
 from rce.error import InvalidRequest, AlreadyDead
@@ -70,6 +71,14 @@ class User(Referenceable):
         """ User ID of this User. """
         return self._userID
     
+    @property
+    def robots(self):
+        return self._robots
+
+    @property
+    def containers(self):
+        return self._containers
+
     def createRobot(self, robotID):
         """ Create a new Robot object.
             
@@ -109,7 +118,7 @@ class User(Referenceable):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
         
-        namespace, remote_container = self._realm.createContainer()
+        namespace, remote_container = self._realm.createContainer(self._userID)
         container = Container(namespace, remote_container)
         self._containers[tag] = container
         container.notifyOnDeath(self._containerDied)
@@ -415,6 +424,7 @@ class User(Referenceable):
             destroying all objects owned by this User as well as deleting all
             circular references.
         """
+        print "Destroying user"
         for connection in self._connections.itervalues():
             connection.dontNotifyOnDeath(self._connectionDied)
         
@@ -797,7 +807,11 @@ class Container(_Wrapper):
         except KeyError:
             raise InvalidRequest('Can not get a non existent interface '
                                  "'{0}' from the container.".format(iTag))
-    
+    def getConnectInfo(self):
+        d = self._obj.getAddress()
+        d.addCallback(lambda addr: 'http://{0}:{1}/'.format(addr.host, addr.port+2000))
+        return d
+
     def _containerDied(self, container):
         if self._container:
             assert container == self._container

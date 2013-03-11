@@ -195,7 +195,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                 the cloud engine.
             @type  portal:      twisted.cred.portal.Portal
         """
-        self._protal = portal
+        self._portal = portal
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
         self._logout = None
@@ -228,7 +228,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                     'request.'.format(name))
         
         cred = RobotCredentials(userID[0], robotID[0], key[0])
-        avatar = self._protal.login(cred, self, IRobot)
+        avatar = self._portal.login(cred, self, IRobot)
         avatar.addCallback(self._authenticate_success)
         avatar.addErrback(self._authenticate_failed)
         return avatar

@@ -62,6 +62,9 @@ MASTER_PORT = 8080
 # Port which should be used for the internal communication
 RCE_INTERNAL_PORT = 10030
 
+#Port for connection between rosproxy and console client
+ROS_PROXY_PORT = 9020
+
 ##################################################
 ###                                            ###
 ###  Deployment specific interface settings    ###
