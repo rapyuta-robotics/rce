@@ -46,6 +46,23 @@ from twisted.conch.recvline import HistoricRecvLine
 from twisted.conch.insults.insults import ServerProtocol
 from twisted.python import usage
 
+class userAddOptions(usage.Options):
+    optParameters = [
+        ["username", "u", None, "Username"],
+        ["password", "p", None, "Password"]
+    ]
+
+class userRemoveOptions(usage.Options):
+    optParameters = [
+        ["username", "u", None, "Username"]
+    ]
+
+class userOptions(usage.Options):
+    subCommands = [['add', None, userAddOptions, "Add User"],
+                   ['remove', None, userRemoveOptions, "Remove User"],
+                   ['update', None, userAddOptions, "Update User"]
+    ]
+
 class containerOptions(usage.Options):
     optParameters = [
         ["start", "s", None, "Start a Container"],
@@ -191,6 +208,26 @@ class ConsoleClient(HistoricRecvLine):
            
     def cmd_EXIT(self, line):
         reactor.stop()
+
+
+    def cmd_USER(self, line):
+        config = userOptions()
+        try:
+            config.parseOptions(line)
+            if config.subCommand == 'add':
+                self._user.callRemote('add_user', config.subOptions['username'],
+                                       config.subOptions['password'])
+
+            elif config.subCommand == 'remove':
+                self._user.callRemote('remove_user', config.subOptions['username'])
+            
+            elif config.subCommand == 'update':
+                self._user.callRemote('update_user', config.subOptions['username'],
+                                       config.subOptions['password'])
+
+        except usage.UsageError, errortext:
+            self.terminal.write("BUG in usage: "+str(errortext))
+
 
     def cmd_CONTAINER(self, line):
         config = containerOptions()

@@ -39,7 +39,7 @@ from twisted.cred import error, credentials
 from twisted.cred.checkers import ICredentialsChecker
 import re
 
-_RE = r'(\w+):(\w+)\s+'
+_RE = r'(\w+):(.+)'
 _PASS_RE = r'^.*(?=.{4,10})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 password_fail = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
 class CredentialError(Exception):

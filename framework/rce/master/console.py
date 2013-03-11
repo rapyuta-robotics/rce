@@ -138,9 +138,15 @@ class UserAvatar(Avatar):
     def perspective_list_machines(self):
         return defer.succeed(self.console._list_machines())
     
-    def perspective_admin_add_user(self, username, password):
+    def perspective_add_user(self, username, password):
         self.console._root._checker.addUser(username, password)
-   
+    
+    def perspective_remove_user(self, username):
+        self.console._root._checker.removeUser(username)
+
+    def perspective_update_user(self, username, password):
+        self.console._root._checker.passwd(username, password)
+
     def perspective_start_container(self, tag):
         self.user.remote_createContainer(tag)
     
