@@ -79,6 +79,7 @@ II.  Generate the container filesystem
               mkdir /opt/rce/src
               touch /etc/init/rceComm.conf
               touch /etc/init/rceLauncher.conf
+              touch /etc/init/rceRosapi.conf
 
         d.  Add the ROS repository (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
               sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -87,7 +88,7 @@ II.  Generate the container filesystem
 
         e.  Install the required packages for twisted and ROS
                 Minimal installation:
-                    apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs
+                    apt-get install python-twisted-core python-twisted-web ros-fuerte-ros-comm ros-fuerte-common-msgs
                 For test nodes:
                     apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
