@@ -37,7 +37,6 @@ from twisted.internet import defer
 from twisted.python import failure
 from twisted.cred import error, credentials
 from twisted.cred.checkers import ICredentialsChecker
-from hashlib import sha512
 import re
 
 _RE = r'(\w+):(\w+)\s+'
@@ -63,8 +62,8 @@ class RCECredChecker:
         password information.
         """
         self.filename = filename
-        self.hash = lambda x,y,z : sha512(y).hexdigest()
-        self.credentialInterfaces = (credentials.IUsernamePassword,)
+        self.credentialInterfaces = (credentials.IUsernamePassword,
+                                credentials.IUsernameHashedPassword)
         self.scanner = re.compile(_RE)
         pass_re = re.compile(_PASS_RE)
         self.pass_validator = lambda x : True if pass_re.match(x) else False
@@ -122,25 +121,22 @@ class RCECredChecker:
             return defer.fail(error.UnauthorizedLogin())
         else:
             up = credentials.IUsernamePassword(c, None)
-            if up is not None:
-                h = self.hash(up.password)
-                if h == p:
-                    return defer.succeed(u)
-            return defer.fail(error.UnauthorizedLogin())
+            return defer.maybeDeferred(c.checkPassword, p
+                    ).addCallback(self._cbPasswordMatch, u)
 
     def addUser(self, username, password, provision= False):
         if not (self.pass_validator(password) or provision):
             raise CredentialError(password_fail)
         if provision:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,self.hash(password)))+'\n'))
+                f.writelines((':'.join((username,password))+'\n'))
             return True
         try: 
             self.getUser(username)
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,self.hash(password)))+'\n'))
+                f.writelines((':'.join((username,password))+'\n'))
             return True
 
     def removeUser(self,username):
@@ -162,8 +158,9 @@ class RCECredChecker:
                 if self.scanner.match(line).groups()[0] != username:
                     print line[:-1]
                 else:
-                    print ':'.join((username,self.hash(password)))
+                    print ':'.join((username,password))
             return True
         except KeyError:
             raise CredentialError('No such user') 
+
 
