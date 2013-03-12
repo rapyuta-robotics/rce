@@ -29,21 +29,30 @@
 #     \author/s: Dhananjay Sathe
 #
 #
+# global imports
 import os
 import fileinput
-from zope.interface import implements
+from hashlib import md5
+import re
 
+
+# twisted specific imports
+from zope.interface import implements
 from twisted.internet import defer
 from twisted.python import failure
-from twisted.cred import error, credentials
+from twisted.cred import error
+from twisted.spread.pb import IUsernameMD5Password
 from twisted.cred.checkers import ICredentialsChecker
-import re
+
 
 _RE = r'(\w+):(.+)'
 _PASS_RE = r'^.*(?=.{4,10})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 password_fail = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
+
+
 class CredentialError(Exception):
     pass
+
 
 class RCECredChecker:
     """The RCE file-based, text-based username/password database.
@@ -55,6 +64,7 @@ class RCECredChecker:
     _credCache = None
     _cacheTimestamp = 0
 
+    
     def __init__(self, filename):
         """
         @type filename: C{str}
@@ -62,29 +72,29 @@ class RCECredChecker:
         password information.
         """
         self.filename = filename
-        self.credentialInterfaces = (credentials.IUsernamePassword,
-                                credentials.IUsernameHashedPassword)
+        self.credentialInterfaces = (IUsernameMD5Password,)
         self.scanner = re.compile(_RE)
         pass_re = re.compile(_PASS_RE)
         self.pass_validator = lambda x : True if pass_re.match(x) else False
-        
+
         # Run some basic tests to check if the settings file is valid
-        
+
         if self.filename is None :
                 print('Settings variable PASSWORD_FILE not set')
                 exit()
-        
+
         if not os.access(os.path.dirname(self.filename), os.W_OK):
             print('The user lacks privileges to access/modify the password file.')
             exit()
-        
+
         # Provision for first run needs to be initialized with the default admin user creds
         if not os.path.exists(self.filename):
             self.addUser('admin','admin', provision= True)
             # TODO : Remove this user later , temporarily inserting for maintaining compat with current test classes.
             self.addUser('testUser','testUser', provision= True)
             Warning('Please reset the admin password using the console utility. The Default password is admin ')
-            
+
+    
     def __getstate__(self):
         d = dict(vars(self))
         for k in '_credCache', '_cacheTimestamp':
@@ -107,6 +117,7 @@ class RCECredChecker:
             for line in f:
                 parts = self.scanner.match(line).groups()
                 yield parts
+
     
     def getUser(self, username):
         if self._credCache is None or os.path.getmtime(self.filename) > self._cacheTimestamp:
@@ -114,53 +125,57 @@ class RCECredChecker:
             self._credCache = dict(self._loadCredentials())
         return username, self._credCache[username]
 
+    
     def requestAvatarId(self, c):
         try:
             u, p = self.getUser(c.username)
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
-            up = credentials.IUsernamePassword(c, None)
-            return defer.maybeDeferred(c.checkPassword, p
+            return defer.maybeDeferred(c.checkMD5Password, p
                     ).addCallback(self._cbPasswordMatch, u)
 
+    
     def addUser(self, username, password, provision= False):
         if not (self.pass_validator(password) or provision):
             raise CredentialError(password_fail)
         if provision:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,password))+'\n'))
+                f.writelines((':'.join((username,md5(password).digest()))+'\n'))
             return True
-        try: 
+        try:
             self.getUser(username)
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,password))+'\n'))
+                f.writelines((':'.join((username,md5(password).digest()))+'\n'))
             return True
 
+    
     def removeUser(self,username):
-        try: 
-            self.getUser(username)# why bother reading the file if the user doesn't even exist ! 
+        try:
+            self.getUser(username)# why bother reading the file if the user doesn't even exist !
             for line in fileinput.input(self.filename, inplace=1):
                 if self.scanner.match(line).groups()[0] != username:
                     print line[:-1]
+                    print line[:-1]
             return True
         except KeyError:
-            raise CredentialError('No such user') 
+            raise CredentialError('No such user')
 
-    def passwd(self,username, password): 
+    
+    def passwd(self,username, password):
         if not self.pass_validator(password):
             raise CredentialError(password_fail)
-        try: 
-            self.getUser(username) # why bother reading the file if the user doesn't even exist ! 
+        try:
+            self.getUser(username) # why bother reading the file if the user doesn't even exist !
             for line in fileinput.input(self.filename, inplace=1):
                 if self.scanner.match(line).groups()[0] != username:
                     print line[:-1]
                 else:
-                    print ':'.join((username,password))
+                    print ':'.join((username,md5(password).digest()))
             return True
         except KeyError:
-            raise CredentialError('No such user') 
+            raise CredentialError('No such user')
 
 
