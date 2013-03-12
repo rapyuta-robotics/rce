@@ -122,12 +122,7 @@ class ConsoleDummyRealm(object):
         user = self._rce._getUser(avatarId)
         avatar = UserAvatar(user, self._rce._console)
         def detach():
-            if sys.getrefcount(user) <= 4:
-                print sys.getrefcount(user)
-                user.destroy()
-                del self._rce._users[avatarId]
-        print('Connection from User.', sys.getrefcount(user))
-        
+            pass
         return IPerspective, avatar, detach
 
 class UserAvatar(Avatar):
@@ -136,23 +131,39 @@ class UserAvatar(Avatar):
         self.console = console
 
     def perspective_list_machines(self):
-        return defer.succeed(self.console._list_machines())
+        return defer.succeed(self.console._list_machines_byIP())
+        
+    def perspective_stats_machine(self, machineIP):
+        return defer.succeed(self.console._list_machine_stats(machineIP))
+        
+    def perspective_machine_containers(self, machineIP):
+        return defer.succeed(self.console._list_machine_containers(machineIP))
     
     def perspective_add_user(self, username, password):
-        self.console._root._checker.addUser(username, password)
+        self.console._add_user(username, password)
     
     def perspective_remove_user(self, username):
-        self.console._root._checker.removeUser(username)
+        self.console._remove_user(username)
 
     def perspective_update_user(self, username, password):
-        self.console._root._checker.passwd(username, password)
+        self.console._change_password(username, password)
+    
+    def perspective_list_users(self):
+        return defer.succeed(self.console._list_userID())
 
     def perspective_start_container(self, tag):
         self.user.remote_createContainer(tag)
     
     def perspective_stop_container(self, tag):
         self.user.remote_destroyContainer(tag)
-    
+
+    def perspective_list_containers(self):
+        return defer.succeed(self.console._list_user_containers(self.user))
+
+    def perspective_list_containers_by_user(self, userID):
+        user = self.console._root._getUser(userID)
+        return defer.succeed(self.console._list_user_containers(user))
+
     def perspective_get_rosapi_connect_info(self, tag):
         uid = uuid4().hex
         try:
@@ -196,6 +207,10 @@ class UserAvatar(Avatar):
     def perspective_list_robots(self):
         return defer.succeed(self.console._list_user_robots(self.user))
 
+    def perspective_list_robots_by_user(self, userID):
+        user = self.console._root._getUser(userID)
+        return defer.succeed(self.console._list_user_robots(user))
+
 class Console(object):
     """
     The selective class that helps implement the console abilities
@@ -220,6 +235,7 @@ class Console(object):
         """
         return self._root._balancer._machines
     
+
     def _list_machines_byIP(self):
         """ Gets a list of all machines that are available in the Cloud Engine
         This should be only accessible to the top level admin for security reasons
@@ -229,7 +245,7 @@ class Console(object):
         """
         return [machine.IP for machine in self._list_machines()]
     
-    def _list_machine_containers(self, machine):
+    def _list_machine_containers(self, machineIP):
         """ Gets a list of all containers available in the Machine
         This should be only accessible to the top level admin for security reasons
         
@@ -239,9 +255,13 @@ class Console(object):
         @return:               List of containers .
         @rtype:                List(rce.master.container.Container)
         """
-        return machine._containers
+        machine = [machine for machine in self._root._balancer._machines if machineIP == machine.IP]
+        if machine:
+            return machine[0]._containers
+        else:
+            raise InternalError('No such machine')
 
-    def _list_machine_stats(self, machine):
+    def _list_machine_stats(self, machineIP):
         """ Gets some useful facts about the Machine
         This should be only accessible to the top level admin for security reasons
         
@@ -251,10 +271,13 @@ class Console(object):
         @return:               List of containers .
         @rtype:                List(rce.master.container.Container)
         """
-        stat_info = {'active': machine.active,
-                     'IP' :  machine.IP,
-                     'capacity' : machine.capacity}
-        return stat_info
+        machine = [machine for machine in self._root._balancer._machines if machineIP == machine.IP]
+        if machine:
+            stat_info = {'active': machine[0].active,
+                         'capacity' : machine[0].capacity}
+            return stat_info
+        else:
+            raise InternalError('No such machine')
     
     def _list_machine_users(self, machine):
         """ Gets some useful facts about the Machine
@@ -277,7 +300,7 @@ class Console(object):
         """
         return self._root._users.keys()
 
-    def _admin_add_user(self, username, password):
+    def _add_user(self, username, password):
         """ Add a user to the RoboEarth Cloud Engine
 
         @param username:         Username of the user to be added
@@ -291,7 +314,7 @@ class Console(object):
         """
         self._root._checker.addUser(username, password)
 
-    def _admin_remove_user(self, username, password):
+    def _remove_user(self, username, password):
         """ Remove a user to the RoboEarth Cloud Engine
 
         @param username:         Username of the user to be removed
@@ -302,7 +325,7 @@ class Console(object):
         """
         self._root._checker.removeUser(username)
 
-    def _admin_user_passwd(self, username, password):
+    def _change_password(self, username, password):
         """ Add a user to the RoboEarth Cloud Engine
 
         @param username:         Username of the user to be added
