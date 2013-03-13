@@ -41,6 +41,7 @@ from zope.interface import implements
 from twisted.internet import defer
 from twisted.python import failure
 from twisted.cred import error
+from twisted.cred.credentials import UsernamePassword
 from twisted.spread.pb import IUsernameMD5Password
 from twisted.cred.checkers import ICredentialsChecker
 
