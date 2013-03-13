@@ -53,7 +53,6 @@ password_fail = 'Password must be between 4-10 Digits one each of uppercase,lowe
 class CredentialError(Exception):
     pass
 
-
 class RCECredChecker:
     """The RCE file-based, text-based username/password database.
     """
@@ -132,8 +131,12 @@ class RCECredChecker:
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
-            return defer.maybeDeferred(c.checkMD5Password, p
-                    ).addCallback(self._cbPasswordMatch, u)
+            if isinstance(c, UsernamePassword):
+                return defer.maybeDeferred(c.checkPassword, p
+                        ).addCallback(self._cbPasswordMatch, u)
+            else :
+                return defer.maybeDeferred(c.checkMD5Password, p
+                        ).addCallback(self._cbPasswordMatch, u)
 
     
     def addUser(self, username, password, provision= False):
