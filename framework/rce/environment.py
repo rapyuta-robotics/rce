@@ -34,6 +34,7 @@
 from uuid import UUID
 from multiprocessing.managers import SyncManager
 from time import sleep
+import fcntl
 
 # ROS specific imports
 import rospy
@@ -51,7 +52,6 @@ from rce.monitor.interface import PublisherInterface, SubscriberInterface, \
     ServiceClientInterface, ServiceProviderInterface
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
-from rce.master.console import ROSProxyClient, ROSProxyServer
 
 
 class Environment(Namespace):
@@ -221,7 +221,7 @@ class EnvironmentClient(Endpoint):
     """ Environment client is responsible for the cloud engine components
         inside a container.
     """
-    def __init__(self, reactor, commPort, shared_dict):
+    def __init__(self, reactor, commPort):
         """ Initialize the Environment Client.
             
             @param reactor:     Reference to the twisted reactor used in this
@@ -236,7 +236,7 @@ class EnvironmentClient(Endpoint):
         Endpoint.__init__(self, reactor, commPort)
         
         self._environment = None
-        self._allowedUsersforROSProxy = shared_dict
+        self._FILE = "/opt/rce/data/rosenvbridge.db"
     
     def registerEnvironment(self, environment):
         assert self._environment is None
@@ -263,8 +263,12 @@ class EnvironmentClient(Endpoint):
         return Environment(self, status, self._reactor)
 
     def remote_addUsertoROSProxy(self, UserID, Key):
-        self._allowedUsersforROSProxy.update([(UserID, Key)])
-        print self._allowedUsersforROSProxy
+
+        bridgefile = open(self._FILE, "a")
+        fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
+        bridgefile.write(UserID+':'+Key+'\n')
+        bridgefile.close() # unlocks the file
+
         
     def terminate(self):
         """ Method should be called to destroy the client and will take
@@ -288,10 +292,7 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    dict_server = ROSProxyServer('', 5000, 'dummypassword')
-    shared_dict = ROSProxyClient('', 5000, 'dummypassword')
-    client = EnvironmentClient(reactor, commPort, shared_dict.get_dict())
-    
+    client = EnvironmentClient(reactor, commPort)
     def terminate():
         reactor.callFromThread(client.terminate)
         reactor.callFromThread(reactor.stop)

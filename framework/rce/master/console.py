@@ -89,22 +89,6 @@ class UnauthorisedLogon(Exception):
     """
     pass
 
-def ROSProxyClient(HOST, PORT, AUTHKEY):
-    class DictManager(SyncManager):
-        pass
-    DictManager.register('get_dict')
-    manager = DictManager(address = (HOST, PORT), authkey = AUTHKEY)
-    manager.connect() # This starts the connected client
-    return manager
-    
-def ROSProxyServer(HOST, PORT, AUTHKEY):
-    Users = {}
-    class DictManager(SyncManager):
-        pass
-    DictManager.register('get_dict', callable = lambda: Users)
-    manager = DictManager(address = (HOST, PORT), authkey = AUTHKEY)
-    manager.start() # This starts the connected client
-    return manager
 
 class ConsoleDummyRealm(object):
     implements(IRealm)

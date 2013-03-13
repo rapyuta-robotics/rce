@@ -202,8 +202,7 @@ class Container(object):
         
         try:
             dfrd = getProcessValue('/usr/bin/lxc-start',
-                                   ('-n', name, '-f', self._conf, '-d'), # '-o', 
-                                    #'/usr/bin/lxc.debug', '-l', 'DEBUG'),
+                                   ('-n', name, '-f', self._conf, '-d'),
                                    env=os.environ, reactor=self._reactor)
             def cb(retVal):
                 if retVal == 0:

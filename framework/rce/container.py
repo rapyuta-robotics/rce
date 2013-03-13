@@ -246,6 +246,7 @@ class RCEContainer(Referenceable):
         # Setup network
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
             f.write(client.getNetworkConfigTemplate().format(ip=ip))
+
     
     def start(self):
         """ Method which starts the container.

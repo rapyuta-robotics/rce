@@ -35,6 +35,7 @@ from multiprocessing.managers import SyncManager
 import sys, time
 import httplib
 import json
+import fcntl
 
 #twisted-specific imports
 from twisted.cred.error import UnauthorizedLogin
@@ -57,7 +58,6 @@ import rospy
 
 #rce specific imports
 from rce.error import InvalidRequest, InternalError, DeadConnection
-from rce.master.console import ROSProxyClient
 
 class ROSProxy():
     def get_services(self):
@@ -71,9 +71,23 @@ class ROSProxy():
 class ConsoleROSProxyAuthentication(Resource):
     
     isLeaf = True
-    def __init__(self, Users):
+    def __init__(self):
         self._ros = ROSProxy()
-        self._users = Users
+        self._FILE = "/opt/rce/data/rosenvbridge.db"
+        
+    def _checkDB(self, userID, key):
+        
+        bridgefile = open(self._FILE, "r+")
+        fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
+        lines = bridgefile.readlines()
+        for line in lines:
+            g = line.split(':')
+            if g[0] == userID and str(g[1].rstrip()) == str(key):
+                bridgefile.close() # unlocks the file
+                return True
+        
+        bridgefile.close() # unlocks the file
+        return False
 
     def _processGETReq(self, args):
         """ Internally used method to process a GET request.
@@ -86,7 +100,7 @@ class ConsoleROSProxyAuthentication(Resource):
             return fail(InvalidRequest('Request is missing parameter: '
                                        '{0}'.format(e)))
         
-        if not self._users.get(userID[0]) or self._users.get(userID[0]) != key[0]:
+        if not self._checkDB(userID[0], key[0]):
             return fail(UnauthorizedLogin("Unknown user or key"))
             
         for name, param in [('action', action), ('userID', userID),
@@ -170,9 +184,7 @@ def main(reactor, rosproxyPort):
 
     rospy.on_shutdown(terminate)
 
-    shared_dict = ROSProxyClient('', 5000, 'dummypassword')
-
-    reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication(shared_dict.get_dict()))) #HTTP Server
+    reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication())) #HTTP Server
     
     reactor.run(installSignalHandlers=False)
     
