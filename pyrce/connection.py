@@ -35,6 +35,7 @@ from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 import json
 import weakref
+from hashlib import md5
 
 try:
     from cStringIO import StringIO, InputType, OutputType
@@ -104,7 +105,7 @@ class _Connection(object):
         """
         self._userID = userID
         self._robotID = robotID
-        self._password = password
+        self._password = md5(password).digest()
         self._reactor = reactor
         
         self._argList = [('userID', self._userID), ('robotID', self._robotID)]
