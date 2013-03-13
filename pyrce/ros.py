@@ -120,13 +120,13 @@ def main(config, reactor):
     try:
         userID = config['userID']
         robotID = config['robotID']
+        password = config['password']
         url = config['url']
     except KeyError as e:
         print('Configuration is missing the key {0}.'.format(e))
         return 1
     
-    # TODO: Add password at some point instead of just using userID as passwd
-    conn = ROSConnection(userID, robotID, userID, reactor)
+    conn = ROSConnection(userID, robotID, password, reactor)
     env = Environment(reactor, conn, config)
     
     deferred = Deferred()
