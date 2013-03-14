@@ -32,10 +32,7 @@
 
 #python specific imports
 from multiprocessing.managers import SyncManager
-import sys, time
-import httplib
-import json
-import fcntl
+import sys, httplib, json, fcntl
 
 #twisted-specific imports
 from twisted.cred.error import UnauthorizedLogin
@@ -65,7 +62,8 @@ class ROSProxy():
         return get_service_list()
 
     def get_topics(self):
-        """ Returns a list of all the topics being published in the ROS system """
+        """ Returns a list of all the topics being published in the ROS system 
+        """
         return [x[0] for x in get_published_topics()]
 
 class ConsoleROSProxyAuthentication(Resource):
@@ -77,17 +75,17 @@ class ConsoleROSProxyAuthentication(Resource):
         
     def _checkDB(self, userID, key):
         
-        bridgefile = open(self._FILE, "r+")
-        fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
-        lines = bridgefile.readlines()
-        for line in lines:
-            g = line.split(':')
-            if g[0] == userID and str(g[1].rstrip()) == str(key):
-                bridgefile.close() # unlocks the file
-                return True
-        
-        bridgefile.close() # unlocks the file
-        return False
+        found = False
+        with open(self._FILE, "r+") as bridgefile:
+            fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
+            lines = bridgefile.readlines()
+            for line in lines:
+                g = line.split(':')
+                if g[0] == userID and str(g[1].rstrip()) == str(key):
+                    found = True
+        return found
+
+
 
     def _processGETReq(self, args):
         """ Internally used method to process a GET request.
@@ -183,8 +181,10 @@ def main(reactor, rosproxyPort):
         reactor.callFromThread(reactor.stop)
 
     rospy.on_shutdown(terminate)
-
-    reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication())) #HTTP Server
+    
+    #HTTP Server
+    reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication())) 
+    
     
     reactor.run(installSignalHandlers=False)
     

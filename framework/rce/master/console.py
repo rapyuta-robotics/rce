@@ -151,7 +151,8 @@ class UserAvatar(Avatar):
     def perspective_get_rosapi_connect_info(self, tag):
         uid = uuid4().hex
         try:
-            self.user._containers[tag]._obj.registerconsole(self.user.userID, uid)
+            self.user._containers[tag]._obj.registerconsole(self.user.userID, 
+                                                            uid)
             d = self.user._containers[tag].getConnectInfo()
             d.addCallback(lambda addr: (addr, uid))
             return d
@@ -212,7 +213,8 @@ class Console(object):
     # The following method is only accessible to the Admin user
     def _list_machines(self):
         """ Gets a list of all machines that are available in the Cloud Engine
-        This should be only accessible to the top level admin for security reasons
+        This should be only accessible to the top level admin for security 
+        reasons
         
         @return:            List of machines .
         @rtype:             List(rce.master.machine.Machine)
@@ -222,7 +224,8 @@ class Console(object):
 
     def _list_machines_byIP(self):
         """ Gets a list of all machines that are available in the Cloud Engine
-        This should be only accessible to the top level admin for security reasons
+        This should be only accessible to the top level admin for security 
+        reasons
         
         @return:            List of machines by IPv4 addresses 
         @rtype:             List(str)
@@ -231,15 +234,18 @@ class Console(object):
     
     def _list_machine_containers(self, machineIP):
         """ Gets a list of all containers available in the Machine
-        This should be only accessible to the top level admin for security reasons
+        This should be only accessible to the top level admin for security 
+        reasons
         
-        @param machine:        Machine for which the containers need to be listed.
+        @param machine:        Machine for which the containers need to be 
+                               listed.
         @type  machine:        rce.master.machine.Machine
         
         @return:               List of containers .
         @rtype:                List(rce.master.container.Container)
         """
-        machine = [machine for machine in self._root._balancer._machines if machineIP == machine.IP]
+        machine = [machine for machine in self._root._balancer._machines 
+                   if machineIP == machine.IP]
         if machine:
             return machine[0]._containers
         else:
@@ -247,15 +253,18 @@ class Console(object):
 
     def _list_machine_stats(self, machineIP):
         """ Gets some useful facts about the Machine
-        This should be only accessible to the top level admin for security reasons
+        This should be only accessible to the top level admin for security 
+        reasons
         
-        @param machine:        Machine for which the containers need to be listed.
+        @param machine:        Machine for which the containers need to be 
+                               listed.
         @type  machine:        rce.master.machine.Machine
         
         @return:               List of containers .
         @rtype:                List(rce.master.container.Container)
         """
-        machine = [machine for machine in self._root._balancer._machines if machineIP == machine.IP]
+        machine = [machine for machine in self._root._balancer._machines 
+                   if machineIP == machine.IP]
         if machine:
             stat_info = {'active': machine[0].active,
                          'capacity' : machine[0].capacity}
@@ -265,19 +274,23 @@ class Console(object):
     
     def _list_machine_users(self, machine):
         """ Gets some useful facts about the Machine
-        This should be only accessible to the top level admin for security reasons
+        This should be only accessible to the top level admin for security 
+        reasons
         
-        @param machine:        Machine for which the containers need to be listed.
+        @param machine:        Machine for which the containers need to be 
+                               listed.
         @type  machine:        rce.master.machine.Machine
         
-        @return:               Counter containing the users and the number of containers they are running .
+        @return:               Counter containing the users and the number of 
+                               containers they are running .
         @rtype:                List collections.Counter
         """
         return machine._users.keys()
     
     def _list_userID(self):
         """ Gets a list of all users that are logged into the Cloud Engine
-        This should be only accessible to the top level admin for security reasons
+        This should be only accessible to the top level admin for security 
+        reasons
         
         @return:            List of users .
         @rtype:             list(str)
@@ -351,7 +364,8 @@ class Console(object):
         @param user:         User logged into the cloud engine.
         @rtype:              rce.master.user.User
         
-        @return:             List of hashed connection keys to rce.master.network.Connection
+        @return:             List of hashed connection keys to 
+                             rce.master.network.Connection
         @rtype:              list(str)
         """
         return user._connections.keys()
@@ -377,7 +391,8 @@ class Console(object):
         @param user:             User logged into the cloud engine.
         @type:                   rce.master.user.User
         
-        @param uuid:             tag assosicated to the container object to be fetched
+        @param uuid:             tag assosicated to the container object to be 
+                                 fetched
         @type:                   str
         
         @return:                 Container object
@@ -392,7 +407,8 @@ class Console(object):
         @param user:             User logged into the cloud engine.
         @type:                   rce.master.user.User
         
-        @param uuid:             hash_key assosicated to the connection object to be fetched
+        @param uuid:             hash_key assosicated to the connection object 
+                                 to be fetched
         @type:                   str
         
         @return:                 Container object
@@ -403,12 +419,15 @@ class Console(object):
 
 
     # TODO : Please read
-    # The above functions expose a bunch of basic objects form the cloud engine , the rest of these methods use the exposed objects in convenient wrappers ,
-    # feel free to edit and modify these as required alternatively one could use the above to generate the required behavior.
+    # The above functions expose a bunch of basic objects form the cloud engine,
+    # the rest of these methods use the exposed objects in convenient wrappers ,
+    # feel free to edit and modify these as required alternatively one could 
+    #use the above to generate the required behavior.
 
     def generate_user_graph(self, user):
-        """Generates a multidict representation of the users connect graph across the cloud engine.
-        Useful for visualizing and debugging a users activities and connections.
+        """Generates a multidict representation of the users connect graph 
+        across the cloud engine. Useful for visualizing and debugging a users 
+        activities and connections.
         """
         #build the physical container graph
         def get_containmer_tree(tag):
@@ -431,7 +450,7 @@ class Console(object):
         connections = InterfaceConnection2way()
         for connection in user._connections.itervalues():
             connections[connection._connectionA._interface._uid] = \
-                                 connection._connectionB._interface._uid
+                connection._connectionB._interface._uid
 
         return {'userID':user._userID,'network':machines,
                 'robots':robots, 'connections': connections}

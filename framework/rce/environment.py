@@ -263,12 +263,9 @@ class EnvironmentClient(Endpoint):
         return Environment(self, status, self._reactor)
 
     def remote_addUsertoROSProxy(self, UserID, Key):
-
-        bridgefile = open(self._FILE, "a")
-        fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
-        bridgefile.write(UserID+':'+Key+'\n')
-        bridgefile.close() # unlocks the file
-
+        with open(self._FILE, "a") as bridgefile:
+            fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
+            bridgefile.write(UserID+':'+Key+'\n')
         
     def terminate(self):
         """ Method should be called to destroy the client and will take
