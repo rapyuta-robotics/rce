@@ -717,7 +717,7 @@ class ConsoleClient(HistoricRecvLine):
         else:
             self.parseInputLine(line)
 
-def runWithProtocol(klass, masterIP):
+def runWithProtocol(klass, masterIP, port):
     """
         Function overridden from twisted.conch.stdio to allow Ctrl+C interrupt
         @param klass:     A callable which will be invoked with
@@ -732,7 +732,7 @@ def runWithProtocol(klass, masterIP):
     oldSettings = termios.tcgetattr(fd)
     tty.setcbreak(fd)
     try:
-        p = ServerProtocol(klass, masterIP)
+        p = ServerProtocol(klass, masterIP, port)
         stdio.StandardIO(p)
         reactor.run()
     finally:
