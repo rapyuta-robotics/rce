@@ -807,7 +807,11 @@ class Container(_Wrapper):
         except KeyError:
             raise InvalidRequest('Can not get a non existent interface '
                                  "'{0}' from the container.".format(iTag))
+
     def getConnectInfo(self):
+        """ Get connection information for the given container for rosproxy
+            calls.
+        """
         d = self._obj.getAddress()
         d.addCallback(lambda addr: 'http://{0}:{1}/'.format(addr.host, addr.port+2000))
         return d
