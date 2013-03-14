@@ -146,6 +146,8 @@ class Environment(Namespace):
         return parameter
     
     def getAddress(self):
+        """ Get address of the endpoint of the environment namespace.
+        """
         return self._endpoint.getAddress()
         
     def registerNode(self, node):
@@ -165,6 +167,8 @@ class Environment(Namespace):
         self._parameters.remove(parameter)
     
     def registerconsole(self, userID, key):
+        """ Register a console user with the environment.
+        """
         self._endpoint.registerconsole(userID, key)
         
     def destroy(self):
