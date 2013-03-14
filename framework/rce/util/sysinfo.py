@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     sys.py
+#     sysinfo.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     Adapted from the psutils package and rewritten in pure python with relevant required functions.
@@ -27,7 +27,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #
-#     \author/s: Dhananjay Sathe
+#     \author/s: Dhananjay Sathe : dhananjaysathe@gmail.com
 #
 
 import os
@@ -118,7 +118,7 @@ def _get_sys_totalmem():
         for line in f:
             if line.startswith('MemTotal:'):
                 total = int(line.split()[1]) * 1024
-            
+
             if  total is not None :
                 break
         else:
@@ -126,7 +126,8 @@ def _get_sys_totalmem():
     finally:
         f.close()
     return total
-              
+
+
 def _get_terminal_map():
     ret = {}
     ls = glob.glob('/dev/tty*') + glob.glob('/dev/pts/*')
@@ -137,10 +138,12 @@ def _get_terminal_map():
 
 _pmap = {}
 
+
 def get_pid_list():
     """Returns a list of PIDs currently running on the system."""
     pids = [int(x) for x in os.listdir('/proc') if x.isdigit()]
     return pids
+
 
 def pid_exists(pid):
     """Check whether pid exists in the current process table."""
@@ -155,6 +158,7 @@ def pid_exists(pid):
         return e.errno == errno.EPERM
     else:
         return True
+
 
 def process_iter():
     """Return a generator yielding a Process class instance for all
@@ -240,6 +244,7 @@ def _get_num_cpus():
         raise RuntimeError("can't determine number of CPUs")
     return num
 
+
 def isfile_strict(path):
     """Same as os.path.isfile() but does not swallow EACCES / EPERM
     exceptions, see:
@@ -254,6 +259,8 @@ def isfile_strict(path):
         return False
     else:
         return stat.S_ISREG(st.st_mode)
+
+
 # --- decorators
 
 def wrap_exceptions(callable):
@@ -274,7 +281,6 @@ def wrap_exceptions(callable):
                 raise AccessDenied(self.pid, self._process_name)
             raise
     return wrapper
-
 
 
 # DECLARATIONS AND CONSTANTS
@@ -346,7 +352,7 @@ nt_uids = namedtuple('user', 'real effective saved')
 nt_gids = namedtuple('group', 'real effective saved')
 
 
-# SYSTEM FUNCTIONS 
+# SYSTEM FUNCTIONS
 
 # System - CPU
 
@@ -472,8 +478,8 @@ def cpu_percent(interval=0.1, percpu=False):
             ret.append(calculate(t1, t2))
         return ret
 
- 
-# System - Memory 
+
+# System - Memory
 
 def usage_percent(used, total, _round=None):
     """Calculate percentage usage of 'used' against 'total'."""
@@ -520,7 +526,7 @@ def get_sys_meminfo():
     percent = usage_percent((total - avail), total, _round=1)
     return nt_virtmem_info(total, avail, percent, used, free,
                            active, inactive, buffers, cached)
-    
+
 
 # System - Network
 
@@ -553,7 +559,7 @@ def network_io_counters():
     return retdict
 
 
-# System disk 
+# System disk
 
 def disk_io_counters():
     """Return disk I/O statistics for every disk installed on the
@@ -603,7 +609,7 @@ def disk_io_counters():
 class Process(object):
     """Linux process implementation."""
 
-    __slots__ = ["pid", "_process_name", "_last_sys_cpu_times", 
+    __slots__ = ["pid", "_process_name", "_last_sys_cpu_times",
                  "_last_proc_cpu_times", "_gone", "create_time",
                  "ppid"]
 
@@ -642,7 +648,7 @@ class Process(object):
         except NoSuchProcess:
             self._gone = True
             return False
-    
+
     def get_process_exe(self):
         try:
             exe = os.readlink("/proc/%s/exe" % self.pid)
@@ -728,7 +734,7 @@ class Process(object):
         utime = float(values[11]) / _CLOCK_TICKS
         stime = float(values[12]) / _CLOCK_TICKS
         return nt_cputimes(utime, stime)
-    
+
     def get_cpu_percent(self, interval=0.1):
         """Return a float representing the current process CPU
         utilization as a percentage.
@@ -799,7 +805,7 @@ class Process(object):
         starttime = (float(values[19]) / _CLOCK_TICKS) + BOOT_TIME
         return starttime
 
-    
+
     def get_children(self, recursive=False):
         """Return the children of this process as a list of Process
         objects.
@@ -867,8 +873,8 @@ class Process(object):
                             if child.pid not in checkpids:
                                 checkpids.append(child.pid)
         return ret
-    
-    
+
+
     @wrap_exceptions
     def get_memory_info(self):
         f = open("/proc/%s/statm" % self.pid)
@@ -917,7 +923,7 @@ class Process(object):
             return (rss / float(TOTAL_PHYMEM)) * 100
         except ZeroDivisionError:
             return 0.0
-        
+
     def get_memory_maps(self):
         """Return process's mapped memory regions as a list of nameduples.
         Fields are explained in 'man proc'; here is an updated (Apr 2012)
