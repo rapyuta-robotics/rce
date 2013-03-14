@@ -73,10 +73,12 @@ class User(Referenceable):
     
     @property
     def robots(self):
+        """Robots owned by this User"""
         return self._robots
 
     @property
     def containers(self):
+        """"Containers used by this User."""
         return self._containers
 
     def createRobot(self, robotID):

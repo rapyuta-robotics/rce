@@ -131,7 +131,6 @@ class LoadBalancer(object):
             @type  machine:     rce.master.machine.Machine
         """
         try:
-            print('Destroying Connection to Container Process.')
             self._machines.remove(machine)
         except KeyError:
             raise InternalError('Tried to remove a non existent machine.')
@@ -271,7 +270,6 @@ class Machine(object):
         """ Method should be called to destroy the machine and will take care
             of deleting all circular references.
         """
-        print 'containers', self._containers
         for container in self._containers.copy():
             container.destroy()
         

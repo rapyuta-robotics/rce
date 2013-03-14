@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     connection.py
+#     console.py
 #     
 #     This file is part of the RoboEarth Cloud Engine pyrce client.
 #     
@@ -12,7 +12,7 @@
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
 #     
-#     Copyright 2012 RoboEarth
+#     Copyright 2013 RoboEarth
 #     
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -54,36 +54,46 @@ class InterfaceConnection2way(dict):
 
     def __init__(self, d=None):
         dict.__init__(self)
-        self.d1 = defaultdict(list)
-        self.d2 = defaultdict(list)
+        self._d1 = defaultdict(list)
+        self._d2 = defaultdict(list)
 
     def __getitem__(self, key):
+        ret = []
+        count = 0
         try:
-            return self.d1.get(key)
-        except KeyError:
-            return self.d2(key)
+            ret.extend(self._d1.get(key))
+        except TypeError:
+            count+=1
+        try:
+            ret.extend(*self._d2.get(key))
+        except TypeError:
+            count+=1
+        if count == 2:
+            raise KeyError
+        else:
+            return ret
 
     def __setitem__(self, key, val):
-        self.d1[key].append(val)
-        self.d2[val].append(key)
+        self._d1[key].append(val)
+        self._d2[val].append(key)
 
     def key(self, val):
-        return self.d2[val]
+        return self._d2[val]
 
     def keys(self, val):
-        return self.d2.keys()
+        return self._d2.keys()
 
     def iterkeys(self, val):
-        return self.d2.iterkeys()
+        return self._d2.iterkeys()
 
     def get(self, key):
-        return self.d1[key]
+        return self._d1[key]
 
     def values(self, key):
-        return self.d1.values()
+        return self._d1.values()
 
     def itervalues(self, key):
-        return self.d1.itervalues()
+        return self._d1.itervalues()
 
 
 class UnauthorisedLogon(Exception):

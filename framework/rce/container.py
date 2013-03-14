@@ -572,7 +572,6 @@ class ContainerClient(Referenceable):
         self._containers.add(container)
     
     def unregisterContainer(self, container):
-        print 'containers', self._containers
         assert container in self._containers
         self._containers.remove(container)
     

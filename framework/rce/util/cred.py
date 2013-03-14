@@ -12,7 +12,7 @@
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
 #
-#     Copyright 2012 RoboEarth
+#     Copyright 2013 RoboEarth
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -48,11 +48,12 @@ from twisted.cred.checkers import ICredentialsChecker
 
 _RE = r'(\w+):(.+)'
 _PASS_RE = r'^.*(?=.{4,10})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
-password_fail = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
+_PASSWORD_FAIL = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
 
 
 class CredentialError(Exception):
     pass
+
 
 class RCECredChecker:
     """The RCE file-based, text-based username/password database.
@@ -106,6 +107,7 @@ class RCECredChecker:
 
 
     def _cbPasswordMatch(self, matched, username):
+        """Internal method in case of success"""
         if matched:
             return username
         else:
@@ -113,6 +115,7 @@ class RCECredChecker:
 
 
     def _loadCredentials(self):
+        """Internal method to read file."""
         with open(self.filename) as f :
             for line in f:
                 parts = self.scanner.match(line).groups()
@@ -120,6 +123,7 @@ class RCECredChecker:
 
     
     def getUser(self, username):
+        """"Fetch username from db or cache, internal method"""
         if self._credCache is None or os.path.getmtime(self.filename) > self._cacheTimestamp:
             self._cacheTimestamp = os.path.getmtime(self.filename)
             self._credCache = dict(self._loadCredentials())
@@ -141,8 +145,19 @@ class RCECredChecker:
 
     
     def addUser(self, username, password, provision= False):
+        """ Change password for the username:
+        
+        @param username:        username
+        @type  username:        str
+        
+        @param password:        password
+        @type  password:        str   
+        
+        @param provision:       Special flag to indicate provisioning mode
+        @type  password:        bool  
+        """
         if not (self.pass_validator(password) or provision):
-            raise CredentialError(password_fail)
+            raise CredentialError(_PASSWORD_FAIL)
         if provision:
             with open(self.filename, 'a') as f :
                 f.writelines((':'.join((username,md5(password).digest()))+'\n'))
@@ -157,6 +172,11 @@ class RCECredChecker:
 
     
     def removeUser(self,username):
+        """ Remove the given user:
+        
+        @param username:         username
+        @type  username:         str
+        """
         try:
             self.getUser(username)# why bother reading the file if the user doesn't even exist !
             for line in fileinput.input(self.filename, inplace=1):
@@ -169,8 +189,16 @@ class RCECredChecker:
 
     
     def passwd(self,username, password):
+        """ Change password for the username:
+        
+        @param username:         username
+        @type  username:         str
+        
+        @param password:        password
+        @type  password:        str     
+        """
         if not self.pass_validator(password):
-            raise CredentialError(password_fail)
+            raise CredentialError(_PASSWORD_FAIL)
         try:
             self.getUser(username) # why bother reading the file if the user doesn't even exist !
             for line in fileinput.input(self.filename, inplace=1):
