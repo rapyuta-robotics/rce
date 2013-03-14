@@ -270,7 +270,7 @@ class RoboEarthCloudEngine(object):
 
 
 def main(reactor, internalCred, externalCred, internalPort, externalPort,
-         intIF, commPort):
+         intIF, commPort, consolePort):
     log.startLogging(sys.stdout)
     
     rce = RoboEarthCloudEngine(reactor, externalCred, intIF, commPort)
@@ -286,7 +286,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     pconsole = Portal(consolerealm, (externalCred,))
     
     #Console Connection
-    reactor.listenTCP(8081, PBServerFactory(pconsole))
+    reactor.listenTCP(consolePort, PBServerFactory(pconsole))
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
     reactor.run()

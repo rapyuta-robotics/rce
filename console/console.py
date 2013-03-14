@@ -338,7 +338,7 @@ class ConsoleClient(HistoricRecvLine):
     """ The class creates the terminal and manages connections with Master
         and ROSAPI servers on specific containers
     """
-    def __init__(self, masterIP):
+    def __init__(self, masterIP, consolePort):
         """ Initialize the ConsoleClient. 
 
             @param masterIP:    The IP of the master server
@@ -346,6 +346,7 @@ class ConsoleClient(HistoricRecvLine):
         """
         self._user = None
         self._masterIP = masterIP
+        self._console_port = consolePort
         self._mode = "Username"
         self._username = None
         self._password = None
@@ -365,7 +366,7 @@ class ConsoleClient(HistoricRecvLine):
         HistoricRecvLine.connectionMade(self)
         self._factory = PBClientFactory()
 
-        reactor.connectTCP(self._masterIP, 8081, self._factory)
+        reactor.connectTCP(self._masterIP, self._console_port, self._factory)
         self.terminal.write("Username: ")
 
     def parseInputLine(self, line):
@@ -746,13 +747,16 @@ def _get_argparse():
 
     parser.add_argument('ipMaster', help='IP address of master process.',
                         type=str)
+    
+    parser.add_argument('--port', help='Console port to connect to.',
+                        type=int, default= 8081)
 
     return parser
 
 def main():
     startLogging(sys.stdout)
     args = _get_argparse().parse_args()
-    runWithProtocol(ConsoleClient, args.ipMaster)
+    runWithProtocol(ConsoleClient, args.ipMaster, args.port)
   
 if __name__ == '__main__':
     main()

@@ -50,4 +50,4 @@ intCred = InMemoryUsernamePasswordDatabaseDontUse(robot='robot',
 
 # Run main function
 main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT,
-     settings.INT_IF, settings.RCE_INTERNAL_PORT)
+     settings.INT_IF, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT)
