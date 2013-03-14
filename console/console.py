@@ -31,12 +31,10 @@
 #     
 
 #python specific imports
-from sys import stdout
 from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 import sys, os, termios, tty, json
 import getopt
-from os import path
 
 #twisted specific imports
 from twisted.python.log import err, startLogging
@@ -47,10 +45,18 @@ from twisted.internet import stdio
 from twisted.conch.recvline import HistoricRecvLine
 from twisted.conch.insults.insults import ServerProtocol
 from twisted.python import usage
-from twisted.python import reflect, text, util
+
 
 class CustomOptions(usage.Options):
+    """ Custom Class to override functionality of usage.Options
+    """
+    
     def __init__(self, terminal):
+        """ Initialize the CutsomOptions Class
+        
+            @param terminal:    Reference to the running terminal
+            @type  terminal:    ConsoleClient.terminal
+        """
         super(CustomOptions, self).__init__()
         self.terminal = terminal
 
@@ -133,23 +139,39 @@ class CustomOptions(usage.Options):
         return synopsis
 
     def opt_help(self):
+        """
+        Function overridden to prevent program exiting after showing help.
+        """
         self.terminal.write(self.__str__())
 
     def opt_version(self):
         self.terminal.write('vestigial option')
-            
+
+
+#Various Option Classes follow
 class UserAddOptions(CustomOptions):
+    """
+        Parameters for user add.
+    """
     optParameters = [
         ["username", "u", None, "Username"],
         ["password", "p", None, "Password"]
     ]
 
+
 class UserRemoveOptions(CustomOptions):
+    """
+        Parameters for user remove.
+    """
     optParameters = [
         ["username", "u", None, "Username"]
     ]
 
+
 class UserOptions(CustomOptions):
+    """
+        Options for user command.
+    """
     subCommands = [['add', None, UserAddOptions, "Add User"],
                    ['remove', None, UserRemoveOptions, "Remove User"],
                    ['update', None, UserAddOptions, "Update User"]
@@ -157,8 +179,12 @@ class UserOptions(CustomOptions):
     optFlags = [
         ["list", "l", "List all Users"]
     ]
+
     
 class ContainerOptions(CustomOptions):
+    """
+        Options for container command.
+    """
     optParameters = [
         ["start", "s", None, "Start a Container"],
         ["stop", "t", None, "Stop a Container"],
@@ -169,8 +195,12 @@ class ContainerOptions(CustomOptions):
     optFlags = [
         ["list", "l", "List all containers of the user logged in"]
     ]
+
     
 class NodeStartOptions(CustomOptions):
+    """
+        Parameters for node start.
+    """
     optParameters = [
         ["ctag", "c", None, "Container tag"],
         ["ntag", "n", None, "Node tag"],
@@ -179,34 +209,58 @@ class NodeStartOptions(CustomOptions):
         ["args", "a", None, "Arguments"]
     ]
 
+
 class NodeStopOptions(CustomOptions):
+    """
+        Parameters for node stop.
+    """
     optParameters = [
         ["ctag", "c", None, "Container tag"],
         ["ntag", "n", None, "Node tag"]
     ]
 
+
 class NodeOptions(CustomOptions):
+    """
+        Options for node command.
+    """
     subCommands = [['start', None, NodeStartOptions, "Start Node"],
                    ['stop', None, NodeStopOptions, "Stop Node"]]
-                   
+
+
 class ParameterAddOptions(CustomOptions):
+    """
+        Parameters for adding ROS parameters.
+    """
     optParameters = [
         ["ctag", "c", None, "Container tag"],
         ["name", "n", None, "Name of parameter"],
         ["value", "v", None, "Value of parameter"]
     ]
+
     
 class ParameterRemoveOptions(CustomOptions):
+    """
+        Parameters for removing ROS parameters.
+    """
     optParameters = [
         ["ctag", "c", None, "Container tag"],
         ["name", "n", None, "Name of parameter"]
     ]
 
+
 class ParameterOptions(CustomOptions):
+    """
+        Options for parameter command.
+    """
     subCommands = [['add', None, ParameterAddOptions, 'Add parameter'],
                    ['remove', None, ParameterRemoveOptions, 'Remove parameter']]
+
                    
 class InterfaceAddOptions(CustomOptions):
+    """
+        Parameters for adding interfaces.
+    """
     optParameters = [
         ["etag", "e", None, "Endpoint tag"],
         ["itag", "i", None, "Interface tag"],
@@ -215,7 +269,11 @@ class InterfaceAddOptions(CustomOptions):
         ["addr", "a", None, "Address"]
     ]
 
+
 class InterfaceRemoveOptions(CustomOptions):
+    """
+        Parameters for removing interfaces.
+    """
     optParameters = [
         ["etag", "e", None, "Endpoint tag"],
         ["itag", "i", None, "Interface tag"]
@@ -223,11 +281,18 @@ class InterfaceRemoveOptions(CustomOptions):
 
 
 class InterfaceOptions(CustomOptions):
+    """
+        Options for interface command.
+    """
     subCommands = [['add', None, InterfaceAddOptions, 'Add interface'],
-                   ['remove', None, InterfaceRemoveOptions, 'Remove interface']]
+                   ['remove', None, InterfaceRemoveOptions, 'Remove interface']
+    ]
 
 
 class ConnectionSubOptions(CustomOptions):
+    """
+        Sub options for connection subcommands.
+    """
     optParameters = [
         ["tag1", "1", None, "First Interface"],
         ["tag2", "2", None, "Second Interface"]
@@ -235,12 +300,19 @@ class ConnectionSubOptions(CustomOptions):
 
 
 class ConnectionOptions(CustomOptions):
+    """
+        Options for connection command.
+    """
     subCommands = [['add', None, ConnectionSubOptions, 'Connect Interfaces'],
                    ['remove', None, ConnectionSubOptions, 
-                   'Disconnect Interfaces']]
+                   'Disconnect Interfaces']
+    ]
 
 
 class RobotOptions(CustomOptions):
+    """
+        Options for robot command.
+    """
     optParameters = [
         ["username", "u", None, "List Robots by Username"]
     ]
@@ -250,6 +322,9 @@ class RobotOptions(CustomOptions):
 
 
 class MachineOptions(CustomOptions):
+    """
+        Options for machine command.
+    """
     optParameters = [
         ["stats", "s", None, "Statistics of Machine by IP"],
         ["containers", "c", None, "List Containers by Machine's IP"]
@@ -260,9 +335,15 @@ class MachineOptions(CustomOptions):
     
 
 class ConsoleClient(HistoricRecvLine):
-    from os import linesep as delimiter
-
+    """ The class creates the terminal and manages connections with Master
+        and ROSAPI servers on specific containers
+    """
     def __init__(self, masterIP):
+        """ Initialize the ConsoleClient. 
+
+            @param masterIP:    The IP of the master server
+            @type  masterIP:    string
+        """
         self._user = None
         self._masterIP = masterIP
         self._mode = "Username"
@@ -272,10 +353,15 @@ class ConsoleClient(HistoricRecvLine):
         self._connectedrosapinodes = {}
 
     def showPrompt(self):
+        """ Show the prompt >>>
+        """
         self.terminal.nextLine()
         self.terminal.write(self.ps[self.pn])
 
     def connectionMade(self):
+        """ Create a PBClientFactory and connect to master when ConsoleClient
+            connected to StandardIO. Prompt user for Username
+        """
         HistoricRecvLine.connectionMade(self)
         self._factory = PBClientFactory()
 
@@ -283,6 +369,12 @@ class ConsoleClient(HistoricRecvLine):
         self.terminal.write("Username: ")
 
     def parseInputLine(self, line):
+        """
+            A function to route various commands entered via Console.
+            
+            @param line:    The text entered on the Console
+            @type line:    string
+        """
         if line is not None and line is not '':
             func = getattr(self, 'cmd_' + line.split()[0].upper(), None)
             if func is not None:
@@ -290,8 +382,17 @@ class ConsoleClient(HistoricRecvLine):
             else:
                 self.terminal.write('No such command')
         self.showPrompt()
-    
+
     def callToRosProxy(self, command, parameter):
+        """ 
+            Function to handle call to ROSAPI Proxy Server.
+            
+            @param command:      The command to execute in ROS environment.
+            @type command:       string
+            
+            @param parameter:    A parameter for the command.
+            @type parameter:     string
+        """
         def perform_action((url,key)):
             self._connectedrosapinodes[parameter] = (url,key)
             argList = [('userID', self._username), ('action', command), 
@@ -319,22 +420,40 @@ class ConsoleClient(HistoricRecvLine):
             d.addErrback(lambda err: self.terminal.write("Problem "
                                 "in connection with master: "
                                 "{0}".format(str(err))))
-    
-    
+        
     def callToUser(self, command, *args):
+        """
+            A wrapper function for call to remote user.
+            
+            @param command:    The command to be executed
+            @type command:     string
+        """
         self._user.callRemote(command, *args)
-    
-    
+        
     def callToUserAndDisplay(self, command, *args):
+        """
+            A wrapper function around call to user and displaying the result
+            @param command:    The command to be executed
+            @type command:     string
+        """
         d = self._user.callRemote(command, *args)
         d.addCallback(lambda result: self.terminal.write(str(result)))
 
-
+    #Various commands follow
     def cmd_EXIT(self, line):
+        """
+            Handler for exit command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         reactor.stop()
 
-
     def cmd_USER(self, line):
+        """
+            Handler for user command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = UserOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -362,8 +481,12 @@ class ConsoleClient(HistoricRecvLine):
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
 
-
     def cmd_CONTAINER(self, line):
+        """
+            Handler for container command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = ContainerOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -388,9 +511,13 @@ class ConsoleClient(HistoricRecvLine):
 
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
-
         
     def cmd_NODE(self, line):
+        """
+            Handler for node command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = NodeOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -419,6 +546,11 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
 
     def cmd_PARAMETER(self, line):
+        """
+            Handler for parameter command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = ParameterOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -438,6 +570,11 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
     
     def cmd_INTERFACE(self, line):
+        """
+            Handler for interface command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = InterfaceOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -467,6 +604,11 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
     
     def cmd_CONNECTION(self, line):
+        """
+            Handler for connection command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = ConnectionOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -482,9 +624,13 @@ class ConsoleClient(HistoricRecvLine):
 
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
-                
-    
+                    
     def cmd_ROBOT(self, line):
+        """
+            Handler for robot command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = RobotOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -500,6 +646,11 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
 
     def cmd_MACHINE(self, line):
+        """
+            Handler for machine command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         config = MachineOptions(self.terminal)
         try:
             config.parseOptions(line)
@@ -517,6 +668,11 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(str(errortext)))
 
     def cmd_HELP(self, line):
+        """
+            Handler for help command.
+            @param line:    line input from terminal.
+            @type line:     string
+        """
         configs = [UserOptions(self.terminal), ContainerOptions(self.terminal),
                    NodeOptions(self.terminal), ParameterOptions(self.terminal),
                    InterfaceOptions(self.terminal), 
@@ -526,14 +682,20 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.nextLine()
             config.opt_help()
 
-
     def lineReceived(self, line):
+        """
+            Manage state/mode after connection. Code uses states to take 
+            credential input and then starts terminal input.
+             
+            @param line:    line typed on terminal
+            @type line:     string
+        """
         
-        def cbError(why, msg):
+        def _cbError(why, msg):
             err(why, msg)
             reactor.stop()
 
-        def cbConnected(perspective):
+        def _cbConnected(perspective):
             self._user = perspective
             self.terminal.write('Connection to Master Established.')
             self.showPrompt()
@@ -548,13 +710,23 @@ class ConsoleClient(HistoricRecvLine):
             self._password = line
             usernameLogin = self._factory.login(UsernamePassword(self._username,
                                                 self._password))
-            usernameLogin.addCallback(cbConnected)
-            usernameLogin.addErrback(cbError, "Username/password login failed")
+            usernameLogin.addCallback(_cbConnected)
+            usernameLogin.addErrback(_cbError, "Username/password login failed")
 
         else:
             self.parseInputLine(line)
 
 def runWithProtocol(klass, masterIP):
+    """
+        Function overridden from twisted.conch.stdio to allow Ctrl+C interrupt
+        @param klass:     A callable which will be invoked with
+                          *a, **kw and should return an ITerminalProtocol 
+                          implementor. This will be invoked when a connection
+                          to this ServerProtocol is established.
+
+        @param masterIP:  IP of the master server.  
+        @type masterIP:   string
+    """
     fd = sys.stdin.fileno()
     oldSettings = termios.tcgetattr(fd)
     tty.setcbreak(fd)
@@ -565,7 +737,6 @@ def runWithProtocol(klass, masterIP):
     finally:
         termios.tcsetattr(fd, termios.TCSANOW, oldSettings)
         os.write(fd, "\r\x1bc\r")
-
   
 def _get_argparse():
     from argparse import ArgumentParser
@@ -582,7 +753,6 @@ def main():
     startLogging(sys.stdout)
     args = _get_argparse().parse_args()
     runWithProtocol(ConsoleClient, args.ipMaster)
-
-    
+  
 if __name__ == '__main__':
     main()

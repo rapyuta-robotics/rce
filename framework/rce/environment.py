@@ -263,6 +263,16 @@ class EnvironmentClient(Endpoint):
         return Environment(self, status, self._reactor)
 
     def remote_addUsertoROSProxy(self, UserID, Key):
+        """ Method to add username and key to rosproxy-environment bridge
+            file that maintains list of users that can call functions of
+            rosproxy.
+            
+            @param UserID:    username
+            @type UserID:     string
+            
+            @param Key:       Secret key
+            @type Key:        string
+        """
         with open(self._FILE, "a") as bridgefile:
             fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
             bridgefile.write(UserID+':'+Key+'\n')

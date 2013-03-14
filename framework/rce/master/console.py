@@ -49,6 +49,9 @@ from rce.error import InternalError
 
 
 class InterfaceConnection2way(dict):
+    """ A two-way dictionary implementation
+    """
+
     def __init__(self, d=None):
         dict.__init__(self)
         self.d1 = defaultdict(list)
@@ -91,6 +94,9 @@ class UnauthorisedLogon(Exception):
 
 
 class ConsoleDummyRealm(object):
+    """ A dummy realm that routes console users to the RoboEarthCloudEngine 
+        Realm so as not to involve it's requestAvatar method. 
+    """
     implements(IRealm)
     
     def __init__(self, reactor, rce):
@@ -109,46 +115,116 @@ class ConsoleDummyRealm(object):
             pass
         return IPerspective, avatar, detach
 
+
 class UserAvatar(Avatar):
+    """ Avatar to be returned when user logs in via console.
+    """
+    
     def __init__(self, user, console):
+        """ Initializer for user avatar. 
+        
+            @param user:    User object
+            @type user:     rce.master.User
+            
+            @param console: Reference to Console Proxy object
+            @type console:  rce.master.Console
+        """
         self.user = user
         self.console = console
 
     def perspective_list_machines(self):
+        """ Remote call to list machine IPs.
+        """
         return defer.succeed(self.console._list_machines_byIP())
         
     def perspective_stats_machine(self, machineIP):
+        """ Remote call to list stats of machine with given IP.
+        
+            @param machineIP:    IP of master server.
+            @type machineIP:     string
+        """
         return defer.succeed(self.console._list_machine_stats(machineIP))
         
     def perspective_machine_containers(self, machineIP):
+        """ Remote call to list containers in a machine with given IP.
+        
+            @param machineIP:    IP of master server
+            @type machineIP:     string
+        """
         return defer.succeed(self.console._list_machine_containers(machineIP))
     
     def perspective_add_user(self, username, password):
+        """ Remote call to add user.
+        
+            @param username:    The username
+            @type username:     string
+    
+            @param password:    The password
+            @type password:     string
+        """
         self.console._add_user(username, password)
     
     def perspective_remove_user(self, username):
+        """ Remote call to remove user.
+
+            @param username:    The username
+            @type username:     string
+        """
         self.console._remove_user(username)
 
     def perspective_update_user(self, username, password):
+        """ Remote call to edit user information.
+
+            @param username:    The username
+            @type username:     string
+            
+            @param password:    The password
+            @type password:     string
+        """
         self.console._change_password(username, password)
     
     def perspective_list_users(self):
+        """ Remote call to list all users logged into RoboEarthCloudEngine.
+        """
         return defer.succeed(self.console._list_userID())
 
     def perspective_start_container(self, tag):
+        """ Remote call to start container given the tag.
+        
+            @param tag:    Tag associated with a container.
+            @type tag:     string
+        """
         self.user.remote_createContainer(tag)
     
     def perspective_stop_container(self, tag):
+        """ Remote call to stop container given the tag.
+        
+            @param tag:    Tag associated with a container.
+            @type tag:     string
+        """
         self.user.remote_destroyContainer(tag)
 
     def perspective_list_containers(self):
+        """ Remote call to list containers under the logged in user.
+        """
         return defer.succeed(self.console._list_user_containers(self.user))
 
     def perspective_list_containers_by_user(self, userID):
+        """ Remote call to list containers under a given user.
+            
+            @param userID:    The username
+            @type userID:     string
+        """
         user = self.console._root._getUser(userID)
         return defer.succeed(self.console._list_user_containers(user))
 
     def perspective_get_rosapi_connect_info(self, tag):
+        """ Remote call to get rosapi request URL and key for a particular 
+            container.
+            
+            @param tag:    Tag associated with a container.
+            @type tag:     string
+        """
         uid = uuid4().hex
         try:
             self.user._containers[tag]._obj.registerconsole(self.user.userID, 
@@ -160,41 +236,81 @@ class UserAvatar(Avatar):
             raise InternalError('No such container')
             
     def perspective_start_node(self, cTag, nTag, pkg, exe, args):
+        """ Remote call to add a node to a ROS environment.
+        """
         self.user.remote_addNode(cTag, nTag, pkg, exe, args)
     
     def perspective_stop_node(self, cTag, nTag):
+        """ Remote call to remove a node from a ROS environment.
+        """
         self.user.remote_removeNode(cTag, nTag)
         
     def perspective_add_parameter(self, cTag, name, value):
+        """ Remote call to add a parameter to a ROS environment.
+        """
         self.user.remote_addParameter(cTag, name, value)
         
     def perspective_remove_parameter(self, cTag, name):
+        """ Remote call to remove a parameter from a ROS environment.
+        """
         self.user.remote_removeParameter(cTag, name)
         
     def perspective_add_interface(self, eTag, iTag, iType, iCls, addr = ''):
+        """ Remote call to add an interface.
+        """
         self.user.remote_addInterface(eTag, iTag, iType, iCls, addr)
 
     def perspective_remove_interface(self, eTag, iTag):
+        """ Remote call to remove an interface.
+        """
         self.user.remote_removeInterface(eTag, iTag)
     
     def perspective_add_connection(self, tag1, tag2):
+        """ Remote call to add a connection between two interfaces.
+
+            @param tag1:    Tag for first interface
+            @type tag1:     string
+
+            @param tag2:    Tag for second interface
+            @type tag2:     string
+        """
         self.user.remote_addConnection(tag1, tag2)    
         
     def perspective_remove_connection(self, tag1, tag2):
+        """ Remote call to remove connection between two interfaces.
+
+            @param tag1:    Tag for first interface
+            @type tag1:     string
+            @param tag2:    Tag for second interface
+            @type tag2:     string
+        """
         self.user.remote_removeConnection(tag1, tag2)
     
     def perspective_start_robot(self, robotID):
+        """ Remote call to start robot with given ID. Useless for now.
+
+            @param robotID:    ID for the robot
+            @type robotID:     string
+        """
         self.user.createRobot(robotID)
     
     def perspective_stop_robot(self, robotID):
         pass
     
     def perspective_list_robots(self):
+        """ List Robots under the logged in user.
+        """
         return defer.succeed(self.console._list_user_robots(self.user))
 
     def perspective_list_robots_by_user(self, userID):
+        """ List robots under the user specified.
+        
+            @param userID:    The username
+            @type userID:     string
+        """
         user = self.console._root._getUser(userID)
         return defer.succeed(self.console._list_user_robots(user))
+
 
 class Console(object):
     """
@@ -212,7 +328,7 @@ class Console(object):
     
     # The following method is only accessible to the Admin user
     def _list_machines(self):
-        """ Gets a list of all machines that are available in the Cloud Engine
+        """ Gets a list of all machines that are available in the Cloud Engine.
         This should be only accessible to the top level admin for security 
         reasons
         
@@ -223,7 +339,7 @@ class Console(object):
     
 
     def _list_machines_byIP(self):
-        """ Gets a list of all machines that are available in the Cloud Engine
+        """ Gets a list of all machines that are available in the Cloud Engine.
         This should be only accessible to the top level admin for security 
         reasons
         
@@ -233,7 +349,7 @@ class Console(object):
         return [machine.IP for machine in self._list_machines()]
     
     def _list_machine_containers(self, machineIP):
-        """ Gets a list of all containers available in the Machine
+        """ Gets a list of all containers available in the Machine.
         This should be only accessible to the top level admin for security 
         reasons
         
@@ -252,7 +368,7 @@ class Console(object):
             raise InternalError('No such machine')
 
     def _list_machine_stats(self, machineIP):
-        """ Gets some useful facts about the Machine
+        """ Gets some useful facts about the Machine.
         This should be only accessible to the top level admin for security 
         reasons
         
@@ -273,7 +389,7 @@ class Console(object):
             raise InternalError('No such machine')
     
     def _list_machine_users(self, machine):
-        """ Gets some useful facts about the Machine
+        """ List users using a machine's resources.
         This should be only accessible to the top level admin for security 
         reasons
         
@@ -288,7 +404,7 @@ class Console(object):
         return machine._users.keys()
     
     def _list_userID(self):
-        """ Gets a list of all users that are logged into the Cloud Engine
+        """ Gets a list of all users that are logged into the Cloud Engine.
         This should be only accessible to the top level admin for security 
         reasons
         

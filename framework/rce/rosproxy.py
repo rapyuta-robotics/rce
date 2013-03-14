@@ -67,13 +67,25 @@ class ROSProxy():
         return [x[0] for x in get_published_topics()]
 
 class ConsoleROSProxyAuthentication(Resource):
+    """ Authenticator and Request handler for the ROS Proxy Web Server.
+    """
     
     isLeaf = True
+    
     def __init__(self):
         self._ros = ROSProxy()
         self._FILE = "/opt/rce/data/rosenvbridge.db"
         
     def _checkDB(self, userID, key):
+        """ Method to check the rosproxy database to authenticate a web 
+            request.
+
+            @param userID:    Username
+            @type userID:     string
+
+            @param key:       Secret key
+            @type key:        string
+        """
         
         found = False
         with open(self._FILE, "r+") as bridgefile:
@@ -110,6 +122,10 @@ class ConsoleROSProxyAuthentication(Resource):
         return self.parseInputLine(action)
 
     def parseInputLine(self, action):
+        """ Function to route various command requests.
+            @param action:    The command to be executed.
+            @type action:     list
+        """
         output = None
         if action is not None and action is not '':
             func = getattr(self, 'cmd_' + str(action[0]).upper(), None)
@@ -120,9 +136,13 @@ class ConsoleROSProxyAuthentication(Resource):
         return succeed(output)
                 
     def cmd_SERVICES(self):
+        """ Handler for services call.
+        """
         return self._ros.get_services()
         
     def cmd_TOPICS(self):
+        """ Handler for topics call.
+        """
         return self._ros.get_topics()
 
     def _processGETResp(self, output, request):
