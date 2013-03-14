@@ -286,7 +286,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     pconsole = Portal(consolerealm, (externalCred,))
     
     #Console Connection
-    reactor.listenTCP(8800, PBServerFactory(pconsole))
+    reactor.listenTCP(8081, PBServerFactory(pconsole))
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
     reactor.run()

@@ -365,7 +365,7 @@ class ConsoleClient(HistoricRecvLine):
         HistoricRecvLine.connectionMade(self)
         self._factory = PBClientFactory()
 
-        reactor.connectTCP(self._masterIP, 8800, self._factory)
+        reactor.connectTCP(self._masterIP, 8081, self._factory)
         self.terminal.write("Username: ")
 
     def parseInputLine(self, line):
