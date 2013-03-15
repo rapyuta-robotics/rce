@@ -48,7 +48,7 @@ from twisted.spread.pb import IPerspective, PBServerFactory, Avatar
 from rce.error import InternalError
 
 
-class InterfaceConnection2way(dict):
+class InterfaceConnection2way(object):
     """ A simple two-way dictionary implementation
     """
 
@@ -82,7 +82,7 @@ class InterfaceConnection2way(dict):
         return self._d.iteritems()
     
     def values(self):
-        return self._d.valus()
+        return self._d.values()
 
     def itervalues(self):
         return self._d.itervalues()
