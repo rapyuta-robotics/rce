@@ -49,51 +49,43 @@ from rce.error import InternalError
 
 
 class InterfaceConnection2way(dict):
-    """ A two-way dictionary implementation
+    """ A simple two-way dictionary implementation
     """
 
-    def __init__(self, d=None):
-        dict.__init__(self)
-        self._d1 = defaultdict(list)
-        self._d2 = defaultdict(list)
+    def __init__(self):
+        self._d = defaultdict(list)
 
     def __getitem__(self, key):
-        ret = []
-        count = 0
-        try:
-            ret.extend(self._d1.get(key))
-        except TypeError:
-            count+=1
-        try:
-            ret.extend(*self._d2.get(key))
-        except TypeError:
-            count+=1
-        if count == 2:
+        ret = self._d.get(key)
+        if ret :
+            return ret 
+        else :
             raise KeyError
-        else:
-            return ret
 
     def __setitem__(self, key, val):
-        self._d1[key].append(val)
-        self._d2[val].append(key)
+        self._d[key].append(val)
+        self._d[val].append(key)
 
-    def key(self, val):
-        return self._d2[val]
+    def keys(self):
+        return self._d.keys()
 
-    def keys(self, val):
-        return self._d2.keys()
-
-    def iterkeys(self, val):
-        return self._d2.iterkeys()
+    def iterkeys(self):
+        return self._d.iterkeys()
 
     def get(self, key):
-        return self._d1[key]
+        self._d.get(key)
 
-    def values(self, key):
-        return self._d1.values()
+    def items(self):
+        return self._d.items()
 
-    def itervalues(self, key):
-        return self._d1.itervalues()
+    def iteritems(self):
+        return self._d.iteritems()
+    
+    def values(self):
+        return self._d.valus()
+
+    def itervalues(self):
+        return self._d.itervalues()
 
 
 class UnauthorisedLogon(Exception):
