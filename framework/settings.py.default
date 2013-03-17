@@ -156,7 +156,8 @@ def prepare_conf():
     """
     import os
     path='/'.join([os.getenv('HOME'),'.rce'])
-    os.makedirs(path)
+    if not os.path.exists(path):
+    	os.makedirs(path)
     return '/'.join([path,'creds'])
 PASSWORD_FILE = prepare_conf()
 #PASSWORD_FILE = ''
