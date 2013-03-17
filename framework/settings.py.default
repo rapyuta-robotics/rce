@@ -155,8 +155,8 @@ def prepare_conf():
     TODO: Expand this similar class to parse the entire settings file so as to store it in the user accessible dir
     """
     import os
-    path=(os.path.join((os.getenv('HOME'),'.rce')))
+    path='/'.join([os.getenv('HOME'),'.rce'])
     os.makedirs(path)
-    return os.path.join(path,creds)
-#PASSWORD_FILE = prepare_conf()
-PASSWORD_FILE = ''
+    return '/'.join([path,'creds'])
+PASSWORD_FILE = prepare_conf()
+#PASSWORD_FILE = ''
