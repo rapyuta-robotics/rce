@@ -270,7 +270,7 @@ class RoboEarthCloudEngine(object):
 
 
 def main(reactor, internalCred, externalCred, internalPort, externalPort,
-         intIF, commPort, consolePort):
+         intIF, commPort, consolePort, extIF):
     log.startLogging(sys.stdout)
     
     rce = RoboEarthCloudEngine(reactor, externalCred, intIF, commPort)
@@ -289,4 +289,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     reactor.listenTCP(consolePort, PBServerFactory(pconsole))
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
+    print "\n\nConnection Details : \nn"
+    print "Internal IP Address : ", getIP(intIF)
+    print "Global IP Address : ", getIP(extIF),"\n\n"
     reactor.run()
