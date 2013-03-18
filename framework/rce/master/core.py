@@ -289,7 +289,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     reactor.listenTCP(consolePort, PBServerFactory(pconsole))
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
-    print "\n\nConnection Details : \nn"
+    print "\nConnection Details : \n"
     print "Internal IP Address : ", getIP(intIF)
-    print "Global IP Address : ", getIP(extIF),"\n\n"
+    print "Global IP Address : ", getIP(extIF),"\n"
     reactor.run()
