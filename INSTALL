@@ -40,7 +40,7 @@ I. Prepare the Host System :
 
     3.  Add the ROS repository
           sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-          wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+          curl http://packages.ros.org/ros.key | sudo apt-key add -
           sudo apt-get update
 
     4.  Install the required packages for containers, twisted and ROS
@@ -83,14 +83,14 @@ II.  Generate the container filesystem
 
         d.  Add the ROS repository (refer to http://www.ros.org/wiki/fuerte/Installation/Ubuntu)
               sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-              wget http://packages.ros.org/ros.key -O - | apt-key add -
+              curl http://packages.ros.org/ros.key | apt-key add -
               apt-get update
 
         e.  Install the required packages for twisted and ROS
                 Minimal installation:
                     apt-get install python-twisted-core python-twisted-web ros-fuerte-ros-comm ros-fuerte-common-msgs
                 For test nodes:
-                    apt-get install python-twisted-core ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
+                    apt-get install python-twisted-core python-twisted-web ros-fuerte-ros-comm ros-fuerte-common-msgs ros-fuerte-vision-opencv
 
         f.  Leave the container filesystem
               exit
