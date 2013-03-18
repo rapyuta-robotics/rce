@@ -34,7 +34,7 @@
 from uuid import UUID
 from multiprocessing.managers import SyncManager
 from time import sleep
-import fcntl
+import fcntl, os
 
 # ROS specific imports
 import rospy
@@ -293,6 +293,7 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
     
+    print 'JAVA_HOME:', os.environ['JAVA_HOME']
     rospy.init_node('RCE_Master')
     print 'connect to ', masterIP, masterPort
     

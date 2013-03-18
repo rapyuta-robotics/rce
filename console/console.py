@@ -532,8 +532,7 @@ class ConsoleClient(HistoricRecvLine):
                     config.subOptions['exe'], config.subOptions['args'])
 
                 elif (config.subOptions['ctag'] and config.subOptions['ntag'] 
-                     and
-                     config.subOptions['pkg'] and config.subOptions['exe']):
+                     and config.subOptions['pkg'] and config.subOptions['exe']):
                     self.callToUser('start_node', config.subOptions['ctag'], 
                     config.subOptions['ntag'], config.subOptions['pkg'], 
                     config.subOptions['exe'])

@@ -237,7 +237,7 @@ class UserAvatar(Avatar):
         except KeyError:
             raise InternalError('No such container')
             
-    def perspective_start_node(self, cTag, nTag, pkg, exe, args):
+    def perspective_start_node(self, cTag, nTag, pkg, exe, args=''):
         """ Remote call to add a node to a ROS environment.
         """
         self.user.remote_addNode(cTag, nTag, pkg, exe, args)
