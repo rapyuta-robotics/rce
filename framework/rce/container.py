@@ -193,9 +193,9 @@ class RCEContainer(Referenceable):
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
         self._address = '{0}:{1}'.format(ip, client.envPort)
-        self._rosproxyaddress = '{0}:{1}'.format(ip, client.rosproxyPort)
+        self._rosproxyAddress = '{0}:{1}'.format(ip, client.rosproxyPort)
         self._fwdPort = str(nr + 8700)
-        self._rosproxyfwdPort = str(nr + 10700)
+        self._rosproxyFwdPort = str(nr + 10700)
         
         self._container = Container(client.reactor, client.rootfs,
                                     self._confDir, self._name, ip)
@@ -281,9 +281,9 @@ class RCEContainer(Referenceable):
         self._rosremoteRule.protocol = 'tcp'
         self._rosremoteRule.dst = self._client.internalIP
         m = self._rosremoteRule.create_match('tcp')
-        m.dport = self._rosproxyfwdPort
+        m.dport = self._rosproxyFwdPort
         t = self._rosremoteRule.create_target('DNAT')
-        t.to_destination = self._rosproxyaddress
+        t.to_destination = self._rosproxyAddress
         
         #add local(loopback) rule
         self._roslocalRule = iptc.Rule()
@@ -291,9 +291,9 @@ class RCEContainer(Referenceable):
         self._roslocalRule.out_interface = 'lo'
         self._roslocalRule.dst = self._client.internalIP
         m = self._roslocalRule.create_match('tcp')
-        m.dport = self._rosproxyfwdPort
+        m.dport = self._rosproxyFwdPort
         t = self._roslocalRule.create_target('DNAT')
-        t.to_destination = self._rosproxyaddress
+        t.to_destination = self._rosproxyAddress
 
         self._client.prerouting.insert_rule(self._rosremoteRule)
         self._client.output.insert_rule(self._roslocalRule)
@@ -370,49 +370,55 @@ class ContainerClient(Referenceable):
                  rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir):
         """ Initialize the Container Client.
             
-            @param reactor:     Reference to the twisted reactor.
-            @type  reactor:     twisted::reactor
+            @param reactor:      Reference to the twisted reactor.
+            @type  reactor:      twisted::reactor
             
-            @param masterIP:    IP address of the Master process.
-            @type  masterIP:    str
+            @param masterIP:     IP address of the Master process.
+            @type  masterIP:     str
             
-            @param intIF:       Name of the network interface used for the
-                                internal network.
-            @type  intIF:       str
+            @param intIF:        Name of the network interface used for the
+                                 internal network.
+            @type  intIF:        str
             
-            @param bridgeIF:    Name of the bridge interface used for the
-                                container network.
-            @type  bridgeIF:    str
+            @param bridgeIF:     Name of the bridge interface used for the
+                                 container network.
+            @type  bridgeIF:     str
             
-            @param envPort:     Port where the environment process running
-                                inside the container is listening for
-                                connections to other endpoints. (Used for
-                                port forwarding.)
-            @type  envPort:     int
+            @param envPort:      Port where the environment process running
+                                 inside the container is listening for
+                                 connections to other endpoints. (Used for
+                                 port forwarding.)
+            @type  envPort:      int
             
-            @param rootfsDir:   Filesystem path to the root directory of the
-                                container filesystem.
-            @type  rootfsDir:   str
+            @param rosproxyPort: Port where the rosproxy process running
+                                 inside the container is listening for
+                                 connections to console clients. (Used for
+                                 port forwarding.)
+            @type  rosproxyPort: int
             
-            @param confDir:     Filesystem path to the directory where
-                                container configuration files should be stored.
-            @type  confDir:     str
+            @param rootfsDir:    Filesystem path to the root directory of the
+                                 container filesystem.
+            @type  rootfsDir:    str
             
-            @param dataDir:     Filesystem path to the directory where
-                                temporary data of a container should be stored.
-            @type  dataDir:     str
+            @param confDir:      Filesystem path to the directory where
+                                 container configuration files should be stored.
+            @type  confDir:      str
             
-            @param srcDir:      Filesystem path to the directory where the
-                                source of the cloud engine is located.
-            @type  srcDir:      str
+            @param dataDir:      Filesystem path to the directory where
+                                 temporary data of a container should be stored.
+            @type  dataDir:      str
             
-            @param pkgDir:      Filesystem paths to the package directories
-                                as a list of tuples where each tuple contains
-                                the path to the directory in the host machine
-                                and the path to the directory to which the
-                                host directory will be bound in the container
-                                filesystem (without the @param rootfsDir).
-            @type  pkgDir:      [(str, str)]
+            @param srcDir:       Filesystem path to the directory where the
+                                 source of the cloud engine is located.
+            @type  srcDir:       str
+            
+            @param pkgDir:       Filesystem paths to the package directories
+                                 as a list of tuples where each tuple contains
+                                 the path to the directory in the host machine
+                                 and the path to the directory to which the
+                                 host directory will be bound in the container
+                                 filesystem (without the @param rootfsDir).
+            @type  pkgDir:       [(str, str)]
         """
         self._reactor = reactor
         self._internalIP = getIP(intIF)
