@@ -88,13 +88,15 @@ class RCECredChecker:
             print('The user lacks privileges to access/modify the password file.')
             exit()
 
-        # Provision for first run needs to be initialized with the default admin user creds
-        if not os.path.exists(self.filename):
-            self.addUser('admin','admin', provision= True)
-            self.addUser('adminInfra','admin', provision= True)
-            # TODO : Remove this user later , temporarily inserting for maintaining compat with current test classes.
-            self.addUser('testUser','testUser', provision= True)
-            Warning('Please reset the admin and admin-client password using the console utility. The Default password is admin ')
+        # Provision required users
+        required_users = {'admin':'admin','adminInfra':'admin','testUser':'testUser'} # TODO : Remove testUser later , temporarily inserting for maintaining compat with current test classes.
+        for username in required_users.iterkeys():
+            try:
+                self.getUser(username)
+            except KeyError:
+                self.addUser(username,required_users[username], provision= True)
+                Warning('Please reset the password for {user} using the console utility. The Default password is {passwd} '.format(
+                                                                                 user=username,passwd=required_users[username]))
 
 
     def __getstate__(self):
