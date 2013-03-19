@@ -73,8 +73,8 @@ kill timeout 5
 script
     # setup environment
     . /opt/rce/setup.sh
-    chmod 600 /opt/init/rceComm.conf
-    chown root:root /opt/init/rceComm.conf
+    chmod 600 /etc/init/rceComm.conf
+    chown root:root /etc/init/rceComm.conf
     
     # start environment node
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {masterIP} {uid} {passwd}
@@ -220,7 +220,7 @@ class RCEContainer(Referenceable):
         self._container.extendFstab(rceDir, 'opt/rce/data', False)
         self._container.extendFstab(client.srcDir, 'opt/rce/src', True)
         self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
-                                    'etc/init/rceComm.conf', True)
+                                    'etc/init/rceComm.conf', False)
         # TODO: For the moment there is no upstart launcher.
 #        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
 #                                    'etc/init/rceLauncher.conf', True)
