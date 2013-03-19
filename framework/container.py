@@ -33,6 +33,7 @@
 # twisted specific imports
 from twisted.internet import reactor
 from twisted.cred.credentials import UsernamePassword
+from hashlib import md5
 
 # Custom imports
 from rce.container import main
@@ -56,7 +57,7 @@ def _get_argparse():
 
 if __name__ == '__main__':
     # Credentials which should be used to login to Master process
-    cred = UsernamePassword('container', 'container')
+    cred = UsernamePassword('container', md5('admin').digest())
     
     # Before we start, check if:
     #  - the script can be executed, i.e. if we have the necessary super

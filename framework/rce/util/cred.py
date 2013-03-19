@@ -55,6 +55,22 @@ class CredentialError(Exception):
     pass
 
 
+class RCEInternalChecker(RCECredChecker):
+    
+    def requestAvatarId(self, c):
+        try:
+            if c.username in ('container','robot','environment'):
+                u, p = self.getUser('admin')
+        except KeyError:
+            return defer.fail(error.UnauthorizedLogin())
+        else:
+            if isinstance(c, UsernamePassword):
+                return defer.maybeDeferred(c.checkPassword, p
+                        ).addCallback(self._cbPasswordMatch, u)
+            else :
+                return defer.maybeDeferred(c.checkMD5Password, p
+                        ).addCallback(self._cbPasswordMatch, u)
+
 class RCECredChecker:
     """The RCE file-based, text-based username/password database.
     """

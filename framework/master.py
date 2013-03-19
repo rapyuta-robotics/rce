@@ -43,9 +43,7 @@ import settings
 # Credentials checkers used in the cloud engine
 # TODO: At the moment only one user available and Password database in memory
 extCred = RCECredChecker(settings.PASSWORD_FILE)
-intCred = InMemoryUsernamePasswordDatabaseDontUse(robot='robot',
-                                                  container='container',
-                                                  environment='environment')
+intCred = RCEInternalChecker(settings.PASSWORD_FILE)
 
 
 # Run main function

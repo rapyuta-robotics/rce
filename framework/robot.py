@@ -33,6 +33,7 @@
 # Before we start to import everything check if we have the right amount of
 # arguments
 import sys
+from hashlib import md5
 
 if len(sys.argv) != 2:
     from os.path import basename
@@ -50,7 +51,7 @@ import settings
 
 
 # Credentials which should be used to login to Master process
-cred = UsernamePassword('robot', 'robot')
+cred = UsernamePassword('robot', md5('admin').digest())
 
 
 # Run main function
