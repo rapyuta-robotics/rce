@@ -37,6 +37,7 @@ from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
 # Custom imports
 from rce.master.core import main
 from rce.util.cred import RCECredChecker
+from rce.util.cred import RCEInternalChecker
 import settings
 
 
