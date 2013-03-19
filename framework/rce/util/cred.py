@@ -65,7 +65,7 @@ class RCECredChecker:
     _credCache = None
     _cacheTimestamp = 0
 
-    
+
     def __init__(self, filename):
         """
         @type filename: C{str}
@@ -95,7 +95,7 @@ class RCECredChecker:
             self.addUser('testUser','testUser', provision= True)
             Warning('Please reset the admin password using the console utility. The Default password is admin ')
 
-    
+
     def __getstate__(self):
         d = dict(vars(self))
         for k in '_credCache', '_cacheTimestamp':
@@ -121,7 +121,7 @@ class RCECredChecker:
                 parts = self.scanner.match(line).groups()
                 yield parts
 
-    
+
     def getUser(self, username):
         """"Fetch username from db or cache, internal method"""
         if self._credCache is None or os.path.getmtime(self.filename) > self._cacheTimestamp:
@@ -129,7 +129,7 @@ class RCECredChecker:
             self._credCache = dict(self._loadCredentials())
         return username, self._credCache[username]
 
-    
+
     def requestAvatarId(self, c):
         try:
             u, p = self.getUser(c.username)
@@ -143,18 +143,18 @@ class RCECredChecker:
                 return defer.maybeDeferred(c.checkMD5Password, p
                         ).addCallback(self._cbPasswordMatch, u)
 
-    
+
     def addUser(self, username, password, provision= False):
         """ Change password for the username:
-        
+
         @param username:        username
         @type  username:        str
-        
+
         @param password:        password
-        @type  password:        str   
-        
+        @type  password:        str
+
         @param provision:       Special flag to indicate provisioning mode
-        @type  password:        bool  
+        @type  password:        bool
         """
         if not (self.pass_validator(password) or provision):
             raise CredentialError(_PASSWORD_FAIL)
@@ -170,10 +170,10 @@ class RCECredChecker:
                 f.writelines((':'.join((username,md5(password).digest()))+'\n'))
             return True
 
-    
+
     def removeUser(self,username):
         """ Remove the given user:
-        
+
         @param username:         username
         @type  username:         str
         """
@@ -187,15 +187,15 @@ class RCECredChecker:
         except KeyError:
             raise CredentialError('No such user')
 
-    
+
     def passwd(self,username, password):
         """ Change password for the username:
-        
+
         @param username:         username
         @type  username:         str
-        
+
         @param password:        password
-        @type  password:        str     
+        @type  password:        str
         """
         if not self.pass_validator(password):
             raise CredentialError(_PASSWORD_FAIL)
@@ -212,17 +212,13 @@ class RCECredChecker:
 
 
 class RCEInternalChecker(RCECredChecker):
-    
+
     def requestAvatarId(self, c):
         try:
             if c.username in ('container','robot','environment'):
-                u, p = self.getUser('admin')
+                p = self.getUser('admin')[1]
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
-            if isinstance(c, UsernamePassword):
-                return defer.maybeDeferred(c.checkPassword, p
-                        ).addCallback(self._cbPasswordMatch, u)
-            else :
-                return defer.maybeDeferred(c.checkMD5Password, p
-                        ).addCallback(self._cbPasswordMatch, u)
+            return defer.maybeDeferred(c.checkPassword, p
+                        ).addCallback(self._cbPasswordMatch, c.username)
