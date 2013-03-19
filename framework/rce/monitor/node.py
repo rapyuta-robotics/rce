@@ -181,7 +181,7 @@ class Node(Referenceable, ArgumentMixin):
         
         if exitCode:
             log.msg('Node ({0}) terminated with exit code: '
-                    '{1}\ncmd = {2}'.format(self._name, exitCode, self._cmd))
+                    '{1}'.format(self._name, exitCode))
         
         if self._owner:
             self._owner.unregisterNode(self)

@@ -30,10 +30,6 @@
 #     
 #     
 
-# Before we start to import everything check if we have the right amount of
-# arguments
-import sys
-
 # twisted specific imports
 from twisted.internet import reactor
 

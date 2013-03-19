@@ -31,7 +31,6 @@
 #     
 
 #python specific imports
-from multiprocessing.managers import SyncManager
 import sys, httplib, json, fcntl
 
 #twisted-specific imports
@@ -56,7 +55,7 @@ import rospy
 #rce specific imports
 from rce.error import InvalidRequest, InternalError, DeadConnection
 
-class ROSProxy():
+class ROSProxy(object):
     def get_services(self):
         """ Returns a list of all the services advertised in the ROS system """
         return get_service_list()
@@ -65,6 +64,7 @@ class ROSProxy():
         """ Returns a list of all the topics being published in the ROS system 
         """
         return [x[0] for x in get_published_topics()]
+
 
 class ConsoleROSProxyAuthentication(Resource):
     """ Authenticator and Request handler for the ROS Proxy Web Server.
@@ -96,8 +96,6 @@ class ConsoleROSProxyAuthentication(Resource):
                 if g[0] == userID and str(g[1].rstrip()) == str(key):
                     found = True
         return found
-
-
 
     def _processGETReq(self, args):
         """ Internally used method to process a GET request.

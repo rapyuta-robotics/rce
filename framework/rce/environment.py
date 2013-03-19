@@ -32,7 +32,6 @@
 
 # Python specific imports
 from uuid import UUID
-from multiprocessing.managers import SyncManager
 from time import sleep
 import fcntl
 

@@ -33,7 +33,6 @@
 # Python specific imports
 import sys
 from uuid import uuid4
-from multiprocessing.managers import SyncManager
 from collections import defaultdict
 
 #zope specific imports
@@ -101,8 +100,7 @@ class ConsoleDummyRealm(object):
     """
     implements(IRealm)
     
-    def __init__(self, reactor, rce):
-        self._reactor = reactor
+    def __init__(self, rce):
         self._rce = rce
         
     def requestAvatar(self, avatarId, mind, *interfaces):
@@ -113,9 +111,8 @@ class ConsoleDummyRealm(object):
 
         user = self._rce._getUser(avatarId)
         avatar = UserAvatar(user, self._rce._console)
-        def detach():
-            pass
-        return IPerspective, avatar, detach
+
+        return IPerspective, avatar, lambda: None
 
 
 class UserAvatar(Avatar):
@@ -126,10 +123,10 @@ class UserAvatar(Avatar):
         """ Initializer for user avatar. 
         
             @param user:    User object
-            @type user:     rce.master.User
+            @type user:     rce.master.user.User
             
             @param console: Reference to Console Proxy object
-            @type console:  rce.master.Console
+            @type console:  rce.master.console.Console
         """
         self.user = user
         self.console = console
@@ -229,7 +226,7 @@ class UserAvatar(Avatar):
         """
         uid = uuid4().hex
         try:
-            self.user._containers[tag]._obj.registerconsole(self.user.userID, 
+            self.user._containers[tag]._obj.registerConsole(self.user.userID, 
                                                             uid)
             d = self.user._containers[tag].getConnectInfo()
             d.addCallback(lambda addr: (addr, uid))
@@ -237,7 +234,7 @@ class UserAvatar(Avatar):
         except KeyError:
             raise InternalError('No such container')
             
-    def perspective_start_node(self, cTag, nTag, pkg, exe, args):
+    def perspective_start_node(self, cTag, nTag, pkg, exe, args=''):
         """ Remote call to add a node to a ROS environment.
         """
         self.user.remote_addNode(cTag, nTag, pkg, exe, args)
@@ -257,7 +254,7 @@ class UserAvatar(Avatar):
         """
         self.user.remote_removeParameter(cTag, name)
         
-    def perspective_add_interface(self, eTag, iTag, iType, iCls, addr = ''):
+    def perspective_add_interface(self, eTag, iTag, iType, iCls, addr=''):
         """ Remote call to add an interface.
         """
         self.user.remote_addInterface(eTag, iTag, iType, iCls, addr)
@@ -327,7 +324,6 @@ class Console(object):
         """
         self._root = root
     
-    
     # The following method is only accessible to the Admin user
     def _list_machines(self):
         """ Gets a list of all machines that are available in the Cloud Engine.
@@ -339,7 +335,6 @@ class Console(object):
         """
         return self._root._balancer._machines
     
-
     def _list_machines_byIP(self):
         """ Gets a list of all machines that are available in the Cloud Engine.
         This should be only accessible to the top level admin for security 
@@ -548,7 +543,7 @@ class Console(object):
         activities and connections.
         """
         #build the physical container graph
-        def get_containmer_tree(tag):
+        def get_container_tree(tag):
             container = self._retrieve_container_byTag(user, tag)
             nodes = container._nodes.keys()
             parameters = container._parameters.keys()
@@ -558,7 +553,7 @@ class Console(object):
 
         machines = defaultdict(list)
         for tag,container in user._containers.iteritems():
-            machines[container._machine.IP].append(get_containmer_tree(tag))
+            machines[container._machine.IP].append(get_container_tree(tag))
 
         #build the robots graph
         robots = {}

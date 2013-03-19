@@ -274,7 +274,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     log.startLogging(sys.stdout)
     
     rce = RoboEarthCloudEngine(reactor, externalCred, intIF, commPort)
-    consolerealm = ConsoleDummyRealm(reactor, rce)
+    consolerealm = ConsoleDummyRealm(rce)
 
     # Internal communication
     p = Portal(rce, (internalCred,))

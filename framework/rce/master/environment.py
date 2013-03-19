@@ -166,10 +166,10 @@ class Environment(Namespace):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
     
-    def registerconsole(self, userID, key):
+    def registerConsole(self, userID, key):
         """ Register a console user with the environment.
         """
-        self._endpoint.registerconsole(userID, key)
+        self._endpoint.registerConsole(userID, key)
         
     def destroy(self):
         """ Method should be called to destroy the environment and will take
@@ -228,10 +228,10 @@ class EnvironmentEndpoint(Endpoint):
         self.callRemote('createNamespace', status).chainDeferred(environment)
         return environment
     
-    def registerconsole(self, userID, key):
+    def registerConsole(self, userID, key):
         self.callRemote('addUsertoROSProxy', userID, key)
     
-    def unregisterconsole(self, userID, key):
+    def unregisterConsole(self, userID, key):
         self.callRemote('removeUserfromROSProxy', userID)
 
     def destroy(self):

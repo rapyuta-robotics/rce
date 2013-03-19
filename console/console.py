@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     consoleclient.py
+#     console.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -338,6 +338,7 @@ class ConsoleClient(HistoricRecvLine):
     """ The class creates the terminal and manages connections with Master
         and ROSAPI servers on specific containers
     """
+    
     def __init__(self, masterIP, consolePort):
         """ Initialize the ConsoleClient. 
 
@@ -351,7 +352,7 @@ class ConsoleClient(HistoricRecvLine):
         self._username = None
         self._password = None
         self._factory = None
-        self._connectedrosapinodes = {}
+        self._connected_rosapi_nodes = {}
 
     def showPrompt(self):
         """ Show the prompt >>>
@@ -395,7 +396,7 @@ class ConsoleClient(HistoricRecvLine):
             @type parameter:     string
         """
         def perform_action((url,key)):
-            self._connectedrosapinodes[parameter] = (url,key)
+            self._connected_rosapi_nodes[parameter] = (url,key)
             argList = [('userID', self._username), ('action', command), 
                              ('key', key)]
             try:
@@ -412,7 +413,7 @@ class ConsoleClient(HistoricRecvLine):
                                      e.msg, msg))
 
         try:
-            url, key = self._connectedrosapinodes[parameter]
+            url, key = self._connected_rosapi_nodes[parameter]
             perform_action((url, key))
         except KeyError:
             d = self._user.callRemote('get_rosapi_connect_info',
@@ -460,7 +461,7 @@ class ConsoleClient(HistoricRecvLine):
             config.parseOptions(line)
             if config.subCommand == 'add':
                 if (config.subOptions['username'] and 
-                   config.subOptions['password']):
+                    config.subOptions['password']):
                     self.callToUser('add_user', config.subOptions['username'],
                                            config.subOptions['password'])
 
@@ -471,7 +472,7 @@ class ConsoleClient(HistoricRecvLine):
             
             elif config.subCommand == 'update':
                 if (config.subOptions['username'] and 
-                config.subOptions['password']):
+                    config.subOptions['password']):
                     self.callToUser('update_user', 
                                     config.subOptions['username'],
                                     config.subOptions['password'])
@@ -480,7 +481,7 @@ class ConsoleClient(HistoricRecvLine):
                 self.callToUserAndDisplay('list_users')
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
 
     def cmd_CONTAINER(self, line):
         """
@@ -511,7 +512,7 @@ class ConsoleClient(HistoricRecvLine):
                                            config['username'])
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
         
     def cmd_NODE(self, line):
         """
@@ -532,8 +533,7 @@ class ConsoleClient(HistoricRecvLine):
                     config.subOptions['exe'], config.subOptions['args'])
 
                 elif (config.subOptions['ctag'] and config.subOptions['ntag'] 
-                     and
-                     config.subOptions['pkg'] and config.subOptions['exe']):
+                     and config.subOptions['pkg'] and config.subOptions['exe']):
                     self.callToUser('start_node', config.subOptions['ctag'], 
                     config.subOptions['ntag'], config.subOptions['pkg'], 
                     config.subOptions['exe'])
@@ -544,7 +544,7 @@ class ConsoleClient(HistoricRecvLine):
                     config.subOptions['ntag'])
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
 
     def cmd_PARAMETER(self, line):
         """
@@ -568,7 +568,7 @@ class ConsoleClient(HistoricRecvLine):
                     config.subOptions['ctag'], config.subOptions['name'])
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
     
     def cmd_INTERFACE(self, line):
         """
@@ -602,7 +602,7 @@ class ConsoleClient(HistoricRecvLine):
                     config.subOptions['etag'], config.subOptions['itag'])
                 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
     
     def cmd_CONNECTION(self, line):
         """
@@ -624,7 +624,7 @@ class ConsoleClient(HistoricRecvLine):
                     config.subOptions['tag1'], config.subOptions['tag2'])
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
                     
     def cmd_ROBOT(self, line):
         """
@@ -644,7 +644,7 @@ class ConsoleClient(HistoricRecvLine):
                                            config['username'])
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
 
     def cmd_MACHINE(self, line):
         """
@@ -666,7 +666,7 @@ class ConsoleClient(HistoricRecvLine):
                                            config['containers'])
 
         except usage.UsageError as errortext:
-            self.terminal.write("BUG in usage: {0}".format(str(errortext)))
+            self.terminal.write("BUG in usage: {0}".format(errortext))
 
     def cmd_HELP(self, line):
         """
