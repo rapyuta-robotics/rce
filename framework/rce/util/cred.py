@@ -91,9 +91,10 @@ class RCECredChecker:
         # Provision for first run needs to be initialized with the default admin user creds
         if not os.path.exists(self.filename):
             self.addUser('admin','admin', provision= True)
+            self.addUser('admin-client','admin', provision= True)
             # TODO : Remove this user later , temporarily inserting for maintaining compat with current test classes.
             self.addUser('testUser','testUser', provision= True)
-            Warning('Please reset the admin password using the console utility. The Default password is admin ')
+            Warning('Please reset the admin and admin-client password using the console utility. The Default password is admin ')
 
 
     def __getstate__(self):
@@ -216,7 +217,7 @@ class RCEInternalChecker(RCECredChecker):
     def requestAvatarId(self, c):
         try:
             if c.username in ('container','robot','environment'):
-                p = self.getUser('admin')[1]
+                p = self.getUser('admin-client')[1]
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
