@@ -33,11 +33,10 @@
 # Before we start to import everything check if we have the right amount of
 # arguments
 import sys
-from hashlib import md5
 
-if len(sys.argv) != 3:
+if len(sys.argv) != 4:
     from os.path import basename
-    print('Usage: {0} [masterIP] [uid]'.format(basename(sys.argv[0])))
+    print('Usage: {0} [masterIP] [uid] [passwd]'.format(basename(sys.argv[0])))
     exit(1)
 
 
@@ -51,7 +50,7 @@ import settings
 
 
 # Credentials which should be used to login to Master process
-cred = UsernamePassword('environment', md5('admin').digest())
+cred = UsernamePassword('environment', sys.argv[3])
 
 
 # Run main function

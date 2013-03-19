@@ -73,9 +73,11 @@ kill timeout 5
 script
     # setup environment
     . /opt/rce/setup.sh
+    chmod 600 /opt/init/rceComm.conf
+    chown root:root /opt/init/rceComm.conf
     
     # start environment node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {masterIP} {uid}
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {masterIP} {uid} {passwd}
 end script
 """
 
@@ -234,7 +236,7 @@ class RCEContainer(Referenceable):
         # Create upstart scripts
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
-                                         uid=uid))
+                                         uid=uid,passwd= self._client._passwd))
         
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI)
@@ -367,7 +369,7 @@ class ContainerClient(Referenceable):
         There can be only one Container Client per machine.
     """
     def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, 
-                 rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir):
+                 rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir, passwd):
         """ Initialize the Container Client.
             
             @param reactor:     Reference to the twisted reactor.
@@ -418,6 +420,7 @@ class ContainerClient(Referenceable):
         self._internalIP = getIP(intIF)
         self._envPort = envPort
         self._rosproxyPort = rosproxyPort
+        self._passwd = passwd
         
         bridgeIP = getIP(bridgeIF)
         
@@ -622,7 +625,7 @@ def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
     
     client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort, 
                              rosproxyPort, rootfsDir, confDir, dataDir, srcDir, 
-                             pkgDir)
+                             pkgDir, cred.password)
     
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
