@@ -32,13 +32,20 @@
 
 # Before we start to import everything check if we have the right amount of
 # arguments
-import sys
 from hashlib import md5
 
-if len(sys.argv) != 2:
-    from os.path import basename
-    print('Usage: {0} [masterIP]'.format(basename(sys.argv[0])))
-    exit(1)
+def _get_argparse():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(prog='robot',
+                            description='RCE Robot Client Process.')
+
+    parser.add_argument('ipMaster', help='IP address of master process.',
+                        type=str)
+    parser.add_argument('client-password', help='Admin-Client password',
+                        type=str)
+
+    return parser
 
 
 # twisted specific imports
@@ -49,12 +56,12 @@ from twisted.cred.credentials import UsernamePassword
 from rce.robot import main
 import settings
 
+if __name__ == '__main__':
 
-# Credentials which should be used to login to Master process
-cred = UsernamePassword('robot', md5('admin').digest())
+    args = _get_argparse().parse_args()
+    cred = UsernamePassword('robot', md5(args.client-password).digest())
 
-
-# Run main function
-main(reactor, cred, sys.argv[1], settings.MASTER_PORT, settings.EXT_IF,
-     settings.WS_PORT, settings.RCE_INTERNAL_PORT, settings.ROOT_PKG_DIR,
-     settings.CONVERTER_CLASSES)
+    # Run main function
+    main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.EXT_IF,
+         settings.WS_PORT, settings.RCE_INTERNAL_PORT, settings.ROOT_PKG_DIR,
+         settings.CONVERTER_CLASSES)

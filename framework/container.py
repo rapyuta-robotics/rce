@@ -48,6 +48,8 @@ def _get_argparse():
 
     parser.add_argument('ipMaster', help='IP address of master process.',
                         type=str)
+    parser.add_argument('client-password', help='container-client password',
+                        type=str)
     parser.add_argument('--maxContainers', help='Maximum Number of containers '
                         'to support on this machine.', type=int,
                         default=settings.MAX_CONTAINER)
@@ -57,7 +59,7 @@ def _get_argparse():
 
 if __name__ == '__main__':
     # Credentials which should be used to login to Master process
-    cred = UsernamePassword('container', md5('admin').digest())
+    
     
     # Before we start, check if:
     #  - the script can be executed, i.e. if we have the necessary super
@@ -71,6 +73,7 @@ if __name__ == '__main__':
         exit(1)
     
     args = _get_argparse().parse_args()
+    cred = UsernamePassword('container', md5(args.client-password).digest())
     
     main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.INT_IF,
          settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, 
