@@ -42,7 +42,7 @@ def _get_argparse():
 
     parser.add_argument('ipMaster', help='IP address of master process.',
                         type=str)
-    parser.add_argument('client-password', help='Admin-Client password',
+    parser.add_argument('client_password', help='Admin-Client password',
                         type=str)
 
     return parser
@@ -59,7 +59,7 @@ import settings
 if __name__ == '__main__':
 
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('robot', md5(args.client-password).digest())
+    cred = UsernamePassword('robot', md5(args.client_password).digest())
 
     # Run main function
     main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.EXT_IF,

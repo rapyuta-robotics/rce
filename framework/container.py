@@ -48,7 +48,7 @@ def _get_argparse():
 
     parser.add_argument('ipMaster', help='IP address of master process.',
                         type=str)
-    parser.add_argument('client-password', help='container-client password',
+    parser.add_argument('password', help='Admin-Infrastructure password',
                         type=str)
     parser.add_argument('--maxContainers', help='Maximum Number of containers '
                         'to support on this machine.', type=int,
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         exit(1)
     
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('container', md5(args.client-password).digest())
+    cred = UsernamePassword('container', md5(args.password).digest())
     
     main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.INT_IF,
          settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, 
