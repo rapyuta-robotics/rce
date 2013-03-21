@@ -35,6 +35,7 @@ from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 import sys, os, termios, tty, json
 import getopt
+from hashlib import sha512
 
 #twisted specific imports
 from twisted.python.log import err, startLogging
@@ -710,7 +711,7 @@ class ConsoleClient(HistoricRecvLine):
             self._mode = 'Terminal'
             self._password = line
             usernameLogin = self._factory.login(UsernamePassword(self._username,
-                                                self._password))
+                                                sha512(self._password).digest()))
             usernameLogin.addCallback(_cbConnected)
             usernameLogin.addErrback(_cbError, "Username/password login failed")
 

@@ -32,7 +32,7 @@
 
 # Before we start to import everything check if we have the right amount of
 # arguments
-from hashlib import md5
+from hashlib import sha512
 
 def _get_argparse():
     from argparse import ArgumentParser
@@ -59,7 +59,7 @@ import settings
 if __name__ == '__main__':
 
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('robot', md5(args.password).digest())
+    cred = UsernamePassword('robot', sha512(args.password).digest())
 
     # Run main function
     main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.EXT_IF,

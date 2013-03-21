@@ -33,7 +33,7 @@
 # twisted specific imports
 from twisted.internet import reactor
 from twisted.cred.credentials import UsernamePassword
-from hashlib import md5
+from hashlib import sha512
 
 # Custom imports
 from rce.container import main
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         exit(1)
     
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('container', md5(args.password).digest())
+    cred = UsernamePassword('container', sha512(args.password).digest())
     
     main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.INT_IF,
          settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, 

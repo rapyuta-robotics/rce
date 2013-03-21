@@ -32,7 +32,7 @@
 # global imports
 import os
 import fileinput
-from hashlib import md5
+from hashlib import sha512
 import re
 
 
@@ -41,8 +41,7 @@ from zope.interface import implements
 from twisted.internet import defer
 from twisted.python import failure
 from twisted.cred import error
-from twisted.cred.credentials import UsernamePassword
-from twisted.spread.pb import IUsernameMD5Password
+from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
 
@@ -73,7 +72,7 @@ class RCECredChecker:
         password information.
         """
         self.filename = filename
-        self.credentialInterfaces = (IUsernameMD5Password,)
+        self.credentialInterfaces = (IUsernameHashedPassword,)
         self.scanner = re.compile(_RE)
         pass_re = re.compile(_PASS_RE)
         self.pass_validator = lambda x : True if pass_re.match(x) else False
@@ -139,13 +138,8 @@ class RCECredChecker:
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
-            if isinstance(c, UsernamePassword):
-                return defer.maybeDeferred(c.checkPassword, p
+            return defer.maybeDeferred(c.checkPassword, p
                         ).addCallback(self._cbPasswordMatch, u)
-            else :
-                return defer.maybeDeferred(c.checkMD5Password, p
-                        ).addCallback(self._cbPasswordMatch, u)
-
 
     def addUser(self, username, password, provision= False):
         """ Change password for the username:
@@ -163,14 +157,14 @@ class RCECredChecker:
             raise CredentialError(_PASSWORD_FAIL)
         if provision:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,md5(password).digest()))+'\n'))
+                f.writelines((':'.join((username,sha512(password).digest()))+'\n'))
             return True
         try:
             self.getUser(username)
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,md5(password).digest()))+'\n'))
+                f.writelines((':'.join((username,sha512(password).digest()))+'\n'))
             return True
 
 
@@ -208,7 +202,7 @@ class RCECredChecker:
                 if self.scanner.match(line).groups()[0] != username:
                     print line[:-1]
                 else:
-                    print ':'.join((username,md5(password).digest()))
+                    print ':'.join((username,sha512(password).digest()))
             return True
         except KeyError:
             raise CredentialError('No such user')
