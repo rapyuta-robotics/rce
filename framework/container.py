@@ -33,7 +33,7 @@
 # twisted specific imports
 from twisted.internet import reactor
 from twisted.cred.credentials import UsernamePassword
-from hashlib import sha512
+from hashlib import sha256
 
 # Custom imports
 from rce.container import main
@@ -46,11 +46,13 @@ def _get_argparse():
     parser = ArgumentParser(prog='container',
                             description='RCE Container Client Slave.')
 
-    parser.add_argument('ipMaster', help='IP address of master process.',
+    parser.add_argument('MasterIP', help='IP address of Master Process.',
                         type=str)
-    parser.add_argument('password', help='Admin-Infrastructure password',
+    parser.add_argument('MasterPassword', help='Admin Password',
                         type=str)
-    parser.add_argument('--maxContainers', help='Maximum Number of containers '
+    parser.add_argument('InfraPassword', help='Admin-Infrastructure Password',
+                        type=str)
+    parser.add_argument('--maxContainers', help='Maximum Number of Containers '
                         'to support on this machine.', type=int,
                         default=settings.MAX_CONTAINER)
 
@@ -73,11 +75,12 @@ if __name__ == '__main__':
         exit(1)
     
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('container', sha512(args.password).digest())
+    cred = UsernamePassword('container', sha256(args.InfraPassword).digest())
+    MasterPasswd = sha256(args.MasterPassword).digest()
     
-    main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.INT_IF,
-         settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, 
-         settings.ROS_PROXY_PORT, settings.ROOTFS, settings.CONF_DIR, 
-         settings.DATA_DIR, settings.ROOT_SRC_DIR, settings.ROOT_PKG_DIR, 
-         args.maxContainers)
+    main(reactor, cred, args.MasterIP, MasterPasswd, cred.password, 
+         settings.MASTER_PORT, settings.INT_IF, settings.BRIDGE_IF,
+         settings.RCE_INTERNAL_PORT, settings.ROS_PROXY_PORT, settings.ROOTFS, 
+         settings.CONF_DIR, settings.DATA_DIR, settings.ROOT_SRC_DIR, 
+         settings.ROOT_PKG_DIR, args.maxContainers)
 

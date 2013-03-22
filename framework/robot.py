@@ -32,7 +32,7 @@
 
 # Before we start to import everything check if we have the right amount of
 # arguments
-from hashlib import sha512
+from hashlib import sha256
 
 def _get_argparse():
     from argparse import ArgumentParser
@@ -40,9 +40,9 @@ def _get_argparse():
     parser = ArgumentParser(prog='robot',
                             description='RCE Robot Client Process.')
 
-    parser.add_argument('ipMaster', help='IP address of master process.',
+    parser.add_argument('MasterIP', help='IP address of master process.',
                         type=str)
-    parser.add_argument('password', help='Admin-Infrastructure password',
+    parser.add_argument('InfraPassword', help='Admin-Infrastructure password',
                         type=str)
 
     return parser
@@ -59,9 +59,9 @@ import settings
 if __name__ == '__main__':
 
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('robot', sha512(args.password).digest())
+    cred = UsernamePassword('robot', sha256(args.InfraPassword).digest())
 
     # Run main function
-    main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.EXT_IF,
+    main(reactor, cred, args.MasterIP, settings.MASTER_PORT, settings.EXT_IF,
          settings.WS_PORT, settings.RCE_INTERNAL_PORT, settings.ROOT_PKG_DIR,
          settings.CONVERTER_CLASSES)

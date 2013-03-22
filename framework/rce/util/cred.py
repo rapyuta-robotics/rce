@@ -32,9 +32,10 @@
 # global imports
 import os
 import fileinput
-from hashlib import sha512
 import re
-
+from hashlib import sha256
+import base64
+from Crypto.Cipher import AES
 
 # twisted specific imports
 from zope.interface import implements
@@ -48,6 +49,26 @@ from twisted.cred.checkers import ICredentialsChecker
 _RE = r'(\w+):(.+)'
 _PASS_RE = r'^.*(?=.{4,10})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 _PASSWORD_FAIL = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
+
+# AES Encryption Stuff
+# AES ENcryptors Strength Depends on inpur password lenght , ensure it with appropriate hash
+# the block size for the cipher object; must be 32 for AES 256
+_BLOCK_SIZE = 32
+
+# the character used for padding--with a block cipher such as AES, the value
+# you encrypt must be a multiple of BLOCK_SIZE in length.  This character is
+# used to ensure that your value is always a multiple of BLOCK_SIZE
+_PADDING = '{'
+
+# one-liner to sufficiently pad the text to be encrypted
+pad = lambda s: s + (_BLOCK_SIZE - len(s) % _BLOCK_SIZE) * _PADDING
+
+# one-liners to encrypt/encode and decrypt/decode a string
+# encrypt with AES, encode with base64
+EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+cipher = lambda passwd: AES.new(passwd)
+salter = lambda u,p: sha256(u+p).digest
+
 
 
 class CredentialError(Exception):
@@ -157,14 +178,14 @@ class RCECredChecker:
             raise CredentialError(_PASSWORD_FAIL)
         if provision:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,sha512(password).digest()))+'\n'))
+                f.writelines((':'.join((username,sha256(password).digest()))+'\n'))
             return True
         try:
             self.getUser(username)
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f :
-                f.writelines((':'.join((username,sha512(password).digest()))+'\n'))
+                f.writelines((':'.join((username,sha256(password).digest()))+'\n'))
             return True
 
 
@@ -202,7 +223,7 @@ class RCECredChecker:
                 if self.scanner.match(line).groups()[0] != username:
                     print line[:-1]
                 else:
-                    print ':'.join((username,sha512(password).digest()))
+                    print ':'.join((username,sha256(password).digest()))
             return True
         except KeyError:
             raise CredentialError('No such user')
@@ -212,10 +233,16 @@ class RCEInternalChecker(RCECredChecker):
 
     def requestAvatarId(self, c):
         try:
-            if c.username in ('container','robot','environment'):
+            if c.username in ('container','robot'):
                 p = self.getUser('adminInfra')[1]
+                user = c.username
+            else: # it is the environment uuid
+                infra = self.getUser('adminInfra')[1]
+                main = self.getUser('admin')[1]
+                p = EncodeAES(cipher(main), salter(c.username+infra))
+                user = 'environment'
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
             return defer.maybeDeferred(c.checkPassword, p
-                        ).addCallback(self._cbPasswordMatch, c.username)
+                        ).addCallback(self._cbPasswordMatch, user)

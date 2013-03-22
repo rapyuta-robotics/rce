@@ -50,7 +50,7 @@ import settings
 
 
 # Credentials which should be used to login to Master process
-cred = UsernamePassword('environment', sys.argv[3])
+cred = UsernamePassword(sys.argv[2], sys.argv[3])
 
 
 # Run main function

@@ -55,6 +55,7 @@ from rce.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
 from rce.util.network import getIP
 from rce.util.path import processPkgPath, checkPath, checkExe
+from rce.util.cred import salter,EncodeAES,cipher
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
@@ -234,9 +235,11 @@ class RCEContainer(Referenceable):
             self._container.extendFstab(srcPath, destPath, True)
         
         # Create upstart scripts
+        passwd = EncodeAES(cipher(self._client._masterPasswd), 
+                               salter(uid+self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
-                                         uid=uid,passwd= self._client._passwd))
+                                         uid=uid,passwd= passwd))
         
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI)
@@ -368,12 +371,18 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, 
-                 rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir, passwd):
+    def __init__(self, reactor, masterPasswd, infraPasswd, masterIP, intIF, bridgeIF, envPort, 
+                 rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:      Reference to the twisted reactor.
             @type  reactor:      twisted::reactor
+            
+            @param masterPassd:  SHA 256 Digested Master Password.
+            @type  masterPassd:  str
+            
+            @param infraPasswd:  SHA 256 Digested Infra Password.
+            @type  infraPasswd:  str 
             
             @param masterIP:     IP address of the Master process.
             @type  masterIP:     str
@@ -426,7 +435,8 @@ class ContainerClient(Referenceable):
         self._internalIP = getIP(intIF)
         self._envPort = envPort
         self._rosproxyPort = rosproxyPort
-        self._passwd = passwd
+        self._masterPasswd = masterPasswd
+        self._infraPasswd = infraPasswd
         
         bridgeIP = getIP(bridgeIF)
         
@@ -618,7 +628,7 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort, 
+def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort, internalIF, bridgeIF, envPort, 
          rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
@@ -629,9 +639,9 @@ def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort, 
+    client = ContainerClient(reactor, masterIP, masterPassword, infraPasswd, internalIF, bridgeIF, envPort, 
                              rosproxyPort, rootfsDir, confDir, dataDir, srcDir, 
-                             pkgDir, cred.password)
+                             pkgDir)
     
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))

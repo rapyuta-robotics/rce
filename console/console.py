@@ -35,7 +35,7 @@ from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 import sys, os, termios, tty, json
 import getopt
-from hashlib import sha512
+from hashlib import sha256
 
 #twisted specific imports
 from twisted.python.log import err, startLogging
@@ -711,7 +711,7 @@ class ConsoleClient(HistoricRecvLine):
             self._mode = 'Terminal'
             self._password = line
             usernameLogin = self._factory.login(UsernamePassword(self._username,
-                                                sha512(self._password).digest()))
+                                                sha256(self._password).digest()))
             usernameLogin.addCallback(_cbConnected)
             usernameLogin.addErrback(_cbError, "Username/password login failed")
 
@@ -746,7 +746,7 @@ def _get_argparse():
     parser = ArgumentParser(prog='console',
                             description='RCE Monitoring terminal.')
 
-    parser.add_argument('ipMaster', help='IP address of master process.',
+    parser.add_argument('MasterIP', help='IP address of master process.',
                         type=str)
     
     parser.add_argument('--port', help='Console port to connect to.',
@@ -757,7 +757,7 @@ def _get_argparse():
 def main():
     startLogging(sys.stdout)
     args = _get_argparse().parse_args()
-    runWithProtocol(ConsoleClient, args.ipMaster, args.port)
+    runWithProtocol(ConsoleClient, args.MasterIP, args.port)
   
 if __name__ == '__main__':
     main()
