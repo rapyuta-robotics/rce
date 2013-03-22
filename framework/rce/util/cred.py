@@ -47,7 +47,7 @@ from twisted.cred.checkers import ICredentialsChecker
 
 
 _RE = r'(\w+):(.+)'
-_PASS_RE = r'^.*(?=.{4,10})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
+_PASS_RE = r'^.*(?=.{4,15})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 _PASSWORD_FAIL = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
 
 # AES Encryption Stuff
