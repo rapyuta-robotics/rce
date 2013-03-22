@@ -61,13 +61,13 @@ _BLOCK_SIZE = 32
 _PADDING = '{'
 
 # one-liner to sufficiently pad the text to be encrypted
-pad = lambda s: s + (_BLOCK_SIZE - len(s) % _BLOCK_SIZE) * _PADDING
+pad = lambda s: s + (_BLOCK_SIZE - len(str(s)) % _BLOCK_SIZE) * _PADDING
 
 # one-liners to encrypt/encode and decrypt/decode a string
 # encrypt with AES, encode with base64
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 cipher = lambda passwd: AES.new(passwd)
-salter = lambda u,p: sha256(u+p).digest
+salter = lambda u,p: sha256(u+p).digest()
 
 
 
@@ -239,7 +239,7 @@ class RCEInternalChecker(RCECredChecker):
             else: # it is the environment uuid
                 infra = self.getUser('adminInfra')[1]
                 main = self.getUser('admin')[1]
-                p = EncodeAES(cipher(main), salter(c.username+infra))
+                p = EncodeAES(cipher(main), salter(c.username,infra))
                 user = 'environment'
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())

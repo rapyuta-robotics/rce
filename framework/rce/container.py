@@ -236,7 +236,7 @@ class RCEContainer(Referenceable):
         
         # Create upstart scripts
         passwd = EncodeAES(cipher(self._client._masterPasswd), 
-                               salter(uid+self._client._infraPasswd))
+                               salter(uid,self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          uid=uid,passwd= passwd))
@@ -371,21 +371,21 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterPasswd, infraPasswd, masterIP, intIF, bridgeIF, envPort, 
+    def __init__(self, reactor, masterIP, masterPasswd, infraPasswd, intIF, bridgeIF, envPort, 
                  rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:      Reference to the twisted reactor.
             @type  reactor:      twisted::reactor
             
+            @param masterIP:     IP address of the Master process.
+            @type  masterIP:     str
+            
             @param masterPassd:  SHA 256 Digested Master Password.
             @type  masterPassd:  str
             
             @param infraPasswd:  SHA 256 Digested Infra Password.
             @type  infraPasswd:  str 
-            
-            @param masterIP:     IP address of the Master process.
-            @type  masterIP:     str
             
             @param intIF:        Name of the network interface used for the
                                  internal network.
