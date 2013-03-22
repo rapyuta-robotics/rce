@@ -47,7 +47,7 @@ from twisted.cred.checkers import ICredentialsChecker
 
 
 _RE = r'(\w+):(.+)'
-_PASS_RE = r'^.*(?=.{4,15})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
+_PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 _PASSWORD_FAIL = 'Password must be between 4-10 Digits one each of uppercase,lowercase, digit and special character '
 
 # AES Encryption Stuff
@@ -199,7 +199,6 @@ class RCECredChecker:
             self.getUser(username)# why bother reading the file if the user doesn't even exist !
             for line in fileinput.input(self.filename, inplace=1):
                 if self.scanner.match(line).groups()[0] != username:
-                    print line[:-1]
                     print line[:-1]
             return True
         except KeyError:
