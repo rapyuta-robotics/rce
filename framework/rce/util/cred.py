@@ -113,7 +113,7 @@ class RCECredChecker:
         for username in required_users.iterkeys():
             try:
                 self.getUser(username)
-            except KeyError:
+            except (KeyError,OSError):
                 self.addUser(username,required_users[username], provision= True)
                 Warning('Please reset the password for {user} using the console utility. The Default password is {passwd} '.format(
                                                                                  user=username,passwd=required_users[username]))
