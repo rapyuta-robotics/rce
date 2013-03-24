@@ -35,8 +35,7 @@ from uuid import uuid4
 
 # twisted specific imports
 from twisted.spread.pb import Referenceable
-from twisted.internet.defer import DeferredList, succeed
-from twisted.internet.address import IPv4Address
+from twisted.internet.defer import DeferredList
 
 # Custom imports
 from rce.error import InvalidRequest, AlreadyDead
@@ -73,12 +72,12 @@ class User(Referenceable):
     
     @property
     def robots(self):
-        """Robots owned by this User"""
+        """ Robots owned by this User. """
         return self._robots
 
     @property
     def containers(self):
-        """"Containers used by this User."""
+        """" Containers used by this User. """
         return self._containers
 
     def createRobot(self, robotID):
@@ -392,7 +391,7 @@ class User(Referenceable):
                                  "'{0}'.".format(tag))
     
     def _containerDied(self, container):
-        if self._robots:
+        if self._containers:
             for key, value in self._containers.iteritems():
                 if value == container:
                     del self._containers[key]
@@ -426,7 +425,6 @@ class User(Referenceable):
             destroying all objects owned by this User as well as deleting all
             circular references.
         """
-        print "Destroying user"
         for connection in self._connections.itervalues():
             connection.dontNotifyOnDeath(self._connectionDied)
         
@@ -815,7 +813,8 @@ class Container(_Wrapper):
             calls.
         """
         d = self._obj.getAddress()
-        d.addCallback(lambda addr: 'http://{0}:{1}/'.format(addr.host, addr.port+2000))
+        d.addCallback(lambda addr: 'http://{0}:{1}/'.format(addr.host,
+                                                            addr.port+2000))
         return d
 
     def _containerDied(self, container):

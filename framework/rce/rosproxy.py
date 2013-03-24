@@ -31,7 +31,9 @@
 #     
 
 #python specific imports
-import sys, httplib, json, fcntl
+import httplib
+import json
+import fcntl
 
 #twisted-specific imports
 from twisted.cred.error import UnauthorizedLogin
@@ -41,27 +43,30 @@ from twisted.web.server import NOT_DONE_YET, Site
 from twisted.internet.defer import fail, succeed
 
 #rosapi imports
-from rospy import get_published_topics
-from rosservice import get_service_list
-from rosservice import get_service_type as rosservice_get_service_type
-from rosservice import get_service_node as rosservice_get_service_node
-from rosservice import get_service_uri
-from rostopic import find_by_type
-from ros import rosnode, rosgraph
-from rosnode import get_node_names
-from rosgraph.masterapi import Master
 import rospy
+from rosservice import get_service_list
+# TODO: Unused imports
+#from rosservice import get_service_type as rosservice_get_service_type
+#from rosservice import get_service_node as rosservice_get_service_node
+#from rosservice import get_service_uri
+#from rostopic import find_by_type
+#from rosnode import get_node_names
+#from rosgraph.masterapi import Master
+
+get_published_topics = rospy.get_published_topics
 
 #rce specific imports
-from rce.error import InvalidRequest, InternalError, DeadConnection
+from rce.error import InvalidRequest, InternalError#, DeadConnection
+
 
 class ROSProxy(object):
     def get_services(self):
-        """ Returns a list of all the services advertised in the ROS system """
+        """ Returns a list of all the services advertised in the ROS system
+        """
         return get_service_list()
 
     def get_topics(self):
-        """ Returns a list of all the topics being published in the ROS system 
+        """ Returns a list of all the topics being published in the ROS system
         """
         return [x[0] for x in get_published_topics()]
 
@@ -69,15 +74,14 @@ class ROSProxy(object):
 class ConsoleROSProxyAuthentication(Resource):
     """ Authenticator and Request handler for the ROS Proxy Web Server.
     """
-    
     isLeaf = True
     
     def __init__(self):
         self._ros = ROSProxy()
         self._FILE = "/opt/rce/data/rosenvbridge.db"
-        
+    
     def _checkDB(self, userID, key):
-        """ Method to check the rosproxy database to authenticate a web 
+        """ Method to check the rosproxy database to authenticate a web
             request.
 
             @param userID:    Username
@@ -110,7 +114,7 @@ class ConsoleROSProxyAuthentication(Resource):
         
         if not self._checkDB(userID[0], key[0]):
             return fail(UnauthorizedLogin("Unknown user or key"))
-            
+        
         for name, param in [('action', action), ('userID', userID),
                             ('key', key)]:
             if len(param) != 1:
@@ -137,7 +141,7 @@ class ConsoleROSProxyAuthentication(Resource):
         """ Handler for services call.
         """
         return self._ros.get_services()
-        
+    
     def cmd_TOPICS(self):
         """ Handler for topics call.
         """
@@ -191,18 +195,18 @@ class ConsoleROSProxyAuthentication(Resource):
         
         return NOT_DONE_YET
 
+
 def main(reactor, rosproxyPort):
     f = open('/opt/rce/data/rosproxy.log', 'w')
     log.startLogging(f)
-        
+    
     def terminate():
         reactor.callFromThread(reactor.stop)
 
     rospy.on_shutdown(terminate)
     
     #HTTP Server
-    reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication())) 
-    
+    reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication()))
     
     reactor.run(installSignalHandlers=False)
     

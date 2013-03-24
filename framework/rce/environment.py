@@ -32,7 +32,6 @@
 
 # Python specific imports
 from uuid import UUID
-from time import sleep
 import fcntl
 
 # ROS specific imports
@@ -235,7 +234,7 @@ class EnvironmentClient(Endpoint):
         Endpoint.__init__(self, reactor, commPort)
         
         self._environment = None
-        self._FILE = "/opt/rce/data/rosenvbridge.db"
+        self._dbFile = "/opt/rce/data/rosenvbridge.db"
     
     def registerEnvironment(self, environment):
         assert self._environment is None
@@ -272,7 +271,9 @@ class EnvironmentClient(Endpoint):
             @param Key:       Secret key
             @type Key:        string
         """
-        with open(self._FILE, "a") as bridgefile:
+        # TODO: Should this be deferred to a separate thread due to flock,
+        #       which is a blocking call?
+        with open(self._dbFile, "a") as bridgefile:
             fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
             bridgefile.write(UserID+':'+Key+'\n')
         
@@ -288,6 +289,7 @@ class EnvironmentClient(Endpoint):
         
         Endpoint.terminate(self)
 
+
 def main(reactor, cred, masterIP, masterPort, commPort, uid):
     f = open('/opt/rce/data/env.log', 'w')
     log.startLogging(f)
@@ -299,6 +301,7 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
     reactor.connectTCP(masterIP, masterPort, factory)
     
     client = EnvironmentClient(reactor, commPort)
+    
     def terminate():
         reactor.callFromThread(client.terminate)
         reactor.callFromThread(reactor.stop)

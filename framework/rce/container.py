@@ -79,6 +79,7 @@ script
 end script
 """
 
+# TODO: rosapi upstart script can be made static
 _UPSTART_ROSAPI = """
 # description
 author "Mayank Singh"
@@ -252,7 +253,7 @@ class RCEContainer(Referenceable):
         """ Method which starts the container.
         """
         # can raise iptc.xtables.XTablesError
-        #add remote rule
+        #add remote rule for RCE internal communication
         self._remoteRule = iptc.Rule()
         self._remoteRule.protocol = 'tcp'
         self._remoteRule.dst = self._client.internalIP
@@ -261,7 +262,7 @@ class RCEContainer(Referenceable):
         t = self._remoteRule.create_target('DNAT')
         t.to_destination = self._address
         
-        #add local(loopback) rule
+        #add local (loopback) rule for RCE internal communication
         self._localRule = iptc.Rule()
         self._localRule.protocol = 'tcp'
         self._localRule.out_interface = 'lo'
@@ -270,13 +271,8 @@ class RCEContainer(Referenceable):
         m.dport = self._fwdPort
         t = self._localRule.create_target('DNAT')
         t.to_destination = self._address
-
-        self._client.prerouting.insert_rule(self._remoteRule)
-        self._client.output.insert_rule(self._localRule)
         
-        
-        #rules for rosproxy
-        #add remote rule
+        #add remote rule for rosproxy
         self._rosremoteRule = iptc.Rule()
         self._rosremoteRule.protocol = 'tcp'
         self._rosremoteRule.dst = self._client.internalIP
@@ -285,7 +281,7 @@ class RCEContainer(Referenceable):
         t = self._rosremoteRule.create_target('DNAT')
         t.to_destination = self._rosproxyAddress
         
-        #add local(loopback) rule
+        #add local(loopback) rule for rosproxy
         self._roslocalRule = iptc.Rule()
         self._roslocalRule.protocol = 'tcp'
         self._roslocalRule.out_interface = 'lo'
@@ -295,8 +291,11 @@ class RCEContainer(Referenceable):
         t = self._roslocalRule.create_target('DNAT')
         t.to_destination = self._rosproxyAddress
 
+        self._client.prerouting.insert_rule(self._remoteRule)
+        self._client.output.insert_rule(self._localRule)
         self._client.prerouting.insert_rule(self._rosremoteRule)
         self._client.output.insert_rule(self._roslocalRule)
+        
         return self._container.start(self._name)
     
     def remote_getPort(self):
@@ -479,13 +478,13 @@ class ContainerClient(Referenceable):
     @property
     def envPort(self):
         """ Port where the environment process running inside the container is
-            for new connections.
+            listening for new connections.
         """
         return self._envPort
     
     @property
     def rosproxyPort(self):
-        """ Port where the environment process running inside the container is
+        """ Port where the ROS proxy running inside the container is listening
             for new connections.
         """
         return self._rosproxyPort
@@ -615,7 +614,7 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort, 
+def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
          rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
@@ -626,8 +625,8 @@ def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort, 
-                             rosproxyPort, rootfsDir, confDir, dataDir, srcDir, 
+    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort,
+                             rosproxyPort, rootfsDir, confDir, dataDir, srcDir,
                              pkgDir)
     
     d = factory.login(cred, (client, maxNr))

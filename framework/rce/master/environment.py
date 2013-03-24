@@ -145,10 +145,11 @@ class Environment(Namespace):
                         value).chainDeferred(parameter)
         return parameter
     
-    def getAddress(self):
-        """ Get address of the endpoint of the environment namespace.
-        """
-        return self._endpoint.getAddress()
+    # TODO: Unused method
+#    def getAddress(self):
+#        """ Get the address of the endpoint of the environment namespace.
+#        """
+#        return self._endpoint.getAddress()
         
     def registerNode(self, node):
         assert node not in self._nodes

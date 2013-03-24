@@ -48,7 +48,7 @@ class Container(Proxy):
             @type  machine:     rce.master.machine.Machine
             
             @param userID:        UserID of the user who created the container.
-            @type  userID:        'str'            
+            @type  userID:        str
         """
         super(Container, self).__init__()
         self._userID = userID

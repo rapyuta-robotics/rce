@@ -30,6 +30,7 @@
 #     
 #     
 
+# Python specific imports
 from collections import Counter
 
 # Custom imports
@@ -140,17 +141,19 @@ class LoadBalancer(object):
         """ Internally used method to retrieve the machine where the next
             container should be created.
             
-            @param userID:        UserID of the user who created the container.
-            @type  userID:        str            
+            @param userID:      UserID of the user who created the container.
+            @type  userID:      str
         """
-        candidates  = [machine for machine in self._machines if machine._users[userID]]
+        candidates  = [machine for machine in self._machines
+                           if machine._users[userID]]
         try:
             machine = max(candidates, key=lambda m: m.availability)
         except ValueError: 
             try:
                 machine = max(self._machines, key=lambda m: m.availability)
             except ValueError:
-                raise ContainerProcessError('There is no free container process.')
+                raise ContainerProcessError('There is no free container '
+                                            'process.')
         
         if machine.availability:
             return machine
@@ -164,6 +167,9 @@ class LoadBalancer(object):
                                 environment process when he connects to the
                                 Master.
             @type  uid:         str
+            
+            @param userID:      UserID of the user who created the container.
+            @type  userID:      str
             
             @return:            New Container instance.
             @rtype:             rce.master.container.Container
@@ -235,8 +241,8 @@ class Machine(object):
                                 Master.
             @type  uid:         str
             
-            @param userID:        UserID of the user who created the container.
-            @type  userID:        str            
+            @param userID:      UserID of the user who created the container.
+            @type  userID:      str
             
             @return:            New Container instance.
             @rtype:             rce.master.container.Container
@@ -259,7 +265,7 @@ class Machine(object):
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
-        self._users[container._userID] -= 1        
+        self._users[container._userID] -= 1
     
     def listContainers(self):
         return self._containers

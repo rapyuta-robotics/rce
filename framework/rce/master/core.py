@@ -43,7 +43,6 @@ from twisted.cred.credentials import UsernamePassword
 from twisted.cred.portal import IRealm, Portal
 from twisted.spread.pb import IPerspective, PBServerFactory, Avatar
 from twisted.web.server import Site
-from twisted.internet import defer
 
 # Custom imports
 from rce.error import InternalError
@@ -54,8 +53,9 @@ from rce.master.network import Network
 from rce.master.environment import EnvironmentEndpoint
 from rce.master.robot import RobotEndpoint
 from rce.master.user import User
+from rce.master.console import Console, ConsoleDummyRealm
 from rce.util.network import getIP
-from rce.master.console import Console, UserAvatar, ConsoleDummyRealm
+
 
 class RoboEarthCloudEngine(object):
     """ Realm for the twisted cred system. It is responsible for storing all
@@ -274,22 +274,21 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     log.startLogging(sys.stdout)
     
     rce = RoboEarthCloudEngine(reactor, externalCred, intIF, commPort)
-    consolerealm = ConsoleDummyRealm(rce)
+    console = ConsoleDummyRealm(rce)
 
     # Internal communication
-    p = Portal(rce, (internalCred,))
-    reactor.listenTCP(internalPort, PBServerFactory(p))
+    rcePortal = Portal(rce, (internalCred,))
+    reactor.listenTCP(internalPort, PBServerFactory(rcePortal))
     
-    # Client Connection
+    # Client Connections
+    consolePortal = Portal(console, (externalCred,))
+    reactor.listenTCP(consolePort, PBServerFactory(consolePortal))
     reactor.listenTCP(externalPort, Site(MasterRobotAuthentication(rce)))
     
-    pconsole = Portal(consolerealm, (externalCred,))
-    
-    #Console Connection
-    reactor.listenTCP(consolePort, PBServerFactory(pconsole))
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
-    print "\nConnection Details : \n"
-    print "Internal IP Address : ", getIP(intIF)
-    print "Global IP Address : ", getIP(extIF),"\n"
+    print("\nConnection Details:\n")
+    print("Internal IP Address: {0}".format(getIP(intIF)))
+    print("Global IP Address:   {0}\n".format(getIP(extIF)))
+    
     reactor.run()

@@ -31,28 +31,31 @@
 #     
 
 #python specific imports
+import sys
+import os
+import termios
+import tty
+import json
+import getopt
 from urllib import urlencode
 from urllib2 import urlopen, HTTPError
-import sys, os, termios, tty, json
-import getopt
 
 #twisted specific imports
+from twisted.python import usage
 from twisted.python.log import err, startLogging
 from twisted.cred.credentials import UsernamePassword
 from twisted.internet import reactor
-from twisted.spread.pb import PBClientFactory
 from twisted.internet import stdio
+from twisted.spread.pb import PBClientFactory
 from twisted.conch.recvline import HistoricRecvLine
 from twisted.conch.insults.insults import ServerProtocol
-from twisted.python import usage
 
 
 class CustomOptions(usage.Options):
     """ Custom Class to override functionality of usage.Options
     """
-    
     def __init__(self, terminal):
-        """ Initialize the CutsomOptions Class
+        """ Initialize the CustomOptions Class
         
             @param terminal:    Reference to the running terminal
             @type  terminal:    ConsoleClient.terminal
@@ -64,14 +67,12 @@ class CustomOptions(usage.Options):
         """
         The guts of the command-line parser.
         """
-
         if options is None:
             options = sys.argv[1:]
 
         try:
-            opts, args = getopt.getopt(options,
-                                       self.shortOpt, self.longOpt)
-        except getopt.error, e:
+            opts, args = getopt.getopt(options, self.shortOpt, self.longOpt)
+        except getopt.error as e:
             raise usage.UsageError(str(e))
 
         for opt, arg in opts:
@@ -84,7 +85,7 @@ class CustomOptions(usage.Options):
             if optMangled not in self.synonyms:
                 optMangled = opt.replace("-", "_")
                 if optMangled not in self.synonyms:
-                    raise usage.UsageError("No such option '%s'" % (opt,))
+                    raise usage.UsageError("No such option '{0}'".format(opt))
 
             optMangled = self.synonyms[optMangled]
             if isinstance(self._dispatch[optMangled], usage.CoerceParameter):
@@ -97,7 +98,7 @@ class CustomOptions(usage.Options):
             if not args:
                 args = [self.defaultSubCommand]
             sub, rest = args[0], args[1:]
-            for (cmd, short, parser, doc) in self.subCommands:
+            for (cmd, short, parser, _) in self.subCommands:
                 if sub == cmd or sub == short:
                     self.subCommand = cmd
                     self.subOptions = parser(self.terminal)
@@ -105,7 +106,7 @@ class CustomOptions(usage.Options):
                     self.subOptions.parseOptions(rest)
                     break
             else:
-                raise usage.UsageError("Unknown command: %s" % sub)
+                raise usage.UsageError("Unknown command: {0}".format(sub))
         else:
             try:
                 self.parseArgs(*args)
@@ -123,14 +124,12 @@ class CustomOptions(usage.Options):
         if self.parent is None:
             command = self.__class__.__name__
             offset = command.find('Options')
-            default = "Usage: %s%s" % (command[:offset],
+            default = "Usage: {0}{1}".format(command[:offset],
                                        (self.longOpt and " [options]") or '')
         else:
-            default = '%s' % ((self.longOpt and "[options]") or '')
+            default = (self.longOpt and " [options]") or ''
 
-        synopsis = getattr(self, "synopsis", default)
-
-        synopsis = synopsis.rstrip()
+        synopsis = getattr(self, "synopsis", default).rstrip()
 
         if self.parent is not None:
             synopsis = ' '.join((self.parent.getSynopsis(),
@@ -153,194 +152,199 @@ class UserAddOptions(CustomOptions):
     """
         Parameters for user add.
     """
-    optParameters = [
-        ["username", "u", None, "Username"],
-        ["password", "p", None, "Password"]
-    ]
+    optParameters = (
+        ("username", "u", None, "Username"),
+        ("password", "p", None, "Password"),
+    )
 
 
 class UserRemoveOptions(CustomOptions):
     """
         Parameters for user remove.
     """
-    optParameters = [
-        ["username", "u", None, "Username"]
-    ]
+    optParameters = (
+        ("username", "u", None, "Username"),
+    )
 
 
 class UserOptions(CustomOptions):
     """
         Options for user command.
     """
-    subCommands = [['add', None, UserAddOptions, "Add User"],
-                   ['remove', None, UserRemoveOptions, "Remove User"],
-                   ['update', None, UserAddOptions, "Update User"]
-    ]
-    optFlags = [
-        ["list", "l", "List all Users"]
-    ]
+    subCommands = (
+        ('add', None, UserAddOptions, "Add User"),
+        ('remove', None, UserRemoveOptions, "Remove User"),
+        ('update', None, UserAddOptions, "Update User"),
+    )
+    optFlags = (
+        ("list", "l", "List all Users"),
+    )
 
-    
+
 class ContainerOptions(CustomOptions):
     """
         Options for container command.
     """
-    optParameters = [
-        ["start", "s", None, "Start a Container"],
-        ["stop", "t", None, "Stop a Container"],
-        ["services", "v", None, "List services running on the container"],
-        ["topics", "o", None, "List topics running on the container"],
-        ["username", "u", None, "List containers by username"]
-    ]
-    optFlags = [
-        ["list", "l", "List all containers of the user logged in"]
-    ]
+    optParameters = (
+        ("start", "s", None, "Start a Container"),
+        ("stop", "t", None, "Stop a Container"),
+        ("services", "v", None, "List services running on the container"),
+        ("topics", "o", None, "List topics running on the container"),
+        ("username", "u", None, "List containers by username"),
+    )
+    optFlags = (
+        ("list", "l", "List all containers of the user logged in"),
+    )
 
-    
+
 class NodeStartOptions(CustomOptions):
     """
         Parameters for node start.
     """
-    optParameters = [
-        ["ctag", "c", None, "Container tag"],
-        ["ntag", "n", None, "Node tag"],
-        ["pkg", "p", None, "Package"],
-        ["exe", "e", None, "Executable"],
-        ["args", "a", None, "Arguments"]
-    ]
+    optParameters = (
+        ("ctag", "c", None, "Container tag"),
+        ("ntag", "n", None, "Node tag"),
+        ("pkg", "p", None, "Package"),
+        ("exe", "e", None, "Executable"),
+        ("args", "a", None, "Arguments"),
+    )
 
 
 class NodeStopOptions(CustomOptions):
     """
         Parameters for node stop.
     """
-    optParameters = [
-        ["ctag", "c", None, "Container tag"],
-        ["ntag", "n", None, "Node tag"]
-    ]
+    optParameters = (
+        ("ctag", "c", None, "Container tag"),
+        ("ntag", "n", None, "Node tag"),
+    )
 
 
 class NodeOptions(CustomOptions):
     """
         Options for node command.
     """
-    subCommands = [['start', None, NodeStartOptions, "Start Node"],
-                   ['stop', None, NodeStopOptions, "Stop Node"]]
+    subCommands = (
+        ('start', None, NodeStartOptions, "Start Node"),
+        ('stop', None, NodeStopOptions, "Stop Node"),
+    )
 
 
 class ParameterAddOptions(CustomOptions):
     """
         Parameters for adding ROS parameters.
     """
-    optParameters = [
-        ["ctag", "c", None, "Container tag"],
-        ["name", "n", None, "Name of parameter"],
-        ["value", "v", None, "Value of parameter"]
-    ]
+    optParameters = (
+        ("ctag", "c", None, "Container tag"),
+        ("name", "n", None, "Name of parameter"),
+        ("value", "v", None, "Value of parameter"),
+    )
 
-    
+
 class ParameterRemoveOptions(CustomOptions):
     """
         Parameters for removing ROS parameters.
     """
-    optParameters = [
-        ["ctag", "c", None, "Container tag"],
-        ["name", "n", None, "Name of parameter"]
-    ]
+    optParameters = (
+        ("ctag", "c", None, "Container tag"),
+        ("name", "n", None, "Name of parameter"),
+    )
 
 
 class ParameterOptions(CustomOptions):
     """
         Options for parameter command.
     """
-    subCommands = [['add', None, ParameterAddOptions, 'Add parameter'],
-                   ['remove', None, ParameterRemoveOptions, 'Remove parameter']]
+    subCommands = (
+        ('add', None, ParameterAddOptions, 'Add parameter'),
+        ('remove', None, ParameterRemoveOptions, 'Remove parameter'),
+    )
 
-                   
+
 class InterfaceAddOptions(CustomOptions):
     """
         Parameters for adding interfaces.
     """
-    optParameters = [
-        ["etag", "e", None, "Endpoint tag"],
-        ["itag", "i", None, "Interface tag"],
-        ["itype", "t", None, "Interface type"],
-        ["icls", "c", None, "Interface Class"],
-        ["addr", "a", None, "Address"]
-    ]
+    optParameters = (
+        ("etag", "e", None, "Endpoint tag"),
+        ("itag", "i", None, "Interface tag"),
+        ("itype", "t", None, "Interface type"),
+        ("icls", "c", None, "Interface Class"),
+        ("addr", "a", None, "Address"),
+    )
 
 
 class InterfaceRemoveOptions(CustomOptions):
     """
         Parameters for removing interfaces.
     """
-    optParameters = [
-        ["etag", "e", None, "Endpoint tag"],
-        ["itag", "i", None, "Interface tag"]
-    ]
+    optParameters = (
+        ("etag", "e", None, "Endpoint tag"),
+        ("itag", "i", None, "Interface tag"),
+    )
 
 
 class InterfaceOptions(CustomOptions):
     """
         Options for interface command.
     """
-    subCommands = [['add', None, InterfaceAddOptions, 'Add interface'],
-                   ['remove', None, InterfaceRemoveOptions, 'Remove interface']
-    ]
+    subCommands = (
+        ('add', None, InterfaceAddOptions, 'Add interface'),
+        ('remove', None, InterfaceRemoveOptions, 'Remove interface'),
+    )
 
 
 class ConnectionSubOptions(CustomOptions):
     """
         Sub options for connection subcommands.
     """
-    optParameters = [
-        ["tag1", "1", None, "First Interface"],
-        ["tag2", "2", None, "Second Interface"]
-    ]
+    optParameters = (
+        ("tag1", "1", None, "First Interface"),
+        ("tag2", "2", None, "Second Interface"),
+    )
 
 
 class ConnectionOptions(CustomOptions):
     """
         Options for connection command.
     """
-    subCommands = [['add', None, ConnectionSubOptions, 'Connect Interfaces'],
-                   ['remove', None, ConnectionSubOptions, 
-                   'Disconnect Interfaces']
-    ]
+    subCommands = (
+        ('add', None, ConnectionSubOptions, 'Connect Interfaces'),
+        ('remove', None, ConnectionSubOptions, 'Disconnect Interfaces'),
+    )
 
 
 class RobotOptions(CustomOptions):
     """
         Options for robot command.
     """
-    optParameters = [
-        ["username", "u", None, "List Robots by Username"]
-    ]
-    optFlags = [
-        ["list", "l", "List all Robots"]
-    ]
+    optParameters = (
+        ("username", "u", None, "List Robots by Username"),
+    )
+    optFlags = (
+        ("list", "l", "List all Robots"),
+    )
 
 
 class MachineOptions(CustomOptions):
     """
         Options for machine command.
     """
-    optParameters = [
-        ["stats", "s", None, "Statistics of Machine by IP"],
-        ["containers", "c", None, "List Containers by Machine's IP"]
-    ]
-    optFlags = [
-        ["list", "l", "List all Machines"]
-    ]
-    
+    optParameters = (
+        ("stats", "s", None, "Statistics of Machine by IP"),
+        ("containers", "c", None, "List Containers by Machine's IP"),
+    )
+    optFlags = (
+        ("list", "l", "List all Machines"),
+    )
+
 
 class ConsoleClient(HistoricRecvLine):
     """ The class creates the terminal and manages connections with Master
         and ROSAPI servers on specific containers
     """
-    
     def __init__(self, masterIP, consolePort):
-        """ Initialize the ConsoleClient. 
+        """ Initialize the ConsoleClient.
 
             @param masterIP:    The IP of the master server
             @type  masterIP:    string
@@ -375,7 +379,7 @@ class ConsoleClient(HistoricRecvLine):
             A function to route various commands entered via Console.
             
             @param line:    The text entered on the Console
-            @type line:    string
+            @type  line:    string
         """
         if line is not None and line is not '':
             func = getattr(self, 'cmd_' + line.split()[0].upper(), None)
@@ -390,15 +394,15 @@ class ConsoleClient(HistoricRecvLine):
             Function to handle call to ROSAPI Proxy Server.
             
             @param command:      The command to execute in ROS environment.
-            @type command:       string
+            @type  command:      string
             
             @param parameter:    A parameter for the command.
-            @type parameter:     string
+            @type  parameter:    string
         """
         def perform_action((url,key)):
             self._connected_rosapi_nodes[parameter] = (url,key)
-            argList = [('userID', self._username), ('action', command), 
-                             ('key', key)]
+            argList = [('userID', self._username), ('action', command),
+                       ('key', key)]
             try:
                 f = urlopen('{0}?{1}'.format(url, urlencode(argList)))
                 response = json.loads(f.read())
@@ -409,34 +413,32 @@ class ConsoleClient(HistoricRecvLine):
                     msg = ' - {0}'.format(msg)
 
                 self.terminal.write('HTTP Error {0}: '
-                                    '{1}{2}'.format(e.getcode(), 
-                                     e.msg, msg))
+                                    '{1}{2}'.format(e.getcode(), e.msg, msg))
 
         try:
             url, key = self._connected_rosapi_nodes[parameter]
             perform_action((url, key))
         except KeyError:
-            d = self._user.callRemote('get_rosapi_connect_info',
-                                        parameter)
+            d = self._user.callRemote('get_rosapi_connect_info', parameter)
             d.addCallback(perform_action)
             d.addErrback(lambda err: self.terminal.write("Problem "
                                 "in connection with master: "
-                                "{0}".format(str(err))))
-        
+                                "{0}".format(err)))
+    
     def callToUser(self, command, *args):
         """
             A wrapper function for call to remote user.
             
             @param command:    The command to be executed
-            @type command:     string
+            @type  command:    string
         """
         self._user.callRemote(command, *args)
-        
+    
     def callToUserAndDisplay(self, command, *args):
         """
             A wrapper function around call to user and displaying the result
             @param command:    The command to be executed
-            @type command:     string
+            @type  command:    string
         """
         d = self._user.callRemote(command, *args)
         d.addCallback(lambda result: self.terminal.write(str(result)))
@@ -446,7 +448,7 @@ class ConsoleClient(HistoricRecvLine):
         """
             Handler for exit command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         reactor.stop()
 
@@ -454,225 +456,201 @@ class ConsoleClient(HistoricRecvLine):
         """
             Handler for user command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = UserOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config.subCommand == 'add':
-                if (config.subOptions['username'] and 
-                    config.subOptions['password']):
-                    self.callToUser('add_user', config.subOptions['username'],
-                                           config.subOptions['password'])
-
-            elif config.subCommand == 'remove':
-                if config.subOptions['username']:
-                    self.callToUser('remove_user', 
-                                    config.subOptions['username'])
-            
-            elif config.subCommand == 'update':
-                if (config.subOptions['username'] and 
-                    config.subOptions['password']):
-                    self.callToUser('update_user', 
-                                    config.subOptions['username'],
-                                    config.subOptions['password'])
-                                       
-            elif config['list']:
-                self.callToUserAndDisplay('list_users')
-
+            cmd = config.subCommand
+            opts = config.subOptions if hasattr(config, 'subOptions') else {}
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if cmd == 'add':
+                if (opts['username'] and opts['password']):
+                    self.callToUser('add_user', opts['username'],
+                                    opts['password'])
+            elif cmd == 'remove':
+                if opts['username']:
+                    self.callToUser('remove_user', opts['username'])
+            elif cmd == 'update':
+                if (opts['username'] and opts['password']):
+                    self.callToUser('update_user', opts['username'],
+                                    opts['password'])
+            elif config['list']:
+                self.callToUserAndDisplay('list_users')
 
     def cmd_CONTAINER(self, line):
         """
             Handler for container command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = ContainerOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config['start'] is not None:
-                self.callToUser('start_container', config['start'])
-
-            elif config['stop'] is not None:
-                self.callToUser('stop_container', config['stop'])
-
-            elif config['services'] is not None:
-                self.callToRosProxy('services', config['services'])
-            
-            elif config['topics'] is not None:
-                self.callToRosProxy('topics', config['topics'])
-            
-            elif config['list']:
-                self.callToUserAndDisplay('list_containers')
-
-            elif config['username'] is not None:
-                self.callToUserAndDisplay('list_containers_by_user', 
-                                           config['username'])
-
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
-        
+        else:
+            if config['start']:
+                self.callToUser('start_container', config['start'])
+            elif config['stop']:
+                self.callToUser('stop_container', config['stop'])
+            elif config['services']:
+                self.callToRosProxy('services', config['services'])
+            elif config['topics']:
+                self.callToRosProxy('topics', config['topics'])
+            elif config['list']:
+                self.callToUserAndDisplay('list_containers')
+            elif config['username']:
+                self.callToUserAndDisplay('list_containers_by_user',
+                                          config['username'])
+    
     def cmd_NODE(self, line):
         """
             Handler for node command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = NodeOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config.subCommand == 'start':
-
-                if (config.subOptions['args'] and config.subOptions['ctag'] and 
-                   config.subOptions['ntag'] and config.subOptions['pkg'] and 
-                   config.subOptions['exe']):
-                    self.callToUser('start_node', config.subOptions['ctag'], 
-                    config.subOptions['ntag'], config.subOptions['pkg'], 
-                    config.subOptions['exe'], config.subOptions['args'])
-
-                elif (config.subOptions['ctag'] and config.subOptions['ntag'] 
-                     and config.subOptions['pkg'] and config.subOptions['exe']):
-                    self.callToUser('start_node', config.subOptions['ctag'], 
-                    config.subOptions['ntag'], config.subOptions['pkg'], 
-                    config.subOptions['exe'])
-
-            elif config.subCommand == 'stop':
-                if config.subOptions['ctag'] and config.subOptions['ntag']:
-                    self.callToUser('stop_node', config.subOptions['ctag'], 
-                    config.subOptions['ntag'])
-
+            cmd = config.subCommand
+            opts = config.subOptions if hasattr(config, 'subOptions') else {}
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if cmd == 'start':
+                if (opts['args'] and opts['ctag'] and opts['ntag']
+                    and opts['pkg'] and opts['exe']):
+                    self.callToUser('start_node', opts['ctag'], opts['ntag'],
+                                    opts['pkg'], opts['exe'], opts['args'])
+                elif (opts['ctag'] and opts['ntag']  and opts['pkg']
+                      and opts['exe']):
+                    self.callToUser('start_node', opts['ctag'], opts['ntag'],
+                                    opts['pkg'], opts['exe'])
+            elif cmd == 'stop':
+                if opts['ctag'] and opts['ntag']:
+                    self.callToUser('stop_node', opts['ctag'], opts['ntag'])
 
     def cmd_PARAMETER(self, line):
         """
             Handler for parameter command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = ParameterOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config.subCommand == 'add':
-                if (config.subOptions['ctag'] and config.subOptions['name'] and
-                config.subOptions['value']):
-                    self.callToUser('add_parameter', 
-                    config.subOptions['ctag'], config.subOptions['name'], 
-                    config.subOptions['value'])
-
-            elif config.subCommand == 'remove':
-                if config.subOptions['ctag'] and config.subOptions['name']:
-                    self.callToUser('remove_parameter', 
-                    config.subOptions['ctag'], config.subOptions['name'])
-
+            cmd = config.subCommand
+            opts = config.subOptions if hasattr(config, 'subOptions') else {}
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if cmd == 'add':
+                if opts['ctag'] and opts['name'] and opts['value']:
+                    self.callToUser('add_parameter', opts['ctag'],
+                                    opts['name'], opts['value'])
+            elif cmd == 'remove':
+                if opts['ctag'] and opts['name']:
+                    self.callToUser('remove_parameter', opts['ctag'],
+                                    opts['name'])
     
     def cmd_INTERFACE(self, line):
         """
             Handler for interface command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = InterfaceOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config.subCommand == 'add':
-            
-                if (config.subOptions['addr'] and config.subOptions['etag'] and
-                   config.subOptions['itag'] and config.subOptions['itype']
-                   and config.subOptions['icls']):
-                    self.callToUser('add_interface', 
-                    config.subOptions['etag'], config.subOptions['itag'], 
-                    config.subOptions['itype'], config.subOptions['icls'], 
-                    config.subOptions['addr'])
-
-                elif (config.subOptions['etag'] and config.subOptions['itag'] 
-                     and
-                     config.subOptions['itype'] and config.subOptions['icls']):
-                    self.callToUser('add_interface', 
-                    config.subOptions['etag'], config.subOptions['itag'], 
-                    config.subOptions['itype'], config.subOptions['icls'])
-                    
-            elif config.subCommand == 'remove':
-                if config.subOptions['etag'] and config.subOptions['itag']:
-                    self.callToUser('remove_interface', 
-                    config.subOptions['etag'], config.subOptions['itag'])
-                
+            cmd = config.subCommand
+            opts = config.subOptions if hasattr(config, 'subOptions') else {}
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if cmd == 'add':
+                if (opts['addr'] and opts['etag'] and opts['itag']
+                    and opts['itype'] and opts['icls']):
+                    self.callToUser('add_interface', opts['etag'],
+                                    opts['itag'], opts['itype'], opts['icls'],
+                                    opts['addr'])
+                elif (opts['etag'] and opts['itag'] and opts['itype'] and
+                      opts['icls']):
+                    self.callToUser('add_interface',  opts['etag'],
+                                    opts['itag'], opts['itype'], opts['icls'])
+            elif cmd == 'remove':
+                if opts['etag'] and opts['itag']:
+                    self.callToUser('remove_interface', opts['etag'],
+                                    opts['itag'])
     
     def cmd_CONNECTION(self, line):
         """
             Handler for connection command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = ConnectionOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config.subCommand == 'add':
-                if config.subOptions['tag1'] and config.subOptions['tag2']:
-                    self.callToUser('add_connection', 
-                    config.subOptions['tag1'], config.subOptions['tag2'])
-
-            elif config.subCommand == 'remove':
-                if config.subOptions['tag1'] and config.subOptions['tag2']:
-                    self.callToUser('remove_connection', 
-                    config.subOptions['tag1'], config.subOptions['tag2'])
-
+            cmd = config.subCommand
+            opts = config.subOptions if hasattr(config, 'subOptions') else {}
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if cmd == 'add':
+                if opts['tag1'] and opts['tag2']:
+                    self.callToUser('add_connection', opts['tag1'],
+                                    opts['tag2'])
+            elif cmd == 'remove':
+                if opts['tag1'] and opts['tag2']:
+                    self.callToUser('remove_connection', opts['tag1'],
+                                    opts['tag2'])
                     
     def cmd_ROBOT(self, line):
         """
             Handler for robot command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = RobotOptions(self.terminal)
         try:
             config.parseOptions(line)
-
-            if config['list']:
-                self.callToUserAndDisplay('list_robots')
-                
-            elif config['username'] is not None:
-                self.callToUserAndDisplay('list_robots_by_user', 
-                                           config['username'])
-
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if config['list']:
+                self.callToUserAndDisplay('list_robots')
+            elif config['username']:
+                self.callToUserAndDisplay('list_robots_by_user',
+                                          config['username'])
 
     def cmd_MACHINE(self, line):
         """
             Handler for machine command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         config = MachineOptions(self.terminal)
         try:
             config.parseOptions(line)
-            if config['list']:
-                self.callToUserAndDisplay('list_machines')
-            
-            elif config['stats'] is not None:
-                self.callToUserAndDisplay('stats_machine', config['stats'])
-            
-            elif config['containers'] is not None:
-                self.callToUserAndDisplay('machine_containers', 
-                                           config['containers'])
-
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
+        else:
+            if config['list']:
+                self.callToUserAndDisplay('list_machines')
+            elif config['stats']:
+                self.callToUserAndDisplay('stats_machine', config['stats'])
+            elif config['containers']:
+                self.callToUserAndDisplay('machine_containers',
+                                          config['containers'])
 
     def cmd_HELP(self, line):
         """
             Handler for help command.
             @param line:    line input from terminal.
-            @type line:     string
+            @type  line:    string
         """
         configs = [UserOptions(self.terminal), ContainerOptions(self.terminal),
                    NodeOptions(self.terminal), ParameterOptions(self.terminal),
@@ -687,11 +665,10 @@ class ConsoleClient(HistoricRecvLine):
         """
             Manage state/mode after connection. Code uses states to take 
             credential input and then starts terminal input.
-             
+            
             @param line:    line typed on terminal
-            @type line:     string
+            @type  line:    string
         """
-        
         def _cbError(why, msg):
             err(why, msg)
             reactor.stop()
@@ -700,7 +677,7 @@ class ConsoleClient(HistoricRecvLine):
             self._user = perspective
             self.terminal.write('Connection to Master Established.')
             self.showPrompt()
-            
+        
         if self._mode == 'Username':
             self._mode = 'Password'
             self._username = line
@@ -717,16 +694,17 @@ class ConsoleClient(HistoricRecvLine):
         else:
             self.parseInputLine(line)
 
+
 def runWithProtocol(klass, masterIP, port):
     """
         Function overridden from twisted.conch.stdio to allow Ctrl+C interrupt
         @param klass:     A callable which will be invoked with
-                          *a, **kw and should return an ITerminalProtocol 
+                          *a, **kw and should return an ITerminalProtocol
                           implementor. This will be invoked when a connection
                           to this ServerProtocol is established.
 
-        @param masterIP:  IP of the master server.  
-        @type masterIP:   string
+        @param masterIP:  IP of the master server.
+        @type  masterIP:  string
     """
     fd = sys.stdin.fileno()
     oldSettings = termios.tcgetattr(fd)
@@ -738,7 +716,8 @@ def runWithProtocol(klass, masterIP, port):
     finally:
         termios.tcsetattr(fd, termios.TCSANOW, oldSettings)
         os.write(fd, "\r\x1bc\r")
-  
+
+
 def _get_argparse():
     from argparse import ArgumentParser
 
@@ -753,10 +732,12 @@ def _get_argparse():
 
     return parser
 
+
 def main():
     startLogging(sys.stdout)
     args = _get_argparse().parse_args()
     runWithProtocol(ConsoleClient, args.ipMaster, args.port)
-  
+
+
 if __name__ == '__main__':
     main()
