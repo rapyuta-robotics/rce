@@ -78,7 +78,7 @@ class ConsoleROSProxyAuthentication(Resource):
     
     def __init__(self):
         self._ros = ROSProxy()
-        self._FILE = "/opt/rce/data/rosenvbridge.db"
+        self._dbFile = "/opt/rce/data/rosenvbridge.db"
     
     def _checkDB(self, userID, key):
         """ Method to check the rosproxy database to authenticate a web
@@ -90,9 +90,11 @@ class ConsoleROSProxyAuthentication(Resource):
             @param key:       Secret key
             @type key:        string
         """
-        
+        # TODO: Why not return True directly instead all lines will be read
+        # TODO: Should this be deferred to a separate thread due to flock,
+        #       which is a blocking call?
         found = False
-        with open(self._FILE, "r+") as bridgefile:
+        with open(self._dbFile, "r+") as bridgefile:
             fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
             lines = bridgefile.readlines()
             for line in lines:

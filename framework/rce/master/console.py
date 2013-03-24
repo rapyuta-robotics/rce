@@ -490,7 +490,6 @@ class Console(object):
 #            
 #            @return:             Robot object
 #            @rtype:              rce.master.user.Robot
-#        
 #        """
 #        return user._robots.get(robotID)
     
@@ -505,7 +504,6 @@ class Console(object):
             
             @return:             Container object
             @rtype:              rce.master.user.Container
-        
         """
         return user._containers.get(tag)
     
@@ -542,22 +540,23 @@ class Console(object):
             nodes = container._nodes.keys()
             parameters = container._parameters.keys()
             interfaces = container._interfaces.keys()
-            return {tag:{'nodes':nodes,'parameters':parameters,
+            return {tag:{'nodes':nodes, 'parameters':parameters,
                          'interfaces':interfaces}}
 
         machines = defaultdict(list)
-        for tag,container in user._containers.iteritems():
+        for tag, container in user._containers.iteritems():
             machines[container._machine.IP].append(get_container_tree(tag))
 
         #build the robots graph
         robots = {}
-        for uuid,robot in user._robots.iteritems():
+        for uuid, robot in user._robots.iteritems():
             robots[uuid] =  robot._interfaces.keys()
+
         # build the connections map
         connections = InterfaceConnection2way()
         for connection in user._connections.itervalues():
             connections[connection._connectionA._interface._uid] = \
                 connection._connectionB._interface._uid
 
-        return {'userID':user._userID,'network':machines,
+        return {'userID':user._userID, 'network':machines,
                 'robots':robots, 'connections': connections}

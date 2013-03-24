@@ -53,7 +53,8 @@ _PASSWORD_FAIL = ('Password must be between 4-10 Digits one each of '
 
 
 class CredentialError(Exception):
-    pass
+    """ TODO: Add doc
+    """
 
 
 class RCECredChecker(object):
