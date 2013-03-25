@@ -43,7 +43,7 @@ import settings
 
 # Credentials checkers used in the cloud engine
 # TODO: At the moment only one user available and Password database in memory
-extCred = RCECredChecker(settings.PASSWORD_FILE)
+extCred = RCECredChecker(settings.PASSWORD_FILE,settings.DEV_MODE)
 intCred = RCEInternalChecker(settings.PASSWORD_FILE)
 
 

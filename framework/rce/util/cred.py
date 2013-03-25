@@ -88,12 +88,11 @@ class RCECredChecker:
 
     def __init__(self, filename, dev_mode= False):
         """
-        
-        @param filename: The creds file to be usd
-        @type filename : str
-        
-        @param dev_mode: Indicate if developer mode is enabled.
-        @type dev_mode : Boolean
+            @param filename: The creds file to be usd
+            @type filename : str
+            
+            @param dev_mode: Indicate if developer mode is enabled.
+            @type dev_mode : bool
         """
         self.filename = filename
         self.credentialInterfaces = (IUsernameHashedPassword,)
@@ -121,14 +120,19 @@ class RCECredChecker:
                 except (KeyError,OSError,AttributeError):
                     self.addUser(username,self.required_users[username], provision= True)
         else:
+            init_flag = True
             for username in self.required_users.iterkeys():
                 try:
                     self.getUser(username)
                 except (KeyError,OSError,AttributeError):
+                    if init_flag:
+                        print "It appears this is your first run or your credentials db has changed or is incomplete",\
+                            " you must set the passwords for the Admin and Admin-Infrastructure accounts. "
+                        init_flag = False
                     self.addUser(username,self.get_new_password(username), provision= True)
     
     def get_new_password(self, user):
-        print 'Note: The password must contain one each of following',\
+        print '\nNote: The password must contain one each of following',\
             '\n\t* lowercase,\n\t* uppercase,\n\t* digit \n\t* special character',\
             ' \n\tAnd must be between 4-20 chars long\n'
         while True:
@@ -187,14 +191,14 @@ class RCECredChecker:
     def addUser(self, username, password, provision= False):
         """ Change password for the username:
 
-        @param username:        username
-        @type  username:        str
-
-        @param password:        password
-        @type  password:        str
-
-        @param provision:       Special flag to indicate provisioning mode
-        @type  password:        bool
+            @param username:        username
+            @type  username:        str
+    
+            @param password:        password
+            @type  password:        str
+    
+            @param provision:       Special flag to indicate provisioning mode
+            @type  password:        bool
         """
         if not (self.pass_validator(password) or provision):
             raise CredentialError(_PASSWORD_FAIL)
@@ -214,8 +218,8 @@ class RCECredChecker:
     def removeUser(self,username):
         """ Remove the given user:
 
-        @param username:         username
-        @type  username:         str
+            @param username:         username
+            @type  username:         str
         """
         try:
             self.getUser(username)# why bother reading the file if the user doesn't even exist !
@@ -226,26 +230,42 @@ class RCECredChecker:
         except KeyError:
             raise CredentialError('No such user')
 
+    
+    def passwd(self,username, new_password, control_mode):
+        """ Change password for the username.
+            In admin mode you need to set the boolean indicating Admin Mode.
+            In case of a normal user you need to pass the old password for the user.
+            Note : In admin mode , the admin is free to set any password he likes as the 
+            strict password strength validator is turned off in this case.
 
-    def passwd(self,username, password):
-        """ Change password for the username:
-
-        @param username:         username
-        @type  username:         str
-
-        @param password:        password
-        @type  password:        str
+            @param username:            username
+            @type  username:            str
+                    
+            @param new_password:        New Password
+            @type  new_password:        str
+            
+            @param control_mode:        pass old password in user mode / if using in admin mode pass as True
+            @type  control_mode:        str/bool
+        
         """
-        if not self.pass_validator(password):
-            raise CredentialError(_PASSWORD_FAIL)
         try:
-            self.getUser(username) # why bother reading the file if the user doesn't even exist !
-            for line in fileinput.input(self.filename, inplace=1):
-                if self.scanner.match(line).groups()[0] != username:
-                    print line[:-1]
-                else:
-                    print ':'.join((username,sha256(password).digest()))
-            return True
+            if type(control_mode)== bool :
+                admin = True
+                old_password = ''
+            else:
+                admin = False
+                old_password = control_mode
+                if not self.pass_validator(new_password):
+                    raise CredentialError(_PASSWORD_FAIL)
+            if sha256(old_password).digest() == self.getUser(username)[1] or admin: # why bother reading the file if the user doesn't even exist !
+                for line in fileinput.input(self.filename, inplace=1):
+                    if self.scanner.match(line).groups()[0] != username:
+                        print line[:-1]
+                    else:
+                        print ':'.join((username,sha256(new_password).digest()))
+                return True
+            else:
+                raise CredentialError('Invalid User Password')
         except KeyError:
             raise CredentialError('No such user')
 
