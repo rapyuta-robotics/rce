@@ -86,11 +86,14 @@ class RCECredChecker:
     _cacheTimestamp = 0
 
 
-    def __init__(self, filename):
+    def __init__(self, filename, dev_mode= False):
         """
-        @type filename: C{str}
-        @param filename: The name of the file from which to read username and
-        password information.
+        
+        @param filename: The creds file to be usd
+        @type filename : str
+        
+        @param dev_mode: Indicate if developer mode is enabled.
+        @type dev_mode : Boolean
         """
         self.filename = filename
         self.credentialInterfaces = (IUsernameHashedPassword,)
@@ -109,15 +112,34 @@ class RCECredChecker:
             exit()
 
         # Provision required users
-        required_users = {'admin':'admin','adminInfra':'admin','testUser':'testUser'} # TODO : Remove testUser later , temporarily inserting for maintaining compat with current test classes.
-        for username in required_users.iterkeys():
-            try:
-                self.getUser(username)
-            except (KeyError,OSError):
-                self.addUser(username,required_users[username], provision= True)
-                Warning('Please reset the password for {user} using the console utility. The Default password is {passwd} '.format(
-                                                                                 user=username,passwd=required_users[username]))
-
+        self.required_users = {'admin':'admin','adminInfra':'admin'} # TODO : Remove testUser later , temporarily inserting for maintaining compat with current test classes.
+        if dev_mode:
+            self.required_users['testUser']='testUser'
+            for username in self.required_users.iterkeys():
+                try:
+                    self.getUser(username)
+                except (KeyError,OSError,AttributeError):
+                    self.addUser(username,self.required_users[username], provision= True)
+        else:
+            for username in self.required_users.iterkeys():
+                try:
+                    self.getUser(username)
+                except (KeyError,OSError,AttributeError):
+                    self.addUser(username,self.get_new_password(username), provision= True)
+    
+    def get_new_password(self, user):
+        print 'Note: The password must contain one each of following',\
+            '\n\t* lowercase,\n\t* uppercase,\n\t* digit \n\t* special character',\
+            ' \n\tAnd must be between 4-20 chars long\n'
+        while True:
+            passwd = raw_input('Enter a password for the user "{0}" : '.format(user)).strip()
+            if passwd == raw_input('Please confirm the password for the user "{0}" : '.format(user)).strip():
+                if self.pass_validator(passwd):
+                    return passwd
+                else:
+                    print "Password Does not contain appropriate characters."
+            else:
+                print "Passwords Do Not Match"
 
     def __getstate__(self):
         d = dict(vars(self))
