@@ -48,10 +48,11 @@ def _get_argparse():
 
     parser.add_argument('MasterIP', help='IP address of Master Process.',
                         type=str)
-    parser.add_argument('MasterPassword', help='Admin Password',
-                        type=str)
-    parser.add_argument('InfraPassword', help='Admin-Infrastructure Password',
-                        type=str)
+    if not settings.DEV_MODE:
+        parser.add_argument('MasterPassword', help='Admin Password',
+                            type=str)
+        parser.add_argument('InfraPassword', help='Admin-Infrastructure Password',
+                            type=str)
     parser.add_argument('--maxContainers', help='Maximum Number of Containers '
                         'to support on this machine.', type=int,
                         default=settings.MAX_CONTAINER)
@@ -75,8 +76,12 @@ if __name__ == '__main__':
         exit(1)
     
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('container', sha256(args.InfraPassword).digest())
-    passwd = sha256(args.MasterPassword).digest()
+    if settings.DEV_MODE:
+        cred = UsernamePassword('container', sha256('admin').digest())
+        passwd = sha256('admin').digest()
+    else:
+        cred = UsernamePassword('container', sha256(args.InfraPassword).digest())
+        passwd = sha256(args.MasterPassword).digest()
     
     main(reactor, cred, args.MasterIP, passwd, cred.password, 
          settings.MASTER_PORT, settings.INT_IF, settings.BRIDGE_IF,

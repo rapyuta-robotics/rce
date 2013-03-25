@@ -161,3 +161,11 @@ def prepare_conf():
     return '/'.join([path,'creds'])
 PASSWORD_FILE = prepare_conf()
 #PASSWORD_FILE = ''
+
+#######################################
+###                                 ###
+### Developer Debug Mode            ###
+###                                 ###
+#######################################
+
+DEV_MODE = True

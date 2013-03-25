@@ -42,7 +42,8 @@ def _get_argparse():
 
     parser.add_argument('MasterIP', help='IP address of master process.',
                         type=str)
-    parser.add_argument('InfraPassword', help='Admin-Infrastructure password',
+    if not settings.DEV_MODE:
+        parser.add_argument('InfraPassword', help='Admin-Infrastructure password',
                         type=str)
 
     return parser
@@ -59,7 +60,10 @@ import settings
 if __name__ == '__main__':
 
     args = _get_argparse().parse_args()
-    cred = UsernamePassword('robot', sha256(args.InfraPassword).digest())
+    if settings.DEV_MODE:
+        cred = UsernamePassword('robot', sha256('admin').digest())
+    else:
+        cred = UsernamePassword('robot', sha256(args.InfraPassword).digest())
 
     # Run main function
     main(reactor, cred, args.MasterIP, settings.MASTER_PORT, settings.EXT_IF,
