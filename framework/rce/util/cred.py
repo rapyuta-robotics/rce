@@ -230,12 +230,20 @@ class RCECredChecker:
 
 class RCEInternalChecker(RCECredChecker):
 
+    def add_checker(self,method):
+        self.checkUidValidity = method
+
     def requestAvatarId(self, c):
         try:
             if c.username in ('container','robot'):
                 p = self.getUser('adminInfra')[1]
                 user = c.username
             else: # it is the environment uuid
+                try:
+                    self.checkUidValidity(c.username) # this method is set by the real object instance
+                except AssertionError:
+                    return defer.fail(error.UnauthorizedLogin())
+
                 infra = self.getUser('adminInfra')[1]
                 main = self.getUser('admin')[1]
                 p = EncodeAES(cipher(main), salter(c.username,infra))
