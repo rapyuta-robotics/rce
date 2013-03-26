@@ -276,7 +276,7 @@ class Loader(object):
             @return:        Class matching the string pair.
             @rtype:         subclass of genpy.message.Message
             
-            @raise:         core.util.ResourceNotFound
+            @raise:         rce.util.loader.ResourceNotFound
         """
         key = (pkg, 'msg', cls)
         
@@ -307,7 +307,7 @@ class Loader(object):
             @return:        Class matching the string pair.
             @rtype:         ROS service class
             
-            @raise:         core.util.ResourceNotFound
+            @raise:         rce.util.loader.ResourceNotFound
         """
         key = (pkg, 'srv', cls)
         
@@ -333,7 +333,7 @@ class Loader(object):
             @return:        Path to the package.
             @rtype:         str
             
-            @raise:         core.util.ResourceNotFound
+            @raise:         rce.util.loader.ResourceNotFound
         """
         try:
             return self._rp.get_path(pkg)
@@ -379,7 +379,7 @@ class Loader(object):
             @return:        Path to the executable in package.
             @rtype:         str
             
-            @raise:         core.util.ResourceNotFound
+            @raise:         rce.util.loader.ResourceNotFound
         """
         try:
             nodeDict = self._nodeCache[pkg]
