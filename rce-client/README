@@ -1,0 +1,11 @@
+Installation:
+    python setup.py install
+
+Python Client:
+    Use the class 'Connection' from the module connection.
+
+ROS Client:
+    Use the script ros.py to start the client. Requires a configuration
+    file. An example can be found in rce/test/debug.cfg
+    
+      ./ros.py <path to config file>
