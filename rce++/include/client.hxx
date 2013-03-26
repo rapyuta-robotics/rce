@@ -199,12 +199,12 @@ class Subscriber_impl: public ReceiverInterface_impl<Client>
 		}
 };
 
-template<class Config>
+template<class Config_impl>
 class Client_impl
 {
 	public:
 		typedef boost::shared_ptr<Client_impl> ClientPtr_t;
-		typedef Config Config_t;
+		typedef Config_impl Config;
 		typedef typename Config::String_type String;
 		typedef typename Config::Value_type Value;
 		typedef typename Config::Object_type Object;

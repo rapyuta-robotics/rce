@@ -61,7 +61,7 @@ class StringMsg
 		const rce::Client::Value asJSON()
 		{
 			rce::Client::Object msg;
-			rce::Client::Config_t::add(msg, "data", "Hello World!");
+			rce::Client::Config::add(msg, "data", "Hello World!");
 			return rce::Client::Value(msg);
 		}
 

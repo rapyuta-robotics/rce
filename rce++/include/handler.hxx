@@ -201,8 +201,8 @@ void Protocol_impl<Client>::send(const typename Client::String &type,
 		const typename Client::Object &data)
 {
 	typename Client::Object message;
-	Client::Config_t::add(message, "type", type);
-	Client::Config_t::add(message, "data", data);
+	Client::Config::add(message, "type", type);
+	Client::Config::add(message, "data", data);
 
 	_BinaryOutVector_t binaries = _BinaryOutVector_t();
 	typename _BinaryOutVector_t::iterator it;
@@ -221,10 +221,10 @@ void Protocol_impl<Client>::send(const typename Client::String &tag,
 		const typename Client::String &msgID)
 {
 	typename Client::Object data;
-	Client::Config_t::add(data, "iTag", tag);
-	Client::Config_t::add(data, "type", type);
-	Client::Config_t::add(data, "msgID", msgID);
-	Client::Config_t::add(data, "msg", msg);
+	Client::Config::add(data, "iTag", tag);
+	Client::Config::add(data, "type", type);
+	Client::Config::add(data, "msgID", msgID);
+	Client::Config::add(data, "msg", msg);
 
 	send(RCE_DATA_MESSAGE, data);
 }
