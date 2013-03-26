@@ -34,10 +34,7 @@
 from autobahn.websocket import WebSocketClientFactory, \
     WebSocketClientProtocol
 
-# Custom package imports
-import sys                          ### TODO:
-sys.path.append('../framework')     ### TEMPORARY FIX
-
+# Custom imports
 from rce.client.assembler import MessageAssembler
 
 

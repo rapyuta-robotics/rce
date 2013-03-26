@@ -44,10 +44,10 @@ except ImportError:
 from twisted.internet.defer import Deferred
 
 # Custom imports
-from connection import ConnectionError, ROSConnection
+from pyrce.connection import ConnectionError, ROSConnection
 
 
-_MAP = {#'ServiceConverter' : '???',
+_MAP = {#'ServiceClientConverter' : '???',
         'ServiceProviderConverter' : 'service',
         'PublisherConverter' : 'subscriber',
         'SubscriberConverter' : 'publisher'}

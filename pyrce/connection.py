@@ -54,19 +54,14 @@ from twisted.python.threadable import isInIOThread
 from twisted.internet.threads import deferToThread
 from autobahn.websocket import connectWS
 
-# Custom package imports
-import sys                          ### TODO:
-sys.path.append('../framework')     ### TEMPORARY FIX
-
+# Custom imports
 from rce.client import types
 from rce.client.assembler import recursiveBinarySearch
 
-# Custom local imports
-from comm import RCERobotFactory
-import interface
+from pyrce.comm import RCERobotFactory
+import pyrce.interface
 
-# Custom package imports
-if interface.HAS_ROS:
+if pyrce.interface.HAS_ROS:
     from rce.util.loader import Loader
 
 
