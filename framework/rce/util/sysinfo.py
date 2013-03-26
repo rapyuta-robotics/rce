@@ -42,7 +42,7 @@ import re
 import stat
 import time
 
-from collections import namedtuple
+from collections import namedtuple,defaultdict
 
 # Necessary Object Declarations
 
@@ -61,6 +61,24 @@ class NoSuchProcess(Exception):
             else:
                 details = "(pid=%s)" % self.pid
             self.msg = "process no longer exists " + details
+
+    def __str__(self):
+        return self.msg
+
+class AccessDenied(Exception):
+    """Exception raised when permission to perform an action is denied."""
+
+    def __init__(self, pid=None, name=None, msg=None):
+        self.pid = pid
+        self.name = name
+        self.msg = msg
+        if msg is None:
+            if (pid is not None) and (name is not None):
+                self.msg = "(pid=%s, name=%s)" % (pid, repr(name))
+            elif (pid is not None):
+                self.msg = "(pid=%s)" % self.pid
+            else:
+                self.msg = ""
 
     def __str__(self):
         return self.msg
@@ -1080,12 +1098,12 @@ class Process(object):
         files = os.listdir("/proc/%s/fd" % self.pid)
         hit_enoent = False
         for fd in files:
-            file = "/proc/%s/fd/%s" % (self.pid, fd)
-            if os.path.islink(file):
+            fd_file = "/proc/%s/fd/%s" % (self.pid, fd)
+            if os.path.islink(fd_file):
                 try:
-                    file = os.readlink(file)
+                    fd_file = os.readlink(fd_file)
                 except OSError:
-                    # ENOENT == file which is gone in the meantime
+                    # ENOENT == fd_file which is gone in the meantime
                     err = sys.exc_info()[1]
                     if err.errno == errno.ENOENT:
                         hit_enoent = True
@@ -1096,8 +1114,8 @@ class Process(object):
                     # to tell whether it's a regular file or not,
                     # so we skip it. A regular file is always supposed
                     # to be absolutized though.
-                    if file.startswith('/') and isfile_strict(file):
-                        ntuple = nt_openfile(file, int(fd))
+                    if fd_file.startswith('/') and isfile_strict(fd_file):
+                        ntuple = nt_openfile(fd_file, int(fd))
                         retlist.append(ntuple)
         if hit_enoent:
             # raise NSP if the process disappeared on us
@@ -1143,14 +1161,14 @@ class Process(object):
             # no connections for this process
             return []
 
-        def process(file, family, type_):
+        def process(fin, family, type_):
             retlist = []
             try:
-                f = open(file, 'r')
+                f = open(fin, 'r')
             except IOError:
                 # IPv6 not supported on this platform
                 err = sys.exc_info()[1]
-                if err.errno == errno.ENOENT and file.endswith('6'):
+                if err.errno == errno.ENOENT and fin.endswith('6'):
                     return []
                 else:
                     raise
@@ -1223,7 +1241,7 @@ class Process(object):
 
     @wrap_exceptions
     def get_num_fds(self):
-       return len(os.listdir("/proc/%s/fd" % self.pid))
+        return len(os.listdir("/proc/%s/fd" % self.pid))
 
     @wrap_exceptions
     def get_process_ppid(self):
