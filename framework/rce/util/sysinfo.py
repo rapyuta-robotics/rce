@@ -5,6 +5,7 @@
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     Adapted from the psutils package and rewritten in pure python with relevant required functions.
+#     Giampaolo Rodola  - https://code.google.com/p/psutil/
 #
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
@@ -27,7 +28,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #
-#     \author/s: Dhananjay Sathe : dhananjaysathe@gmail.com
+#     \author/s: Dhananjay Sathe : dhananjaysathe@gmail.com, Giampaolo Rodola : g.rodola@gmail.com
 #
 
 import os
