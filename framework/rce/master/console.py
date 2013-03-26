@@ -171,7 +171,7 @@ class UserAvatar(Avatar):
         """
         self.console._remove_user(username)
 
-    def perspective_update_user(self, username, password, control_mode):
+    def perspective_update_user(self, username, new_password, control_mode):
         """ Remote call to change user credentials.
 
             @param username:            username
@@ -183,7 +183,7 @@ class UserAvatar(Avatar):
             @param control_mode:        pass old password in user mode / if using in admin mode pass as True
             @type  control_mode:        str/bool
         """
-        self.console._change_password(username, password, control_mode)
+        self.console._change_password(username, new_password, control_mode)
     
     def perspective_list_users(self):
         """ Remote call to list all users logged into RoboEarthCloudEngine.
@@ -360,11 +360,10 @@ class Console(object):
         @return:               List of containers .
         @rtype:                List(rce.master.container.Container)
         """
-        machine = [machine for machine in self._root._balancer._machines 
-                   if machineIP == machine.IP]
-        if machine:
-            return machine[0]._containers
-        else:
+        try:
+            return (machine for machine in self._root._balancer._machines 
+                   if machineIP == machine.IP).next()._containers
+        except StopIteration:
             raise InternalError('No such machine')
 
     def _list_machine_stats(self, machineIP):
@@ -379,13 +378,13 @@ class Console(object):
         @return:               List of containers .
         @rtype:                List(rce.master.container.Container)
         """
-        machine = [machine for machine in self._root._balancer._machines 
-                   if machineIP == machine.IP]
-        if machine:
+        try:
+            machine = (machine for machine in self._root._balancer._machines 
+                       if machineIP == machine.IP).next()
             stat_info = {'active': machine[0].active,
                          'capacity' : machine[0].capacity}
             return stat_info
-        else:
+        except StopIteration:
             raise InternalError('No such machine')
     
     def _list_machine_users(self, machine):
@@ -438,19 +437,22 @@ class Console(object):
         """
         self._root._checker.removeUser(username)
 
-    def _change_password(self, username, password):
+    def _change_password(self, username, new_password, control_mode):
         """ Add a user to the RoboEarth Cloud Engine
 
         @param username:         Username of the user to be added
         @type username:         str
 
-        @param password:        Password of the user to be added
-        @type  passowrd:        str
+        @param new_password:        New Password
+        @type  new_password:        str
+        
+        @param control_mode:        pass old password in user mode / if using in admin mode pass as True
+        @type  control_mode:        str/bool
 
         @return:            Results to True if succeeded  .
         @rtype:             boolean
         """
-        self._root._checker.passwd(username, password)
+        self._root._checker.passwd(username, new_password, control_mode)
     
     def _list_user_robots(self, user):
         """ Retrieve a list of all the robots owned by the user.
