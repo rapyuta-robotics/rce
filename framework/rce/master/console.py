@@ -171,16 +171,19 @@ class UserAvatar(Avatar):
         """
         self.console._remove_user(username)
 
-    def perspective_update_user(self, username, password):
-        """ Remote call to edit user information.
+    def perspective_update_user(self, username, password, control_mode):
+        """ Remote call to change user credentials.
 
-            @param username:    The username
-            @type username:     string
+            @param username:            username
+            @type  username:            str
+                    
+            @param new_password:        New Password
+            @type  new_password:        str
             
-            @param password:    The password
-            @type password:     string
+            @param control_mode:        pass old password in user mode / if using in admin mode pass as True
+            @type  control_mode:        str/bool
         """
-        self.console._change_password(username, password)
+        self.console._change_password(username, password, control_mode)
     
     def perspective_list_users(self):
         """ Remote call to list all users logged into RoboEarthCloudEngine.

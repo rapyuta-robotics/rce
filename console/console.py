@@ -473,10 +473,12 @@ class ConsoleClient(HistoricRecvLine):
             
             elif config.subCommand == 'update':
                 if (config.subOptions['username'] and 
-                    config.subOptions['password']):
+                    config.subOptions['new_password'] and
+                    config.subOptions['old_password']):
                     self.callToUser('update_user', 
                                     config.subOptions['username'],
-                                    config.subOptions['password'])
+                                    config.subOptions['new_password'],
+                                    config.subOptions['old_password'])
                                        
             elif config['list']:
                 self.callToUserAndDisplay('list_users')
