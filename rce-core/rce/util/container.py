@@ -41,9 +41,6 @@ from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred
 from twisted.internet.utils import getProcessValue
 
-# Custom imports
-from rce.util.path import checkPath
-
 
 _CONFIG = """
 lxc.utsname = {hostname}
@@ -140,15 +137,21 @@ class Container(object):
         self._hostname = hostname
         self._ip = ip
         
-        checkPath(conf, 'Container Configuration')
+        if not os.path.isabs(conf):
+            raise ValueError('Container configuration directory is not an '
+                             'absolute path.')
+        
+        if not os.path.isdir(conf):
+            raise ValueError('Container Configuration directory does not '
+                             'exist: {0}'.format(conf))
         
         if os.path.exists(self._conf):
-            raise ValueError('There is already a config file in the given '
-                             'configuration folder.')
+            raise ValueError('There is already a config file in the container '
+                             "configuration directory '{0}'.".format(conf))
         
         if os.path.exists(self._fstab):
-            raise ValueError('There is already a fstab file in the given '
-                             'configuration folder.')
+            raise ValueError('There is already a fstab file in the container '
+                             "configuration directory '{0}'.".format(conf))
         
         self._fstabExt = []
     

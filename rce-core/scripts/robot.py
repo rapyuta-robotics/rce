@@ -66,6 +66,6 @@ if __name__ == '__main__':
     else:
         cred = UsernamePassword('robot', sha256(args.InfraPassword).digest())
 
-    main(reactor, cred, args.MasterIP, settings.MASTER_PORT, settings.EXT_IF,
+    main(reactor, cred, args.MasterIP, settings.MASTER_PORT, settings.EXT_IP,
          settings.WS_PORT, settings.RCE_INTERNAL_PORT, settings.ROOT_PKG_DIR,
          settings.CONVERTER_CLASSES)

@@ -54,7 +54,6 @@ from rce.master.environment import EnvironmentEndpoint
 from rce.master.robot import RobotEndpoint
 from rce.master.user import User
 from rce.master.console import Console, ConsoleDummyRealm
-from rce.util.network import getIP
 from rce.util.cred import CredentialError
 
 
@@ -74,7 +73,7 @@ class RoboEarthCloudEngine(object):
     DISTRIBUTOR_CLS = Distributor
     CONSOLE_CLS = Console
 
-    def __init__(self, reactor, checker, intIF, port):
+    def __init__(self, reactor, checker, intIP, port):
         """ Initialize the RoboEarth Cloud Engine realm.
 
             @param reactor:     Twisted reactor used in this process.
@@ -84,9 +83,9 @@ class RoboEarthCloudEngine(object):
                                 an initial request is received.
             @type  checker:     twisted.cred.checkers.ICredentialsChecker
 
-            @param intIF:       Name of network interface used for internal
-                                communication.
-            @type  intIF:       str
+            @param intIP:       IP address of the network interface used for
+                                the internal communication.
+            @type  intIP:       str
 
             @param port:        Port where the robot process is listening for
                                 connections to other endpoints.
@@ -94,7 +93,7 @@ class RoboEarthCloudEngine(object):
         """
         self._reactor = reactor
         self._checker = checker
-        self._intIF = intIF
+        self._intIP = intIP
         self._port = port
 
         self._network = Network()
@@ -104,8 +103,6 @@ class RoboEarthCloudEngine(object):
 
         self._users = {}
         self._pendingContainer = {}
-
-        self._intIP = None
 
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns Avatar for slave processes of the cloud engine.
@@ -154,9 +151,6 @@ class RoboEarthCloudEngine(object):
             @return:            IP address of the network interface.
             @rtype:             str
         """
-        if self._intIP is None:
-            self._intIP = getIP(self._intIF)
-
         return self._intIP
 
     def requestUser(self, userID, robotID, password):
@@ -280,11 +274,11 @@ class RoboEarthCloudEngine(object):
 
 
 def main(reactor, internalCred, externalCred, internalPort, externalPort,
-         intIF, commPort, consolePort, extIF):
+         intIP, commPort, consolePort, extIP):
     log.startLogging(sys.stdout)
 
     # Realms
-    rce = RoboEarthCloudEngine(reactor, externalCred, intIF, commPort)
+    rce = RoboEarthCloudEngine(reactor, externalCred, intIP, commPort)
     http = None # TODO: Need to figure out what the correct realm here is...
     console = ConsoleDummyRealm(rce)
     
@@ -306,7 +300,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
     
     print("\nConnection Details:\n")
-    print("Internal IP Address: {0}".format(getIP(intIF)))
-    print("Global IP Address:   {0}\n".format(getIP(extIF)))
+    print("Internal IP Address: {0}".format(intIP))
+    print("Global IP Address:   {0}\n".format(extIP))
     
     reactor.run()

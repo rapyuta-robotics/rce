@@ -89,7 +89,7 @@ if __name__ == '__main__':
         passwd = sha256(args.MasterPassword).digest()
     
     main(reactor, cred, args.MasterIP, passwd, cred.password,
-         settings.MASTER_PORT, settings.INT_IF, settings.BRIDGE_IF,
+         settings.MASTER_PORT, settings.INT_IP, settings.BRIDGE_IP,
          settings.RCE_INTERNAL_PORT, settings.ROS_PROXY_PORT, settings.ROOTFS,
          settings.CONF_DIR, settings.DATA_DIR, settings.ROOT_SRC_DIR,
          settings.ROOT_PKG_DIR, args.maxContainers)

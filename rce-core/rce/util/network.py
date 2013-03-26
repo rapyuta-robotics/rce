@@ -30,51 +30,8 @@
 #
 #
 
-import socket
-import fcntl
-import struct
-import re
-import urllib2
-
-
-_IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
-                        '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
-
-# Internal AWS url metadata retrieval address for type 'public-ipv4'
-_AWS_IP_V4_ADDR = 'http://169.254.169.254/latest/meta-data/public-ipv4'
-
-
-def getIP(ifname):
-    """ Get the IP address associated with a network interface.
-
-        Based on:
-            http://code.activestate.com/recipes/439094-get-the-ip-address-
-            associated-with-a-network-inter/
-
-            PSF License (Python Software Foundation)
-
-        @param ifname:      Name of the network interface.
-        @type  finame:      str
-
-        @return:            IP address as a string, i.e. x.x.x.x
-        @rtype:             str
-    """
-    # case where in a custom setup the global IP address is preconfigured
-    # and does not necessarily bind to a network interface
-    # eg: ElasticIP or custom DNS routings
-    if _IP_V4_REGEX.match(ifname):
-        return ifname
-    
-    # AWS Specific IP resolution method for the global ipv4 address
-    if ifname == 'aws_dns' :
-        return urllib2.urlopen(_AWS_IP_V4_ADDR).read()
-    
-    s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,  # SIOCGIFADDR
-        struct.pack('256s', ifname[:15])
-    )[20:24])
+# Custom imports
+from settings import LOCALHOST_IP
 
 
 def isLocalhost(ip):
@@ -87,4 +44,4 @@ def isLocalhost(ip):
                             False otherwise.
         @rtype:             bool
     """
-    return ip in ('127.0.0.1', 'localhost')
+    return ip in (LOCALHOST_IP, 'localhost')

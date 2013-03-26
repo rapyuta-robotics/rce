@@ -53,9 +53,8 @@ from twisted.spread.pb import Referenceable, PBClientFactory, \
 # Custom imports
 from rce.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
-from rce.util.network import getIP
-from rce.util.path import processPkgPath, checkPath, checkExe
 from rce.util.cred import salter, EncodeAES, cipher
+from rce.util.network import isLocalhost
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
@@ -137,6 +136,26 @@ iface eth0 inet static
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
 """
+
+
+def _checkExe(folder, exe):
+    """ Check if the executable is valid.
+        
+        @param folder:          Folder in which the executable is located.
+        @type  folder:          str
+        
+        @param exe:             Executable which should be checked.
+        @type  exe:             str
+        
+        @raise:                 ValueError, if executable is not valid.
+    """
+    path = os.path.join(folder, exe)
+    
+    if not os.path.isfile(path):
+        raise ValueError("'{0}' is not a file.".format(exe))
+    
+    if not os.access(path, os.X_OK):
+        raise ValueError("'{0}' is not a executable.".format(exe))
 
 
 class RCEContainer(Referenceable):
@@ -367,8 +386,8 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, masterPasswd, infraPasswd, intIF,
-                 bridgeIF, envPort, rosproxyPort, rootfsDir, confDir, dataDir,
+    def __init__(self, reactor, masterIP, masterPasswd, infraPasswd, intIP,
+                 bridgeIP, envPort, rosproxyPort, rootfsDir, confDir, dataDir,
                  srcDir, pkgDir):
         """ Initialize the Container Client.
             
@@ -384,13 +403,13 @@ class ContainerClient(Referenceable):
             @param infraPasswd:   SHA 256 Digested Infra Password.
             @type  infraPasswd:   str
             
-            @param intIF:         Name of the network interface used for the
-                                  internal network.
-            @type  intIF:         str
+            @param intIP:         IP address of the network interface used for
+                                  the internal communication.
+            @type  intIP:         str
             
-            @param bridgeIF:      Name of the bridge interface used for the
-                                  container network.
-            @type  bridgeIF:      str
+            @param bridgeIP:      IP address of the network interface used for
+                                  the container communication.
+            @type  bridgeIP:      str
             
             @param envPort:       Port where the environment process running
                                   inside the container is listening for
@@ -431,13 +450,11 @@ class ContainerClient(Referenceable):
             @type  pkgDir:        [(str, str)]
         """
         self._reactor = reactor
-        self._internalIP = getIP(intIF)
+        self._internalIP = intIP
         self._envPort = envPort
         self._rosproxyPort = rosproxyPort
         
-        bridgeIP = getIP(bridgeIF)
-        
-        if masterIP in ('localhost', '127.0.0.1'):
+        if isLocalhost(masterIP):
             self._masterIP = bridgeIP
         else:
             self._masterIP = masterIP
@@ -449,20 +466,12 @@ class ContainerClient(Referenceable):
         self._confDir = confDir
         self._dataDir = dataDir
         self._srcDir = srcDir
-        
-        # Validate directory paths
-        checkPath(self._confDir, 'Configuration')
-        checkPath(self._dataDir, 'Data')
-        checkPath(self._rootfs, 'Container file system')
-        checkPath(self._srcDir, 'RCE source')
+        self._pkgDir = pkgDir
         
         # Validate executable paths
-        checkExe(self._srcDir, 'environment.py')
-        checkExe(self._srcDir, 'rosproxy.py')
-        #checkExe(self._srcDir, 'launcher.py')
-        
-        # Process ROS package paths
-        self._pkgDir = processPkgPath(pkgDir)
+        _checkExe(self._srcDir, 'environment.py')
+        _checkExe(self._srcDir, 'rosproxy.py')
+        #_checkExe(self._srcDir, 'launcher.py')
         
         for _, path in self._pkgDir:
             os.mkdir(os.path.join(self._rootfs, path))
@@ -629,7 +638,7 @@ class ContainerClient(Referenceable):
 
 
 def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
-         internalIF, bridgeIF, envPort, rosproxyPort, rootfsDir, confDir,
+         internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
          dataDir, srcDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
@@ -641,7 +650,7 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     reactor.connectTCP(masterIP, masterPort, factory)
     
     client = ContainerClient(reactor, masterIP, masterPassword, infraPasswd,
-                             internalIF, bridgeIF, envPort, rosproxyPort,
+                             internalIP, bridgeIP, envPort, rosproxyPort,
                              rootfsDir, confDir, dataDir, srcDir, pkgDir)
     
     d = factory.login(cred, (client, maxNr))

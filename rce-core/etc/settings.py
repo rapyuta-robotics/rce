@@ -30,6 +30,18 @@
 #
 #
 
+# Python specific imports
+import os
+import socket
+import fcntl
+import struct
+import re
+import urllib2
+
+# Custom imports
+from rce.util.name import isLegalName
+
+
 ##################################################
 ###                                            ###
 ###                 RCE settings               ###
@@ -105,13 +117,58 @@ ADAPTER_CONFIGURATION = {
 #'CUSTOM'       : ('eth0','eth1','lxcbr0'),
 }
 
-###
-# Do not modify this
+#####################
+# Do not modify this!
 if PLATFORM not in ADAPTER_CONFIGURATION:
     raise ValueError('Invalid platform selected.')
 
-EXT_IF, INT_IF , BRIDGE_IF = ADAPTER_CONFIGURATION[PLATFORM]
-###
+EXT_IF, INT_IF, BRIDGE_IF = ADAPTER_CONFIGURATION[PLATFORM]
+
+_IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
+                        '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
+
+# Internal AWS url metadata retrieval address for type 'public-ipv4'
+_AWS_IP_V4_ADDR = 'http://169.254.169.254/latest/meta-data/public-ipv4'
+
+def _getIP(ifname):
+    """ Get the IP address associated with a network interface.
+
+        Based on:
+            http://code.activestate.com/recipes/439094-get-the-ip-address-
+            associated-with-a-network-inter/
+
+            PSF License (Python Software Foundation)
+
+        @param ifname:      Name of the network interface.
+        @type  finame:      str
+
+        @return:            IP address as a string, i.e. x.x.x.x
+        @rtype:             str
+    """
+    # case where in a custom setup the global IP address is preconfigured
+    # and does not necessarily bind to a network interface
+    # eg: ElasticIP or custom DNS routings
+    if _IP_V4_REGEX.match(ifname):
+        return ifname
+    
+    # AWS Specific IP resolution method for the global ipv4 address
+    if ifname == 'aws_dns' :
+        return urllib2.urlopen(_AWS_IP_V4_ADDR).read()
+    
+    s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+EXT_IP = _getIP(EXT_IF)
+INT_IP = _getIP(INT_IF)
+BRIDGE_IP = _getIP(BRIDGE_IF)
+LOCALHOST_IP = _getIP('lo')
+
+del _IP_V4_REGEX, _AWS_IP_V4_ADDR, _getIP
+#####################
 
 ##################################################
 ###                                            ###
@@ -141,6 +198,77 @@ ROOT_SRC_DIR = '/opt/rce/framework'
 #     'filesystem path' is used as name
 ROOT_PKG_DIR = [('/opt/rce/test', 'rce_test')]
 
+#####################
+# Do not modify this!
+def _checkPath(path, description):
+    """ Check if the path is valid.
+        
+        @param path:            Path which should be checked.
+        @type  path:            str
+        
+        @param description:     Description which is used for the error
+                                message if necessary.
+        @type  description:     str
+        
+        @raise:                 ValueError, if path is not valid.
+    """
+    if not os.path.isabs(path):
+        raise ValueError('{0} directory is not an absolute '
+                         'path.'.format(description))
+    
+    if not os.path.isdir(path):
+        raise ValueError('{0} directory does not exist: '
+                         '{1}'.format(description, path))
+
+def _processPkgPath(paths):
+    """ Utility function to process the attribute ROOT_PKG_DIR from settings.
+        
+        @param paths:       List of attribute ROOT_PKG_DIR from settings.py
+        @type  paths:       [(str, str/None)]
+        
+        @return:            Processed list; each element of ROOT_PKG_DIR will
+                            be transformed into a tuple of source path and
+                            destination path which can than be used to
+                            extend the fstab file for the container creation.
+        @rtype:             [(str, str)]
+        
+        @raise:             ValueError
+    """
+    pkgDir = []
+    usedNames = set()
+    
+    for path, name in paths:
+        _checkPath(path, 'ROS Package')
+        
+        if not name:
+            name = os.path.basename(path)
+        
+        if not isLegalName(name):
+            raise ValueError("'{0}' is not a legal name.".format(name))
+        
+        if name in usedNames:
+            raise ValueError("Package name '{0}' is not "
+                             'unique.'.format(name))
+        
+        usedNames.add(name)
+        
+        # TODO: Contains container specific configuration: 'opt/rce/packages'
+        pkgDir.append((path, os.path.join('opt/rce/packages', name)))
+    
+    return pkgDir
+
+# Validate directory paths
+_checkPath(CONF_DIR, 'Configuration')
+_checkPath(DATA_DIR, 'Data')
+_checkPath(ROOTFS, 'Container file system')
+_checkPath(ROOT_SRC_DIR, 'RCE source')
+
+# Process package directories
+ROOT_PKG_DIR = _processPkgPath(ROOT_PKG_DIR)
+
+del _checkPath, _processPkgPath
+#####################
+
 ##################################################
 ###                                            ###
 ###             Admin Cred Settings            ###
@@ -151,19 +279,25 @@ ROOT_PKG_DIR = [('/opt/rce/test', 'rce_test')]
 # authentication for users
 # Remember that the user running master must have write privileges to write
 # to this file.
-def prepare_conf():
+
+#####################
+# Do not modify this!
+def _prepare_conf():
     """ Helper function to build the basic conf dirs
     TODO: Expand this similar class to parse the entire settings file so as
           to store it in the user accessible dir
     """
-    import os
-    path='/'.join([os.getenv('HOME'),'.rce'])
+    path = os.path.join(os.getenv('HOME'), '.rce')
+    
     if not os.path.exists(path):
         os.makedirs(path)
-    return '/'.join([path,'creds'])
+    
+    return os.path.join(path, 'creds')
 
-PASSWORD_FILE = prepare_conf()
-#PASSWORD_FILE = ''
+PASSWORD_FILE = _prepare_conf()
+
+del _prepare_conf
+#####################
 
 ##################################################
 ###                                            ###

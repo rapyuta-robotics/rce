@@ -43,7 +43,6 @@ import subprocess
 
 # Custom imports
 import settings
-from rce.util.path import processPkgPath
 
 
 _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']
@@ -51,7 +50,7 @@ _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']
 
 def up():
     mounts = [(pkg[0], os.path.join(settings.ROOTFS, pkg[1]))
-              for pkg in processPkgPath(settings.ROOT_PKG_DIR)]
+              for pkg in settings.ROOT_PKG_DIR]
     
     # Create all the necessary mount points
     for mount in mounts:
@@ -76,7 +75,7 @@ def up():
 
 def down():
     mounts = [os.path.join(settings.ROOTFS, pkg[1])
-              for pkg in processPkgPath(settings.ROOT_PKG_DIR)]
+              for pkg in settings.ROOT_PKG_DIR]
     
     stdDir = _STD_DIR[:]
     stdDir.reverse()

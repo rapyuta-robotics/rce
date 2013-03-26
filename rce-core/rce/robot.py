@@ -54,19 +54,18 @@ from twisted.spread.pb import PBClientFactory, \
 from autobahn.websocket import listenWS
 
 # Custom imports
-from rce.error import InternalError, DeadConnection
-from rce.client.interfaces import IRobot, IRobotCredentials
-from rce.client.protocol import CloudEngineWebSocketFactory
-from rce.monitor.converter import PublisherConverter, SubscriberConverter, \
-    ServiceClientConverter, ServiceProviderConverter, \
+from rce.error import InternalError
+from rce.comm.error import DeadConnection
+from rce.comm.interfaces import IRobot, IRobotCredentials
+from rce.comm.server import CloudEngineWebSocketFactory
+from rce.monitor.interface.robot import PublisherConverter, \
+    SubscriberConverter, ServiceClientConverter, ServiceProviderConverter, \
     PublisherForwarder, SubscriberForwarder, \
     ServiceClientForwarder, ServiceProviderForwarder
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
 from rce.util.converter import Converter
-from rce.util.network import getIP
 from rce.util.loader import Loader
-from rce.util.path import processPkgPath
 
 
 class Robot(Namespace):
@@ -522,7 +521,7 @@ class RobotClient(Endpoint):
     # CONFIG
     RECONNECT_TIMEOUT = 10
     
-    def __init__(self, reactor, commPort, extIF, extPort, loader, converter):
+    def __init__(self, reactor, commPort, extIP, extPort, loader, converter):
         """ Initialize the Robot Client.
             
             @param reactor:     Reference to the twisted reactor used in this
@@ -534,9 +533,9 @@ class RobotClient(Endpoint):
                                 incoming connections.
             @type  commPort:    int
             
-            @param extIF:       Name of network interface used for the external
-                                communication.
-            @type  extIF:       str
+            @param extIP:       IP address of network interface used for the
+                                external communication.
+            @type  extIP:       str
             
             @param extPort:     Port where the server for the external
                                 communication is listening for websocket
@@ -554,7 +553,7 @@ class RobotClient(Endpoint):
         """
         Endpoint.__init__(self, reactor, commPort)
         
-        self._extAddress = '{0}:{1}'.format(getIP(extIF), extPort)
+        self._extAddress = '{0}:{1}'.format(extIP, extPort)
         self._converter = converter
         self._loader = loader
         
@@ -745,7 +744,7 @@ class RobotClient(Endpoint):
         Endpoint.terminate(self)
 
 
-def main(reactor, cred, masterIP, masterPort, extIF, extPort, commPort,
+def main(reactor, cred, masterIP, masterPort, extIP, extPort, commPort,
          pkgPath, customConverters):
     log.startLogging(sys.stdout)
     
@@ -757,7 +756,7 @@ def main(reactor, cred, masterIP, masterPort, extIF, extPort, commPort,
     reactor.connectTCP(masterIP, masterPort, factory)
     
     rosPath = []
-    for path in get_ros_paths() + [p for p, _ in processPkgPath(pkgPath)]:
+    for path in get_ros_paths() + [p for p, _ in pkgPath]:
         if path not in rosPath:
             rosPath.append(path)
     
@@ -772,7 +771,7 @@ def main(reactor, cred, masterIP, masterPort, extIF, extPort, commPort,
         mod = __import__(module, fromlist=[className])
         converter.addCustomConverter(getattr(mod, className))
     
-    client = RobotClient(reactor, commPort, extIF, extPort, loader, converter)
+    client = RobotClient(reactor, commPort, extIP, extPort, loader, converter)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)

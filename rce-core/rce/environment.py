@@ -46,8 +46,8 @@ from rce.error import InternalError
 from rce.util.loader import Loader
 from rce.monitor.node import Node
 from rce.monitor.parameter import Parameter
-from rce.monitor.interface import PublisherInterface, SubscriberInterface, \
-    ServiceClientInterface, ServiceProviderInterface
+from rce.monitor.interface.environment import PublisherInterface, \
+    SubscriberInterface, ServiceClientInterface, ServiceProviderInterface
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
 

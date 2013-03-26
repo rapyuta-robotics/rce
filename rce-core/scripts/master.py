@@ -45,5 +45,5 @@ if __name__ == '__main__':
     intCred = RCEInternalChecker(settings.PASSWORD_FILE)
 
     main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT,
-         settings.INT_IF, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT,
-         settings.EXT_IF)
+         settings.INT_IP, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT,
+         settings.EXT_IP)
