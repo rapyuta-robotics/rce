@@ -369,7 +369,7 @@ class User(Referenceable):
                                     testRobot/logPublisher
             @type  tagX:        str
         """
-        key = hash(tagA)^hash(tagB)
+        key = int(md5(tagA).hexdigest(),16)^ int(md5(tagB).hexdigest(),16)
         
         try:
             connection = self._connections.pop(key)
