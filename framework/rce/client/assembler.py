@@ -73,7 +73,7 @@ def recursiveBinarySearch(multidict):
     uriBinary = []
     keys = []
     
-    for k,v in multidict.iteritems():
+    for k, v in multidict.iteritems():
         if isinstance(v, dict):
             uriBinaryPart, multidictPart = recursiveBinarySearch(v)
             uriBinary += uriBinaryPart

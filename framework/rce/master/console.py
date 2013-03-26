@@ -167,16 +167,21 @@ class UserAvatar(Avatar):
         """
         self.console._remove_user(username)
 
-    def perspective_update_user(self, username, password):
-        """ Remote call to edit user information.
+    def perspective_update_user(self, username, new_password, control_mode):
+        """ Remote call to change user credentials.
 
-            @param username:    The username
-            @type  username:    string
+            @param username:        username
+            @type  username:        str
             
-            @param password:    The password
-            @type  password:    string
+            @param new_password:    new password
+            @type  new_password:    str
+            
+            @param control_mode:    in user mode:  old password
+                                    in admin mode: True
+            @type  control_mode:    in user mode:  str
+                                    in admin mode: bool
         """
-        self.console._change_password(username, password)
+        self.console._change_password(username, new_password, control_mode)
     
     def perspective_list_users(self):
         """ Remote call to list all users logged into RoboEarthCloudEngine.
@@ -346,13 +351,12 @@ class Console(object):
             @return:           List of containers.
             @rtype:            List(rce.master.container.Container)
         """
-#        machine = [machine for machine in self._list_machines()
-#                   if machineIP == machine.IP]
-        machine = [machine for machine in self._root._balancer._machines
-                   if machineIP == machine.IP]
-        if machine:
-            return machine[0]._containers
-        else:
+        try:
+#            return (machine for machine in self._list_machines()
+#                    if machineIP == machine.IP).next()._containers
+            return (machine for machine in self._root._balancer._machines
+                    if machineIP == machine.IP).next()._containers
+        except StopIteration:
             raise InternalError('No such machine')
 
     def _list_machine_stats(self, machineIP):
@@ -368,13 +372,13 @@ class Console(object):
             @return:           List of containers.
             @rtype:            List(rce.master.container.Container)
         """
-        machine = [machine for machine in self._root._balancer._machines
-                   if machineIP == machine.IP]
-        if machine:
-            stat_info = {'active': machine[0].active,
-                         'capacity' : machine[0].capacity}
-            return stat_info
-        else:
+        try:
+#            machine = (machine for machine in self._list_machines()
+#                       if machineIP == machine.IP).next()
+            machine = (machine for machine in self._root._balancer._machines
+                       if machineIP == machine.IP).next()
+            return {'active':machine.active, 'capacity':machine.capacity}
+        except StopIteration:
             raise InternalError('No such machine')
     
 #    def _list_machine_users(self, machine): # TODO: Method is never used
@@ -429,21 +433,24 @@ class Console(object):
         """
         self._root._checker.removeUser(username)
 
-    def _change_password(self, username, password):
+    def _change_password(self, username, new_password, control_mode):
         """ Change the password of a user of the RoboEarth Cloud Engine
 
-            @param username:     Username of the user to be added
-            @type  username:     str
+            @param username:        Username of the user to be added
+            @type  username:        str
+            
+            @param new_password:    New Password
+            @type  new_password:    str
+            
+            @param control_mode:    in user mode:  old password
+                                    in admin mode: True
+            @type  control_mode:    in user mode:  str
+                                    in admin mode: bool
     
-            @param password:     Password of the user to be added
-            @type  passowrd:     str
-    
-            @return:             Results to True if succeeded  .
-            @rtype:              boolean
+            @return:                 Results to True if succeeded
+            @rtype:                  boolean
         """
-        # TODO: Old and new password necessary
-        #       except for admin changing another user's password
-        self._root._checker.passwd(username, password)
+        self._root._checker.passwd(username, new_password, control_mode)
     
     def _list_user_robots(self, user):
         """ Retrieve a list of all the robots owned by the user.

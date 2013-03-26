@@ -30,6 +30,21 @@
 #
 #
 
+if __name__ == '__main__':
+    # Before we start, check if the script can be executed, i.e. if we have
+    # the necessary super user privileges
+    import os
+    import sys
+    
+    if os.getuid() != 0:
+        print('{0} has to be run as super '
+              'user.'.format(os.path.basename(sys.argv[0])))
+        exit(1)
+
+
+#Python specific imports
+from hashlib import sha256
+
 # twisted specific imports
 from twisted.internet import reactor
 from twisted.cred.credentials import UsernamePassword
@@ -45,35 +60,36 @@ def _get_argparse():
     parser = ArgumentParser(prog='container',
                             description='RCE Container Client Slave.')
 
-    parser.add_argument('ipMaster', help='IP address of master process.',
-                        type=str)
-    parser.add_argument('--maxContainers', help='Maximum Number of containers '
-                        'to support on this machine.', type=int,
+    parser.add_argument('MasterIP', type=str,
+                        help='IP address of Master Process.')
+    
+    if not settings.DEV_MODE:
+        parser.add_argument('MasterPassword', type=str, help='Admin Password')
+        parser.add_argument('InfraPassword', type=str,
+                            help='Admin-Infrastructure Password')
+    
+    parser.add_argument('--maxContainers', type=int,
+                        help='Maximum Number of Containers to support on this '
+                             'machine.',
                         default=settings.MAX_CONTAINER)
 
     return parser
 
 
 if __name__ == '__main__':
-    # Credentials which should be used to login to Master process
-    cred = UsernamePassword('container', 'container')
-    
-    # Before we start, check if:
-    #  - the script can be executed, i.e. if we have the necessary super
-    #    user privileges
-    #  - we have the right amount of arguments
-    import os, sys
-    
-    if os.getuid() != 0:
-        print('{0} has to be run as super '
-              'user.'.format(os.path.basename(sys.argv[0])))
-        exit(1)
-    
     args = _get_argparse().parse_args()
     
-    main(reactor, cred, args.ipMaster, settings.MASTER_PORT, settings.INT_IF,
-         settings.BRIDGE_IF, settings.RCE_INTERNAL_PORT, 
-         settings.ROS_PROXY_PORT, settings.ROOTFS, settings.CONF_DIR, 
-         settings.DATA_DIR, settings.ROOT_SRC_DIR, settings.ROOT_PKG_DIR, 
-         args.maxContainers)
-
+    # Credentials which should be used to login to Master process
+    if settings.DEV_MODE:
+        cred = UsernamePassword('container', sha256('admin').digest())
+        passwd = sha256('admin').digest()
+    else:
+        cred = UsernamePassword('container',
+                                sha256(args.InfraPassword).digest())
+        passwd = sha256(args.MasterPassword).digest()
+    
+    main(reactor, cred, args.MasterIP, passwd, cred.password,
+         settings.MASTER_PORT, settings.INT_IF, settings.BRIDGE_IF,
+         settings.RCE_INTERNAL_PORT, settings.ROS_PROXY_PORT, settings.ROOTFS,
+         settings.CONF_DIR, settings.DATA_DIR, settings.ROOT_SRC_DIR,
+         settings.ROOT_PKG_DIR, args.maxContainers)

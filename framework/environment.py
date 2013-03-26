@@ -30,14 +30,16 @@
 #     
 #     
 
-# Before we start to import everything check if we have the right amount of
-# arguments
-import sys
-
-if len(sys.argv) != 3:
-    from os.path import basename
-    print('Usage: {0} [masterIP] [uid]'.format(basename(sys.argv[0])))
-    exit(1)
+if __name__ == '__main__':
+    # Before we start to import everything check if we have the right amount of
+    # arguments
+    import os
+    import sys
+    
+    if len(sys.argv) != 4:
+        print('Usage: {0} [masterIP] [uid] '
+              '[passwd]'.format(os.path.basename(sys.argv[0])))
+        exit(1)
 
 
 # twisted specific imports
@@ -49,10 +51,9 @@ from rce.environment import main
 import settings
 
 
-# Credentials which should be used to login to Master process
-cred = UsernamePassword('environment', 'environment')
-
-
-# Run main function
-main(reactor, cred, sys.argv[1], settings.MASTER_PORT,
-     settings.RCE_INTERNAL_PORT, sys.argv[2])
+if __name__ == '__main__':
+    # Credentials which should be used to login to Master process
+    cred = UsernamePassword(sys.argv[2], sys.argv[3])
+    
+    main(reactor, cred, sys.argv[1], settings.MASTER_PORT,
+         settings.RCE_INTERNAL_PORT, sys.argv[2])

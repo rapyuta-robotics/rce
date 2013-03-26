@@ -32,23 +32,18 @@
 
 # twisted specific imports
 from twisted.internet import reactor
-from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
 
 # Custom imports
 from rce.master.core import main
-from rce.util.cred import RCECredChecker
+from rce.util.cred import RCECredChecker, RCEInternalChecker
 import settings
 
 
-# Credentials checkers used in the cloud engine
-# TODO: At the moment only one user available and Password database in memory
-extCred = RCECredChecker(settings.PASSWORD_FILE)
-intCred = InMemoryUsernamePasswordDatabaseDontUse(robot='robot',
-                                                  container='container',
-                                                  environment='environment')
+if __name__ == '__main__':
+    # Credentials checkers used in the cloud engine
+    extCred = RCECredChecker(settings.PASSWORD_FILE, settings.DEV_MODE)
+    intCred = RCEInternalChecker(settings.PASSWORD_FILE)
 
-
-# Run main function
-main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT,
-     settings.INT_IF, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT,
-     settings.EXT_IF)
+    main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT,
+         settings.INT_IF, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT,
+         settings.EXT_IF)

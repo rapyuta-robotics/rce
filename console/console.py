@@ -39,6 +39,7 @@ import json
 import getopt
 from urllib import urlencode
 from urllib2 import urlopen, HTTPError
+from hashlib import sha256
 
 #twisted specific imports
 from twisted.python import usage
@@ -375,8 +376,7 @@ class ConsoleClient(HistoricRecvLine):
         self.terminal.write("Username: ")
 
     def parseInputLine(self, line):
-        """
-            A function to route various commands entered via Console.
+        """ A function to route various commands entered via Console.
             
             @param line:    The text entered on the Console
             @type  line:    string
@@ -390,8 +390,7 @@ class ConsoleClient(HistoricRecvLine):
         self.showPrompt()
 
     def callToRosProxy(self, command, parameter):
-        """ 
-            Function to handle call to ROSAPI Proxy Server.
+        """ Function to handle call to ROSAPI Proxy Server.
             
             @param command:      The command to execute in ROS environment.
             @type  command:      string
@@ -403,6 +402,7 @@ class ConsoleClient(HistoricRecvLine):
             self._connected_rosapi_nodes[parameter] = (url,key)
             argList = [('userID', self._username), ('action', command),
                        ('key', key)]
+            
             try:
                 f = urlopen('{0}?{1}'.format(url, urlencode(argList)))
                 response = json.loads(f.read())
@@ -426,8 +426,7 @@ class ConsoleClient(HistoricRecvLine):
                                 "{0}".format(err)))
     
     def callToUser(self, command, *args):
-        """
-            A wrapper function for call to remote user.
+        """ A wrapper function for call to remote user.
             
             @param command:    The command to be executed
             @type  command:    string
@@ -435,8 +434,8 @@ class ConsoleClient(HistoricRecvLine):
         self._user.callRemote(command, *args)
     
     def callToUserAndDisplay(self, command, *args):
-        """
-            A wrapper function around call to user and displaying the result
+        """ A wrapper function around call to user and displaying the result
+            
             @param command:    The command to be executed
             @type  command:    string
         """
@@ -445,20 +444,21 @@ class ConsoleClient(HistoricRecvLine):
 
     #Various commands follow
     def cmd_EXIT(self, line):
-        """
-            Handler for exit command.
+        """ Handler for exit command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         reactor.stop()
 
     def cmd_USER(self, line):
-        """
-            Handler for user command.
+        """ Handler for user command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = UserOptions(self.terminal)
+        
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -474,19 +474,21 @@ class ConsoleClient(HistoricRecvLine):
                 if opts['username']:
                     self.callToUser('remove_user', opts['username'])
             elif cmd == 'update':
-                if (opts['username'] and opts['password']):
+                if (opts['username'] and opts['new_password']
+                    and opts['old_password']):
                     self.callToUser('update_user', opts['username'],
-                                    opts['password'])
+                                    opts['new_password'], opts['old_password'])
             elif config['list']:
                 self.callToUserAndDisplay('list_users')
 
     def cmd_CONTAINER(self, line):
-        """
-            Handler for container command.
+        """ Handler for container command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = ContainerOptions(self.terminal)
+        
         try:
             config.parseOptions(line)
         except usage.UsageError as errortext:
@@ -507,12 +509,13 @@ class ConsoleClient(HistoricRecvLine):
                                           config['username'])
     
     def cmd_NODE(self, line):
-        """
-            Handler for node command.
+        """ Handler for node command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = NodeOptions(self.terminal)
+        
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -534,12 +537,13 @@ class ConsoleClient(HistoricRecvLine):
                     self.callToUser('stop_node', opts['ctag'], opts['ntag'])
 
     def cmd_PARAMETER(self, line):
-        """
-            Handler for parameter command.
+        """ Handler for parameter command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = ParameterOptions(self.terminal)
+        
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -557,12 +561,13 @@ class ConsoleClient(HistoricRecvLine):
                                     opts['name'])
     
     def cmd_INTERFACE(self, line):
-        """
-            Handler for interface command.
+        """ Handler for interface command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = InterfaceOptions(self.terminal)
+        
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -586,12 +591,13 @@ class ConsoleClient(HistoricRecvLine):
                                     opts['itag'])
     
     def cmd_CONNECTION(self, line):
-        """
-            Handler for connection command.
+        """ Handler for connection command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = ConnectionOptions(self.terminal)
+        
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -609,8 +615,8 @@ class ConsoleClient(HistoricRecvLine):
                                     opts['tag2'])
                     
     def cmd_ROBOT(self, line):
-        """
-            Handler for robot command.
+        """ Handler for robot command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
@@ -627,8 +633,8 @@ class ConsoleClient(HistoricRecvLine):
                                           config['username'])
 
     def cmd_MACHINE(self, line):
-        """
-            Handler for machine command.
+        """ Handler for machine command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
@@ -647,8 +653,8 @@ class ConsoleClient(HistoricRecvLine):
                                           config['containers'])
 
     def cmd_HELP(self, line):
-        """
-            Handler for help command.
+        """ Handler for help command.
+            
             @param line:    line input from terminal.
             @type  line:    string
         """
@@ -657,13 +663,13 @@ class ConsoleClient(HistoricRecvLine):
                    InterfaceOptions(self.terminal), 
                    ConnectionOptions(self.terminal),
                    RobotOptions(self.terminal), MachineOptions(self.terminal)]
+        
         for config in configs:
             self.terminal.nextLine()
             config.opt_help()
 
     def lineReceived(self, line):
-        """
-            Manage state/mode after connection. Code uses states to take 
+        """ Manage state/mode after connection. Code uses states to take 
             credential input and then starts terminal input.
             
             @param line:    line typed on terminal
@@ -682,22 +688,21 @@ class ConsoleClient(HistoricRecvLine):
             self._mode = 'Password'
             self._username = line
             self.terminal.write('Password: ')
-
         elif self._mode == 'Password':
             self._mode = 'Terminal'
             self._password = line
-            usernameLogin = self._factory.login(UsernamePassword(self._username,
-                                                self._password))
+            cred = UsernamePassword(self._username,
+                                    sha256(self._password).digest())
+            usernameLogin = self._factory.login(cred)
             usernameLogin.addCallback(_cbConnected)
             usernameLogin.addErrback(_cbError, "Username/password login failed")
-
         else:
             self.parseInputLine(line)
 
 
 def runWithProtocol(klass, masterIP, port):
-    """
-        Function overridden from twisted.conch.stdio to allow Ctrl+C interrupt
+    """ Function overridden from twisted.conch.stdio to allow Ctrl+C interrupt
+        
         @param klass:     A callable which will be invoked with
                           *a, **kw and should return an ITerminalProtocol
                           implementor. This will be invoked when a connection
@@ -709,6 +714,7 @@ def runWithProtocol(klass, masterIP, port):
     fd = sys.stdin.fileno()
     oldSettings = termios.tcgetattr(fd)
     tty.setcbreak(fd)
+    
     try:
         p = ServerProtocol(klass, masterIP, port)
         stdio.StandardIO(p)
@@ -724,7 +730,7 @@ def _get_argparse():
     parser = ArgumentParser(prog='console',
                             description='RCE Monitoring terminal.')
 
-    parser.add_argument('ipMaster', help='IP address of master process.',
+    parser.add_argument('MasterIP', help='IP address of master process.',
                         type=str)
     
     parser.add_argument('--port', help='Console port to connect to.',
@@ -736,8 +742,8 @@ def _get_argparse():
 def main():
     startLogging(sys.stdout)
     args = _get_argparse().parse_args()
-    runWithProtocol(ConsoleClient, args.ipMaster, args.port)
-
+    
+    runWithProtocol(ConsoleClient, args.MasterIP, args.port)
 
 if __name__ == '__main__':
     main()

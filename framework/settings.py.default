@@ -141,7 +141,6 @@ ROOT_SRC_DIR = '/opt/rce/framework'
 #     'filesystem path' is used as name
 ROOT_PKG_DIR = [('/opt/rce/test', 'rce_test')]
 
-
 ##################################################
 ###                                            ###
 ###             Admin Cred Settings            ###
@@ -165,3 +164,11 @@ def prepare_conf():
 
 PASSWORD_FILE = prepare_conf()
 #PASSWORD_FILE = ''
+
+##################################################
+###                                            ###
+###            Developer Debug Mode            ###
+###                                            ###
+##################################################
+
+DEV_MODE = True

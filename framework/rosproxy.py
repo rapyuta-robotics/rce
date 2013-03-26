@@ -37,5 +37,5 @@ from twisted.internet import reactor
 from rce.rosproxy import main
 import settings
 
-# Run main function
-main(reactor, settings.ROS_PROXY_PORT)
+if __name__ == '__main__':
+    main(reactor, settings.ROS_PROXY_PORT)

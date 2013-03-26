@@ -40,8 +40,8 @@ pjoin = os.path.join
 try:
     import iptc
 except ImportError:
-    print 'python-iptables could not be imported.'
-    print '    see: http://github.com/ldx/python-iptables'
+    print('python-iptables could not be imported.')
+    print('    see: http://github.com/ldx/python-iptables')
     exit(1)
 
 # twisted specific imports
@@ -55,6 +55,7 @@ from rce.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
 from rce.util.network import getIP
 from rce.util.path import processPkgPath, checkPath, checkExe
+from rce.util.cred import salter,EncodeAES,cipher
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
@@ -75,7 +76,7 @@ script
     . /opt/rce/setup.sh
     
     # start environment node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {masterIP} {uid}
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /opt/rce/src/environment.py -- {masterIP} {uid} {passwd}
 end script
 """
 
@@ -227,15 +228,17 @@ class RCEContainer(Referenceable):
                                     'etc/init/rceRosapi.conf', True)
         
         self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
-                                    'etc/network/interfaces', False)
+                                    'etc/network/interfaces', True)
         
         for srcPath, destPath in client.pkgDirIter:
             self._container.extendFstab(srcPath, destPath, True)
         
         # Create upstart scripts
+        passwd = EncodeAES(cipher(self._client._masterPasswd),
+                           salter(uid, self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
-                                         uid=uid))
+                                         uid=uid, passwd=passwd))
         
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI)
@@ -247,12 +250,11 @@ class RCEContainer(Referenceable):
         # Setup network
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
             f.write(client.getNetworkConfigTemplate().format(ip=ip))
-
     
     def start(self):
         """ Method which starts the container.
         """
-        # can raise iptc.xtables.XTablesError
+        ### can raise iptc.xtables.XTablesError
         #add remote rule for RCE internal communication
         self._remoteRule = iptc.Rule()
         self._remoteRule.protocol = 'tcp'
@@ -365,8 +367,9 @@ class ContainerClient(Referenceable):
         
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, intIF, bridgeIF, envPort, 
-                 rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir):
+    def __init__(self, reactor, masterIP, masterPasswd, infraPasswd, intIF,
+                 bridgeIF, envPort, rosproxyPort, rootfsDir, confDir, dataDir,
+                 srcDir, pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:      Reference to the twisted reactor.
@@ -374,6 +377,12 @@ class ContainerClient(Referenceable):
             
             @param masterIP:     IP address of the Master process.
             @type  masterIP:     str
+            
+            @param masterPassd:  SHA 256 Digested Master Password.
+            @type  masterPassd:  str
+            
+            @param infraPasswd:  SHA 256 Digested Infra Password.
+            @type  infraPasswd:  str
             
             @param intIF:        Name of the network interface used for the
                                  internal network.
@@ -430,6 +439,9 @@ class ContainerClient(Referenceable):
             self._masterIP = bridgeIP
         else:
             self._masterIP = masterIP
+        
+        self._masterPasswd = masterPasswd
+        self._infraPasswd = infraPasswd
         
         self._rootfs = rootfsDir
         self._confDir = confDir
@@ -614,8 +626,9 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
-         rosproxyPort, rootfsDir, confDir, dataDir, srcDir, pkgDir, maxNr):
+def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
+         internalIF, bridgeIF, envPort, rosproxyPort, rootfsDir, confDir,
+         dataDir, srcDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -625,9 +638,9 @@ def main(reactor, cred, masterIP, masterPort, internalIF, bridgeIF, envPort,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
     
-    client = ContainerClient(reactor, masterIP, internalIF, bridgeIF, envPort,
-                             rosproxyPort, rootfsDir, confDir, dataDir, srcDir,
-                             pkgDir)
+    client = ContainerClient(reactor, masterIP, masterPassword, infraPasswd,
+                             internalIF, bridgeIF, envPort, rosproxyPort,
+                             rootfsDir, confDir, dataDir, srcDir, pkgDir)
     
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
