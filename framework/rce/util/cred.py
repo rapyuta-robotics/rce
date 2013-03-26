@@ -248,15 +248,15 @@ class RCECredChecker:
             @type  control_mode:        str/bool
         
         """
+        if type(control_mode)== bool :
+            admin = True
+            old_password = ''
+        else:
+            admin = False
+            old_password = control_mode
+            if not self.pass_validator(new_password):
+                raise CredentialError(_PASSWORD_FAIL)
         try:
-            if type(control_mode)== bool :
-                admin = True
-                old_password = ''
-            else:
-                admin = False
-                old_password = control_mode
-                if not self.pass_validator(new_password):
-                    raise CredentialError(_PASSWORD_FAIL)
             if sha256(old_password).digest() == self.getUser(username)[1] or admin: # why bother reading the file if the user doesn't even exist !
                 for line in fileinput.input(self.filename, inplace=1):
                     if self.scanner.match(line).groups()[0] != username:
