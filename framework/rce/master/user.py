@@ -32,7 +32,7 @@
 
 # Python specific imports
 from uuid import uuid4
-
+from hashlib import md5
 # twisted specific imports
 from twisted.spread.pb import Referenceable
 from twisted.internet.defer import DeferredList, succeed
@@ -347,7 +347,7 @@ class User(Referenceable):
                                  '{1}.'.format(Types.decode(ifA.iType),
                                                Types.decode(ifB.iType)))
         
-        key = hash(tagA)^hash(tagB)
+        key = int(md5(tagA).hexdigest(),16)^ int(md5(tagB).hexdigest(),16)
         
         if key in self._connections:
             raise InvalidRequest('Can not add the same connection twice.')
