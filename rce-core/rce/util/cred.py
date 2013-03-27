@@ -236,11 +236,14 @@ class RCECredChecker(object):
     def userMemebership(self, username, group):
         """ Test if a user is member of a certain group
 
-            @param username:    username for who the mode is to be set.
+            @param username:    username of the user
             @type  username:    str
 
-            @return:            groups
-            @rtype:             set
+            @param group:       gropu tfor which membership is to be tested of the user
+            @type  group:       str
+
+            @return:            Result indicating membership
+            @rtype:             bool
         """
         return group in self.getUserGroups(username)
 
