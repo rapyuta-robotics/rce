@@ -59,6 +59,7 @@ from rce.util.network import isLocalhost
 #    writeCertToFile, writeKeyToFile
 
 
+# TODO: Modify name of executable
 _UPSTART_COMM = """
 # description
 author "Dominique Hunziker"
@@ -80,6 +81,7 @@ end script
 """
 
 # TODO: rosapi upstart script can be made static
+# TODO: Modify name of executable
 _UPSTART_ROSAPI = """
 # description
 author "Mayank Singh"
@@ -100,6 +102,7 @@ script
 end script
 """
 
+# TODO: Modify name of executable
 _UPSTART_LAUNCHER = """
 # description
 author "Dominique Hunziker"
@@ -469,9 +472,9 @@ class ContainerClient(Referenceable):
         self._pkgDir = pkgDir
         
         # Validate executable paths
-        _checkExe(self._srcDir, 'environment.py')
-        _checkExe(self._srcDir, 'rosproxy.py')
-        #_checkExe(self._srcDir, 'launcher.py')
+        _checkExe(self._srcDir, 'environment.py') # TODO: Modify name of executable
+        _checkExe(self._srcDir, 'rosproxy.py') # TODO: Modify name of executable
+        #_checkExe(self._srcDir, 'launcher.py') # TODO: Modify name of executable
         
         for _, path in self._pkgDir:
             os.mkdir(os.path.join(self._rootfs, path))

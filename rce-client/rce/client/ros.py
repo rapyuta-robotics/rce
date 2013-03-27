@@ -30,9 +30,6 @@
 #     
 #     
 
-# Python specific imports
-import json
-
 # ROS specific imports
 try:
     import rospy
@@ -137,36 +134,3 @@ def main(config, reactor):
     rospy.on_shutdown(env.terminate)
     
     reactor.run(installSignalHandlers=False)
-    
-    return 0
-
-
-def _get_argparse():
-    from argparse import ArgumentParser, FileType
-
-    parser = ArgumentParser(prog='ROS Client',
-                            description='Client for the RoboEarth Cloud Engine'
-                                        ' providing an Interface for ROS based'
-                                        ' communications.')
-
-    parser.add_argument('config', help='Configuration file.',
-                        type=FileType('r'))
-
-    return parser
-
-
-if __name__ == '__main__':
-    from twisted.internet import reactor
-    
-    args = _get_argparse().parse_args()
-    fh = args.config
-    
-    try:
-        config = json.load(fh)
-    except ValueError:
-        print('Configuration file is not in proper JSON format.')
-        exit(1)
-    finally:
-        fh.close()
-    
-    main(config, reactor)

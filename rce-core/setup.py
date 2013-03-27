@@ -48,5 +48,9 @@ setup(
     platforms = '',
     namespace_packages = ['rce', 'rce.util'],
     packages = ['rce', 'rce.master', 'rce.client', 'rce.slave', 'rce.monitor',
-                'rce.util']
+                'rce.util'],
+    scripts = ['scripts/rce-make', 'scripts/rce-setup-rcemake',
+               'scripts/rce-master', 'scripts/rce-container',
+               'scripts/rce-robot', 'scripts/rce-environment',
+               'scripts/rce-rosproxy']
 )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     console.py
+#     rce-console/rce/console/console.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -372,7 +372,7 @@ class ConsoleClient(HistoricRecvLine):
         HistoricRecvLine.connectionMade(self)
         self._factory = PBClientFactory()
 
-        reactor.connectTCP(self._masterIP, self._console_port, self._factory)
+        reactor.connectTCP(self._masterIP, self._console_port, self._factory) #@UndefinedVariable
         self.terminal.write("Username: ")
 
     def parseInputLine(self, line):
@@ -449,7 +449,7 @@ class ConsoleClient(HistoricRecvLine):
             @param line:    line input from terminal.
             @type  line:    string
         """
-        reactor.stop()
+        reactor.stop() #@UndefinedVariable
 
     def cmd_USER(self, line):
         """ Handler for user command.
@@ -677,7 +677,7 @@ class ConsoleClient(HistoricRecvLine):
         """
         def _cbError(why, msg):
             err(why, msg)
-            reactor.stop()
+            reactor.stop() #@UndefinedVariable
 
         def _cbConnected(perspective):
             self._user = perspective
@@ -718,32 +718,12 @@ def runWithProtocol(klass, masterIP, port):
     try:
         p = ServerProtocol(klass, masterIP, port)
         stdio.StandardIO(p)
-        reactor.run()
+        reactor.run() #@UndefinedVariable
     finally:
         termios.tcsetattr(fd, termios.TCSANOW, oldSettings)
         os.write(fd, "\r\x1bc\r")
 
 
-def _get_argparse():
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser(prog='console',
-                            description='RCE Monitoring terminal.')
-
-    parser.add_argument('MasterIP', help='IP address of master process.',
-                        type=str)
-    
-    parser.add_argument('--port', help='Console port to connect to.',
-                        type=int, default= 8081)
-
-    return parser
-
-
-def main():
+def main(ip, port):
     startLogging(sys.stdout)
-    args = _get_argparse().parse_args()
-    
-    runWithProtocol(ConsoleClient, args.MasterIP, args.port)
-
-if __name__ == '__main__':
-    main()
+    runWithProtocol(ConsoleClient, ip, port)

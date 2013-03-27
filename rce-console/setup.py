@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rosproxy.py
+#     rce-comm/setup.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -26,16 +26,27 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #     
-#     \author/s: Mayank Singh
+#     \author/s: Dominique Hunziker 
 #     
 #     
 
-# twisted specific imports
-from twisted.internet import reactor
+from setuptools import setup
 
-# Custom imports
-from rce.rosproxy import main
-import settings
+LONG_DESCRIPTION = """ TODO """
 
-if __name__ == '__main__':
-    main(reactor, settings.ROS_PROXY_PORT)
+setup(
+    name = 'rce-console',
+    description ='Console package of RoboEarth Cloud Engine.',
+    long_description = LONG_DESCRIPTION,
+    version = '0.1',
+    author = 'Dominique Hunziker',
+    author_email = 'dominique.hunziker@gmail.com',
+    url = 'http:github.com/IDSCETHZurich/rce.git',
+    license = 'Apache 2.0',
+    requires = [],
+    keywords = '',
+    platforms = '',
+    namespace_packages = ['rce'],
+    packages = ['rce.console'],
+    scripts = ['scripts/rce-console']
+)
