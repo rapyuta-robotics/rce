@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     error.py
+#     rce-comm/rce/comm/error.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

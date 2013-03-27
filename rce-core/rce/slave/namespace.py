@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     namespace.py
+#     rce-core/rce/slave/namespace.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

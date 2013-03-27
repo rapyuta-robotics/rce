@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     robot.py
+#     rce-core/rce/monitor/interface/robot.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -47,13 +47,24 @@ except ImportError:
         return isinstance(obj, StringIO)
 
 # Custom imports
-from rce.error import InvalidRequest, InternalError
-from rce.slave.interface import Interface
+from rce.error import InternalError
+from rce.slave.interface import Interface, InvalidResoureName
 import settings
 
 
 # Compression level used
 GZIP_LVL = settings.GZIP_LVL
+
+
+class ConversionError(Exception):
+    """ Exception is raised in case a ROS message could not be converted.
+    """
+
+
+class ServiceError(Exception):
+    """ Exception is raised in case a response message was received, but not
+        corresponding request is available.
+    """
 
 
 class _AbstractConverter(Interface):
@@ -158,13 +169,13 @@ class _ConverterBase(_AbstractConverter):
                                 ' messages.')
         
         if clsName != self._clsName:
-            raise InvalidRequest('Sent message type does not match the used '
-                                 'message type for this interface.')
+            raise InvalidResoureName('Sent message type does not match the '
+                                     'used message type for this interface.')
         
         try:
             msg = self._converter.decode(self._inputMsgCls, msg)
         except (TypeError, ValueError) as e:
-            raise InvalidRequest(str(e))
+            raise ConversionError(str(e))
         
         buf = StringIO()
         msg.serialize(buf)
@@ -199,7 +210,7 @@ class _ConverterBase(_AbstractConverter):
         try:
             jsonMsg = self._converter.encode(rosMsg)
         except (TypeError, ValueError) as e:
-            raise InvalidRequest(str(e))
+            raise ConversionError(str(e))
         
         self._sendToClient(jsonMsg, msgID, protocol, remoteID)
 
@@ -218,8 +229,8 @@ class ServiceClientConverter(_ConverterBase):
         args = self._clsName.split('/')
         
         if len(args) != 2:
-            raise InvalidRequest('srv type is not valid. Has to be of the '
-                                 'from pkg/msg, i.e. std_msgs/Int8.')
+            raise InvalidResoureName('srv type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
         
         srvCls = loader.loadSrv(*args)
         self._inputMsgCls = srvCls._response_class
@@ -229,8 +240,8 @@ class ServiceClientConverter(_ConverterBase):
         try:
             msgID, protocol, remoteID = self._pendingRequests.pop(msgID)
         except KeyError:
-            raise InvalidRequest('Service Client does not wait for a response '
-                                 'with message ID {0}.'.format(msgID))
+            raise ServiceError('Service Client does not wait for a response '
+                               'with message ID {0}.'.format(msgID))
         
         self.respond(msg, msgID, protocol, remoteID)
     
@@ -261,8 +272,8 @@ class ServiceProviderConverter(_ConverterBase):
         args = self._clsName.split('/')
         
         if len(args) != 2:
-            raise InvalidRequest('srv type is not valid. Has to be of the '
-                                 'from pkg/msg, i.e. std_msgs/Int8.')
+            raise InvalidResoureName('srv type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
         
         srvCls = loader.loadSrv(*args)
         self._inputMsgCls = srvCls._request_class
@@ -282,8 +293,8 @@ class PublisherConverter(_ConverterBase):
         args = self._clsName.split('/')
         
         if len(args) != 2:
-            raise InvalidRequest('msg type is not valid. Has to be of the '
-                                 'from pkg/msg, i.e. std_msgs/Int8.')
+            raise InvalidResoureName('msg type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
         
         self._outputMsgCls = loader.loadMsg(*args)
     
@@ -301,8 +312,8 @@ class SubscriberConverter(_ConverterBase):
         args = self._clsName.split('/')
         
         if len(args) != 2:
-            raise InvalidRequest('msg type is not valid. Has to be of the '
-                                 'from pkg/msg, i.e. std_msgs/Int8.')
+            raise InvalidResoureName('msg type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
         
         self._inputMsgCls = loader.loadMsg(*args)
     
@@ -331,11 +342,11 @@ class _ForwarderBase(_AbstractConverter):
             @type  msg:         dict
         """
         if clsName != self._clsName:
-            raise InvalidRequest('Sent message type does not match the used '
-                                 'message type for this interface.')
+            raise InvalidResoureName('Sent message type does not match the '
+                                     'used message type for this interface.')
         
         if not _checkIsStringIO(msg):
-            raise InvalidRequest('Sent message is not a binary message.')
+            raise ConversionError('Sent message is not a binary message.')
         
         self._receive(zlib.decompress(msg.getvalue()), msgID)
     
@@ -374,8 +385,8 @@ class ServiceClientForwarder(_ForwarderBase):
         try:
             msgID, protocol, remoteID = self._pendingRequests.pop(msgID)
         except KeyError:
-            raise InvalidRequest('Service Client does not wait for a response '
-                                 'with message ID {0}.'.format(msgID))
+            raise ServiceError('Service Client does not wait for a response '
+                               'with message ID {0}.'.format(msgID))
         
         self.respond(msg, msgID, protocol, remoteID)
     

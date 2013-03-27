@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     setupRCEmake.py
+#     rce-core/setupRCEmake.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -30,12 +30,13 @@
 #     
 #     
 
-# Before we start to import everything check if the script can be executed
 import os
 
-if os.getuid() != 0:
-    print('setupRCEmake has to be run as super user.')
-    exit(1)
+if __name__ == '__main__':
+    # Before we start to import everything check if the script can be executed
+    if os.getuid() != 0:
+        print('setupRCEmake has to be run as super user.')
+        exit(1)
 
 # Python specific imports
 import sys

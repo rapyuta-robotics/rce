@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     parameter.py
+#     rce-core/rce/monitor/parameter.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

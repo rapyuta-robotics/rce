@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rosproxy.py
+#     rce-core/rce/rosproxy.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -56,7 +56,12 @@ from rosservice import get_service_list
 get_published_topics = rospy.get_published_topics
 
 #rce specific imports
-from rce.error import InvalidRequest, InternalError
+from rce.error import InternalError
+
+
+class InvalidRequest(Exception):
+    """ Exception is raised in case the HTTP request could not be processed.
+    """
 
 
 class ROSProxy(object):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     loader.py
+#     rce-util/rce/util/loader.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -73,10 +73,11 @@ import rospkg
 
 # twisted specific imports
 from twisted.python import log
+from twisted.spread.pb import Error
 
 
-class ResourceNotFound(Exception):
-    """ Error is raised by the Loader when a resource can not be found.
+class ResourceNotFound(Error):
+    """ Exception is raised by the Loader when a resource can not be found.
     """
 
 

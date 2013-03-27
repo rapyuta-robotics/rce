@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#       error.py
+#       rce-core/rce/error.py
 #       
 #       This file is part of the RoboEarth Cloud Engine framework.
 #       
@@ -39,23 +39,7 @@ class InternalError(Error):
     """
 
 
-#class InvalidRequest(Error):
-#    """ This class is used to signal an invalid request.
-#    """
-
-
-class InvalidKey(Error):
-    """ this class is used to signal an invalid key during the initialization
-        of the ROS message connections.
-    """
-
-
 class MaxNumberExceeded(Error):
     """ Indicates that a quantity has exceeded an upper limit.
-    """
-
-
-class ConnectionError(Error):
-    """ Error is raised when the connection failed unexpectedly.
     """
 

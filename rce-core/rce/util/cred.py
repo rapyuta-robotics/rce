@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     cred.py
+#     rce-core/rce/util/cred.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #

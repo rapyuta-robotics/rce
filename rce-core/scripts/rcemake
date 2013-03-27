@@ -1,7 +1,7 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
 #     
-#     rcemake
+#     rce-core/rcemake
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -36,10 +36,10 @@ if [ $(id -u) -ne 0 ]; then
 	exit
 fi
 
-ROOTFS=$(./setupRCEmake.py up)
+ROOTFS=$(setupRCEmake.py up)
 
 if [ $? -eq 0 ]; then
     chroot $ROOTFS /bin/bash
 fi
 
-./setupRCEmake.py down
+setupRCEmake.py down

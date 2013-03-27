@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     types.py
+#     rce-comm/rce/comm/types.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

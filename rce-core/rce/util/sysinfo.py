@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     sysinfo.py
+#     rce-core/rce/util/sysinfo.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #

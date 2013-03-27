@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     endpoint.py
+#     rce-core/rce/slave/endpoint.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -34,11 +34,15 @@
 from twisted.python.failure import Failure
 from twisted.internet.defer import fail
 from twisted.internet.protocol import ServerFactory, ClientCreator
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, Error
 
 # Custom imports
-from rce.error import ConnectionError
 from rce.slave.protocol import Loopback, RCEInternalProtocol
+
+
+class ConnectionError(Error):
+    """ Error is raised when the connection failed unexpectedly.
+    """
 
 
 class Endpoint(Referenceable):

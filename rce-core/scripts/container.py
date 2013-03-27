@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     container.py
+#     rce-core/container.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     protocol.py
+#     rce-core/rce/slave/protocol.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

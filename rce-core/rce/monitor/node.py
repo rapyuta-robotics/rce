@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     node.py
+#     rce-core/rce/monitor/node.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -43,8 +43,6 @@ from twisted.spread.pb import Referenceable, \
     DeadReferenceError, PBConnectionLost
 
 # Custom imports
-from rce.error import InvalidRequest
-from rce.util.loader import ResourceNotFound
 from rce.monitor.common import ArgumentMixin
 
 
@@ -114,6 +112,8 @@ class Node(Referenceable, ArgumentMixin):
             @param namespace:   Namespace in which the node should be started
                                 in the environment.
             @type  namespace:   str
+            
+            @raise:             rce.util.loader.ResourceNotFound
         """
         ArgumentMixin.__init__(self, owner.loader)
         
@@ -125,11 +125,7 @@ class Node(Referenceable, ArgumentMixin):
         self._call = None
         
         # Find and validate executable
-        try:
-            cmd = [self._loader.findNode(pkg, exe)]
-        except ResourceNotFound as e:
-            raise InvalidRequest('Could not identify which node to launch: '
-                                 '{0}'.format(e))
+        cmd = [self._loader.findNode(pkg, exe)] # raises ResourceNotFound
         
         # Add arguments
         args = self.processArgument(args)
@@ -137,8 +133,8 @@ class Node(Referenceable, ArgumentMixin):
         # TODO: Is it necessary to limit the possible characters here?
 #        for char in '$;':
 #            if char in args:
-#                raise InvalidRequest('Argument can not contain special '
-#                                     "character '{0}'.".format(char))
+#                raise ValueError('Argument can not contain special '
+#                                 "character '{0}'.".format(char))
         
         cmd += shlex.split(args)
         

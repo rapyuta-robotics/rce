@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     environment.py
+#     rce-core/rce/monitor/interface/environment.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -43,8 +43,8 @@ import rospy
 from twisted.internet.threads import deferToThreadPool
 
 # Custom imports
-from rce.error import InvalidRequest, InternalError
-from rce.slave.interface import Interface
+from rce.error import InternalError
+from rce.slave.interface import Interface, InvalidResoureName
 
 
 class _ROSInterfaceBase(Interface):
@@ -73,6 +73,8 @@ class _ROSInterfaceBase(Interface):
             @param addr:        ROS name/address which the interface should
                                 use.
             @type  addr:        str
+            
+            @raise:             rce.util.loader.ResourceNotFound
         """
         Interface.__init__(self, owner, status, uid)
         
@@ -89,8 +91,8 @@ class ServiceClientInterface(_ROSInterfaceBase):
         try:
             pkg, name = package_resource_name(clsName)
         except ValueError:
-            raise InvalidRequest('Service type is not valid. Has to be of the '
-                                 'form pkg/srv, i.e. std_srvs/Empty.')
+            raise InvalidResoureName('Service type is not valid. Has to be of '
+                                     'the form pkg/srv, i.e. std_srvs/Empty.')
         
         self._srvCls = owner.loader.loadSrv(pkg, name)
         self._srvCls._request_class = rospy.AnyMsg
@@ -134,8 +136,8 @@ class ServiceProviderInterface(_ROSInterfaceBase):
         try:
             pkg, name = package_resource_name(clsName)
         except ValueError:
-            raise InvalidRequest('Service type is not valid. Has to be of the '
-                                 'form pkg/srv, i.e. std_srvs/Empty.')
+            raise InvalidResoureName('Service type is not valid. Has to be of '
+                                     'the form pkg/srv, i.e. std_srvs/Empty.')
         
         self._service = None
         self._pendingLock = Lock()
@@ -220,8 +222,8 @@ class PublisherInterface(_ROSInterfaceBase):
         try:
             pkg, name = package_resource_name(clsName)
         except ValueError:
-            raise InvalidRequest('Message type is not valid. Has to be of the '
-                                 'form pkg/msg, i.e. std_msgs/Int8.')
+            raise InvalidResoureName('Message type is not valid. Has to be of '
+                                     'the form pkg/msg, i.e. std_msgs/Int8.')
         
         self._msgCls = owner.loader.loadMsg(pkg, name)
 

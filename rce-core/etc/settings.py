@@ -39,7 +39,7 @@ import re
 import urllib2
 
 # Custom imports
-from rce.util.name import isLegalName
+from rce.util.name import validateName, IllegalName
 
 
 ##################################################
@@ -243,7 +243,9 @@ def _processPkgPath(paths):
         if not name:
             name = os.path.basename(path)
         
-        if not isLegalName(name):
+        try:
+            validateName(name)
+        except IllegalName:
             raise ValueError("'{0}' is not a legal name.".format(name))
         
         if name in usedNames:

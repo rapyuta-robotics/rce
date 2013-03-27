@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     name.py
+#     rce-core/rce/util/name.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -33,12 +33,20 @@
 # Python specific imports
 import re
 
+# twisted specific imports
+from twisted.spread.pb import Error
+
 
 # ASCII char followed by (alphanumeric, _)
 _NAME_RE = re.compile('^[A-Za-z][\w_]*$') 
 
 
-def isLegalName(name):
+class IllegalName(Error):
+    """ Exception is raised in case the name is not legal.
+    """
+
+
+def validateName(name):
     """ Check if the name is legal, i.e. if it starts with an ASCII char
         followed by alphanumeric chars or '_'.
         
@@ -49,7 +57,11 @@ def isLegalName(name):
         @rtype:         bool
     """
     if not name:
-        return False
+        raise IllegalName('Name can not be an empty string.')
     
     m = _NAME_RE.match(name)
-    return m is not None and m.group(0) == name
+    
+    if m is None or m.group(0) != name:
+        raise IllegalName('Name has to start with a letter followed by an '
+                          'arbitrary number of alphanumeric characters or '
+                          'underscores.')

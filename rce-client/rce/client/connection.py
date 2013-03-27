@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     connection.py
+#     rce-client/rce/client/connection.py
 #     
-#     This file is part of the RoboEarth Cloud Engine pyrce client.
+#     This file is part of the RoboEarth Cloud Engine framework.
 #     
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/

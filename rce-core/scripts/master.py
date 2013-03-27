@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     master.py
+#     rce-core/master.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

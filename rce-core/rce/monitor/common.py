@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     common.py
+#     rce-core/rce/monitor/common.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -34,8 +34,11 @@
 import os
 import re
 
-# Custom imports
-from rce.error import InvalidRequest
+
+class EnvironmentVariableNotFound(Exception):
+    """ Exception is raised in case the requested environment variable was not
+        found.
+    """
 
 
 class ArgumentMixin(object):
@@ -66,11 +69,13 @@ class ArgumentMixin(object):
         """ Internally used method to replace found matches of _RE_ENV regular
             expression with corresponding environment variable.
         """
+        var = match.group('var')
+        
         try:
-            return os.environ[match.group('var')]
+            return os.environ[var]
         except KeyError:
-            raise InvalidRequest('Can not find environment variable: '
-                                 '{0}'.format(match.group('var')))
+            raise EnvironmentVariableNotFound('Can not find environment '
+                                              'variable: {0}'.format(var))
     
     def processArgument(self, value):
         """ Run the replacement methods over the argument if it is a string.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     network.py
+#     rce-core/rce/master/network.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -36,11 +36,22 @@ from uuid import uuid4
 # twisted specific imports
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, DeferredList
-from twisted.spread.pb import Referenceable, PBConnectionLost
+from twisted.spread.pb import Referenceable, Error, PBConnectionLost
 
 # Custom imports
-from rce.error import InternalError, ConnectionError, InvalidKey
+from rce.error import InternalError
 from rce.master.base import Proxy, Status, AlreadyDead
+
+
+class ConnectionError(Error):
+    """ Error is raised when the connection failed unexpectedly.
+    """
+
+
+class InvalidKey(Error):
+    """ this class is used to signal an invalid key during the initialization
+        of the ROS message connections.
+    """
 
 
 class Network(object):

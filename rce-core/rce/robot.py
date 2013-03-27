@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     robot.py
+#     rce-core/rce/robot.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     user.py
+#     rce-core/rce/master/user.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -35,13 +35,18 @@ from uuid import uuid4
 from hashlib import md5
 
 # twisted specific imports
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, Error
 from twisted.internet.defer import DeferredList
 
 # Custom imports
-from rce.error import InvalidRequest, AlreadyDead
+from rce.master.base import AlreadyDead
 from rce.slave.interface import Types
-from rce.util.name import isLegalName
+from rce.util.name import validateName
+
+
+class InvalidRequest(Error):
+    """ Exception is raised if the request can not be processed.
+    """
 
 
 class User(Referenceable):
@@ -91,9 +96,11 @@ class User(Referenceable):
             @return:            The authentication key and address which are
                                 used for the websocket connection.
             @rtype:             twisted::Deferred
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
-        if not isLegalName(robotID):
-            raise InvalidRequest('Robot ID is not a valid.')
+        validateName(robotID)
         
         if (robotID in self._robots or robotID in self._containers):
             raise InvalidRequest('ID is already used for a container '
@@ -112,9 +119,11 @@ class User(Referenceable):
             @param tag:         Tag which is used to identify the container
                                 in subsequent requests.
             @type  tag:         str
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
-        if not isLegalName(tag):
-            raise InvalidRequest('Container tag is not a valid.')
+        validateName(tag)
         
         if tag in self._containers or tag in self._robots:
             raise InvalidRequest('Tag is already used for a container '
@@ -179,6 +188,9 @@ class User(Referenceable):
             @param namespace:   Namespace in which the node should be started
                                 in the environment.
             @type  namespace:   str
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
         try:
             self._containers[cTag].addNode(nTag, pkg, exe, args, name, nspc)
@@ -225,6 +237,9 @@ class User(Referenceable):
                                 String values can contain the directives
                                 $(find PKG) or $(env VAR).
             @type  value:       str, int, float, bool, list
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
         try:
             self._containers[cTag].addParameter(name, value)
@@ -284,6 +299,9 @@ class User(Referenceable):
                                 use. Only necessary if the suffix of @param
                                 iType is 'Interface'.
             @type  addr:        str
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
         if iType.endswith('Converter') or iType.endswith('Forwarder'):
             try:
@@ -559,9 +577,11 @@ class Robot(_Wrapper):
                                 package and the name of the message/service,
                                 i.e. 'std_msgs/Int32'.
             @type  clsName:     str
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
-        if not isLegalName(iTag):
-            raise InvalidRequest('Interface tag is not a valid.')
+        validateName(iTag)
         
         if iTag in self._interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "
@@ -680,9 +700,11 @@ class Container(_Wrapper):
             @param namespace:   Namespace in which the node should be started
                                 in the environment.
             @type  namespace:   str
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
-        if not isLegalName(nTag):
-            raise InvalidRequest('Node tag is not a valid.')
+        validateName(nTag)
         
         if nTag in self._nodes:
             raise InvalidRequest("Can not use the same node tag '{0}' in the "
@@ -762,9 +784,11 @@ class Container(_Wrapper):
             @param addr:        ROS name/address which the interface should
                                 use.
             @type  addr:        str
+            
+            @raise:             rce.util.name.IllegalName,
+                                rce.master.user.InvalidRequest
         """
-        if not isLegalName(iTag):
-            raise InvalidRequest('Interface tag is not a valid.')
+        validateName(iTag)
         
         if iTag in self._interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "

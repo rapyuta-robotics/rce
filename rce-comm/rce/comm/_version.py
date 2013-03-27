@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     _version.py
+#     rce-comm/rce/comm/_version.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     converter.py
+#     rce-core/rce/util/converter.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

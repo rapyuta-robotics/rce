@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     interface.py
+#     rce-util/rce/util/interface.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     

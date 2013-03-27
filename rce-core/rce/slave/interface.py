@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     interface.py
+#     rce-core/rce/slave/interface.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -36,7 +36,7 @@ from uuid import UUID
 # twisted specific imports
 from twisted.python import log
 from twisted.spread.pb import Referenceable, \
-    DeadReferenceError, PBConnectionLost
+    Error, DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import InternalError
@@ -96,6 +96,11 @@ class Types(object):
             @rtype:             bool
         """
         return iTypeA+iTypeB == 3
+
+
+class InvalidResoureName(Error):
+    """ Exception is raised in case the interface resource name is invalid.
+    """
 
 
 class Interface(Referenceable):
