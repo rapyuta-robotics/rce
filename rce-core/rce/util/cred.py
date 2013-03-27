@@ -37,6 +37,7 @@ import re
 import base64
 from hashlib import sha256
 from Crypto.Cipher import AES
+from collections import namedtuple
 
 # twisted specific imports
 from zope.interface import implements
@@ -45,13 +46,6 @@ from twisted.python import failure
 from twisted.cred import error
 from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
-
-
-_RE = r'(\w+):(.+)'
-_PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
-_PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
-                  'contain at least one uppercase, lowercase, digit, and '
-                  'special character.')
 
 ### AES Encryption Stuff
 # AES Encryptors strength depends on input password length, ensure it with
@@ -79,6 +73,30 @@ class CredentialError(Exception):
     """ TODO: Add doc
     """
 
+# Cloud engine Specific Types and Declarations
+userinfo = namedtuple('userinfo','password mode groups')
+
+# User mode mask length , modify these for future adaptations
+_MODE_LENGTH = 1
+_DEFAULT_USER_MODE = 1 # should be as many digits as the above eg: 1 or 01 or 001
+
+#default groups a user belongs to
+_DEFAULT_GROUPS = ('user',)
+
+# The Regex patters used
+
+_RE = r'(\w+)\s(.+)\s(\d{'+str(_MODE_LENGTH)+'})\s(.+)'
+_PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
+_PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
+                  'contain at least one uppercase, lowercase, digit, and '
+                  'special character.')
+_FIRST_RUN_MSG = ('It appears this is your first run or your credentials database'
+                  ' has changed or is incomplete. You must set the passwords for'
+                  ' the Admin and Admin-Infrastructure accounts.')
+_NEW_PASS_PROMPT = ('\nNote: The password must be between 4-20 characters '
+                ' long and contain at least one character each of the following'
+           '\n\t* lowercase\n\t* uppercase\n\t* digit\n\t* special character\n')
+
 
 class RCECredChecker(object):
     """The RCE file-based, text-based username/password database.
@@ -93,7 +111,7 @@ class RCECredChecker(object):
         """
             @param filename:    The creds file to be usd
             @type  filename:    str
-            
+
             @param dev_mode:    Indicate if developer mode is enabled.
             @type  dev_mode:    bool
         """
@@ -115,7 +133,7 @@ class RCECredChecker(object):
 
         # Provision required users
         self.required_users = {'admin':'admin', 'adminInfra':'admin'}
-        
+
         if dev_mode:
             # TODO : Remove testUser later, temporarily inserting for
             #        maintaining compat with current test classes.
@@ -126,6 +144,9 @@ class RCECredChecker(object):
                 except (KeyError, OSError, AttributeError):
                     self.addUser(username, self.required_users[username],
                                  provision=True)
+            self.setUserMode('admin', 0)
+            self.addUserGroups('admin','owner')
+
         else:
             init_flag = True
             for username in self.required_users.iterkeys():
@@ -133,25 +154,18 @@ class RCECredChecker(object):
                     self.getUser(username)
                 except (KeyError, OSError, AttributeError):
                     if init_flag:
-                        print('It appears this is your first run or your '
-                              'credentials database has changed or is '
-                              'incomplete. You must set the passwords for the '
-                              'Admin and Admin-Infrastructure accounts.')
+                        print(_FIRST_RUN_MSG)
                         init_flag = False
                     self.addUser(username, self.get_new_password(username),
                                  provision=True)
-    
+            self.setUserMode('admin', 0)
+            self.addUserGroups('admin','owner')
+
     def get_new_password(self, user):
-        print('\nNote: The password must be between 4-20 characters long and '
-              'contain at least one'
-              '\n\t* lowercase,'
-              '\n\t* uppercase,'
-              '\n\t* digit'
-              '\n\t* special character\n')
-        
+        print (_NEW_PASS_PROMPT)
         msg_pw = "Enter a password for the user '{0}': ".format(user)
         msg_cf = "Please confirm the password for the user '{0}': ".format(user)
-        
+
         while True:
             passwd = raw_input(msg_pw).strip()
             if passwd == raw_input(msg_cf).strip():
@@ -185,7 +199,8 @@ class RCECredChecker(object):
         with open(self.filename) as f :
             for line in f:
                 parts = self.scanner.match(line).groups()
-                yield parts
+                yield parts[0],userinfo(parts[1],int(parts[2]),
+                                        set(parts[3].split(':')))
 
     def getUser(self, username):
         """ Fetch username from db or cache, internal method
@@ -194,109 +209,233 @@ class RCECredChecker(object):
             os.path.getmtime(self.filename) > self._cacheTimestamp):
             self._cacheTimestamp = os.path.getmtime(self.filename)
             self._credCache = dict(self._loadCredentials())
-        return username, self._credCache[username]
+        return self._credCache[username]
+
+    def getUserMode(self, username):
+        """ Fetch mode for a user.
+
+            @param username:    username for who the mode is to be set.
+            @type  username:    str
+
+            @return:            Mode
+            @rtype:             int
+        """
+        return self.getUser(username).mode
+
+    def getUserGroups(self, username):
+        """ Fetch groups for a user.
+
+            @param username:    username for who the mode is to be set.
+            @type  username:    str
+
+            @return:            groups
+            @rtype:             set
+        """
+        return self.getUser(username).groups
+
+    def userMemebership(self, username, group):
+        """ Test if a user is member of a certain group
+
+            @param username:    username for who the mode is to be set.
+            @type  username:    str
+
+            @return:            groups
+            @rtype:             set
+        """
+        return group in self.getUserGroups(username)
 
     def requestAvatarId(self, c):
         try:
-            u, p = self.getUser(c.username)
+            passwd = self.getUser(c.username).password
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())
         else:
-            return defer.maybeDeferred(c.checkPassword, p
-                        ).addCallback(self._cbPasswordMatch, u)
+            return defer.maybeDeferred(c.checkPassword, passwd
+                        ).addCallback(self._cbPasswordMatch, c.username)
+
+    def setUserMode(self, username, mode):
+        """Set the mode for a user
+           Default mode for a user is 1.Like Unix Admin mode is 0.
+           The rest are open to custom extensions later in the engine.
+
+            @param username:    username for who the mode is to be set.
+            @type  username:    str
+
+            @param mode:        Mode lenght is as set by the _MODE_LENGTH [1] parameter (1 for user 0 for admin)
+            @type  mode:        int
+
+            @return:            Result of Operation
+            @rtype:             bool
+        """
+        #mode sanity check and ensure only a single digit
+        mode = str(mode)
+        if len(mode) != _MODE_LENGTH:
+            raise CredentialError('Invalid Mode Length')
+        try:
+            props = self.getUser(username)
+        except KeyError:
+            raise CredentialError('No such user')
+        # Now process the file in the required mode
+        for line in fileinput.input(self.filename, inplace=1):
+                if  self.scanner.match(line).groups()[0] != username:
+                    print(line[:-1])
+                else:
+                    print('\t'.join((username, props.password,
+                                     mode,':'.join(props.groups))))
+        return True
+
+    def addUserGroups(self, username, *groups):
+        """Add Group membership to certain groups.
+
+            @param username:    username for who the mode is to be set.
+            @type  username:    str
+
+            @param groups:      groups memebership to add to user
+            @type  groups:      csv strings eg : group1,group2
+
+            @return:            Result of Operation
+            @rtype:             bool
+        """
+        #mode sanity check and ensure only a single digit
+        try:
+            props = self.getUser(username)
+        except KeyError:
+            raise CredentialError('No such user')
+        groups = set(groups).union(props.groups)
+        # Now process the file in the required mode
+        for line in fileinput.input(self.filename, inplace=1):
+                if  self.scanner.match(line).groups()[0] != username:
+                    print(line[:-1])
+                else:
+                    print('\t'.join((username, props.password,
+                                     str(props.mode),':'.join(groups))))
+        return True
+
+    def removeUserGroups(self, username, *groups):
+        """Fremove Group membership to certain groups.
+
+            @param username:    username for who the mode is to be set.
+            @type  username:    str
+
+            @param groups:      groups memebership to remove from the user
+            @type  groups:      csv strings eg : group1,group2
+
+            @return:            Result of Operation
+            @rtype:             bool
+        """
+        #mode sanity check and ensure only a single digit
+        try:
+            props = self.getUser(username)
+        except KeyError:
+            raise CredentialError('No such user')
+        groups = props.groups - set(groups)
+        # Now process the file in the required mode
+        for line in fileinput.input(self.filename, inplace=1):
+                if  self.scanner.match(line).groups()[0] != username:
+                    print(line[:-1])
+                else:
+                    print('\t'.join((username, props.password,
+                                     str(props.mode),':'.join(groups))))
+        return True
 
     def addUser(self, username, password, provision=False):
         """ Change password for the username:
-        
+
             @param username:    username
             @type  username:    str
-            
+
             @param password:    password
             @type  password:    str
-        
+
             @param provision:   Special flag to indicate provisioning mode
             @type  provision:   bool
+
+            @return:            Result of Operation
+            @rtype:             bool
         """
         if not (self.pass_validator(password) or provision):
             raise CredentialError(_PASSWORD_FAIL)
-        
+
         if provision:
             with open(self.filename, 'a') as f:
-                f.writelines('{0}:{1}\n'.format(username,
-                                                sha256(password).digest()))
+                f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(username,
+                                                sha256(password).digest(),
+                                                _DEFAULT_USER_MODE,
+                                                ':'.join(_DEFAULT_GROUPS)))
             return True
-        
+
         try:
             self.getUser(username)
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f:
-                f.writelines('{0}:{1}\n'.format(username,
-                                                sha256(password).digest()))
+                f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(username,
+                                                sha256(password).digest(),
+                                                _DEFAULT_USER_MODE,
+                                                ':'.join(_DEFAULT_GROUPS)))
             return True
 
     def removeUser(self, username):
         """ Remove the given users
-        
+
             @param username:    username
             @type  username:    str
+
+            @return:            Result of Operation
+            @rtype:             bool
         """
         try:
-            # why bother reading the file if the user doesn't even exist !
             self.getUser(username)
-            
             for line in fileinput.input(self.filename, inplace=1):
                 if self.scanner.match(line).groups()[0] != username:
                     print(line[:-1])
-            return True
         except KeyError:
-            raise CredentialError('No such user')
+                raise CredentialError('No such user')
 
     def passwd(self,username, new_password, control_mode):
         """ Change password for the username.
-            
+
             In admin mode you need to set the boolean indicating admin Mode.
             In case of a normal user you need to pass the old password for
             the user.
-            
+
             Note : In admin mode, the admin is free to set any password he
                    likes as the strict password strength validator is turned
                    off in this case.
-        
+
             @param username:        username
             @type  username:        str
-            
+
             @param new_password:    new password
             @type  new_password:    str
-            
+
             @param control_mode:    in user mode:  old password
                                     in admin mode: True
             @type  control_mode:    in user mode:  str
                                     in admin mode: bool
+
+            @return:            Result of Operation
+            @rtype:             bool
         """
-        if type(control_mode)== bool :
-            admin = True
-            old_password = ''
-        else:
-            admin = False
-            old_password = control_mode
-            if not self.pass_validator(new_password):
-                raise CredentialError(_PASSWORD_FAIL)
         try:
-            # why bother reading the file if the user doesn't even exist !
-            if (sha256(old_password).digest() == self.getUser(username)[1]
-                or admin):
-                for line in fileinput.input(self.filename, inplace=1):
-                    if self.scanner.match(line).groups()[0] != username:
-                        print(line[:-1])
-                    else:
-                        print('{0}:{1}'.format(username,
-                                               sha256(new_password).digest()))
-                return True
-            else:
-                raise CredentialError('Invalid User Password')
+            props = self.getUser(username)
+            if type(control_mode)== str :
+                if props.password != sha256(control_mode).digest():
+                    raise CredentialError('Invalid Password')
+                if not self.pass_validator(new_password):
+                    raise CredentialError(_PASSWORD_FAIL)
         except KeyError:
             raise CredentialError('No such user')
+        # Now process the file in the required mode
+        for line in fileinput.input(self.filename, inplace=1):
+                if  self.scanner.match(line).groups()[0] != username:
+                    print(line[:-1])
+                else:
+                    print('\t'.join((username, sha256(new_password).digest(),
+                                     str(props.mode), ':'.join(props.groups))))
+        return True
+
+
 
 
 class RCEInternalChecker(RCECredChecker):
@@ -310,7 +449,7 @@ class RCEInternalChecker(RCECredChecker):
     def requestAvatarId(self, c):
         try:
             if c.username in ('container','robot'):
-                p = self.getUser('adminInfra')[1]
+                p = self.getUser('adminInfra').password
                 user = c.username
             else: # it is the environment uuid
                 try:
@@ -319,8 +458,8 @@ class RCEInternalChecker(RCECredChecker):
                 except CredentialError:
                     return defer.fail(error.UnauthorizedLogin())
 
-                infra = self.getUser('adminInfra')[1]
-                main = self.getUser('admin')[1]
+                infra = self.getUser('adminInfra').password
+                main = self.getUser('admin').password
                 p = EncodeAES(cipher(main), salter(c.username,infra))
                 user = 'environment'
         except KeyError:
@@ -328,3 +467,4 @@ class RCEInternalChecker(RCECredChecker):
         else:
             return defer.maybeDeferred(c.checkPassword, p
                         ).addCallback(self._cbPasswordMatch, user)
+
