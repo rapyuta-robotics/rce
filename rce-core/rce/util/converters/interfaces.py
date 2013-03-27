@@ -34,7 +34,7 @@
 from zope.interface import Interface, Attribute
 
 
-class IROSConverter(Interface):
+class ICustomROSConverter(Interface):
     """ Interface which declares the necessary methods which all ROS message
         types converters have to implement.
     """
@@ -48,21 +48,17 @@ class IROSConverter(Interface):
             @param rosMsg:  The ROS message instance which should be converted.
             @type  rosMsg:  genpy.message.Message
 
-            @return:    Dictionary containing the parsed message. The basic
-                        form does map each field in the ROS message to a key /
-                        value pair in the returned data dict. Binaries are
-                        added as StringIO instances.
-            @rtype:     {}
+            @return:        Dictionary containing the parsed message. The basic
+                            form does map each field in the ROS message to a
+                            key / value pair in the returned data dict. Binaries
+                            are added as StringIO instances.
+            @rtype:         {}
 
-            @raise:     TypeError, ValueError
+            @raise:         TypeError, ValueError
         """
     
-    def decode(rosMsgType, data): #@NoSelf
+    def decode(data): #@NoSelf
         """ Generate a ROS message from dictionary.
-
-            @param rosMsgType:  String defining the ROS message type, i.e.
-                                std_msgs/String.
-            @type  rosMsgType:  str
 
             @param data:    Dictionary with keys matching the fields in the
                             desired ROS message.
@@ -70,9 +66,10 @@ class IROSConverter(Interface):
                             instances.
             @param data:    { str : {} }
 
-            @return:    ROS message of type @param rosMsgType containing the
-                        given data.
-            @rtype:     ROS message of type @param rosMsgType
+            @return:        ROS message of type @param rosMsgType containing the
+                            given data.
+            @rtype:         ROS message of type @param rosMsgType
 
-            @raise:     TypeError, ValueError
+            @raise:         TypeError, ValueError,
+                            rce.util.loader.ResourceNotFound
         """

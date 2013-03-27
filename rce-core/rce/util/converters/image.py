@@ -43,7 +43,11 @@ except ImportError:
     def _checkIsStringIO(obj):
         return isinstance(obj, StringIO)
 
-import Image
+try:
+    import Image
+except ImportError:
+    print('Requires Python Image Library.')
+    exit(1)
 
 # ROS specific imports
 import sensor_msgs.msg
@@ -52,14 +56,14 @@ import sensor_msgs.msg
 from zope.interface import implements
 
 # Custom imports
-from rce.util.converters.interfaces import IROSConverter
+from rce.util.converters.interfaces import ICustomROSConverter
 
 
 class ImageConverter(object):
     """ Convert images from PNG file format to ROS sensor message format and
         back.
     """
-    implements(IROSConverter)
+    implements(ICustomROSConverter)
     
     MESSAGE_TYPE = 'sensor_msgs/Image'
 
@@ -69,7 +73,7 @@ class ImageConverter(object):
                                'rgba8' : 'RGBA', 'yuv422' : 'YCbCr' }
     _PIL_MODE_CHANNELS = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }
 
-    def decode(self, _, imgObj):
+    def decode(self, imgObj):
         """ Convert a image stored (PIL library readable image file format)
             in a StringIO object to a ROS compatible message
             (sensor_msgs.Image).

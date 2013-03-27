@@ -46,6 +46,9 @@ except ImportError:
     def _checkIsStringIO(obj):
         return isinstance(obj, StringIO)
 
+# zope specific imports
+from zope.interface import implements
+
 # ROS specific imports
 from genmsg.names import package_resource_name
 from genpy.message import Message
@@ -54,13 +57,27 @@ from rospy.rostime import Duration, Time
 # Custom imports
 from rce.error import InternalError
 from rce.util.interface import verifyClass
-from rce.util.converters.interfaces import IROSConverter
+from rce.util.converters.interfaces import ICustomROSConverter
+
+
+def _stringify(obj):
+    """ Internally used method to make sure that strings are of type str
+        and not of type unicode.
+    """
+    if isinstance(obj, unicode):
+        return obj.encode('utf-8')
+    elif isinstance(obj, str):
+        return obj
+    else:
+        raise TypeError('Object is not a string.')
 
 
 class _DurationConverter(object):
     """ Convert ROS Duration type to JSON style and back.
     """
-    def decode(self, _, data):
+    implements(ICustomROSConverter)
+    
+    def decode(self, data):
         """ Generate a rospy.rostime.Duration instance based on the given data
             which should be a string representation of a float.
         """
@@ -78,7 +95,9 @@ class _DurationConverter(object):
 class _TimeConverter(object):
     """ Convert ROS Time type to JSON style and back.
     """
-    def decode(self, _, data):
+    implements(ICustomROSConverter)
+    
+    def decode(self, data):
         """ Generate a rospy.rostime.Time instance based on the given data of
             the form 'YYYY-MM-DDTHH:MM:SS.mmmmmm' (ISO 8601).
         """
@@ -105,6 +124,11 @@ class _TimeConverter(object):
             raise TypeError('Received object is not a Time instance.')
 
         return (dt.isoformat(), {})
+
+
+# Check custom time classes whether the interface is correctly implemented
+verifyClass(ICustomROSConverter, _DurationConverter)
+verifyClass(ICustomROSConverter, _TimeConverter)
 
 
 class Converter(object):
@@ -148,7 +172,7 @@ class Converter(object):
             @raise:     rce.error.InternalError,
                         rce.util.interfaces.InterfaceError
         """
-        verifyClass(IROSConverter, converter)
+        verifyClass(ICustomROSConverter, converter)
         
         if converter.MESSAGE_TYPE in self._customTypes:
             raise InternalError('There are multiple Converters given for '
@@ -178,15 +202,6 @@ class Converter(object):
             InternalError('Tried to remove a custom converter which was '
                           'never added.')
     
-    def _stringify(self, _, obj):
-        """ Internally used method to make sure that strings are of type str
-            and not of type unicode.
-        """
-        if isinstance(obj, unicode):
-            return obj.encode('utf-8')
-        else:
-            return obj
-    
     def _encode(self, rosMsg):
         """ Internally used method which is responsible for the heavy lifting.
         """
@@ -199,22 +214,20 @@ class Converter(object):
             else:
                 listBool = False
             
-            field = getattr(rosMsg, slotName)
-            
-            if slotType in Converter._BASE_TYPES:
-                convFunc = Converter._BASE_TYPES[slotType]
-            elif slotType in Converter._SPECIAL_TYPES:
-                convFunc = Converter._SPECIAL_TYPES[slotType]().encode
+            if slotType in self._BASE_TYPES:
+                convFunc = self._BASE_TYPES[slotType]
+            elif slotType in self._SPECIAL_TYPES:
+                convFunc = self._SPECIAL_TYPES[slotType]().encode
             elif slotType in self._customTypes:
                 convFunc = self._customTypes[slotType][0]().encode
             else:
                 convFunc = self._encode
             
+            if listBool:
+                convFunc = lambda attr: map(convFunc, attr)
+            
             try:
-                if listBool:
-                    data[slotName] = map(convFunc, field)
-                else:
-                    data[slotName] = convFunc(field)
+                data[slotName] = convFunc(getattr(rosMsg, slotName))
             except ValueError as e:
                 raise ValueError('{0}.{1}: {2}'.format(
                                      rosMsg.__class__.__name__, slotName, e))
@@ -227,13 +240,13 @@ class Converter(object):
             @param rosMsg:  The ROS message instance which should be converted.
             @type  rosMsg:  ROS message instance
 
-            @return:    Dictionary containing the parsed message. The basic
-                        form does map each field in the ROS message to a key /
-                        value pair in the returned data dict. Binaries are
-                        added as StringIO instances.
-            @rtype:     {}
+            @return:        Dictionary containing the parsed message. The basic
+                            form does map each field in the ROS message to a
+                            key / value pair in the returned data dict. Binaries
+                            are added as StringIO instances.
+            @rtype:         {}
 
-            @raise:     TypeError, ValueError
+            @raise:         TypeError, ValueError
         """
         if not isinstance(rosMsg, Message):
             raise TypeError('Given rosMsg object is not an instance of '
@@ -262,29 +275,26 @@ class Converter(object):
             
             field = data[slotName]
             
-            if listBool and not isinstance(field, list):
+            if listBool and not isinstance(field, (list, tuple)):
                 raise TypeError('Given data does not match the definition of '
                                 'the ROS message.')
             
-            if slotType in Converter._BASE_TYPES:
-                convFunc = self._stringify
-                slotCls = None
-            elif slotType in Converter._SPECIAL_TYPES:
-                convFunc = Converter._SPECIAL_TYPES[slotType]().decode
-                slotCls = None
+            if slotType == 'string':
+                convFunc = _stringify
+            elif slotType in self._BASE_TYPES:
+                convFunc = self._BASE_TYPES[slotType]
+            elif slotType in self._SPECIAL_TYPES:
+                convFunc = self._SPECIAL_TYPES[slotType]().decode
             elif slotType in self._customTypes and _checkIsStringIO(field):
                 convFunc = self._customTypes[slotType][0]().decode
-                slotCls = None
             else:
-                convFunc = self._decode
-                slotCls = self._loader.loadMsg(*slotType.split('/'))
+                cls = self._loader.loadMsg(*slotType.split('/'))
+                convFunc = lambda d: self._decode(cls, d)
             
             if listBool:
-                msgData = map(lambda ele: convFunc(slotCls, ele), field)
-            else:
-                msgData = convFunc(slotCls, field)
+                convFunc = lambda f: map(convFunc, f)
             
-            setattr(rosMsg, slotName, msgData)
+            setattr(rosMsg, slotName, convFunc(field))
 
         return rosMsg
     
@@ -300,10 +310,11 @@ class Converter(object):
                             included as StringIO instances.
             @param data:    { str : {} }
 
-            @return:    ROS message of type rosMsg containing the given data.
-            @rtype:     ROS message of type rosMsg
+            @return:        ROS message of type rosMsg containing the given
+                            data.
 
-            @raise:     TypeError, ValueError
+            @raise:         TypeError, ValueError,
+                            rce.util.loader.ResourceNotFound
         """
         if _checkIsStringIO(data):
             for converter, cls in self._customTypes.itervalues():
