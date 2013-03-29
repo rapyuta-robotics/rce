@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/robot.py
+#     rce-core/rce/core/robot.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -33,10 +33,10 @@
 # twisted specific imports
 from twisted.internet.address import IPv4Address
 
-# Custom imports
-from rce.master.network import Endpoint, Namespace
-from rce.master.base import Status
+# rce specific imports
 from rce.util.network import isLocalhost
+from rce.core.network import Endpoint, Namespace
+from rce.core.base import Status
 
 
 class Robot(Namespace):

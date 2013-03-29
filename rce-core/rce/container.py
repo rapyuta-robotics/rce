@@ -50,8 +50,8 @@ from twisted.internet.defer import  DeferredList, succeed
 from twisted.spread.pb import Referenceable, PBClientFactory, \
     DeadReferenceError, PBConnectionLost
 
-# Custom imports
-from rce.error import InternalError, MaxNumberExceeded
+# rce specific imports
+from rce.util.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
 from rce.util.cred import salter, EncodeAES, cipher
 from rce.util.network import isLocalhost

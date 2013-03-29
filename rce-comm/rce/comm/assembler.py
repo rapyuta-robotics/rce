@@ -51,7 +51,7 @@ except ImportError:
 from twisted.python import log
 from twisted.internet.task import LoopingCall
 
-# Custom imports
+# rce specific imports
 from rce.comm.error import InvalidRequest
 
 

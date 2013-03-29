@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/container.py
+#     rce-core/rce/core/container.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -34,8 +34,8 @@
 from twisted.internet.address import IPv4Address
 from twisted.internet.defer import Deferred, succeed
 
-# Custom imports
-from rce.master.base import Proxy
+# rce specific imports
+from rce.core.base import Proxy
 
 
 class Container(Proxy):

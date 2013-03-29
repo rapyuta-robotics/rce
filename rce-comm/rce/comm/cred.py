@@ -33,7 +33,7 @@
 # zope specific imports
 from zope.interface import implements
 
-# Custom imports
+# rce specific imports
 from rce.comm.interfaces import IRobotCredentials
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/user.py
+#     rce-core/rce/core/user.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -38,10 +38,10 @@ from hashlib import md5
 from twisted.spread.pb import Referenceable, Error
 from twisted.internet.defer import DeferredList
 
-# Custom imports
-from rce.master.base import AlreadyDead
-from rce.slave.interface import Types
+# rce specific imports
 from rce.util.name import validateName
+from rce.core.base import AlreadyDead
+from rce.slave.interface import Types
 
 
 class InvalidRequest(Error):

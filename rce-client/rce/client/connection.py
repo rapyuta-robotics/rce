@@ -36,7 +36,7 @@ import weakref
 # zope specific imports
 from zope.interface import implements
 
-# Custom imports
+# rce specific imports
 from rce.comm.interfaces import IRobot, IMessageReceiver
 from rce.comm.client import RCE
 from rce.client.interface import HAS_ROS

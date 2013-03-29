@@ -42,7 +42,7 @@ if __name__ == '__main__':
 import sys
 import subprocess
 
-# Custom imports
+# rce specific imports
 import settings
 
 

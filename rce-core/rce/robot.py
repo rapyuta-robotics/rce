@@ -53,8 +53,10 @@ from twisted.spread.pb import PBClientFactory, \
 # Autobahn specific imports
 from autobahn.websocket import listenWS
 
-# Custom imports
-from rce.error import InternalError
+# rce specific imports
+from rce.util.error import InternalError
+from rce.util.converter import Converter
+from rce.util.loader import Loader
 from rce.comm.error import DeadConnection
 from rce.comm.interfaces import IRobot, IRobotCredentials
 from rce.comm.server import CloudEngineWebSocketFactory
@@ -64,8 +66,6 @@ from rce.monitor.interface.robot import PublisherConverter, \
     ServiceClientForwarder, ServiceProviderForwarder
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
-from rce.util.converter import Converter
-from rce.util.loader import Loader
 
 
 class Robot(Namespace):

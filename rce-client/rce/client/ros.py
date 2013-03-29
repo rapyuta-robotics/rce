@@ -40,11 +40,11 @@ except ImportError:
 # twisted specific imports
 from twisted.internet.defer import Deferred
 
-# Custom imports
+# rce specific imports
 from rce.client.connection import ConnectionError, ROSConnection
 
 
-_MAP = {#'ServiceClientConverter'  : '???',
+_MAP = {#'ServiceClientConverter'  : '???', * TODO: Add a service-provider interface
         'ServiceProviderConverter' : 'service',
         'PublisherConverter'       : 'subscriber',
         'SubscriberConverter'      : 'publisher'}

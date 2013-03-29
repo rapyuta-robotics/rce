@@ -41,8 +41,8 @@ import rospy
 from twisted.python import log
 from twisted.spread.pb import PBClientFactory
 
-# Custom imports
-from rce.error import InternalError
+# rce specific imports
+from rce.util.error import InternalError
 from rce.util.loader import Loader
 from rce.monitor.node import Node
 from rce.monitor.parameter import Parameter

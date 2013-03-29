@@ -33,7 +33,7 @@
 # twisted specific imports
 from twisted.internet import reactor
 
-# Custom imports
+# rce specific imports
 from rce.rosproxy import main
 import settings
 

@@ -46,16 +46,16 @@ except ImportError:
     def _checkIsStringIO(obj):
         return isinstance(obj, StringIO)
 
-# zope specific imports
-from zope.interface import implements
-
 # ROS specific imports
 from genmsg.names import package_resource_name
 from genpy.message import Message
 from rospy.rostime import Duration, Time
 
-# Custom imports
-from rce.error import InternalError
+# zope specific imports
+from zope.interface import implements
+
+# rce specific imports
+from rce.util.error import InternalError
 from rce.util.interface import verifyClass
 from rce.util.converters.interfaces import ICustomROSConverter
 

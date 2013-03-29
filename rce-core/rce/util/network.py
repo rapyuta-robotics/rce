@@ -30,7 +30,7 @@
 #
 #
 
-# Custom imports
+# rce specific imports
 from settings import LOCALHOST_IP
 
 

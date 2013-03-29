@@ -30,7 +30,7 @@
 #     
 #     
 
-#python specific imports
+# Python specific imports
 import sys
 import os
 import termios
@@ -41,7 +41,7 @@ from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 from hashlib import sha256
 
-#twisted specific imports
+# twisted specific imports
 from twisted.python import usage
 from twisted.python.log import err, startLogging
 from twisted.cred.credentials import UsernamePassword

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-comm/setup.py
+#     rce-console/setup.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -43,10 +43,10 @@ setup(
     author_email = 'dominique.hunziker@gmail.com',
     url = 'http:github.com/IDSCETHZurich/rce.git',
     license = 'Apache 2.0',
-    requires = [],
+    install_requires = [],
     keywords = '',
     platforms = '',
     namespace_packages = ['rce'],
-    packages = ['rce.console'],
+    packages = ['rce', 'rce.console'],
     scripts = ['scripts/rce-console']
 )

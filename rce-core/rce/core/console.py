@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/console.py
+#     rce-core/rce/core/console.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -41,8 +41,8 @@ from zope.interface import implements
 from twisted.cred.portal import IRealm
 from twisted.spread.pb import IPerspective, Avatar
 
-# Custom imports
-from rce.error import InternalError
+# rce specific imports
+from rce.util.error import InternalError
 
 
 class InterfaceConnection2way(object):

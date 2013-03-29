@@ -42,7 +42,7 @@ from twisted.internet.protocol import ProcessProtocol
 from twisted.spread.pb import Referenceable, \
     DeadReferenceError, PBConnectionLost
 
-# Custom imports
+# rce specific imports
 from rce.monitor.common import ArgumentMixin
 
 

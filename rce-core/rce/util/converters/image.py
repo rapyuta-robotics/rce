@@ -55,7 +55,7 @@ import sensor_msgs.msg
 # zope specific imports
 from zope.interface import implements
 
-# Custom imports
+# rce specific imports
 from rce.util.converters.interfaces import ICustomROSConverter
 
 

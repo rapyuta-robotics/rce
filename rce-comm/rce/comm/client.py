@@ -48,7 +48,7 @@ from twisted.internet.threads import deferToThread
 from autobahn.websocket import connectWS, WebSocketClientFactory, \
     WebSocketClientProtocol
 
-# Custom imports
+# rce specific imports
 from rce.comm import types
 from rce.comm._version import CURRENT_VERSION
 from rce.comm.interfaces import IRobot, IMessageReceiver

@@ -41,15 +41,14 @@ if __name__ == '__main__':
               'user.'.format(os.path.basename(sys.argv[0])))
         exit(1)
 
-
-#Python specific imports
+# Python specific imports
 from hashlib import sha256
 
 # twisted specific imports
 from twisted.internet import reactor
 from twisted.cred.credentials import UsernamePassword
 
-# Custom imports
+# rce specific imports
 from rce.container import main
 import settings
 

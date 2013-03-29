@@ -36,7 +36,7 @@ from twisted.internet.defer import fail
 from twisted.internet.protocol import ServerFactory, ClientCreator
 from twisted.spread.pb import Referenceable, Error
 
-# Custom imports
+# rce specific imports
 from rce.slave.protocol import Loopback, RCEInternalProtocol
 
 

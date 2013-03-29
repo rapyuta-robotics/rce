@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/environment.py
+#     rce-core/rce/core/environment.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -30,9 +30,9 @@
 #     
 #     
 
-# Custom imports
-from rce.master.base import Proxy, Status
-from rce.master.network import Endpoint, Namespace
+# rce specific imports
+from rce.core.base import Proxy, Status
+from rce.core.network import Endpoint, Namespace
 
 
 class Node(Proxy):

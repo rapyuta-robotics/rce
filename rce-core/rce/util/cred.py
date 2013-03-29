@@ -30,7 +30,7 @@
 #
 #
 
-# global imports
+# Python specific imports
 import os
 import fileinput
 import re

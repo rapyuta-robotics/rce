@@ -46,8 +46,8 @@ except ImportError:
     def _checkIsStringIO(obj):
         return isinstance(obj, StringIO)
 
-# Custom imports
-from rce.error import InternalError
+# rce specific imports
+from rce.util.error import InternalError
 from rce.slave.interface import Interface, InvalidResoureName
 import settings
 

@@ -38,8 +38,8 @@ from twisted.python import log
 from twisted.spread.pb import Referenceable, \
     DeadReferenceError, PBConnectionLost
 
-# Custom imports
-from rce.error import InternalError
+# rce specific imports
+from rce.util.error import InternalError
 from rce.monitor.common import ArgumentMixin
 
 

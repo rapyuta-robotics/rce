@@ -43,9 +43,9 @@ setup(
     author_email = 'dominique.hunziker@gmail.com',
     url = 'http:github.com/IDSCETHZurich/rce.git',
     license = 'Apache 2.0',
-    requires = ['rce-util'],
+    install_requires = ['rce_util'],
     keywords = '',
     platforms = '',
     namespace_packages = ['rce'],
-    packages = ['rce.comm']
+    packages = ['rce', 'rce.comm']
 )

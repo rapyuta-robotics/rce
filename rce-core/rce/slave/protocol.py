@@ -41,8 +41,8 @@ from twisted.protocols.basic import Int32StringReceiver
 from twisted.spread.pb import Referenceable, \
     DeadReferenceError, PBConnectionLost
 
-# Custom imports
-from rce.error import InternalError
+# rce specific imports
+from rce.util.error import InternalError
 
 
 class _Protocol(Referenceable):

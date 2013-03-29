@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     rce-core/rce/master/core.py
+#     rce-core/rce/master.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #
@@ -44,17 +44,17 @@ from twisted.cred.portal import IRealm, Portal
 from twisted.spread.pb import IPerspective, PBServerFactory, Avatar
 from twisted.web.server import Site
 
-# Custom imports
-from rce.error import InternalError
-from rce.comm.server import MasterRobotAuthentication
-from rce.master.machine import LoadBalancer, ContainerProcessError, \
-    Distributor, RobotProcessError
-from rce.master.network import Network
-from rce.master.environment import EnvironmentEndpoint
-from rce.master.robot import RobotEndpoint
-from rce.master.user import User
-from rce.master.console import Console, ConsoleDummyRealm
+# rce specific imports
+from rce.util.error import InternalError
 from rce.util.cred import CredentialError
+from rce.comm.server import MasterRobotAuthentication
+from rce.core.machine import LoadBalancer, ContainerProcessError, \
+    Distributor, RobotProcessError
+from rce.core.network import Network
+from rce.core.environment import EnvironmentEndpoint
+from rce.core.robot import RobotEndpoint
+from rce.core.user import User
+from rce.core.console import Console, ConsoleDummyRealm
 
 
 class RoboEarthCloudEngine(object):

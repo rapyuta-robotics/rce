@@ -52,7 +52,7 @@ from autobahn import httpstatus
 from autobahn.websocket import HttpException, \
     WebSocketServerFactory, WebSocketServerProtocol
 
-# Custom imports
+# rce specific imports
 from rce.comm import types
 from rce.comm._version import MINIMAL_VERSION, CURRENT_VERSION
 from rce.comm.error import InvalidRequest, DeadConnection

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/machine.py
+#     rce-core/rce/core/machine.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -33,11 +33,11 @@
 # Python specific imports
 from collections import Counter
 
-# Custom imports
-from rce.error import InternalError, MaxNumberExceeded
-from rce.master.base import Status
-from rce.master.container import Container
+# rce specific imports
+from rce.util.error import InternalError, MaxNumberExceeded
 from rce.util.network import isLocalhost
+from rce.core.base import Status
+from rce.core.container import Container
 
 
 class ContainerProcessError(Exception):

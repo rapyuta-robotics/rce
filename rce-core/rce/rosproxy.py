@@ -30,19 +30,12 @@
 #     
 #     
 
-#python specific imports
+# Python specific imports
 import httplib
 import json
 import fcntl
 
-#twisted-specific imports
-from twisted.cred.error import UnauthorizedLogin
-from twisted.python import log
-from twisted.web.resource import Resource
-from twisted.web.server import NOT_DONE_YET, Site
-from twisted.internet.defer import fail, succeed
-
-#rosapi imports
+# ROS specific imports
 import rospy
 from rosservice import get_service_list
 # TODO: Unused imports
@@ -55,8 +48,15 @@ from rosservice import get_service_list
 
 get_published_topics = rospy.get_published_topics
 
-#rce specific imports
-from rce.error import InternalError
+# twisted specific imports
+from twisted.cred.error import UnauthorizedLogin
+from twisted.python import log
+from twisted.web.resource import Resource
+from twisted.web.server import NOT_DONE_YET, Site
+from twisted.internet.defer import fail, succeed
+
+# rce specific imports
+from rce.util.error import InternalError
 
 
 class InvalidRequest(Exception):

@@ -35,7 +35,7 @@ from setuptools import setup
 LONG_DESCRIPTION = """ TODO """
 
 setup(
-    name = 'rce-util',
+    name = 'rce_util',
     description ='Util package of RoboEarth Cloud Engine.',
     long_description = LONG_DESCRIPTION,
     version = '0.1',
@@ -43,9 +43,9 @@ setup(
     author_email = 'dominique.hunziker@gmail.com',
     url = 'http:github.com/IDSCETHZurich/rce.git',
     license = 'Apache 2.0',
-    requires = ['zope.interface'],
+    install_requires = ['zope.interface'],
     keywords = '',
     platforms = '',
     namespace_packages = ['rce', 'rce.util'],
-    packages = ['rce.util']
+    packages = ['rce', 'rce.util']
 )

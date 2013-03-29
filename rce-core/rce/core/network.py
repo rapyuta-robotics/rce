@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #     
-#     rce-core/rce/master/network.py
+#     rce-core/rce/core/network.py
 #     
 #     This file is part of the RoboEarth Cloud Engine framework.
 #     
@@ -38,9 +38,9 @@ from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, DeferredList
 from twisted.spread.pb import Referenceable, Error, PBConnectionLost
 
-# Custom imports
-from rce.error import InternalError
-from rce.master.base import Proxy, Status, AlreadyDead
+# rce specific imports
+from rce.util.error import InternalError
+from rce.core.base import Proxy, Status, AlreadyDead
 
 
 class ConnectionError(Error):
