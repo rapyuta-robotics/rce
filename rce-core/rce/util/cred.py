@@ -39,8 +39,10 @@ from hashlib import sha256
 from Crypto.Cipher import AES
 from collections import namedtuple
 
-# twisted specific imports
+# zope specific imports
 from zope.interface import implements
+
+# twisted specific imports
 from twisted.internet import defer
 from twisted.python import failure
 from twisted.cred import error
@@ -64,38 +66,47 @@ pad = lambda s: s + (_BLOCK_SIZE - len(str(s)) % _BLOCK_SIZE) * _PADDING
 
 # one-liners to encrypt/encode and decrypt/decode a string
 # encrypt with AES, encode with base64
-EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+encodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 cipher = lambda passwd: AES.new(passwd)
 salter = lambda u, p: sha256(u+p).digest()
+
+# one-liner to format user-info to write to the credentials file
+formatUser = lambda name, pw, mode, groups: '\t'.join((name, pw, mode,
+                                                       ':'.join(groups)))
+
+### Cloud engine Specific Types and Declarations
+Userinfo = namedtuple('Userinfo', 'password mode groups')
+
+# User mode mask length, modify these for future adaptations
+_MODE_LENGTH = 1
+_DEFAULT_USER_MODE = '1'    # should be as many digits as the above e.g.:
+                            #   1 or 01 or 001
+
+# default groups a user belongs to
+_DEFAULT_GROUPS = ('user',)
+
+### Used Regex patterns
+_RE = r'(\w+)\s(.+)\s(\d{'+str(_MODE_LENGTH)+'})\s(.+)'
+_PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
+
+### Used doc strings
+_PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
+                  'contain at least one uppercase, lowercase, digit, and '
+                  'special character.')
+_FIRST_RUN_MSG = ('It appears this is your first run or your credentials '
+                  'database has changed or is incomplete. You must set the '
+                  'passwords for the Admin and Admin-Infrastructure accounts.')
+_NEW_PASS_PROMPT = ('\nNote: The password must be between 4-20 characters long '
+                    'and contain at least one'
+                    '\n\t* lowercase,'
+                    '\n\t* uppercase,'
+                    '\n\t* digit'
+                    '\n\t* special character\n')
 
 
 class CredentialError(Exception):
     """ TODO: Add doc
     """
-
-# Cloud engine Specific Types and Declarations
-userinfo = namedtuple('userinfo','password mode groups')
-
-# User mode mask length , modify these for future adaptations
-_MODE_LENGTH = 1
-_DEFAULT_USER_MODE = 1 # should be as many digits as the above eg: 1 or 01 or 001
-
-#default groups a user belongs to
-_DEFAULT_GROUPS = ('user',)
-
-# The Regex patters used
-
-_RE = r'(\w+)\s(.+)\s(\d{'+str(_MODE_LENGTH)+'})\s(.+)'
-_PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
-_PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
-                  'contain at least one uppercase, lowercase, digit, and '
-                  'special character.')
-_FIRST_RUN_MSG = ('It appears this is your first run or your credentials database'
-                  ' has changed or is incomplete. You must set the passwords for'
-                  ' the Admin and Admin-Infrastructure accounts.')
-_NEW_PASS_PROMPT = ('\nNote: The password must be between 4-20 characters '
-                ' long and contain at least one character each of the following'
-           '\n\t* lowercase\n\t* uppercase\n\t* digit\n\t* special character\n')
 
 
 class RCECredChecker(object):
@@ -196,11 +207,12 @@ class RCECredChecker(object):
     def _loadCredentials(self):
         """ Internal method to read file.
         """
-        with open(self.filename) as f :
+        # TODO: Add error handling in case the file has an invalid format
+        with open(self.filename) as f:
             for line in f:
                 parts = self.scanner.match(line).groups()
-                yield parts[0],userinfo(parts[1],int(parts[2]),
-                                        set(parts[3].split(':')))
+                yield parts[0], Userinfo(parts[1], int(parts[2]),
+                                         set(parts[3].split(':')))
 
     def getUser(self, username):
         """ Fetch username from db or cache, internal method
@@ -239,7 +251,8 @@ class RCECredChecker(object):
             @param username:    username of the user
             @type  username:    str
 
-            @param group:       gropu tfor which membership is to be tested of the user
+            @param group:       group for which membership is to be tested
+                                of the user
             @type  group:       str
 
             @return:            Result indicating membership
@@ -257,14 +270,16 @@ class RCECredChecker(object):
                         ).addCallback(self._cbPasswordMatch, c.username)
 
     def setUserMode(self, username, mode):
-        """Set the mode for a user
-           Default mode for a user is 1.Like Unix Admin mode is 0.
-           The rest are open to custom extensions later in the engine.
+        """ Set the mode for a user
+            
+            Default mode for a user is 1. Like in Unix Admin mode is 0.
+            The rest are open to custom extensions later in the engine.
 
             @param username:    username for who the mode is to be set.
             @type  username:    str
 
-            @param mode:        Mode lenght is as set by the _MODE_LENGTH [1] parameter (1 for user 0 for admin)
+            @param mode:        Mode length is set by the _MODE_LENGTH [1]
+                                parameter (1 for user; 0 for admin)
             @type  mode:        int
 
             @return:            Result of Operation
@@ -283,18 +298,18 @@ class RCECredChecker(object):
                 if  self.scanner.match(line).groups()[0] != username:
                     print(line[:-1])
                 else:
-                    print('\t'.join((username, props.password,
-                                     mode,':'.join(props.groups))))
+                    print(formatUser(username, props.password, mode,
+                                     props.groups))
         return True
 
     def addUserGroups(self, username, *groups):
-        """Add Group membership to certain groups.
+        """ Add Group membership to certain groups.
 
             @param username:    username for who the mode is to be set.
             @type  username:    str
 
-            @param groups:      groups memebership to add to user
-            @type  groups:      csv strings eg : group1,group2
+            @param groups:      groups membership to add to user
+            @type  groups:      csv strings, e.g. group1,group2
 
             @return:            Result of Operation
             @rtype:             bool
@@ -310,12 +325,12 @@ class RCECredChecker(object):
                 if  self.scanner.match(line).groups()[0] != username:
                     print(line[:-1])
                 else:
-                    print('\t'.join((username, props.password,
-                                     str(props.mode),':'.join(groups))))
+                    print(formatUser(username, props.password, str(props.mode),
+                                     groups))
         return True
 
     def removeUserGroups(self, username, *groups):
-        """Fremove Group membership to certain groups.
+        """ Remove Group membership to certain groups.
 
             @param username:    username for who the mode is to be set.
             @type  username:    str
@@ -337,8 +352,8 @@ class RCECredChecker(object):
                 if  self.scanner.match(line).groups()[0] != username:
                     print(line[:-1])
                 else:
-                    print('\t'.join((username, props.password,
-                                     str(props.mode),':'.join(groups))))
+                    print(formatUser(username, props.password, str(props.mode),
+                                     groups))
         return True
 
     def addUser(self, username, password, provision=False):
@@ -361,10 +376,9 @@ class RCECredChecker(object):
 
         if provision:
             with open(self.filename, 'a') as f:
-                f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(username,
-                                                sha256(password).digest(),
-                                                _DEFAULT_USER_MODE,
-                                                ':'.join(_DEFAULT_GROUPS)))
+                f.write(formatUser(username, sha256(password).digest(),
+                                   _DEFAULT_USER_MODE, _DEFAULT_GROUPS))
+                f.write('\n')
             return True
 
         try:
@@ -372,10 +386,9 @@ class RCECredChecker(object):
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f:
-                f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(username,
-                                                sha256(password).digest(),
-                                                _DEFAULT_USER_MODE,
-                                                ':'.join(_DEFAULT_GROUPS)))
+                f.write(formatUser(username, sha256(password).digest(),
+                                   _DEFAULT_USER_MODE, _DEFAULT_GROUPS))
+                f.write('\n')
             return True
 
     def removeUser(self, username):
@@ -417,12 +430,12 @@ class RCECredChecker(object):
             @type  control_mode:    in user mode:  str
                                     in admin mode: bool
 
-            @return:            Result of Operation
-            @rtype:             bool
+            @return:                Result of Operation
+            @rtype:                 bool
         """
         try:
             props = self.getUser(username)
-            if type(control_mode)== str :
+            if isinstance(control_mode, str):
                 if props.password != sha256(control_mode).digest():
                     raise CredentialError('Invalid Password')
                 if not self.pass_validator(new_password):
@@ -431,14 +444,12 @@ class RCECredChecker(object):
             raise CredentialError('No such user')
         # Now process the file in the required mode
         for line in fileinput.input(self.filename, inplace=1):
-                if  self.scanner.match(line).groups()[0] != username:
-                    print(line[:-1])
-                else:
-                    print('\t'.join((username, sha256(new_password).digest(),
-                                     str(props.mode), ':'.join(props.groups))))
+            if  self.scanner.match(line).groups()[0] != username:
+                print(line[:-1])
+            else:
+                print(formatUser(username, sha256(new_password).digest(),
+                                 str(props.mode), props.groups))
         return True
-
-
 
 
 class RCEInternalChecker(RCECredChecker):
@@ -463,7 +474,7 @@ class RCEInternalChecker(RCECredChecker):
 
                 infra = self.getUser('adminInfra').password
                 main = self.getUser('admin').password
-                p = EncodeAES(cipher(main), salter(c.username,infra))
+                p = encodeAES(cipher(main), salter(c.username,infra))
                 user = 'environment'
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())

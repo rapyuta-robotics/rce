@@ -53,7 +53,7 @@ from twisted.spread.pb import Referenceable, PBClientFactory, \
 # rce specific imports
 from rce.util.error import InternalError, MaxNumberExceeded
 from rce.util.container import Container
-from rce.util.cred import salter, EncodeAES, cipher
+from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
@@ -256,7 +256,7 @@ class RCEContainer(Referenceable):
             self._container.extendFstab(srcPath, destPath, True)
         
         # Create upstart scripts
-        passwd = EncodeAES(cipher(self._client._masterPasswd),
+        passwd = encodeAES(cipher(self._client._masterPasswd),
                            salter(uid, self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,

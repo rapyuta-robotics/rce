@@ -43,7 +43,7 @@ setup(
     author_email = 'dominique.hunziker@gmail.com',
     url = 'http:github.com/IDSCETHZurich/rce.git',
     license = 'Apache 2.0',
-    install_requires = ['rce_comm', 'rce_util'],
+    install_requires = ['rce_comm', 'rce_util', 'python_iptables'],
     keywords = '',
     platforms = '',
     namespace_packages = ['rce', 'rce.util'],
