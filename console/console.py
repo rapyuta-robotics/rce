@@ -375,6 +375,41 @@ class ConsoleClient(HistoricRecvLine):
         reactor.connectTCP(self._masterIP, self._console_port, self._factory)
         self.terminal.write("Username: ")
 
+    def lineReceived(self, line):
+        """ Manage state/mode after connection. Code uses states to take 
+            credential input and then starts terminal input.
+            
+            @param line:    line typed on terminal
+            @type  line:    string
+        """
+        def _cbError(why, msg):
+            err(why, msg)
+            reactor.stop()
+
+        def _cbConnected(perspective):
+            d = perspective.callRemote("getUserView")
+            d.addCallback(_cbConnectionSuccess)
+
+        def _cbConnectionSuccess(view):
+            self._user = view
+            self.terminal.write('Connection to Master Established.')
+            self.showPrompt()
+                    
+        if self._mode == 'Username':
+            self._mode = 'Password'
+            self._username = line
+            self.terminal.write('Password: ')
+        elif self._mode == 'Password':
+            self._mode = 'Terminal'
+            self._password = line
+            cred = UsernamePassword(self._username,
+                                    sha256(self._password).digest())
+            usernameLogin = self._factory.login(cred)
+            usernameLogin.addCallback(_cbConnected)
+            usernameLogin.addErrback(_cbError, "Username/password login failed")
+        else:
+            self.parseInputLine(line)
+
     def parseInputLine(self, line):
         """ A function to route various commands entered via Console.
             
@@ -433,13 +468,13 @@ class ConsoleClient(HistoricRecvLine):
         """
         self._user.callRemote(command, *args)
     
-    def callToUserAndDisplay(self, command, *args):
+    def callToUserAndDisplay(self, domain, command, *args):
         """ A wrapper function around call to user and displaying the result
             
             @param command:    The command to be executed
             @type  command:    string
         """
-        d = self._user.callRemote(command, *args)
+        d = self._user[domain].callRemote(command, *args)
         d.addCallback(lambda result: self.terminal.write(str(result)))
 
     #Various commands follow
@@ -479,7 +514,7 @@ class ConsoleClient(HistoricRecvLine):
                     self.callToUser('update_user', opts['username'],
                                     opts['new_password'], opts['old_password'])
             elif config['list']:
-                self.callToUserAndDisplay('list_users')
+                self.callToUserAndDisplay('', 'list_users')
 
     def cmd_CONTAINER(self, line):
         """ Handler for container command.
@@ -503,9 +538,9 @@ class ConsoleClient(HistoricRecvLine):
             elif config['topics']:
                 self.callToRosProxy('topics', config['topics'])
             elif config['list']:
-                self.callToUserAndDisplay('list_containers')
+                self.callToUserAndDisplay('', 'list_containers')
             elif config['username']:
-                self.callToUserAndDisplay('list_containers_by_user',
+                self.callToUserAndDisplay('', 'list_containers_by_user',
                                           config['username'])
     
     def cmd_NODE(self, line):
@@ -627,9 +662,9 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
             if config['list']:
-                self.callToUserAndDisplay('list_robots')
+                self.callToUserAndDisplay('', 'list_robots')
             elif config['username']:
-                self.callToUserAndDisplay('list_robots_by_user',
+                self.callToUserAndDisplay('', 'list_robots_by_user',
                                           config['username'])
 
     def cmd_MACHINE(self, line):
@@ -645,11 +680,11 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
             if config['list']:
-                self.callToUserAndDisplay('list_machines')
+                self.callToUserAndDisplay('console', 'list_machines')
             elif config['stats']:
-                self.callToUserAndDisplay('stats_machine', config['stats'])
+                self.callToUserAndDisplay('', 'stats_machine', config['stats'])
             elif config['containers']:
-                self.callToUserAndDisplay('machine_containers',
+                self.callToUserAndDisplay('', 'machine_containers',
                                           config['containers'])
 
     def cmd_HELP(self, line):
@@ -667,37 +702,6 @@ class ConsoleClient(HistoricRecvLine):
         for config in configs:
             self.terminal.nextLine()
             config.opt_help()
-
-    def lineReceived(self, line):
-        """ Manage state/mode after connection. Code uses states to take 
-            credential input and then starts terminal input.
-            
-            @param line:    line typed on terminal
-            @type  line:    string
-        """
-        def _cbError(why, msg):
-            err(why, msg)
-            reactor.stop()
-
-        def _cbConnected(perspective):
-            self._user = perspective
-            self.terminal.write('Connection to Master Established.')
-            self.showPrompt()
-        
-        if self._mode == 'Username':
-            self._mode = 'Password'
-            self._username = line
-            self.terminal.write('Password: ')
-        elif self._mode == 'Password':
-            self._mode = 'Terminal'
-            self._password = line
-            cred = UsernamePassword(self._username,
-                                    sha256(self._password).digest())
-            usernameLogin = self._factory.login(cred)
-            usernameLogin.addCallback(_cbConnected)
-            usernameLogin.addErrback(_cbError, "Username/password login failed")
-        else:
-            self.parseInputLine(line)
 
 
 def runWithProtocol(klass, masterIP, port):

@@ -250,11 +250,12 @@ class RCEContainer(Referenceable):
         # Setup network
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
             f.write(client.getNetworkConfigTemplate().format(ip=ip))
+
     
     def start(self):
         """ Method which starts the container.
         """
-        ### can raise iptc.xtables.XTablesError
+        # can raise iptc.xtables.XTablesError
         #add remote rule for RCE internal communication
         self._remoteRule = iptc.Rule()
         self._remoteRule.protocol = 'tcp'

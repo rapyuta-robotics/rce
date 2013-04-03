@@ -105,9 +105,8 @@ class ConsoleDummyRealm(object):
                                       'handles IPerspective.')
 
         user = self._rce._getUser(avatarId)
-        avatar = UserAvatar(user, self._rce._console)
 
-        return IPerspective, avatar, lambda: None
+        return IPerspective, user, lambda: None
 
 
 class UserAvatar(Avatar):

@@ -53,10 +53,12 @@ from autobahn.websocket import HttpException, \
 
 # Custom imports
 from rce.error import InvalidRequest, InternalError, DeadConnection
+from rce.robot import RobotFacade
 from rce.client import types
 from rce.client.interfaces import IRobot
 from rce.client.assembler import recursiveBinarySearch, MessageAssembler
 from rce.client.cred import RobotCredentials
+import settings
 
 
 _MIN_VERSION = '20130210'  # Minimal required version of the client
@@ -108,27 +110,24 @@ class MasterRobotAuthentication(Resource):
         # Version is ok, now the GET request can be processed
         try:
             userID = args['userID']
-            robotID = args['robotID']
-            password = args['password']
         except KeyError as e:
             return fail(InvalidRequest('Request is missing parameter: '
                                        '{0}'.format(e)))
         
-        for name, param in [('userID', userID), ('robotID', robotID),
-                            ('password', password)]:
+        for name, param in [('userID', userID)]:
             if len(param) != 1:
                 return fail(InvalidRequest("Parameter '{0}' has to be unique "
                                            'in request.'.format(name)))
         
-        d = self._realm.requestUser(userID[0], robotID[0], password[0])
+        d = self._realm.requestURL(userID[0])
         d.addCallback(lambda result: (result, version))
         return d
     
-    def _processGETResp(self, ((key, addr), version), request):
+    def _processGETResp(self, (addr, version), request):
         """ Internally used method to process a response to a GET request from
             the realm.
         """
-        msg = {'key' : key, 'url' : 'ws://{0}/'.format(addr)}
+        msg = {'url' : 'ws://{0}/'.format(addr)}
         
         if version != _CUR_VERSION:
             msg['current'] = _CUR_VERSION
@@ -186,7 +185,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     # CONFIG
     MSG_QUEUE_TIMEOUT = 60
     
-    def __init__(self, portal):
+    def __init__(self, portal, reactor, masterIP):
         """ Initialize the Protocol.
             
             @param portal:      Portal which is responsible for the
@@ -196,9 +195,11 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             @type  portal:      twisted.cred.portal.Portal
         """
         self._portal = portal
+        self._reactor = reactor
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
         self._logout = None
+        self._masterIP = masterIP
     
     def onConnect(self, req):
         """ Method is called by the Autobahn engine when a request to establish
@@ -215,23 +216,25 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         try:
             userID = params['userID']
             robotID = params['robotID']
-            key = params['key']
+            password = params['password']
         except KeyError as e:
             raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
                                 'Request is missing parameter: {0}'.format(e))
         
         for name, param in [('userID', userID), ('robotID', robotID),
-                            ('key', key)]:
+                            ('password', password)]:
             if len(param) != 1:
                 raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
                                     "Parameter '{0}' has to be unique in "
                                     'request.'.format(name))
         
-        cred = RobotCredentials(userID[0], robotID[0], key[0])
-        avatar = self._portal.login(cred, self, IRobot)
-        avatar.addCallback(self._authenticate_success)
-        avatar.addErrback(self._authenticate_failed)
-        return avatar
+        deferred = self._portal.requestAvatar(userID[0], robotID[0], 
+                                              password[0], self, self._masterIP,
+                                              settings.RCE_CONSOLE_PORT)
+
+        deferred.addCallback(self._authenticate_success)
+        deferred.addErrback(self._authenticate_failed)
+        return deferred
     
     def _authenticate_success(self, (interface, avatar, logout)):
         """ Method is called by deferred when the connection has been
@@ -297,7 +300,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Internally used method to process a request to create a container.
         """
         try:
-            self._avatar.createContainer(data['containerTag'])
+            self._viewProxy.createContainer(data['containerTag'])
         except KeyError as e:
             raise InvalidRequest("Can not process 'CreateContainer' request. "
                                  'Missing key: {0}'.format(e))
@@ -306,7 +309,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Internally used method to process a request to destroy a container.
         """
         try:
-            self._avatar.destroyContainer(data['containerTag'])
+            self._viewProxy.destroyContainer(data['containerTag'])
         except KeyError as e:
             raise InvalidRequest("Can not process 'DestroyContainer' request. "
                                  'Missing key: {0}'.format(e))
@@ -317,7 +320,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         for node in data.pop('addNodes', []):
             try:
-                self._avatar.addNode(node['containerTag'],
+                self._viewProxy.addNode(node['containerTag'],
                                      node['nodeTag'],
                                      node['pkg'],
                                      node['exe'],
@@ -331,7 +334,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for node in data.pop('removeNodes', []):
             try:
-                self._avatar.removeNode(node['containerTag'],
+                self._viewProxy.removeNode(node['containerTag'],
                                         node['nodeTag'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
@@ -340,7 +343,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for conf in data.pop('addInterfaces', []):
             try:
-                self._avatar.addInterface(conf['endpointTag'],
+                self._viewProxy.addInterface(conf['endpointTag'],
                                           conf['interfaceTag'],
                                           conf['interfaceType'],
                                           conf['className'],
@@ -352,7 +355,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for conf in data.pop('removeInterfaces', []):
             try:
-                self._avatar.removeInterface(conf['endpointTag'],
+                self._viewProxy.removeInterface(conf['endpointTag'],
                                              conf['interfaceTag'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
@@ -361,7 +364,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for param in data.pop('setParam', []):
             try:
-                self._avatar.addParameter(param['containerTag'],
+                self._viewProxy.addParameter(param['containerTag'],
                                           param['name'],
                                           param['value'])
             except KeyError as e:
@@ -371,7 +374,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for param in data.pop('deleteParam', []):
             try:
-                self._avatar.removeParameter(param['containerTag'],
+                self._viewProxy.removeParameter(param['containerTag'],
                                              param['name'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
@@ -384,7 +387,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         for conf in data.pop('connect', []):
             try:
-                self._avatar.addConnection(conf['tagA'], conf['tagB'])
+                self._viewProxy.addConnection(conf['tagA'], conf['tagB'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
                                      "request. 'connect' is missing key: "
@@ -392,7 +395,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for conf in data.pop('disconnect', []):
             try:
-                self._avatar.removeConnection(conf['tagA'], conf['tagB'])
+                self._viewProxy.removeConnection(conf['tagA'], conf['tagB'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
                                      "request. 'disconnect' is missing key: "
@@ -516,7 +519,7 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the
         RoboEarth Cloud Engine.
     """
-    def __init__(self, realm, url, **kw):
+    def __init__(self, realm, reactor, masterIP, url, **kw):
         """ Initialize the Factory.
             
             @param portal:      Portal which is responsible for the
@@ -535,13 +538,14 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
                                 to the __init__ of the base class.
         """
         WebSocketServerFactory.__init__(self, url, **kw)
-        
+        self._reactor = reactor
         self._realm = realm
+        self._masterIP = masterIP
     
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection
             attempt is made.
         """
-        p = RobotWebSocketProtocol(self._realm)
+        p = RobotWebSocketProtocol(self._realm, self._reactor, self._masterIP)
         p.factory = self
         return p

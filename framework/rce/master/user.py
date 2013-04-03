@@ -35,16 +35,17 @@ from uuid import uuid4
 from hashlib import md5
 
 # twisted specific imports
-from twisted.spread.pb import Referenceable
+from twisted.spread.pb import Referenceable, Avatar
 from twisted.internet.defer import DeferredList
 
 # Custom imports
 from rce.error import InvalidRequest, AlreadyDead
 from rce.slave.interface import Types
 from rce.util.name import isLegalName
+from rce.master.view import AdminConsoleView, NormalConsoleView, RobotView
 
 
-class User(Referenceable):
+class User(Avatar):
     """ Represents a User. It has references to all objects the User is
         currently using and all requests from the outside will be going through
         here. For this to happen, each Robot object in the robot processes has
@@ -62,6 +63,7 @@ class User(Referenceable):
         self._realm = realm
         self._userID = userID
         
+        self._role = None
         self._robots = {}
         self._containers = {}
         self._connections = {}
@@ -72,6 +74,11 @@ class User(Referenceable):
         return self._userID
     
     @property
+    def role(self):
+        """ Role of the user. """
+        return self._role
+
+    @property
     def robots(self):
         """ Robots owned by this User. """
         return self._robots
@@ -81,7 +88,7 @@ class User(Referenceable):
         """" Containers used by this User. """
         return self._containers
 
-    def createRobot(self, robotID):
+    def createRobot(self):
         """ Create a new Robot object.
             
             @param robotID:     The robot ID associated with the new Robot
@@ -99,289 +106,22 @@ class User(Referenceable):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
         
-        uid = uuid4().hex
-        robot = self._realm.createRobot(self, robotID, uid)
-        robot = Robot(robot, uid)
+        robot = self._realm.createRobot(self, robotID)
+        robot = Robot(robot)
         self._robots[robotID] = robot
         robot.notifyOnDeath(self._robotDied)
         return robot.getConnectInfo()
     
-    def remote_createContainer(self, tag):
-        """ Create a new Container object.
-            
-            @param tag:         Tag which is used to identify the container
-                                in subsequent requests.
-            @type  tag:         str
-        """
-        if not isLegalName(tag):
-            raise InvalidRequest('Container tag is not a valid.')
-        
-        if tag in self._containers or tag in self._robots:
-            raise InvalidRequest('Tag is already used for a container '
-                                 'or robot.')
-        
-        namespace, remote_container = self._realm.createContainer(self._userID)
-        container = Container(namespace, remote_container)
-        self._containers[tag] = container
-        container.notifyOnDeath(self._containerDied)
-        
-        m = 'Container {0} successfully created.'.format(tag)
-        d = DeferredList([namespace(), remote_container()],
-                         fireOnOneErrback=True, consumeErrors=True)
-        return d.addCallback(lambda _: m)
-    
-    def remote_destroyContainer(self, tag):
-        """ Destroy a Container object.
-            
-            @param tag:         Tag which is used to identify the container
-                                which should be destroyed.
-            @type  tag:         str
-        """
-        try:
-            container = self._containers.pop(tag)
-        except KeyError:
-            raise InvalidRequest('Can not destroy non existent container.')
-        
-        container.dontNotifyOnDeath(self._containerDied)
-        container.destroy()
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_addNode(self, cTag, nTag, pkg, exe, args='', name='', nspc=''):
-        """ Add a node to a ROS environment.
-            
-            @param cTag:        Tag which is used to identify the ROS
-                                environment to which the node should be added.
-            @type  cTag:        str
-            
-            @param nTag:        Tag which is used to identify the node in
-                                subsequent requests.
-            @type  nTag:        str
-
-            @param pkg:         Name of ROS package where the node can be
-                                found.
-            @type  pkg:         str
-
-            @param exe:         Name of executable (node) which should be
-                                launched.
-            @type  exe:         str
-            
-            @param args:        Additional arguments which should be used for
-                                the launch. Can contain the directives
-                                $(find PKG) or $(env VAR). Other special
-                                characters as '$' or ';' are not allowed.
-            @type  args:        str
-            
-            @param name:        Name of the node under which the node should be
-                                launched.
-            @type  name:        str
-            
-            @param namespace:   Namespace in which the node should be started
-                                in the environment.
-            @type  namespace:   str
-        """
-        try:
-            self._containers[cTag].addNode(nTag, pkg, exe, args, name, nspc)
-        except KeyError:
-            raise InvalidRequest('Can not add Node, because Container {0} '
-                                 'does not exist.'.format(cTag))
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_removeNode(self, cTag, nTag):
-        """ Remove a node from a ROS environment.
-            
-            @param cTag:        Tag which is used to identify the ROS
-                                environment from which the node should be
-                                removed.
-            @type  cTag:        str
-            
-            @param nTag:        Tag which is used to identify the ROS node
-                                which should removed.
-            @type  nTag:        str
-        """
-        try:
-            self._containers[cTag].removeNode(nTag)
-        except KeyError:
-            raise InvalidRequest('Can not remove Node, because Container {0} '
-                                 'does not exist.'.format(cTag))
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_addParameter(self, cTag, name, value):
-        """ Add a parameter to a ROS environment.
-            
-            @param cTag:        Tag which is used to identify the ROS
-                                environment to which the parameter should be
-                                added.
-            @type  cTag:        str
-            
-            @param name:        Name of the parameter which should be added.
-                                It is also used to identify the parameter in
-                                subsequent requests.
-            @type  name:        str
-            
-            @param value:       Value of the parameter which should be added.
-                                String values can contain the directives
-                                $(find PKG) or $(env VAR).
-            @type  value:       str, int, float, bool, list
-        """
-        try:
-            self._containers[cTag].addParameter(name, value)
-        except KeyError:
-            raise InvalidRequest('Can not add Parameter, because Container '
-                                 '{0} does not exist.'.format(cTag))
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_removeParameter(self, cTag, name):
-        """ Remove a parameter from a ROS environment.
-            
-            @param cTag:        Tag which is used to identify the ROS
-                                environment from which the parameter should be
-                                removed.
-            @type  cTag:        str
-            
-            @param name:        Name of the parameter which should be removed.
-            @type  name:        str
-        """
-        try:
-            self._containers[cTag].removeParameter(name)
-        except KeyError:
-            raise InvalidRequest('Can not remove Parameter, because Container '
-                                 '{0} does not exist.'.format(cTag))
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_addInterface(self, eTag, iTag, iType, clsName, addr=''):
-        """ Add an interface to an endpoint, i.e. a ROS environment or a 
-            Robot object.
-            
-            @param eTag:        Tag which is used to identify the endpoint to
-                                which the interface should be added; either
-                                a container tag or robot ID.
-            @type  eTag:        str
-                            
-            @param iTag:        Tag which is used to identify the interface in
-                                subsequent requests.
-            @type  iTag:        str
-            
-            @param iType:       Type of the interface. The type consists of a
-                                prefix and a suffix.
-                                 - Valid prefixes are:
-                                     ServiceClient, ServiceProvider,
-                                     Publisher, Subscriber
-                                 - Valid suffixes are:
-                                     Interface, Converter, Forwarder
-            @type  iType:       str
-            
-            @param clsName:     Message type/Service type consisting of the
-                                package and the name of the message/service,
-                                i.e. 'std_msgs/Int32'.
-            @type  clsName:     str
-            
-            @param addr:        ROS name/address which the interface should
-                                use. Only necessary if the suffix of @param
-                                iType is 'Interface'.
-            @type  addr:        str
-        """
-        if iType.endswith('Converter') or iType.endswith('Forwarder'):
-            try:
-                self._robots[eTag].addInterface(iTag, iType, clsName)
-            except KeyError:
-                raise InvalidRequest('Can not add Interface, because Robot '
-                                     '{0} does not exist.'.format(eTag))
-        elif iType.endswith('Interface'):
-            try:
-                self._containers[eTag].addInterface(iTag, iType, clsName, addr)
-            except KeyError:
-                raise InvalidRequest('Can not add Interface, because '
-                                     'Container {0} does not '
-                                     'exist.'.format(eTag))
+    def perspective_getUserView(self, console=True):
+        if self._userID == 'admin' and console:
+            raise InvalidRequest('Administrator cannot login via robot')
+        elif self._userID == 'admin':
+            return AdminConsoleView()
+        elif not console:
+            return RobotView()
         else:
-            raise InvalidRequest('Interface type is invalid (Unknown suffix).')
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_removeInterface(self, eTag, iTag):
-        """ Remove an interface from an endpoint, i.e. a ROS environment or a 
-            Robot object.
-            
-            @param eTag:        Tag which is used to identify the endpoint from
-                                which the interface should be removed; either
-                                a container tag or robot ID.
-            @type  eTag:        str
-            
-            @param iTag:        Tag which is used to identify the interface
-                                which should be removed.
-            @type  iTag:        str
-        """
-        self._getEndpoint(eTag).removeInterface(iTag)
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_addConnection(self, tagA, tagB):
-        """ Create a connection between two interfaces.
-            
-            @param tagX:        Tag which is used to identify the interface
-                                which should be connected. It has to be of the
-                                form:
-                                    [endpoint tag]/[interface tag]
-                                For example:
-                                    testRobot/logPublisher
-            @type  tagX:        str
-        """
-        eTagA, iTagA = tagA.split('/', 2)
-        eTagB, iTagB = tagB.split('/', 2)
-        
-        ifA = self._getEndpoint(eTagA).getInterface(iTagA)
-        ifB = self._getEndpoint(eTagB).getInterface(iTagB)
-        
-        if ifA.clsName != ifB.clsName:
-            raise InvalidRequest('Can not connect two interfaces with '
-                                 'different message/service type.')
-        
-        if not Types.connectable(ifA.iType, ifB.iType):
-            raise InvalidRequest('Can not connect an interface of type {0} '
-                                 'and an interface of type '
-                                 '{1}.'.format(Types.decode(ifA.iType),
-                                               Types.decode(ifB.iType)))
-        
-        key = int(md5(tagA).hexdigest(), 16)^int(md5(tagB).hexdigest(), 16)
-        
-        if key in self._connections:
-            raise InvalidRequest('Can not add the same connection twice.')
-        
-        connection = self._realm.createConnection(ifA.obj, ifB.obj)
-        self._connections[key] = connection
-        connection.notifyOnDeath(self._connectionDied)
-        
-        # TODO: Return some info about success/failure of request
-    
-    def remote_removeConnection(self, tagA, tagB):
-        """ Destroy a connection between two interfaces.
-            
-            @param tagX:        Tag which is used to identify the interface
-                                which should be disconnected. It has to be of
-                                the form:
-                                    [endpoint tag]/[interface tag]
-                                For example:
-                                    testRobot/logPublisher
-            @type  tagX:        str
-        """
-        key = int(md5(tagA).hexdigest(), 16)^int(md5(tagB).hexdigest(), 16)
-        
-        try:
-            connection = self._connections.pop(key)
-        except KeyError:
-                raise InvalidRequest('Can not disconnect two unconnected '
-                                     'interfaces.')
-        
-        connection.dontNotifyOnDeath(self._connectionDied)
-        connection.destroy()
-        
-        # TODO: Return some info about success/failure of request
-    
+            return {'console': NormalConsoleView(), 'robot': RobotView()}
+
     def _getEndpoint(self, tag):
         if tag in self._robots:
             return self._robots[tag]
@@ -510,7 +250,7 @@ class _Wrapper(object):
 class Robot(_Wrapper):
     """ Wrapper for a Robot object. The underlying object is a Robot namespace.
     """
-    def __init__(self, namespace, key):
+    def __init__(self, namespace):
         """ Initialize the Robot wrapper.
             
             @param namespace:   Namespace of the Robot object which should be
@@ -524,7 +264,6 @@ class Robot(_Wrapper):
         """
         super(Robot, self).__init__(namespace)
         
-        self._key = key
         self._interfaces = {}
     
     def getConnectInfo(self):
@@ -536,7 +275,7 @@ class Robot(_Wrapper):
             @rtype:             twisted::Deferred          
         """
         d = self._obj.getWebsocketAddress()
-        d.addCallback(lambda addr: (self._key, addr))
+        d.addCallback(lambda addr: addr)
         return d
     
     def addInterface(self, iTag, iType, clsName):

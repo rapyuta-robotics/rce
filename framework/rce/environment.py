@@ -111,13 +111,13 @@ class Environment(Namespace):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
     
-    def registerInterface(self, interface):
+    '''def registerInterface(self, interface):
         assert interface not in self._interfaces
         self._interfaces.add(interface)
     
     def unregisterInterface(self, interface):
         assert interface in self._interfaces
-        self._interfaces.remove(interface)
+        self._interfaces.remove(interface)'''
     
     def remote_createNode(self, status, pkg, exe, args, name, namespace):
         """ Create a Node object in the environment namespace and

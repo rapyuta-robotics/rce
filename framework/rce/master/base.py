@@ -34,8 +34,8 @@
 from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, succeed, fail
-from twisted.spread.pb import RemoteReference, Referenceable, \
-    DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import (RemoteReference, Referenceable,
+DeadReferenceError, PBConnectionLost)
 
 # Custom imports
 from rce.error import AlreadyDead

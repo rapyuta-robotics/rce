@@ -44,7 +44,7 @@ except ImportError:
 from twisted.internet.defer import Deferred
 
 # Custom imports
-from pyrce.connection import ConnectionError, ROSConnection
+from connection import ConnectionError, ROSConnection
 
 
 _MAP = {#'ServiceClientConverter' : '???',

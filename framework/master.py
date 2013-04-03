@@ -31,19 +31,65 @@
 #     
 
 # twisted specific imports
-from twisted.internet import reactor
+from twisted.python import log
+from twisted.cred.credentials import UsernamePassword
+from twisted.cred.portal import Portal
+from twisted.spread.pb import PBServerFactory
+from twisted.web.server import Site
+from twisted.application.internet import TCPServer
+from twisted.application.service import Application, Service, IServiceCollection
 
 # Custom imports
-from rce.master.core import main
+from rce.client.protocol import MasterRobotAuthentication
+from rce.util.network import getIP
+from rce.master.core import RoboEarthCloudEngine
+from rce.master.console import Console, ConsoleDummyRealm
+
+# twisted specific imports
+#from twisted.internet import reactor
+from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
+
+# Custom imports
 from rce.util.cred import RCECredChecker, RCEInternalChecker
 import settings
 
 
-if __name__ == '__main__':
-    # Credentials checkers used in the cloud engine
-    extCred = RCECredChecker(settings.PASSWORD_FILE, settings.DEV_MODE)
-    intCred = RCEInternalChecker(settings.PASSWORD_FILE)
+# Credentials checkers used in the cloud engine
+extCred = RCECredChecker(settings.PASSWORD_FILE, settings.DEV_MODE)
+intCred = RCEInternalChecker(settings.PASSWORD_FILE)
 
-    main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT,
-         settings.INT_IF, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT,
-         settings.EXT_IF)
+
+rce = RoboEarthCloudEngine(extCred, settings.INT_IF, settings.RCE_INTERNAL_PORT)
+consolerealm = ConsoleDummyRealm(rce)
+
+# Internal communication
+p = Portal(rce, (intCred,))
+internalserver = TCPServer(settings.MASTER_PORT, PBServerFactory(p))
+
+# Client Connection
+robotserver = TCPServer(settings.HTTP_PORT, Site(MasterRobotAuthentication(rce)))
+
+pconsole = Portal(consolerealm, (extCred,))
+
+#Console Connection
+consoleserver = TCPServer(settings.RCE_CONSOLE_PORT, PBServerFactory(pconsole))
+application = Application("master")
+s = IServiceCollection(application)
+internalserver.setServiceParent(s)
+robotserver.setServiceParent(s)
+consoleserver.setServiceParent(s)
+
+class FooService(Service):
+
+    def stopService(self):
+        rce.preShutdown()
+        #Service.stopService(self)
+        rce.postShutdown()
+
+foo = FooService()
+foo.setName('foo')
+foo.setServiceParent(s)
+#reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
+#reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
+
+#reactor.run()

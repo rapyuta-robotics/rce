@@ -67,59 +67,67 @@ from rce.util.converter import Converter
 from rce.util.network import getIP
 from rce.util.loader import Loader
 from rce.util.path import processPkgPath
+from rce.robot import RobotView, Robot
 
-
-class Robot(Namespace):
-    """ Representation of a namespace in the robot process, which is part of
-        the cloud engine internal communication.
-    """
+class RobotFacade(object):
     implements(IRobot)
     
-    _MAP = [ServiceClientConverter, PublisherConverter,
-            SubscriberConverter, ServiceProviderConverter,
-            ServiceClientForwarder, PublisherForwarder,
-            SubscriberForwarder, ServiceProviderForwarder]
-    
-    def __init__(self, client, status, user):
-        """ Initialize the Robot.
-            
-            @param client:      Robot Client which is responsible for
-                                monitoring the robots in this process.
-            @type  client:      rce.robot.RobotClient
-            
-            @param status:      Status observer which is used to inform the
-                                Master of the robot's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-            
-            @param user:        Remote reference to the User instance who owns
-                                this robot.
-            @type  user:        twisted.spread.pb.RemoteReference
-        """
-        self._client = client
-        client.registerRobot(self)
+    def __init__(self, userID, robotID, password, protocol, masterIP, 
+                 console_port):
+
+        self._protocol = protocol
+        def _cbAuthorized(view):
+            self._robotView = view
+            self.start()
+
+        deferred = RobotView(userID, password, protocol, masterIP, console_port)
+        deferred.addCallback(_cbAuthorized)
+        deferred.addErrback(lambda failure: protocol.sendErrorMessage(
+                            failure.getTraceback()))
+                            
+    def start(self):
+        self._robotNamespace = self._protocol._portal.createNamespace()
         
-        self._user = user
-        self._connection = None
+        self.createContainer = self._robotView.createContainer
+        self.destroyContainer = self._robotView.destroyContainer
+        self.addNode = self._robotView.addNode
+        self.removeNode = self._robotView.removeNode
+        self.addInterface = self._robotView.addInterface
+        self.removeInterface = self._robotView.removeInterface
+        self.addParameter = self._robotView.addParameter
+        self.removeParameter = self._robotView.removeParameter
+        self.addConnection = self._robotView.addConnection
+        self.removeConnection = self._robotView.removeConnection
+        self.receivedFromClient = self._robotNamespace.receivedFromClient
+        self.registerConnectionToRobot = self._robotNamespace.registerConnectionToRobot
+        self.unregisterConnectionToRobot = self._robotNamespace.unregisterConnectionToRobot
+        self.remote_destroy = self._robotNamespace.remote_destroy
+
         
-        # The following replaces the call to Namespace.__init__()
-        self._status = status
-        self._interfaces = {}
+class RobotView(object):
     
-    @property
-    def converter(self):
-        """ Reference to the message converter used by the Converter
-            interfaces.
-        """
-        return self._client.converter
-    
-    @property
-    def loader(self):
-        """ Reference to ROS components loader. """
-        return self._client.loader
-    
+    def __init__(self, userID, password, protocol, masterIP, console_port):
+        self.factory = PBClientFactory()
+        self._protocol = protocol
+        self._protocol._reactor.connectTCP(masterIP, console_port, self.factory)
+        cred = UsernamePassword(userID, sha256(password))
+        deferred = self.factory.login(cred)
+        def _cbAuthenticated(perspective):
+            self._perspective = perspective
+            d = self._perspective.callRemote("getUserView", False)
+            d.addCallback(_cbConnectionSuccess)
+            d.addErrback(self._reportError)
+
+        def _cbConnectionSuccess(view):
+            self._view = view
+            
+        deferred.addCallback(_cbAuthenticated)
+        deferred.addErrback(self._reportError)
+        return deferred
+
     def _reportError(self, failure):
-        self._connection.sendErrorMessage(failure.getTraceback())
-    
+        self._protocol.sendErrorMessage(failure.getTraceback())
+        
     def createContainer(self, tag):
         """ Create a new Container object.
             
@@ -128,7 +136,7 @@ class Robot(Namespace):
             @type  tag:         str
         """
         try:
-            d = self._user.callRemote('createContainer', tag)
+            d = self._view.callRemote('createContainer', tag)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -142,7 +150,7 @@ class Robot(Namespace):
             @type  tag:         str
         """
         try:
-            d = self._user.callRemote('destroyContainer', tag)
+            d = self._view.callRemote('destroyContainer', tag)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -183,7 +191,7 @@ class Robot(Namespace):
             @type  namespace:   str
         """
         try:
-            d = self._user.callRemote('addNode', cTag, nTag, pkg, exe, args,
+            d = self._view.callRemote('addNode', cTag, nTag, pkg, exe, args,
                                       name, namespace)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
@@ -203,7 +211,7 @@ class Robot(Namespace):
             @type  nTag:        str
         """
         try:
-            d = self._user.callRemote('removeNode', cTag, nTag)
+            d = self._view.callRemote('removeNode', cTag, nTag)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -242,7 +250,7 @@ class Robot(Namespace):
             @type  addr:        str
         """
         try:
-            d = self._user.callRemote('addInterface', eTag, iTag, iType,
+            d = self._view.callRemote('addInterface', eTag, iTag, iType,
                                       clsName, addr)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
@@ -263,7 +271,7 @@ class Robot(Namespace):
             @type  iTag:        str
         """
         try:
-            d = self._user.callRemote('removeInterface', eTag, iTag)
+            d = self._view.callRemote('removeInterface', eTag, iTag)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -288,7 +296,7 @@ class Robot(Namespace):
             @type  value:       str, int, float, bool, list
         """
         try:
-            d = self._user.callRemote('addParameter', cTag, name, value)
+            d = self._view.callRemote('addParameter', cTag, name, value)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -306,7 +314,7 @@ class Robot(Namespace):
             @type  name:        str
         """
         try:
-            d = self._user.callRemote('removeParameter', cTag, name)
+            d = self._view.callRemote('removeParameter', cTag, name)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -324,7 +332,7 @@ class Robot(Namespace):
             @type  tagX:        str
         """
         try:
-            d = self._user.callRemote('addConnection', tagA, tagB)
+            d = self._view.callRemote('addConnection', tagA, tagB)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
@@ -342,12 +350,62 @@ class Robot(Namespace):
             @type  tagX:        str
         """
         try:
-            d = self._user.callRemote('removeConnection', tagA, tagB)
+            d = self._view.callRemote('removeConnection', tagA, tagB)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
         
-        d.addErrback(self._reportError)
+        d.addErrback(self._reportError)    
     
+    
+class Robot(Namespace):
+    """ Representation of a namespace in the robot process, which is part of
+        the cloud engine internal communication.
+    """
+    
+    _MAP = [ServiceClientConverter, PublisherConverter,
+            SubscriberConverter, ServiceProviderConverter,
+            ServiceClientForwarder, PublisherForwarder,
+            SubscriberForwarder, ServiceProviderForwarder]
+    
+    def __init__(self, client, status):
+        """ Initialize the Robot.
+            
+            @param client:      Robot Client which is responsible for
+                                monitoring the robots in this process.
+            @type  client:      rce.robot.RobotClient
+            
+            @param status:      Status observer which is used to inform the
+                                Master of the robot's status.
+            @type  status:      twisted.spread.pb.RemoteReference
+            
+            @param user:        Remote reference to the User instance who owns
+                                this robot.
+            @type  user:        twisted.spread.pb.RemoteReference
+        """
+        self._client = client
+        client.registerRobot(self)
+        
+        self._connection = None
+        
+        # The following replaces the call to Namespace.__init__()
+        self._status = status
+        self._interfaces = {}
+    
+    @property
+    def converter(self):
+        """ Reference to the message converter used by the Converter
+            interfaces.
+        """
+        return self._client.converter
+    
+    @property
+    def loader(self):
+        """ Reference to ROS components loader. """
+        return self._client.loader
+    
+    def _reportError(self, failure):
+        self._connection.sendErrorMessage(failure.getTraceback())
+
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
             client and send the message to the appropriate interface.
@@ -630,7 +688,8 @@ class RobotClient(Endpoint):
         assert robot in self._deathCandidates
         self._deathCandidates.pop(robot).cancel()
     
-    def requestAvatar(self, avatarId, mind, *interfaces):
+    def requestAvatar(self, userID, robotID, password, protocol, masterIP, 
+                      console_port):
         """ Returns an avatar for the websocket connection to the robot.
             
             Has to be implemented for twisted::IRealm.
@@ -639,13 +698,9 @@ class RobotClient(Endpoint):
                                 (type: rce.robot.Robot)
             @rtype:             twisted::Deferred
         """
-        if IRobot not in interfaces:
-            raise NotImplementedError('RobotClient only handles IRobot.')
         
-        try:
-            robot = self._pendingRobots.pop(avatarId)[1]
-        except KeyError:
-            raise InternalError('There is no avatar matching the ID.')
+        robot = RobotFacade(userID, robotID, password, protocol, masterIP, 
+                            console_port)
         
         return IRobot, robot, robot.remote_destroy
     
@@ -676,38 +731,17 @@ class RobotClient(Endpoint):
         else:
             return fail(UnauthorizedLogin())
     
-    def remote_createNamespace(self, status, user, userID, robotID, key):
+    def createNamespace(self, status):
         """ Create a Robot namespace.
             
             @param status:      Status observer which is used to inform the
                                 Master of the robot's status.
             @type  status:      twisted.spread.pb.RemoteReference
             
-            @param user:        User instance to which this namespace belongs
-                                and which provides the necessar callbacks for
-                                the Robot Avatar.
-            @type  user:        twisted.spread.pb.RemoteReference
-            
-            @param userID:      ID of the user which owns the robot.
-            @type  userID:      str
-            
-            @param robotID:     ID of the robot which has to be created.
-            @type  robotID:     str
-            
-            @param uid:         Key which will be used to authenticate the
-                                webscoket connection.
-            @type  uid:         str
-            
             @return:            Reference to the newly created robot.
             @rtype:             rce.robot.Robot
         """
-        uid = (userID, robotID)
-        
-        if uid in self._pendingRobots:
-            raise InternalError('Can not create the same robot twice.')
-        
-        robot = Robot(self, status, user)
-        self._pendingRobots[uid] = key, robot
+        robot = Robot(self, status)
         return robot
     
     def remote_getWebsocketAddress(self):
@@ -775,7 +809,7 @@ def main(reactor, cred, masterIP, masterPort, extIF, extPort, commPort,
     d.addErrback(_err)
     
     portal = Portal(client, (client,))
-    robot = CloudEngineWebSocketFactory(portal,
+    robot = CloudEngineWebSocketFactory(portal, reactor, masterIP,
                                         'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
     

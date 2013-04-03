@@ -54,14 +54,17 @@ from twisted.python.threadable import isInIOThread
 from twisted.internet.threads import deferToThread
 from autobahn.websocket import connectWS
 
+import sys                          
+sys.path.append('../framework')
+
 # Custom imports
 from rce.client import types
 from rce.client.assembler import recursiveBinarySearch
 
-from pyrce.comm import RCERobotFactory
-import pyrce.interface
+from comm import RCERobotFactory
+import interface
 
-if pyrce.interface.HAS_ROS:
+if interface.HAS_ROS:
     from rce.util.loader import Loader
 
 
@@ -103,7 +106,7 @@ class _Connection(object):
         self._password = sha256(password).digest()
         self._reactor = reactor
         
-        self._argList = [('userID', self._userID), ('robotID', self._robotID)]
+        self._argList = [('userID', self._userID)]
         
         self._conn = None
         self._connectedDeferred = None
@@ -153,8 +156,7 @@ class _Connection(object):
         """
         print('Connect to Master Manager on: {0}'.format(masterUrl))
         
-        args = self._argList+[('password', self._password),
-                              ('version', _VERSION)]
+        args = self._argList+[('version', _VERSION)]
         
         try:
             f = urlopen('{0}?{1}'.format(masterUrl, urlencode(args)))
@@ -183,7 +185,8 @@ class _Connection(object):
         print('Connect to Robot Manager on: {0}'.format(url))
         
         # Make websocket connection to Robot Manager
-        args = urlencode(self._argList+[('key', resp['key'])])
+        args = urlencode(self._argList+[('robotID', self._robotID), 
+                                        ('password', self._password)])
         factory = RCERobotFactory('{0}?{1}'.format(url, args), self)
         connectWS(factory)
     
