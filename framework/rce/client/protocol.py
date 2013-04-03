@@ -228,26 +228,21 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                     "Parameter '{0}' has to be unique in "
                                     'request.'.format(name))
         
-        deferred = self._portal.requestAvatar(userID[0], robotID[0], 
+        deferred_from_facade_factory = self._portal.requestAvatar(userID[0], robotID[0], 
                                               password[0], self, self._masterIP,
                                               settings.RCE_CONSOLE_PORT)
 
-        deferred.addCallback(self._authenticate_success)
-        deferred.addErrback(self._authenticate_failed)
+        deferred_from_facade_factory.addCallback(self._authenticate_success)
+        deferred_from_facade_factory.addErrback(self._authenticate_failed)
         return deferred
     
-    def _authenticate_success(self, (interface, avatar, logout)):
+    def _authenticate_success(self, avatar):
         """ Method is called by deferred when the connection has been
             successfully authenticated while being in 'onConnect'.
         """
-        if interface != IRobot:
-            return Failure(InternalError("Avatar has to implement 'IRobot'."))
-        
-        assert callable(logout)
         
         avatar.registerConnectionToRobot(self)
         self._avatar = avatar
-        self._logout = logout
         self._assembler.start()
     
     def _authenticate_failed(self, e):

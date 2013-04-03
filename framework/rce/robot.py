@@ -43,7 +43,7 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python import log
 from twisted.python.failure import Failure
-from twisted.internet.defer import fail, maybeDeferred
+from twisted.internet.defer import fail, maybeDeferred, Deferred, succeed
 from twisted.cred.error import UnauthorizedLogin
 from twisted.cred.checkers import ICredentialsChecker
 from twisted.cred.portal import IRealm, Portal
@@ -69,25 +69,40 @@ from rce.util.loader import Loader
 from rce.util.path import processPkgPath
 from rce.robot import RobotView, Robot
 
+
+class RobotFacadeFactory(object):
+    def produce(self, userID, robotID, password, protocol, masterIP, 
+                 console_port):
+        deferred_from_facade_factory = Deferred()
+        robot_facade = RobotFacade(userID, robotID, password, protocol, masterIP, 
+                                   console_port, deferred_from_facade_factory)
+        deferred_from_facade_factory.addCallback(lambda _: robot_facade)
+        return deferred_from_facade_factory
+
+
 class RobotFacade(object):
     implements(IRobot)
     
     def __init__(self, userID, robotID, password, protocol, masterIP, 
-                 console_port):
+                 console_port, deferred_from_facade_factory):
 
         self._protocol = protocol
+        self._deferred_from_facade_factory = deferred_from_facade_factory
         def _cbAuthorized(view):
             self._robotView = view
             self.start()
+        robot_view_factory = RobotViewFactory()
+        deferred_from_view_factory = robot_view_factory.produce(userID,
+                                     password, protocol, masterIP, console_port)
+        deferred_from_view_factory.addCallback(_cbAuthorized)
+        # inform facade factory that there's an error in creating view and
+        # dont process further
+        deferred_from_view_factory.addErrback(lambda failure:
+                            self._deferred_from_facade_factory.errback(failure)) 
 
-        deferred = RobotView(userID, password, protocol, masterIP, console_port)
-        deferred.addCallback(_cbAuthorized)
-        deferred.addErrback(lambda failure: protocol.sendErrorMessage(
-                            failure.getTraceback()))
-                            
     def start(self):
         self._robotNamespace = self._protocol._portal.createNamespace()
-        
+
         self.createContainer = self._robotView.createContainer
         self.destroyContainer = self._robotView.destroyContainer
         self.addNode = self._robotView.addNode
@@ -102,31 +117,37 @@ class RobotFacade(object):
         self.registerConnectionToRobot = self._robotNamespace.registerConnectionToRobot
         self.unregisterConnectionToRobot = self._robotNamespace.unregisterConnectionToRobot
         self.remote_destroy = self._robotNamespace.remote_destroy
+        self._deferred_from_facade_factory.callback("success")
 
-        
+
+class RobotViewFactory(object):
+    def produce(self, userID, password, protocol, masterIP, console_port):
+        deferred_from_view_factory = Deferred()
+        robot_view = RobotView(userID, password, protocol, masterIP,
+                               console_port, deferred_from_view_factory)
+        deferred_from_view_factory.addCallback(lambda _: robot_view)
+        return deferred_from_view_factory
+
+
 class RobotView(object):
-    
-    def __init__(self, userID, password, protocol, masterIP, console_port):
+    def __init__(self, userID, password, protocol, masterIP, console_port, deferred_from_view_factory):
         self.factory = PBClientFactory()
         self._protocol = protocol
         self._protocol._reactor.connectTCP(masterIP, console_port, self.factory)
         cred = UsernamePassword(userID, sha256(password))
         deferred = self.factory.login(cred)
+        deferred.addCallback(_cbAuthenticated)
+        deferred.addErrback(lambda failure: deferred_from_view_factory.errback(failure))
+        
         def _cbAuthenticated(perspective):
             self._perspective = perspective
             d = self._perspective.callRemote("getUserView", False)
             d.addCallback(_cbConnectionSuccess)
-            d.addErrback(self._reportError)
+            d.addErrback(lambda failure: deferred_from_view_factory.errback(failure))
 
         def _cbConnectionSuccess(view):
             self._view = view
-            
-        deferred.addCallback(_cbAuthenticated)
-        deferred.addErrback(self._reportError)
-        return deferred
-
-    def _reportError(self, failure):
-        self._protocol.sendErrorMessage(failure.getTraceback())
+            deferred_from_view_factory.callback("success")
         
     def createContainer(self, tag):
         """ Create a new Container object.
@@ -618,6 +639,7 @@ class RobotClient(Endpoint):
         self._robots = set()
         self._pendingRobots = {}
         self._deathCandidates = {}
+        self._robotFactory = RobotFacadeFactory()
     
     @property
     def converter(self):
@@ -698,11 +720,9 @@ class RobotClient(Endpoint):
                                 (type: rce.robot.Robot)
             @rtype:             twisted::Deferred
         """
-        
-        robot = RobotFacade(userID, robotID, password, protocol, masterIP, 
+        robot = self._robotFactory.produce(userID, robotID, password, protocol, masterIP, 
                             console_port)
-        
-        return IRobot, robot, robot.remote_destroy
+        return robot
     
     def _passwordMatch(self, matched, avatarId):
         """ Internally used method to check whether the supplied key matched.
