@@ -46,67 +46,67 @@ namespace rce
 
 class ProtocolException: public std::runtime_error
 {
-	public:
-		ProtocolException(const std::string &e) :
-				std::runtime_error::runtime_error(e)
-		{
-		}
+public:
+	ProtocolException(const std::string &e) :
+			std::runtime_error::runtime_error(e)
+	{
+	}
 };
 
 template<class Client>
 class Protocol_impl: public websocketpp::client::handler
 {
-	private:
-		typedef std::pair<typename Client::String, typename Client::Binary*> _BinaryIn_t;
-		typedef std::vector<_BinaryIn_t> _BinaryInVector_t;
-		typedef std::pair<typename Client::Object, _BinaryInVector_t> _PendingMessage_t;
-		typedef std::vector<_PendingMessage_t> _PendingMessageVector_t;
-		typedef std::vector<typename Client::String> _BinaryOutVector_t;
-		typedef std::pair<std::string, typename Client::Interface_t*> _InterfaceRef_t;
-		typedef std::vector<_InterfaceRef_t> _InterfaceRefVector_t;
+private:
+	typedef std::pair<typename Client::String, typename Client::Binary*> BinaryIn_t;
+	typedef std::vector<BinaryIn_t> BinaryInVector_t;
+	typedef std::pair<typename Client::Object, BinaryInVector_t> PendingMessage_t;
+	typedef std::vector<PendingMessage_t> PendingMessageVector_t;
+	typedef std::vector<typename Client::String> BinaryOutVector_t;
+	typedef std::pair<std::string, typename Client::Interface_t*> InterfaceRef_t;
+	typedef std::vector<InterfaceRef_t> InterfaceRefVector_t;
 
-	public:
-		Protocol_impl(typename Client::ClientPtr_t client) :
-				client_(client)
-		{
-		}
+public:
+	Protocol_impl(typename Client::ClientPtr_t client) :
+			client_(client)
+	{
+	}
 
-		void on_message(connection_ptr con, message_ptr msg);
-		void on_fail(connection_ptr con);
-		void on_open(connection_ptr con);
-		void on_close(connection_ptr con);
+	void on_message(connection_ptr con, message_ptr msg);
+	void on_fail(connection_ptr con);
+	void on_open(connection_ptr con);
+	void on_close(connection_ptr con);
 
-		void registerInterface(const typename Client::String &tag,
-				typename Client::Interface_t* interface);
-		void unregisterInterface(const typename Client::String &tag,
-				typename Client::Interface_t* interface);
+	void registerInterface(const typename Client::String &tag,
+			typename Client::Interface_t* interface);
+	void unregisterInterface(const typename Client::String &tag,
+			typename Client::Interface_t* interface);
 
-		void send(const typename Client::String &type,
-				const typename Client::Object &data);
-		void send(const typename Client::String &tag,
-				const typename Client::String &type,
-				const typename Client::Value &msg,
-				const typename Client::String &msgID);
+	void send(const typename Client::String &type,
+			const typename Client::Object &data);
+	void send(const typename Client::String &tag,
+			const typename Client::String &type,
+			const typename Client::Value &msg,
+			const typename Client::String &msgID);
 
-	private:
-		void onConnect();
+private:
+	void onConnect();
 
-		void processMessage(const std::string &msg);
-		void processMessage(const typename Client::Object &msg);
-		void processBinary(const std::string &msg);
+	void processMessage(const std::string &msg);
+	void processMessage(const typename Client::Object &msg);
+	void processBinary(const std::string &msg);
 
-		void processData(const typename Client::Object &data);
-		void processStatus(const typename Client::String &data);
-		void processError(const typename Client::String &data);
+	void processData(const typename Client::Object &data);
+	void processStatus(const typename Client::String &data);
+	void processError(const typename Client::String &data);
 
-		void send(const std::string &message, bool binary);
+	void send(const std::string &message, bool binary);
 
-		connection_ptr con_; // Pointer to session object of websocketpp
-		_PendingMessageVector_t pending_;
+	connection_ptr con_; // Pointer to session object of websocketpp
+	PendingMessageVector_t pending_;
 
-		typename Client::ClientPtr_t client_;
+	typename Client::ClientPtr_t client_;
 
-		_InterfaceRefVector_t interfaces_;
+	InterfaceRefVector_t interfaces_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,14 +168,14 @@ void Protocol_impl<Client>::registerInterface(
 		const typename Client::String &tag,
 		typename Client::Interface_t* interface)
 {
-	typename _InterfaceRefVector_t::iterator it;
+	typename InterfaceRefVector_t::iterator it;
 
 	for (it = interfaces_.begin(); it < interfaces_.end(); it++)
 		if (it->first == tag && it->second == interface)
 			throw ProtocolException(
 					"Can not register Interface. It is already registered.");
 
-	interfaces_.push_back(_InterfaceRef_t(tag, interface));
+	interfaces_.push_back(InterfaceRef_t(tag, interface));
 }
 
 template<class Client>
@@ -183,7 +183,7 @@ void Protocol_impl<Client>::unregisterInterface(
 		const typename Client::String &tag,
 		typename Client::Interface_t* interface)
 {
-	typename _InterfaceRefVector_t::iterator it;
+	typename InterfaceRefVector_t::iterator it;
 
 	for (it = interfaces_.begin(); it < interfaces_.end(); it++)
 		if (it->first == tag && it->second == interface)
@@ -204,8 +204,8 @@ void Protocol_impl<Client>::send(const typename Client::String &type,
 	Client::Config::add(message, "type", type);
 	Client::Config::add(message, "data", data);
 
-	_BinaryOutVector_t binaries = _BinaryOutVector_t();
-	typename _BinaryOutVector_t::iterator it;
+	BinaryOutVector_t binaries = BinaryOutVector_t();
+	typename BinaryOutVector_t::iterator it;
 
 	this->send(
 			json_spirit::write_string(typename Client::Value(message), binaries,
@@ -233,7 +233,7 @@ template<class Client>
 void Protocol_impl<Client>::processMessage(const std::string &msg)
 {
 	typename Client::Value messageValue;
-	_BinaryInVector_t binaries;
+	BinaryInVector_t binaries;
 
 	json_spirit::read_string_or_throw(msg, messageValue, binaries);
 
@@ -244,7 +244,7 @@ void Protocol_impl<Client>::processMessage(const std::string &msg)
 	typename Client::Object message = messageValue.get_obj();
 
 	if (!binaries.empty())
-		pending_.push_back(_PendingMessage_t(message, binaries));
+		pending_.push_back(PendingMessage_t(message, binaries));
 	else
 		this->processMessage(message);
 }
@@ -259,8 +259,8 @@ void Protocol_impl<Client>::processBinary(const std::string &msg)
 	std::string uid = msg.substr(0, 32);
 	std::string binary = msg.substr(32);
 
-	typename _PendingMessageVector_t::iterator msgIt;
-	typename _BinaryInVector_t::iterator binIt;
+	typename PendingMessageVector_t::iterator msgIt;
+	typename BinaryInVector_t::iterator binIt;
 
 	for (msgIt = pending_.begin(); msgIt != pending_.end(); ++msgIt)
 		for (binIt = msgIt->second.begin(); binIt != msgIt->second.end();
@@ -365,7 +365,7 @@ void Protocol_impl<Client>::processData(const typename Client::Object &data)
 
 	typename Client::String iTag = tag.get_str();
 
-	typename _InterfaceRefVector_t::iterator it;
+	typename InterfaceRefVector_t::iterator it;
 
 	for (it = interfaces_.begin(); it < interfaces_.end(); it++)
 		if (it->first == iTag)

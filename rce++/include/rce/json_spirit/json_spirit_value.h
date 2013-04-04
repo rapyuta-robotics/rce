@@ -21,7 +21,7 @@
 #include <boost/shared_ptr.hpp> 
 #include <boost/variant.hpp>
 
-#include "util.hxx"
+#include "rce/util.hxx"
 
 namespace json_spirit
 {
