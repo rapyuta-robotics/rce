@@ -36,10 +36,10 @@
 
 #include <websocketpp/roles/client.hpp>
 #include <websocketpp/websocketpp.hpp>
-#include "json_spirit/json_spirit_reader_template.h"
-#include "json_spirit/json_spirit_writer_template.h"
-#include "json_spirit/json_spirit_utils.h"
-#include "types.hxx"
+#include "rce/json_spirit/json_spirit_reader_template.h"
+#include "rce/json_spirit/json_spirit_writer_template.h"
+#include "rce/json_spirit/json_spirit_utils.h"
+#include "rce/types.hxx"
 
 namespace rce
 {
@@ -67,7 +67,7 @@ class Protocol_impl: public websocketpp::client::handler
 
 	public:
 		Protocol_impl(typename Client::ClientPtr_t client) :
-				_client(client)
+				client_(client)
 		{
 		}
 
@@ -101,12 +101,12 @@ class Protocol_impl: public websocketpp::client::handler
 
 		void send(const std::string &message, bool binary);
 
-		connection_ptr _con; // Pointer to session object of websocketpp
-		_PendingMessageVector_t _pending;
+		connection_ptr con_; // Pointer to session object of websocketpp
+		_PendingMessageVector_t pending_;
 
-		typename Client::ClientPtr_t _client;
+		typename Client::ClientPtr_t client_;
 
-		_InterfaceRefVector_t _interfaces;
+		_InterfaceRefVector_t interfaces_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,11 +144,11 @@ void Protocol_impl<Client>::on_fail(connection_ptr con)
 template<class Client>
 void Protocol_impl<Client>::on_open(connection_ptr con)
 {
-	if (_con != NULL)
+	if (con_ != NULL)
 		throw ProtocolException(
 				"Can not register connection. There is already a connection registered.");
 
-	_con = con;
+	con_ = con;
 
 	this->onConnect();
 }
@@ -156,11 +156,11 @@ void Protocol_impl<Client>::on_open(connection_ptr con)
 template<class Client>
 void Protocol_impl<Client>::on_close(connection_ptr con)
 {
-	if (_con == NULL)
+	if (con_ == NULL)
 		throw ProtocolException(
 				"Can not unregister connection. There is no connection registered.");
 
-	_con = connection_ptr();
+	con_ = connection_ptr();
 }
 
 template<class Client>
@@ -170,12 +170,12 @@ void Protocol_impl<Client>::registerInterface(
 {
 	typename _InterfaceRefVector_t::iterator it;
 
-	for (it = _interfaces.begin(); it < _interfaces.end(); it++)
+	for (it = interfaces_.begin(); it < interfaces_.end(); it++)
 		if (it->first == tag && it->second == interface)
 			throw ProtocolException(
 					"Can not register Interface. It is already registered.");
 
-	_interfaces.push_back(_InterfaceRef_t(tag, interface));
+	interfaces_.push_back(_InterfaceRef_t(tag, interface));
 }
 
 template<class Client>
@@ -185,12 +185,12 @@ void Protocol_impl<Client>::unregisterInterface(
 {
 	typename _InterfaceRefVector_t::iterator it;
 
-	for (it = _interfaces.begin(); it < _interfaces.end(); it++)
+	for (it = interfaces_.begin(); it < interfaces_.end(); it++)
 		if (it->first == tag && it->second == interface)
 			break;
 
-	if (it != _interfaces.end())
-		_interfaces.erase(it);
+	if (it != interfaces_.end())
+		interfaces_.erase(it);
 	else
 		throw ProtocolException(
 				"Can not unregister Interface. It is not registered.");
@@ -244,7 +244,7 @@ void Protocol_impl<Client>::processMessage(const std::string &msg)
 	typename Client::Object message = messageValue.get_obj();
 
 	if (!binaries.empty())
-		_pending.push_back(_PendingMessage_t(message, binaries));
+		pending_.push_back(_PendingMessage_t(message, binaries));
 	else
 		this->processMessage(message);
 }
@@ -262,7 +262,7 @@ void Protocol_impl<Client>::processBinary(const std::string &msg)
 	typename _PendingMessageVector_t::iterator msgIt;
 	typename _BinaryInVector_t::iterator binIt;
 
-	for (msgIt = _pending.begin(); msgIt != _pending.end(); ++msgIt)
+	for (msgIt = pending_.begin(); msgIt != pending_.end(); ++msgIt)
 		for (binIt = msgIt->second.begin(); binIt != msgIt->second.end();
 				++binIt)
 			if (binIt->first == uid)
@@ -270,7 +270,7 @@ void Protocol_impl<Client>::processBinary(const std::string &msg)
 
 	match:
 
-	if (msgIt != _pending.end() && binIt != msgIt->second.end())
+	if (msgIt != pending_.end() && binIt != msgIt->second.end())
 	{
 		binIt->second->set_data(binary);
 		msgIt->second.erase(binIt);
@@ -278,7 +278,7 @@ void Protocol_impl<Client>::processBinary(const std::string &msg)
 		if (msgIt->second.empty())
 		{
 			this->processMessage(msgIt->first);
-			_pending.erase(msgIt);
+			pending_.erase(msgIt);
 		}
 	}
 	else
@@ -367,7 +367,7 @@ void Protocol_impl<Client>::processData(const typename Client::Object &data)
 
 	typename _InterfaceRefVector_t::iterator it;
 
-	for (it = _interfaces.begin(); it < _interfaces.end(); it++)
+	for (it = interfaces_.begin(); it < interfaces_.end(); it++)
 		if (it->first == iTag)
 			it->second->receive(type.get_str(), msg, msgID.get_str());
 }
@@ -391,8 +391,8 @@ void Protocol_impl<Client>::onConnect()
 	std::cout << "Connection established." << std::endl;
 #endif
 
-	if (_client.get())
-		_client->connected();
+	if (client_.get())
+		client_->connected();
 }
 
 template<class Client>
@@ -402,7 +402,7 @@ void Protocol_impl<Client>::send(const std::string &message, bool binary)
 	if (!binary)
 	std::cout << "Send message: " << message << std::endl;
 #endif
-	websocketpp::message::data_ptr msg = _con->get_data_message();
+	websocketpp::message::data_ptr msg = con_->get_data_message();
 
 	if (binary)
 		msg->reset(websocketpp::frame::opcode::BINARY);
@@ -410,7 +410,7 @@ void Protocol_impl<Client>::send(const std::string &message, bool binary)
 		msg->reset(websocketpp::frame::opcode::TEXT);
 
 	msg->set_payload(message);
-	_con->send(msg);
+	con_->send(msg);
 }
 
 } /* namespace rce */

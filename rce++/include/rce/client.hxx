@@ -34,8 +34,8 @@
 #include <boost/shared_ptr.hpp>
 #include <curl/curl.h>
 
-#include "types.hxx"
-#include "handler.hxx"
+#include "rce/types.hxx"
+#include "rce/handler.hxx"
 
 #define CLIENT_VERSION "20130131"
 
@@ -74,15 +74,15 @@ class InterfaceBase_impl
 		InterfaceBase_impl(const typename Client::ProtocolPtr_t protocol,
 				const typename Client::String tag,
 				const typename Client::String type) :
-				_protocol(protocol), _tag(tag), _type(type)
+				protocol_(protocol), tag_(tag), type_(type)
 		{
 		}
 
 	protected:
-		const typename Client::ProtocolPtr_t _protocol;
+		const typename Client::ProtocolPtr_t protocol_;
 
-		const typename Client::String _tag;
-		const typename Client::String _type;
+		const typename Client::String tag_;
+		const typename Client::String type_;
 
 };
 
@@ -94,7 +94,7 @@ class ReceiverInterface_impl: public InterfaceBase_impl<Client>
 				const typename Client::String tag,
 				const typename Client::String type,
 				const typename Client::MsgCallback_t cb) :
-				InterfaceBase_impl<Client>(protocol, tag, type), _cb(cb)
+				InterfaceBase_impl<Client>(protocol, tag, type), cb_(cb)
 		{
 		}
 
@@ -107,7 +107,7 @@ class ReceiverInterface_impl: public InterfaceBase_impl<Client>
 		}
 
 	protected:
-		const typename Client::MsgCallback_t _cb;
+		const typename Client::MsgCallback_t cb_;
 };
 
 template<class Client>
@@ -149,7 +149,7 @@ class ServiceClient_impl: public ReceiverInterface_impl<Client>
 				const typename Client::String &msgID);
 
 	private:
-		_CallbackRefVector_t _callbacks;
+		_CallbackRefVector_t callbacks_;
 };
 
 template<class Client>
@@ -237,17 +237,17 @@ class Client_impl
 	public:
 		Client_impl(const String userID, const String password,
 				const String robotID) :
-				_userID(userID), _password(password), _robotID(robotID), _connecting(
-						false), _protocol(ProtocolPtr_t()), _endpoint(
+				userID_(userID), password_(password), robotID_(robotID), connecting_(
+						false), protocol_(ProtocolPtr_t()), endpoint_(
 						_WebsocketClientPtr_t())
 		{
-			if (!_initialized)
+			if (!initialized_)
 			{
 				if (curl_global_init(CURL_GLOBAL_NOTHING))
 					throw ClientException(
 							"Can not initialize the curl library.");
 
-				_initialized = true;
+				initialized_ = true;
 			}
 		}
 
@@ -301,17 +301,17 @@ class Client_impl
 		void configConnection(const String &type, const String &iTag1,
 				const String &iTag2) const;
 
-		const String _userID;
-		const String _password;
-		const String _robotID;
+		const String userID_;
+		const String password_;
+		const String robotID_;
 
-		bool _connecting;
-		ConnectCallback_t _cb;
-		ProtocolPtr_t _protocol;
-		boost::thread _connectedCB;
-		_WebsocketClientPtr_t _endpoint;
+		bool connecting_;
+		ConnectCallback_t cb_;
+		ProtocolPtr_t protocol_;
+		boost::thread connectedCB_;
+		_WebsocketClientPtr_t endpoint_;
 
-		static bool _initialized;
+		static bool initialized_;
 };
 
 typedef Client_impl<json_spirit::Config> Client;
@@ -357,7 +357,7 @@ void ServiceClient_impl<Client>::call(const typename Client::Value &msg,
 {
 	typename Client::String uid = generateUUID<typename Client::String>();
 
-	_callbacks.push_back(_CallbackRef_t(uid, cb));
+	callbacks_.push_back(_CallbackRef_t(uid, cb));
 	ReceiverInterface_impl<Client>::_protocol->send(
 			ReceiverInterface_impl<Client>::_tag,
 			ReceiverInterface_impl<Client>::_type, msg, uid);
@@ -372,15 +372,15 @@ void ServiceClient_impl<Client>::receive(const typename Client::String &type,
 
 	typename _CallbackRefVector_t::iterator it;
 
-	for (it = _callbacks.begin(); it != _callbacks.end(); ++it)
+	for (it = callbacks_.begin(); it != callbacks_.end(); ++it)
 		if (it->first == msgID)
 		{
 			(it->second).callback(msg);
 			break;
 		}
 
-	if (it != _callbacks.end())
-		_callbacks.erase(it);
+	if (it != callbacks_.end())
+		callbacks_.erase(it);
 	else
 		throw ClientException(
 				"Received Service response with invalid message ID.");
@@ -410,7 +410,7 @@ void Subscriber_impl<Client>::receive(const typename Client::String &type,
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	Client_impl
-template<class Config> bool Client_impl<Config>::_initialized;
+template<class Config> bool Client_impl<Config>::initialized_;
 
 struct curlMemory
 {
@@ -530,30 +530,30 @@ void Client_impl<Config>::connect(const std::string &url,
 		const ConnectCallback_t cb)
 {
 	// Check whether a connection attempt is valid.
-	if (_connecting)
+	if (connecting_)
 		throw ClientException("Already a connection attempt in progress.");
 
-	if (_protocol && _endpoint)
+	if (protocol_ && endpoint_)
 		throw ClientException("Already a valid connection available.");
 
-	_cb = cb;
+	cb_ = cb;
 
 #ifdef DEBUG
 	std::cout << "Start connection with:" << std::endl;
-	std::cout << "    userID: " << _userID << std::endl;
-	std::cout << "    password: " << _password << std::endl;
-	std::cout << "    robotID: " << _robotID << std::endl;
+	std::cout << "    userID: " << userID_ << std::endl;
+	std::cout << "    password: " << password_ << std::endl;
+	std::cout << "    robotID: " << robotID_ << std::endl;
 #endif
 
 	// Make the initial HTTP request to the Master Manager
-	_connecting = true;
+	connecting_ = true;
 
 	std::string robotURL;
 	std::string key;
 
 	std::ostringstream mStream;
-	mStream << url << "?userID=" << _userID << "&password=" << _password
-			<< "&robotID=" << _robotID << "&version=" << CLIENT_VERSION;
+	mStream << url << "?userID=" << userID_ << "&password=" << password_
+			<< "&robotID=" << robotID_ << "&version=" << CLIENT_VERSION;
 	connectMaster(mStream.str(), robotURL, key);
 
 #ifdef DEBUG
@@ -562,38 +562,38 @@ void Client_impl<Config>::connect(const std::string &url,
 	std::cout << "    key: " << key << std::endl;
 #endif
 
-	_protocol = ProtocolPtr_t(new Protocol_t(ClientPtr_t(this)));
-	_HandlerPtr_t robotHandler(_protocol);
-	_endpoint = _WebsocketClientPtr_t(new _WebsocketClient_t(robotHandler));
-	_connecting = false;
+	protocol_ = ProtocolPtr_t(new Protocol_t(ClientPtr_t(this)));
+	_HandlerPtr_t robotHandler(protocol_);
+	endpoint_ = _WebsocketClientPtr_t(new _WebsocketClient_t(robotHandler));
+	connecting_ = false;
 
 #ifdef DEBUG_WEBSOCKET
 	_endpoint->alog().set_level(websocketpp::log::alevel::ALL);
 	_endpoint->elog().set_level(websocketpp::log::elevel::ALL);
 #else
-	_endpoint->alog().unset_level(websocketpp::log::alevel::ALL);
-	_endpoint->elog().unset_level(websocketpp::log::elevel::ALL);
+	endpoint_->alog().unset_level(websocketpp::log::alevel::ALL);
+	endpoint_->elog().unset_level(websocketpp::log::elevel::ALL);
 #endif
 
 	std::ostringstream rStream;
-	rStream << robotURL << "?userID=" << _userID << "&robotID=" << _robotID
+	rStream << robotURL << "?userID=" << userID_ << "&robotID=" << robotID_
 			<< "&key=" << key;
-	_endpoint->connect(rStream.str());
-	_endpoint->run(); // Blocking call
+	endpoint_->connect(rStream.str());
+	endpoint_->run(); // Blocking call
 }
 
 template<class Config>
 void Client_impl<Config>::connected()
 {
-	_connectedCB = boost::thread(_cb, ClientPtr_t(this));
+	connectedCB_ = boost::thread(cb_, ClientPtr_t(this));
 }
 
 template<class Config>
 void Client_impl<Config>::disconnect()
 {
-	_endpoint->reset();
-	_protocol = ProtocolPtr_t();
-	_endpoint = _WebsocketClientPtr_t();
+	endpoint_->reset();
+	protocol_ = ProtocolPtr_t();
+	endpoint_ = _WebsocketClientPtr_t();
 }
 
 template<class Config>
@@ -602,7 +602,7 @@ void Client_impl<Config>::createContainer(const String &cTag) const
 	Object data;
 	Config::add(data, "containerTag", cTag);
 
-	_protocol->send(RCE_CREATE_CONTAINER, data);
+	protocol_->send(RCE_CREATE_CONTAINER, data);
 }
 
 template<class Config>
@@ -611,7 +611,7 @@ void Client_impl<Config>::destroyContainer(const String &cTag) const
 	Object data;
 	Config::add(data, "containerTag", cTag);
 
-	_protocol->send(RCE_DESTROY_CONTAINER, data);
+	protocol_->send(RCE_DESTROY_CONTAINER, data);
 }
 
 template<class Config>
@@ -778,7 +778,7 @@ void Client_impl<Config>::configComponent(const String &type,
 	Object data;
 	Config::add(data, type, array);
 
-	_protocol->send(RCE_CONFIGURE_COMPONENT, data);
+	protocol_->send(RCE_CONFIGURE_COMPONENT, data);
 }
 
 template<class Config>
@@ -824,28 +824,28 @@ void Client_impl<Config>::configConnection(const String &type,
 	Object data;
 	Config::add(data, type, array);
 
-	_protocol->send(RCE_CONFIGURE_CONNECTION, data);
+	protocol_->send(RCE_CONFIGURE_CONNECTION, data);
 }
 
 template<class Config>
 typename Client_impl<Config>::ServiceClientPtr_t Client_impl<Config>::service(
 		const String &iTag, const String &srvType, const MsgCallback_t &cb)
 {
-	return ServiceClientPtr_t(new ServiceClient_t(_protocol, iTag, srvType, cb));
+	return ServiceClientPtr_t(new ServiceClient_t(protocol_, iTag, srvType, cb));
 }
 
 template<class Config>
 typename Client_impl<Config>::PublisherPtr_t Client_impl<Config>::publisher(
 		const String &iTag, const String &msgType)
 {
-	return PublisherPtr_t(new Publisher_t(_protocol, iTag, msgType));
+	return PublisherPtr_t(new Publisher_t(protocol_, iTag, msgType));
 }
 
 template<class Config>
 typename Client_impl<Config>::SubscriberPtr_t Client_impl<Config>::subscriber(
 		const String &iTag, const String &msgType, const MsgCallback_t &cb)
 {
-	return SubscriberPtr_t(new Subscriber_t(_protocol, iTag, msgType, cb));
+	return SubscriberPtr_t(new Subscriber_t(protocol_, iTag, msgType, cb));
 }
 
 } /* namespace rce */

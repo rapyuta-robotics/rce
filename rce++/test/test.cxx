@@ -31,7 +31,7 @@
 
 #include <iostream>
 #include <boost/bind.hpp>
-#include "client.hxx"
+#include "rce/client.hxx"
 
 class StringMsg
 {
