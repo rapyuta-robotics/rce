@@ -53,11 +53,9 @@ from autobahn.websocket import HttpException, \
 
 # Custom imports
 from rce.error import InvalidRequest, InternalError, DeadConnection
-from rce.robot import RobotFacade
 from rce.client import types
 from rce.client.interfaces import IRobot
 from rce.client.assembler import recursiveBinarySearch, MessageAssembler
-from rce.client.cred import RobotCredentials
 import settings
 
 
@@ -198,7 +196,6 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         self._reactor = reactor
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
-        self._logout = None
         self._masterIP = masterIP
     
     def onConnect(self, req):
@@ -234,7 +231,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
 
         deferred_from_facade_factory.addCallback(self._authenticate_success)
         deferred_from_facade_factory.addErrback(self._authenticate_failed)
-        return deferred
+        return deferred_from_facade_factory
     
     def _authenticate_success(self, avatar):
         """ Method is called by deferred when the connection has been
@@ -295,7 +292,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Internally used method to process a request to create a container.
         """
         try:
-            self._viewProxy.createContainer(data['containerTag'])
+            self._avatar.createContainer(data['containerTag'])
         except KeyError as e:
             raise InvalidRequest("Can not process 'CreateContainer' request. "
                                  'Missing key: {0}'.format(e))
@@ -304,7 +301,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Internally used method to process a request to destroy a container.
         """
         try:
-            self._viewProxy.destroyContainer(data['containerTag'])
+            self._avatar.destroyContainer(data['containerTag'])
         except KeyError as e:
             raise InvalidRequest("Can not process 'DestroyContainer' request. "
                                  'Missing key: {0}'.format(e))
@@ -315,7 +312,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         for node in data.pop('addNodes', []):
             try:
-                self._viewProxy.addNode(node['containerTag'],
+                self._avatar.addNode(node['containerTag'],
                                      node['nodeTag'],
                                      node['pkg'],
                                      node['exe'],
@@ -329,7 +326,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for node in data.pop('removeNodes', []):
             try:
-                self._viewProxy.removeNode(node['containerTag'],
+                self._avatar.removeNode(node['containerTag'],
                                         node['nodeTag'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
@@ -338,7 +335,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for conf in data.pop('addInterfaces', []):
             try:
-                self._viewProxy.addInterface(conf['endpointTag'],
+                self._avatar.addInterface(conf['endpointTag'],
                                           conf['interfaceTag'],
                                           conf['interfaceType'],
                                           conf['className'],
@@ -350,7 +347,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for conf in data.pop('removeInterfaces', []):
             try:
-                self._viewProxy.removeInterface(conf['endpointTag'],
+                self._avatar.removeInterface(conf['endpointTag'],
                                              conf['interfaceTag'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
@@ -359,7 +356,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for param in data.pop('setParam', []):
             try:
-                self._viewProxy.addParameter(param['containerTag'],
+                self._avatar.addParameter(param['containerTag'],
                                           param['name'],
                                           param['value'])
             except KeyError as e:
@@ -369,7 +366,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for param in data.pop('deleteParam', []):
             try:
-                self._viewProxy.removeParameter(param['containerTag'],
+                self._avatar.removeParameter(param['containerTag'],
                                              param['name'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
@@ -382,7 +379,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         for conf in data.pop('connect', []):
             try:
-                self._viewProxy.addConnection(conf['tagA'], conf['tagB'])
+                self._avatar.addConnection(conf['tagA'], conf['tagB'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
                                      "request. 'connect' is missing key: "
@@ -390,7 +387,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         
         for conf in data.pop('disconnect', []):
             try:
-                self._viewProxy.removeConnection(conf['tagA'], conf['tagB'])
+                self._avatar.removeConnection(conf['tagA'], conf['tagB'])
             except KeyError as e:
                 raise InvalidRequest("Can not process 'ConfigureComponent' "
                                      "request. 'disconnect' is missing key: "

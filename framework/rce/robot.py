@@ -33,6 +33,7 @@
 # Python specific imports
 import sys
 from uuid import UUID
+from hashlib import sha256
 
 # ROS specific imports
 from rospkg.environment import get_ros_paths
@@ -45,6 +46,7 @@ from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.internet.defer import fail, maybeDeferred, Deferred, succeed
 from twisted.cred.error import UnauthorizedLogin
+from twisted.cred.credentials import UsernamePassword
 from twisted.cred.checkers import ICredentialsChecker
 from twisted.cred.portal import IRealm, Portal
 from twisted.spread.pb import PBClientFactory, \
@@ -67,7 +69,6 @@ from rce.util.converter import Converter
 from rce.util.network import getIP
 from rce.util.loader import Loader
 from rce.util.path import processPkgPath
-from rce.robot import RobotView, Robot
 
 
 class RobotFacadeFactory(object):
@@ -131,14 +132,6 @@ class RobotViewFactory(object):
 
 class RobotView(object):
     def __init__(self, userID, password, protocol, masterIP, console_port, deferred_from_view_factory):
-        self.factory = PBClientFactory()
-        self._protocol = protocol
-        self._protocol._reactor.connectTCP(masterIP, console_port, self.factory)
-        cred = UsernamePassword(userID, sha256(password))
-        deferred = self.factory.login(cred)
-        deferred.addCallback(_cbAuthenticated)
-        deferred.addErrback(lambda failure: deferred_from_view_factory.errback(failure))
-        
         def _cbAuthenticated(perspective):
             self._perspective = perspective
             d = self._perspective.callRemote("getUserView", False)
@@ -148,6 +141,15 @@ class RobotView(object):
         def _cbConnectionSuccess(view):
             self._view = view
             deferred_from_view_factory.callback("success")
+        self.factory = PBClientFactory()
+        self._protocol = protocol
+        self._protocol._reactor.connectTCP(masterIP, console_port, self.factory)
+        cred = UsernamePassword(userID, password)
+        deferred = self.factory.login(cred)
+        deferred.addCallback(_cbAuthenticated)
+        deferred.addErrback(lambda failure: deferred_from_view_factory.errback(failure))
+        
+
         
     def createContainer(self, tag):
         """ Create a new Container object.
@@ -828,8 +830,8 @@ def main(reactor, cred, masterIP, masterPort, extIF, extPort, commPort,
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
     
-    portal = Portal(client, (client,))
-    robot = CloudEngineWebSocketFactory(portal, reactor, masterIP,
+    #portal = Portal(client, (client,))
+    robot = CloudEngineWebSocketFactory(client, reactor, masterIP,
                                         'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
     
