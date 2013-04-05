@@ -34,8 +34,7 @@
 from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, succeed, fail
-from twisted.spread.pb import (RemoteReference, Referenceable,
-DeadReferenceError, PBConnectionLost)
+from twisted.spread.pb import RemoteReference, Referenceable, DeadReferenceError, PBConnectionLost
 
 # Custom imports
 from rce.error import AlreadyDead
@@ -81,8 +80,11 @@ class Proxy(object):
         """
         super(Proxy, self).__init__(*args, **kw)
         
+        # Stores the remote reference
         self.__obj = None
         self.__failure = None
+        
+        # Status object that informs if remote reference died
         self.__status = None
         
         self.__cbs = set()
@@ -97,7 +99,8 @@ class Proxy(object):
     
     def callRemote(self, _name, *args, **kw):
         """ Make a call to the RemoteReference and return the result as a
-            Deferred.
+            Deferred. It exists to allow queueing of calls to remote reference 
+            before the remote reference has arrived.
             
             For more information refer to twisted.spread.pb.RemoteReference.
             
@@ -131,7 +134,8 @@ class Proxy(object):
     
     def callback(self, obj):
         """ Register the remote reference which provides the necessary methods
-            for this Proxy.
+            for this Proxy. Fires all pending callbacks passing on the remote 
+            reference as a parameter.
             
             Exactly one call can be made to either 'callback' or 'errback'!
             
@@ -141,9 +145,14 @@ class Proxy(object):
         assert self.__obj is None, 'Only one object can be registered.'
         assert isinstance(obj, RemoteReference)
         
+        # Store the remote reference
         self.__obj = obj
+        
+        # inform when the remote reference is disconnected using __disconnected
         obj.notifyOnDisconnect(self.__disconnected)
         
+        # Call all remaining remote calls made before the remote reference 
+        # arrived
         for pending in self.__pending:
             pending.callback(obj)
         
@@ -232,35 +241,50 @@ class Proxy(object):
         """ Method is used as a callback to inform the proxy that a failure
             occurred.
         """
+        # if the proxy already stores a failure then do nothing
         if self.__failure:
             return
         
+        # Disconnect callback for disconnect
         if self.__obj:
             self.__obj.dontNotifyOnDisconnect(self.__disconnected)
         
+        # Disconnect status
         if self.__status:
             self.__status.cancel()
         
+        # Mark that the proxy is a failure and doesn't store remote reference.
         self.__failure = failure
         self.__status = None
         
+        # fire errbacks on all remote calls
         if self.__pending is not None:
             for pending in self.__pending:
                 pending.errback(failure)
             
             self.__pending = None
         
+        # fire all callbacks to notify of the proxy's death
         for cb in self.__cbs:
             cb(self)
         
         self.__cbs = None
     
     def __destroy(self):
+        """ Method to destroy Proxy. Takes care of whether it's been called from
+            the remote side or the local side. Calls __notify to clear up
+            pending callbacks of callRemote or notifyOnDeath. Calls 
+            remote reference's (self.__obj) destroy function to make sure object
+            on the remote side is also dead
+        """
         m = 'Referenced object {0} dead.'.format(self.__class__.__name__)
         self.__notify(Failure(DeadReferenceError(m)))
         
+        # Destroy object on the remote side. Takes care if it's already 
+        # destroyed.
         if self.__obj:
             def eb(failure):
+		from twisted.spread.pb import PBConnectionLost
                 if not failure.check(PBConnectionLost):
                     log.err(failure)
             

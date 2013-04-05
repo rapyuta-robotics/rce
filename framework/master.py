@@ -61,7 +61,7 @@ intCred = RCEInternalChecker(settings.PASSWORD_FILE)
 
 rce = RoboEarthCloudEngine(extCred, settings.INT_IF, settings.RCE_INTERNAL_PORT)
 consolerealm = ConsoleDummyRealm(rce)
-
+intCred.add_checker(rce.checkUIDValidity)
 # Internal communication
 p = Portal(rce, (intCred,))
 internalserver = TCPServer(settings.MASTER_PORT, PBServerFactory(p))

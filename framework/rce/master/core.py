@@ -51,7 +51,7 @@ from rce.master.machine import LoadBalancer, ContainerProcessError, \
     Distributor, RobotProcessError
 from rce.master.network import Network
 from rce.master.environment import EnvironmentEndpoint
-from rce.master.robot import RobotEndpoint
+from rce.master.robot import RobotEndpoint, RobotEndpointAvatar
 from rce.master.user import User
 from rce.master.console import Console, ConsoleDummyRealm
 from rce.util.network import getIP
@@ -124,8 +124,8 @@ class RoboEarthCloudEngine(object):
             endpoint = RobotEndpoint(self._network, self._distributor, self,
                                      self._port)
             endpoint.callback(mind)
-            avatar = Avatar() # TODO: At the moment does nothing
-            detach = lambda: endpoint.destroy()
+            avatar = RobotEndpointAvatar(self, endpoint) # TODO: At the moment does nothing
+            detach = lambda: avatar.logout()
             print('Connection to Robot process established.')
         elif avatarId == 'environment':
             endpoint = self._pendingContainer.pop(mind[1])
@@ -182,34 +182,6 @@ class RoboEarthCloudEngine(object):
             raise InternalError('Robot can not be created.')
         
         return location.getWebsocketAddress()
-    
-    def createRobot(self, user, robotID):
-        """ Callback for User instance to create a new Robot object in a
-            robot process.
-            
-            @param user:        User instance under which the robot has logged
-                                in and will run. (Owner of the robot)
-            @type  user:        rce.master.user.User
-                                (subclass of twisted.spread.pb.Referenceable)
-            
-            @param robotID:     ID of the robot which has to be created.
-            @type  robotID:     str
-            
-            @param uid:         Key which will be used to authenticate the
-                                websocket connection.
-            @type  uid:         str
-            
-            @return:            New Robot instance.
-            @rtype:             rce.master.robot.Robot
-                                (subclass of rce.master.base.Proxy)
-        """
-        try:
-            location = self._distributor.getNextLocation()
-        except RobotProcessError:
-            # TODO: What should we do here?
-            raise InternalError('Robot can not be created.')
-        
-        return location.createNamespace(user, robotID)
     
     def createContainer(self, userID):
         """ Callback for User instance to create a new Container object in a

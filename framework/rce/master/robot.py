@@ -32,11 +32,26 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
+from twisted.spread.pb import Avatar
 
 # Custom imports
 from rce.master.network import Endpoint, Namespace
 from rce.master.base import Status
 from rce.util.network import isLocalhost
+
+
+class RobotEndpointAvatar(Avatar): 
+    def __init__(self, realm, endpoint):
+	self._realm = realm
+        self._endpoint = endpoint
+
+    def perspective_setupProxy(self, robotProxy, userID, robotID):
+	user = self._realm._getUser(userID)
+	status = user.createRobotWrapper(robotProxy, self._endpoint, robotID)
+	return status
+
+    def logout(self):
+	self._endpoint.destroy()
 
 
 class Robot(Namespace):
@@ -127,7 +142,7 @@ class RobotEndpoint(Endpoint):
         """
         return self.callRemote('getWebsocketAddress')
     
-    def createNamespace(self, user, robotID, key):
+    def createRobotProxy(self, robotID, remote_robo):
         """ Create a Namespace object in the endpoint.
             
             @param user:        User instance to which this namespace will
@@ -147,9 +162,8 @@ class RobotEndpoint(Endpoint):
         """
         robot = Robot(self)
         status = Status(robot)
-        self.callRemote('createNamespace', status, user, user.userID, robotID,
-                        key).chainDeferred(robot)
-        return robot
+        robot.callback(remote_robo)
+        return robot, status
     
     def destroy(self):
         """ Method should be called to destroy the robot endpoint and will take

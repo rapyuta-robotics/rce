@@ -88,6 +88,8 @@ class RobotFacade(object):
                  console_port, deferred_from_facade_factory):
 
         self._protocol = protocol
+	self._userID = userID
+	self._robotID = robotID
         self._deferred_from_facade_factory = deferred_from_facade_factory
         def _cbAuthorized(view):
             self._robotView = view
@@ -103,7 +105,14 @@ class RobotFacade(object):
 
     def start(self):
         self._robotNamespace = self._protocol._portal.createNamespace()
+        status = self._protocol._portal._avatar.callRemote('setupProxy',
+	                      self._robotNamespace, self._userID, self._robotID)
+	status.addCallback(self._cbNamespace)
+	status.addErrback(lambda failure:
+                            self._deferred_from_facade_factory.errback(failure))
 
+    def _cbNamespace(self, status):
+        self._robotNamespace.addStatus(status)
         self.createContainer = self._robotView.createContainer
         self.destroyContainer = self._robotView.destroyContainer
         self.addNode = self._robotView.addNode
@@ -149,7 +158,8 @@ class RobotView(object):
         deferred.addCallback(_cbAuthenticated)
         deferred.addErrback(lambda failure: deferred_from_view_factory.errback(failure))
         
-
+    def _reportError(self, failure):
+        self._protocol.sendErrorMessage(failure.getTraceback())
         
     def createContainer(self, tag):
         """ Create a new Container object.
@@ -390,7 +400,7 @@ class Robot(Namespace):
             ServiceClientForwarder, PublisherForwarder,
             SubscriberForwarder, ServiceProviderForwarder]
     
-    def __init__(self, client, status):
+    def __init__(self, client):
         """ Initialize the Robot.
             
             @param client:      Robot Client which is responsible for
@@ -411,7 +421,7 @@ class Robot(Namespace):
         self._connection = None
         
         # The following replaces the call to Namespace.__init__()
-        self._status = status
+        #self._status = status
         self._interfaces = {}
     
     @property
@@ -425,9 +435,9 @@ class Robot(Namespace):
     def loader(self):
         """ Reference to ROS components loader. """
         return self._client.loader
-    
-    def _reportError(self, failure):
-        self._connection.sendErrorMessage(failure.getTraceback())
+
+    def addStatus(self, status):
+	self._status = status
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
@@ -753,7 +763,7 @@ class RobotClient(Endpoint):
         else:
             return fail(UnauthorizedLogin())
     
-    def createNamespace(self, status):
+    def createNamespace(self):
         """ Create a Robot namespace.
             
             @param status:      Status observer which is used to inform the
@@ -763,7 +773,7 @@ class RobotClient(Endpoint):
             @return:            Reference to the newly created robot.
             @rtype:             rce.robot.Robot
         """
-        robot = Robot(self, status)
+        robot = Robot(self)
         return robot
     
     def remote_getWebsocketAddress(self):

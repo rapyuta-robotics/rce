@@ -30,8 +30,20 @@
 #     
 #     
 
-#twisted specific imports
+# Python specific imports
+from uuid import uuid4
+from hashlib import md5
+
+# twisted specific imports
+from twisted.spread.pb import Referenceable, Avatar
+from twisted.internet.defer import DeferredList
 from twisted.spread.pb import Viewable
+
+# Custom imports
+from rce.error import InvalidRequest, AlreadyDead
+from rce.slave.interface import Types
+from rce.util.name import isLegalName
+from rce.master.wrapper import Robot, Container, Interface
 
 class RobotView(Viewable):
     def view_createContainer(self, clientAvatar, tag):

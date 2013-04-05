@@ -70,7 +70,7 @@ class Distributor(object):
     def unregisterRobotProcess(self, robot):
         assert robot in self._robots
         self._robots.remove(robot)
-    
+
     def getNextLocation(self):
         """ Get the next endpoint running in an robot process to create a new
             robot websocket connection.
