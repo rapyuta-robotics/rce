@@ -113,7 +113,7 @@ class User(Avatar):
         return status
     
     def perspective_getUserView(self, console=True):
-        if self._userID == 'admin' and console:
+        if self._userID == 'admin' and not console:
             raise InvalidRequest('Administrator cannot login via robot')
         elif self._userID == 'admin':
             return AdminConsoleView()

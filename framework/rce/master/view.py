@@ -324,6 +324,65 @@ class RobotView(Viewable):
         
 
 class NormalConsoleView(Viewable):
+    def view_update_user(self, clientAvatar, username, password, old_password):
+        """ Remote call to edit user information.
+
+            @param username:       The username
+            @type  username:       string
+            
+            @param password:       The password
+            @type  password:       string
+
+            @param old_password:   Old password
+            @type  old_password:   string
+        """
+        clientAvatar._realm._checker.passwd(username, password, old_password)
+    
+    def view_list_containers(self, clientAvatar):
+        """ Remote call to list containers under the logged-in user.
+        """
+        return clientAvatar.containers.keys()
+
+    def view_get_rosapi_connect_info(self, clientAvatar, tag):
+        """ Remote call to get rosapi request URL and key for a particular
+            container.
+            
+            @param tag:    Tag associated with a container.
+            @type  tag:    string
+        """
+        try:
+            container = clientAvatar._containers[tag]
+        except KeyError:
+            raise InternalError('No such container')
+        else:
+            uid = uuid4().hex
+            container._obj.registerConsole(clientAvatar.userID, uid)
+            d = container.getConnectInfo()
+            d.addCallback(lambda addr: (addr, uid))
+            return d
+    
+    def view_list_robots(self, clientAvatar):
+        """ List Robots under the logged in user.
+        """
+        return clientAvatar.robots.keys()
+
+
+    
+class AdminConsoleView(Viewable):
+    def view_machine_containers(self, clientAvatar, machineIP):
+        """ Remote call to list containers in a machine with given IP.
+        
+            @param machineIP:    IP of master server
+            @type  machineIP:    string
+        """
+        # TODO: Can not return rce.master.container.Container instances need
+        #       some conversion into string, tuple, or some other base type
+        try:
+            return (machine for machine in clientAvatar._realm._balancer._machines
+                    if machineIP == machine.IP).next()._containers
+        except StopIteration:
+            raise InternalError('No such machine')
+
     def view_list_machines(self, clientAvatar):
         """ Remote call to list machine IPs.
         """
@@ -335,74 +394,50 @@ class NormalConsoleView(Viewable):
             @param machineIP:    IP of master server.
             @type  machineIP:    string
         """
-        return self.console._list_machine_stats(machineIP)
-    
-    def view_machine_containers(self, clientAvatar, machineIP):
-        """ Remote call to list containers in a machine with given IP.
-        
-            @param machineIP:    IP of master server
-            @type  machineIP:    string
-        """
-        # TODO: Can not return rce.master.container.Container instances need
-        #       some conversion into string, tuple, or some other base type
-        return self.console._list_machine_containers(machineIP)
-    
+        try:
+            machine = (machine for machine in clientAvatar._realm._balancer._machines
+                       if machineIP == machine.IP).next()
+            return {'active':machine.active, 'capacity':machine.capacity}
+        except StopIteration:
+            raise InternalError('No such machine')
+
     def view_add_user(self, clientAvatar, username, password):
         """ Remote call to add user.
         
             @param username:    The username
             @type  username:    string
-    
+
             @param password:    The password
             @type  password:    string
         """
-        self.console._add_user(username, password)
-    
+        clientAvatar._realm._checker.addUser(username, password)
+
     def view_remove_user(self, clientAvatar, username):
         """ Remote call to remove user.
 
             @param username:    The username
             @type  username:    string
         """
-        self.console._remove_user(username)
+        clientAvatar._realm._checker.removeUser(username)
 
     def view_update_user(self, clientAvatar, username, password):
         """ Remote call to edit user information.
 
-            @param username:    The username
-            @type  username:    string
+            @param username:       The username
+            @type  username:       string
             
-            @param password:    The password
-            @type  password:    string
+            @param password:       The password
+            @type  password:       string
+
+            @param old_password:   Old password
+            @type  old_password:   string
         """
-        self.console._change_password(username, password)
-    
+        clientAvatar._realm._checker.passwd(username, password, True)
+
     def view_list_users(self, clientAvatar):
         """ Remote call to list all users logged into RoboEarthCloudEngine.
         """
-        return self.console._list_userID()
-
-    #The following two should  be accomplised by RobotView
-    #def view_start_container(self, clientAvatar, tag):
-        """ Remote call to start container given the tag.
-        
-            @param tag:    Tag associated with a container.
-            @type  tag:    string
-        """
-    #    self.user.remote_createContainer(tag)
-    
-    #def view_stop_container(self, clientAvatar, tag):
-        """ Remote call to stop container given the tag.
-        
-            @param tag:    Tag associated with a container.
-            @type  tag:    string
-        """
-    #    self.user.remote_destroyContainer(tag)
-
-    def view_list_containers(self, clientAvatar):
-        """ Remote call to list containers under the logged-in user.
-        """
-        return self.console._list_user_containers(self.user)
+        return clientAvatar._realm._users.keys()
 
     def view_list_containers_by_user(self, clientAvatar, userID):
         """ Remote call to list containers under a given user.
@@ -410,85 +445,8 @@ class NormalConsoleView(Viewable):
             @param userID:    The username
             @type  userID:    string
         """
-        user = self.console._root._getUser(userID)
-        return self.console._list_user_containers(user)
-
-    def view_get_rosapi_connect_info(self, clientAvatar, tag):
-        """ Remote call to get rosapi request URL and key for a particular
-            container.
-            
-            @param tag:    Tag associated with a container.
-            @type  tag:    string
-        """
-        try:
-            container = self.user._containers[tag]
-        except KeyError:
-            raise InternalError('No such container')
-        else:
-            uid = uuid4().hex
-            container._obj.registerConsole(self.user.userID, uid)
-            d = container.getConnectInfo()
-            d.addCallback(lambda addr: (addr, uid))
-            return d
-    
-    #Following functions in RobotView    
-    '''
-    def view_start_node(self, clientAvatar, cTag, nTag, pkg, exe, args=''):
-        """ Remote call to add a node to a ROS environment.
-        """
-        self.user.remote_addNode(cTag, nTag, pkg, exe, args)
-    
-    def view_stop_node(self, clientAvatar, cTag, nTag):
-        """ Remote call to remove a node from a ROS environment.
-        """
-        self.user.remote_removeNode(cTag, nTag)
-    
-    def view_add_parameter(self, clientAvatar, cTag, name, value):
-        """ Remote call to add a parameter to a ROS environment.
-        """
-        self.user.remote_addParameter(cTag, name, value)
-    
-    def view_remove_parameter(self, clientAvatar, cTag, name):
-        """ Remote call to remove a parameter from a ROS environment.
-        """
-        self.user.remote_removeParameter(cTag, name)
-    
-    def view_add_interface(self, clientAvatar, eTag, iTag, iType, iCls, addr=''):
-        """ Remote call to add an interface.
-        """
-        self.user.remote_addInterface(eTag, iTag, iType, iCls, addr)
-
-    def view_remove_interface(self, clientAvatar, eTag, iTag):
-        """ Remote call to remove an interface.
-        """
-        self.user.remote_removeInterface(eTag, iTag)
-    
-    def view_add_connection(self, clientAvatar, tag1, tag2):
-        """ Remote call to add a connection between two interfaces.
-
-            @param tag1:    Tag for first interface
-            @type  tag1:    string
-
-            @param tag2:    Tag for second interface
-            @type  tag2:    string
-        """
-        self.user.remote_addConnection(tag1, tag2)
-        
-    def view_remove_connection(self, clientAvatar, tag1, tag2):
-        """ Remote call to remove connection between two interfaces.
-
-            @param tag1:    Tag for first interface
-            @type  tag1:    string
-            @param tag2:    Tag for second interface
-            @type  tag2:    string
-        """
-        self.user.remote_removeConnection(tag1, tag2)
-    '''
-    
-    def view_list_robots(self, clientAvatar):
-        """ List Robots under the logged in user.
-        """
-        return self.console._list_user_robots(self.user)
+        user = clientAvatar._realm._getUser(userID)
+        return user.containers.keys()
 
     def view_list_robots_by_user(self, clientAvatar, userID):
         """ List robots under the user specified.
@@ -496,9 +454,5 @@ class NormalConsoleView(Viewable):
             @param userID:    The username
             @type  userID:    string
         """
-        user = self.console._root._getUser(userID)
-        return self.console._list_user_robots(user)
-    
-class AdminConsoleView(Viewable):
-    pass
-
+        user = clientAvatar._realm._getUser(userID)
+        return user.robots.keys()
