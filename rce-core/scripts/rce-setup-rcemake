@@ -43,7 +43,8 @@ import sys
 import subprocess
 
 # rce specific imports
-import settings
+from rce.util.settings import RCESettingsManager
+settings = RCESettingsManager()
 
 
 _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']

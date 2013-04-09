@@ -48,12 +48,15 @@ from twisted.cred.credentials import UsernamePassword
 
 # rce specific imports
 from rce.environment import main
-import settings
+from rce.util.settings import RCESettingsManager
 
 
 if __name__ == '__main__':
+    
+    settings = RCESettingsManager()
     # Credentials which should be used to login to Master process
     cred = UsernamePassword(sys.argv[2], sys.argv[3])
+    
     
     main(reactor, cred, sys.argv[1], settings.MASTER_PORT,
          settings.RCE_INTERNAL_PORT, sys.argv[2])

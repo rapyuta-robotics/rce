@@ -50,10 +50,11 @@ from twisted.cred.credentials import UsernamePassword
 
 # rce specific imports
 from rce.container import main
-import settings
+from rce.util.settings import RCESettingsManager
 
 
 def _get_argparse():
+    settings = RCESettingsManager()
     from argparse import ArgumentParser
 
     parser = ArgumentParser(prog='container',
@@ -76,16 +77,17 @@ def _get_argparse():
 
 
 if __name__ == '__main__':
+    settings = RCESettingsManager()
     args = _get_argparse().parse_args()
     
     # Credentials which should be used to login to Master process
     if settings.DEV_MODE:
-        cred = UsernamePassword('container', sha256('admin').digest())
-        passwd = sha256('admin').digest()
+        cred = UsernamePassword('container', sha256('admin').hexdigest())
+        passwd = sha256('admin').hexdigest()
     else:
         cred = UsernamePassword('container',
-                                sha256(args.InfraPassword).digest())
-        passwd = sha256(args.MasterPassword).digest()
+                                sha256(args.InfraPassword).hexdigest())
+        passwd = sha256(args.MasterPassword).hexdigest()
     
     main(reactor, cred, args.MasterIP, passwd, cred.password,
          settings.MASTER_PORT, settings.INT_IP, settings.BRIDGE_IP,

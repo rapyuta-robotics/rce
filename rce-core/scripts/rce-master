@@ -36,10 +36,10 @@ from twisted.internet import reactor
 # rce specific imports
 from rce.core import main
 from rce.util.cred import RCECredChecker, RCEInternalChecker
-import settings
-
+from rce.util.settings import RCESettingsManager
 
 if __name__ == '__main__':
+    settings = RCESettingsManager()
     # Credentials checkers used in the cloud engine
     extCred = RCECredChecker(settings.PASSWORD_FILE, settings.DEV_MODE)
     intCred = RCEInternalChecker(settings.PASSWORD_FILE)
