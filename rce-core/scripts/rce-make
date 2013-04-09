@@ -38,6 +38,12 @@ fi
 
 ROOTFS=$(rce-setup-rcemake up)
 
+if [ $1 == 'setup'];then
+	chroot $ROOTFS /bin/bash -c $2
+	rce-setup-rcemake down
+	exit
+fi
+	
 if [ $? -eq 0 ]; then
     chroot $ROOTFS /bin/bash
 fi

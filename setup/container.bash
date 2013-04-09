@@ -71,7 +71,7 @@ EOF
 
 download_ubuntu()
 {
-    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,lsb-release,language-pack-en,vim,wget,build-essential
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,lsb-release,language-pack-en,vim,wget,build-essential,curl
 	
 	### Local
 	mirror=
@@ -252,4 +252,30 @@ if [ $? -ne 0 ]; then
     echo "failed to configure ubuntu for a container"
     exit 1
 fi
+
+echo "Provisioning other required directories and files"
+
+
+# basic source and conf files
+mkdir -p $rootfs/opt/rce
+mkdir -p $rootfs/opt/rce/src
+
+touch $rootfs/etc/init/rceComm.conf
+touch $rootfs/etc/init/rceLauncher.conf
+touch $rootfs/etc/init/rceRosapi.conf
+
+
+
+#The rest of the provisioning.
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+cp $DIR/setup.sh $rootfs/opt/rce/setup.sh
+cp $DIR/rce.conf $rootfs/etc/init/rce.conf
+
 

@@ -50,7 +50,8 @@ class RCESettingsManager(SafeConfigParser,object):
 
         # If it does not exist create it
         if not os.path.exists(self.config_file):
-            self._provision_config()
+            print('Config file missing please run the provision script first')
+            exit()
         self.read(self.config_file)
         self._build_properties()
         #check paths and packages
@@ -63,48 +64,6 @@ class RCESettingsManager(SafeConfigParser,object):
 
         self.CONVERTER_CLASSES = [self.get('converters',option) for
                                   option in self.options('converters')]
-
-    def _provision_config(self):
-        """ Provision all required files as required for first runs.
-        """
-
-        path=os.path.join(os.getenv('HOME'), '.rce')
-        config = {'global':{'gzip_lvl':9,
-                            'platform':'local',
-                            'dev_mode':False,
-                            'password_file':os.path.join(os.getenv('HOME'), '.rce','creds')},
-
-                  'network':{'local':'wlan0,wlan0,lxcbr0',
-                             'rackspace':'eth0,eth1,lxcbr0',
-                             'aws':'aws_dns,eth0,lxcbr0' },
-
-                  'converters':{'image':'rce.util.converters.image.ImageConverter',},
-
-                  'comm':{'http_port':9000,
-                          'ws_port':9010,
-                          'master_port':8080,
-                          'rce_internal_port':10030,
-                          'rce_console_port':8081,
-                          'ros_proxy_port':9020},
-
-                  'machine':{'max_container':10,
-                            'rootfs':'/opt/rce/container/rootfs',
-                            'conf_dir':'/opt/rce/container/config',
-                            'data_dir':'/opt/rce/container/data',
-                            'root_src_dir':'/opt/rce/framework'},
-
-                  'machine/packages':{'test_package':'/opt/rce/test,rce_test'}}
-
-        if not os.path.exists(path):
-            os.makedirs(path)
-        conf_file = open(self.config_file,'w')
-        for section,opts in config.iteritems():
-            self.add_section(section)
-            for key,val in opts.iteritems():
-                self.set(section, key, str(val))
-        self.write(conf_file)
-        conf_file.close()
-        del config,path
 
     @staticmethod
     def _getIP(ifname):
@@ -191,7 +150,6 @@ class RCESettingsManager(SafeConfigParser,object):
         self._checkPath(self.CONF_DIR, 'Configuration')
         self._checkPath(self.DATA_DIR, 'Data')
         self._checkPath(self.ROOTFS, 'Container file system')
-        self._checkPath(self.ROOT_SRC_DIR, 'RCE source')
 
     @staticmethod
     def _checkPath(path, description):
@@ -222,5 +180,4 @@ class RCESettingsManager(SafeConfigParser,object):
                     val = self.get(section,opt)
                     val = int(val) if val.isdigit() else val == 'True' if val in ('True','False') else val
                     setattr(self,opt.upper(),val)
-
 

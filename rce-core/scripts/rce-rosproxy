@@ -35,7 +35,8 @@ from twisted.internet import reactor
 
 # rce specific imports
 from rce.rosproxy import main
-import settings
+from rce.util.settings import RCESettingsManager
 
 if __name__ == '__main__':
+    settings = RCESettingsManager()
     main(reactor, settings.ROS_PROXY_PORT)

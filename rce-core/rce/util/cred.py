@@ -49,6 +49,10 @@ from twisted.cred import error
 from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
+#rce specific imports
+from rce.util.settings import RCESettingsManager
+
+
 ### AES Encryption Stuff
 # AES Encryptors strength depends on input password length, ensure it with
 # appropriate hash
@@ -67,8 +71,8 @@ pad = lambda s: s + (_BLOCK_SIZE - len(str(s)) % _BLOCK_SIZE) * _PADDING
 # one-liners to encrypt/encode and decrypt/decode a string
 # encrypt with AES, encode with base64
 encodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-cipher = lambda passwd: AES.new(passwd)
-salter = lambda u, p: sha256(u+p).digest()
+cipher = lambda passwd: AES.new(passwd.decode('hex'))
+salter = lambda u, p: sha256(u+p).hexdigest()
 
 # one-liner to format user-info to write to the credentials file
 formatUser = lambda name, pw, mode, groups: '\t'.join((name, pw, mode,
@@ -118,15 +122,8 @@ class RCECredChecker(object):
     _credCache = None
     _cacheTimestamp = 0
 
-    def __init__(self, filename, dev_mode=False):
-        """
-            @param filename:    The creds file to be usd
-            @type  filename:    str
-
-            @param dev_mode:    Indicate if developer mode is enabled.
-            @type  dev_mode:    bool
-        """
-        self.filename = filename
+    def __init__(self):
+        self.filename = RCESettingsManager().PASSWORD_FILE
         self.credentialInterfaces = (IUsernameHashedPassword,)
         self.scanner = re.compile(_RE)
         pass_re = re.compile(_PASS_RE)
@@ -141,36 +138,11 @@ class RCECredChecker(object):
             print('The user lacks privileges to access/modify '
                   'the password file.')
             exit()
+        if not os.path.exists(self.filename):
+            print('Creds file missing please run the provision script first')
+            exit()
 
-        # Provision required users
-        self.required_users = {'admin':'admin', 'adminInfra':'admin'}
-
-        if dev_mode:
-            # TODO : Remove testUser later, temporarily inserting for
-            #        maintaining compat with current test classes.
-            self.required_users['testUser'] = 'testUser'
-            for username in self.required_users.iterkeys():
-                try:
-                    self.getUser(username)
-                except (KeyError, OSError, AttributeError):
-                    self.addUser(username, self.required_users[username],
-                                 provision=True)
-            self.setUserMode('admin', 0)
-            self.addUserGroups('admin','owner')
-
-        else:
-            init_flag = True
-            for username in self.required_users.iterkeys():
-                try:
-                    self.getUser(username)
-                except (KeyError, OSError, AttributeError):
-                    if init_flag:
-                        print(_FIRST_RUN_MSG)
-                        init_flag = False
-                    self.addUser(username, self.get_new_password(username),
-                                 provision=True)
-            self.setUserMode('admin', 0)
-            self.addUserGroups('admin','owner')
+        
 
     def get_new_password(self, user):
         print (_NEW_PASS_PROMPT)
@@ -376,7 +348,7 @@ class RCECredChecker(object):
 
         if provision:
             with open(self.filename, 'a') as f:
-                f.write(formatUser(username, sha256(password).digest(),
+                f.write(formatUser(username, sha256(password).hexdigest(),
                                    _DEFAULT_USER_MODE, _DEFAULT_GROUPS))
                 f.write('\n')
             return True
@@ -386,7 +358,7 @@ class RCECredChecker(object):
             raise CredentialError('Given user already exists')
         except KeyError:
             with open(self.filename, 'a') as f:
-                f.write(formatUser(username, sha256(password).digest(),
+                f.write(formatUser(username, sha256(password).hexdigest(),
                                    _DEFAULT_USER_MODE, _DEFAULT_GROUPS))
                 f.write('\n')
             return True
@@ -436,7 +408,7 @@ class RCECredChecker(object):
         try:
             props = self.getUser(username)
             if isinstance(control_mode, str):
-                if props.password != sha256(control_mode).digest():
+                if props.password != sha256(control_mode).hexdigest():
                     raise CredentialError('Invalid Password')
                 if not self.pass_validator(new_password):
                     raise CredentialError(_PASSWORD_FAIL)
@@ -447,23 +419,41 @@ class RCECredChecker(object):
             if  self.scanner.match(line).groups()[0] != username:
                 print(line[:-1])
             else:
-                print(formatUser(username, sha256(new_password).digest(),
+                print(formatUser(username, sha256(new_password).hexdigest(),
                                  str(props.mode), props.groups))
         return True
 
 
-class RCEInternalChecker(RCECredChecker):
-    """ TODO: Add doc
+class RCEInternalChecker(object):
+    """ RCE Internal Auth system
     """
+    implements(ICredentialsChecker)
+    
+    def __init__(self, cred_checker):
+        """ 
+            @param cred_checker:    Cred Checker used to authenticate the cloud engine
+            @type  cred_checker:    rce.util.cred.RCECredChecker
+        """
+        self._root_checker = cred_checker
+        self.credentialInterfaces = (IUsernameHashedPassword,)
+        
     def add_checker(self,method):
         """ TODO: Add doc
         """
         self.checkUidValidity = method
 
+    def _cbPasswordMatch(self, matched, username):
+        """ Internal method in case of success
+        """
+        if matched:
+            return username
+        else:
+            return failure.Failure(error.UnauthorizedLogin())
+        
     def requestAvatarId(self, c):
         try:
             if c.username in ('container','robot'):
-                p = self.getUser('adminInfra').password
+                p = self._root_checker.getUser('adminInfra').password
                 user = c.username
             else: # it is the environment uuid
                 try:
@@ -472,8 +462,8 @@ class RCEInternalChecker(RCECredChecker):
                 except CredentialError:
                     return defer.fail(error.UnauthorizedLogin())
 
-                infra = self.getUser('adminInfra').password
-                main = self.getUser('admin').password
+                infra = self._root_checker.getUser('adminInfra').password
+                main = self._root_checker.getUser('admin').password
                 p = encodeAES(cipher(main), salter(c.username,infra))
                 user = 'environment'
         except KeyError:
