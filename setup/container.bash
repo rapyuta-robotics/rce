@@ -258,7 +258,7 @@ echo "Provisioning other required directories and files"
 
 # basic source and conf files
 mkdir -p $rootfs/opt/rce
-mkdir -p $rootfs/opt/rce/src
+mkdir -p $rootfs/opt/rce/packages
 
 touch $rootfs/etc/init/rceComm.conf
 touch $rootfs/etc/init/rceLauncher.conf
