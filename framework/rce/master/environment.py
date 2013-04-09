@@ -144,12 +144,11 @@ class Environment(Namespace):
         self.callRemote('createParameter', status, name,
                         value).chainDeferred(parameter)
         return parameter
-    
-    # TODO: Unused method
-#    def getAddress(self):
-#        """ Get the address of the endpoint of the environment namespace.
-#        """
-#        return self._endpoint.getAddress()
+
+    def getAddress(self):
+        """ Get the address of the endpoint of the environment namespace.
+        """
+        return self._endpoint.getAddress()
         
     def registerNode(self, node):
         assert node not in self._nodes
