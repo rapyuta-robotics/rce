@@ -60,267 +60,266 @@ enum interface_t
 
 class ClientException: public std::runtime_error
 {
-public:
-	ClientException(const std::string &e) :
-			std::runtime_error::runtime_error(e)
-	{
-	}
+	public:
+		ClientException(const std::string &e) :
+				std::runtime_error::runtime_error(e)
+		{
+		}
 };
 
 template<class Client>
 class InterfaceBase_impl
 {
-public:
-	InterfaceBase_impl(const typename Client::ProtocolPtr_t protocol,
-			const typename Client::String tag,
-			const typename Client::String type) :
-			protocol_(protocol), tag_(tag), type_(type)
-	{
-	}
+	public:
+		InterfaceBase_impl(const typename Client::ProtocolPtr_t protocol,
+				const typename Client::String tag,
+				const typename Client::String type) :
+				protocol_(protocol), tag_(tag), type_(type)
+		{
+		}
 
-protected:
-	const typename Client::ProtocolPtr_t protocol_;
-	const typename Client::String tag_;
-	const typename Client::String type_;
+	protected:
+		const typename Client::ProtocolPtr_t protocol_;
+		const typename Client::String tag_;
+		const typename Client::String type_;
 
 };
 
 template<class Client>
 class ReceiverInterface_impl: public InterfaceBase_impl<Client>
 {
-public:
-	ReceiverInterface_impl(const typename Client::ProtocolPtr_t protocol,
-			const typename Client::String tag,
-			const typename Client::String srvType) :
-			InterfaceBase_impl<Client>(protocol, tag, srvType)
-	{
-		ReceiverInterface_impl<Client>::protocol_->registerInterface(
-				ReceiverInterface_impl<Client>::tag_, this);
-	}
+	public:
+		ReceiverInterface_impl(const typename Client::ProtocolPtr_t protocol,
+				const typename Client::String tag,
+				const typename Client::String srvType) :
+				InterfaceBase_impl<Client>(protocol, tag, srvType)
+		{
+			ReceiverInterface_impl<Client>::protocol_->registerInterface(
+					ReceiverInterface_impl<Client>::tag_, this);
+		}
 
-	virtual ~ReceiverInterface_impl()
-	{
-		ReceiverInterface_impl<Client>::protocol_->unregisterInterface(
-				ReceiverInterface_impl<Client>::tag_, this);
-	}
+		virtual ~ReceiverInterface_impl()
+		{
+			ReceiverInterface_impl<Client>::protocol_->unregisterInterface(
+					ReceiverInterface_impl<Client>::tag_, this);
+		}
 
-	virtual void receive(const typename Client::String &type,
-			const typename Client::Value &msg,
-			const typename Client::String &msgID) = 0;
+		virtual void receive(const typename Client::String &type,
+				const typename Client::Value &msg,
+				const typename Client::String &msgID) = 0;
 };
 
 template<class Client>
 class ServiceClient_impl: public ReceiverInterface_impl<Client>
 {
-private:
-	typedef std::pair<typename Client::String, typename Client::MsgCallback_t> CallbackRef_t;
-	typedef std::vector<CallbackRef_t> CallbackRefVector_t;
+	private:
+		typedef std::pair<typename Client::String,
+				typename Client::MsgCallback_t> CallbackRef_t;
+		typedef std::vector<CallbackRef_t> CallbackRefVector_t;
 
-public:
-	ServiceClient_impl(const typename Client::ProtocolPtr_t protocol,
-			const typename Client::String tag,
-			const typename Client::String srvType,
-			const typename Client::MsgCallback_t cb) :
-			ReceiverInterface_impl<Client>(protocol, tag, srvType), cb_(cb)
-	{
-	}
+	public:
+		ServiceClient_impl(const typename Client::ProtocolPtr_t protocol,
+				const typename Client::String tag,
+				const typename Client::String srvType,
+				const typename Client::MsgCallback_t cb) :
+				ReceiverInterface_impl<Client>(protocol, tag, srvType), cb_(cb)
+		{
+		}
 
-	/*
-	 * Call Service.
-	 *
-	 * @param cb:	Overwrite default callback for one service call.
-	 */
-	void call(const typename Client::Value &msg);
-	void call(const typename Client::Value &msg,
-			const typename Client::MsgCallback_t &cb);
+		/*
+		 * Call Service.
+		 *
+		 * @param cb:	Overwrite default callback for one service call.
+		 */
+		void call(const typename Client::Value &msg);
+		void call(const typename Client::Value &msg,
+				const typename Client::MsgCallback_t &cb);
 
-	void receive(const typename Client::String &type,
-			const typename Client::Value &msg,
-			const typename Client::String &msgID);
+		void receive(const typename Client::String &type,
+				const typename Client::Value &msg,
+				const typename Client::String &msgID);
 
-private:
-	const typename Client::MsgCallback_t cb_;
-	CallbackRefVector_t callbacks_;
+	private:
+		const typename Client::MsgCallback_t cb_;
+		CallbackRefVector_t callbacks_;
 };
 
 template<class Client>
 class ServiceProvider_impl: public ReceiverInterface_impl<Client>
 {
-public:
-	ServiceProvider_impl(const typename Client::ProtocolPtr_t protocol,
-			const typename Client::String tag,
-			const typename Client::String srvType,
-			const typename Client::ServiceCallback_t cb) :
-			ReceiverInterface_impl<Client>(protocol, tag, srvType), cb_(cb)
-	{
-	}
+	public:
+		ServiceProvider_impl(const typename Client::ProtocolPtr_t protocol,
+				const typename Client::String tag,
+				const typename Client::String srvType,
+				const typename Client::ServiceCallback_t cb) :
+				ReceiverInterface_impl<Client>(protocol, tag, srvType), cb_(cb)
+		{
+		}
 
-	void receive(const typename Client::String &type,
-			const typename Client::Value &msg,
-			const typename Client::String &msgID);
+		void receive(const typename Client::String &type,
+				const typename Client::Value &msg,
+				const typename Client::String &msgID);
 
-private:
-	const typename Client::ServiceCallback_t cb_;
+	private:
+		const typename Client::ServiceCallback_t cb_;
 };
 
 template<class Client>
 class Publisher_impl: public InterfaceBase_impl<Client>
 {
-public:
-	Publisher_impl(const typename Client::ProtocolPtr_t protocol,
-			const typename Client::String tag,
-			const typename Client::String msgType) :
-			InterfaceBase_impl<Client>(protocol, tag, msgType)
-	{
-	}
+	public:
+		Publisher_impl(const typename Client::ProtocolPtr_t protocol,
+				const typename Client::String tag,
+				const typename Client::String msgType) :
+				InterfaceBase_impl<Client>(protocol, tag, msgType)
+		{
+		}
 
-	/*
-	 * Publish message.
-	 */
-	void publish(const typename Client::Value &msg);
+		/*
+		 * Publish message.
+		 */
+		void publish(const typename Client::Value &msg);
 };
 
 template<class Client>
 class Subscriber_impl: public ReceiverInterface_impl<Client>
 {
-public:
-	Subscriber_impl(const typename Client::ProtocolPtr_t protocol,
-			const typename Client::String tag,
-			const typename Client::String msgType,
-			const typename Client::MsgCallback_t cb) :
-			ReceiverInterface_impl<Client>(protocol, tag, msgType), cb_(cb)
-	{
-	}
+	public:
+		Subscriber_impl(const typename Client::ProtocolPtr_t protocol,
+				const typename Client::String tag,
+				const typename Client::String msgType,
+				const typename Client::MsgCallback_t cb) :
+				ReceiverInterface_impl<Client>(protocol, tag, msgType), cb_(cb)
+		{
+		}
 
-	void receive(const typename Client::String &type,
-			const typename Client::Value &msg,
-			const typename Client::String &msgID);
+		void receive(const typename Client::String &type,
+				const typename Client::Value &msg,
+				const typename Client::String &msgID);
 
-	void unsubscribe()
-	{
-		ReceiverInterface_impl<Client>::protocol_->unregisterInterface(
-				ReceiverInterface_impl<Client>::tag_, this);
-	}
+		void unsubscribe()
+		{
+			ReceiverInterface_impl<Client>::protocol_->unregisterInterface(
+					ReceiverInterface_impl<Client>::tag_, this);
+		}
 
-private:
-	const typename Client::MsgCallback_t cb_;
+	private:
+		const typename Client::MsgCallback_t cb_;
 };
 
 template<class Config_impl>
 class Client_impl
 {
-public:
-	typedef boost::shared_ptr<Client_impl> ClientPtr_t;
-	typedef Config_impl Config;
-	typedef typename Config::String_type String;
-	typedef typename Config::Value_type Value;
-	typedef typename Config::Object_type Object;
-	typedef typename Config::Binary_type Binary;
-	typedef typename Config::Array_type Array;
+	public:
+		typedef boost::shared_ptr<Client_impl> ClientPtr_t;
+		typedef Config_impl Config;
+		typedef typename Config::String_type String;
+		typedef typename Config::Value_type Value;
+		typedef typename Config::Object_type Object;
+		typedef typename Config::Binary_type Binary;
+		typedef typename Config::Array_type Array;
 
-	typedef ReceiverInterface_impl<Client_impl> Interface_t;
-	typedef boost::function<void(const Value &msg)> MsgCallback_t;
-	typedef boost::function<bool(const Value &req, Value &resp)> ServiceCallback_t;
+		typedef ReceiverInterface_impl<Client_impl> Interface_t;
+		typedef boost::function<void(const Value &msg)> MsgCallback_t;
+		typedef boost::function<bool(const Value &req, Value &resp)> ServiceCallback_t;
 
-	typedef ServiceClient_impl<Client_impl> ServiceClient_t;
-	typedef ServiceProvider_impl<Client_impl> ServiceProvider_t;
-	typedef Publisher_impl<Client_impl> Publisher_t;
-	typedef Subscriber_impl<Client_impl> Subscriber_t;
+		typedef ServiceClient_impl<Client_impl> ServiceClient_t;
+		typedef ServiceProvider_impl<Client_impl> ServiceProvider_t;
+		typedef Publisher_impl<Client_impl> Publisher_t;
+		typedef Subscriber_impl<Client_impl> Subscriber_t;
 
-	typedef boost::shared_ptr<ServiceClient_t> ServiceClientPtr_t;
-	typedef boost::shared_ptr<ServiceProvider_t> ServiceProviderPtr_t;
-	typedef boost::shared_ptr<Publisher_t> PublisherPtr_t;
-	typedef boost::shared_ptr<Subscriber_t> SubscriberPtr_t;
+		typedef boost::shared_ptr<ServiceClient_t> ServiceClientPtr_t;
+		typedef boost::shared_ptr<ServiceProvider_t> ServiceProviderPtr_t;
+		typedef boost::shared_ptr<Publisher_t> PublisherPtr_t;
+		typedef boost::shared_ptr<Subscriber_t> SubscriberPtr_t;
 
-	typedef boost::function<void(ClientPtr_t client)> ConnectCallback_t;
+		typedef boost::function<void(ClientPtr_t client)> ConnectCallback_t;
 
-	typedef Protocol_impl<Client_impl> Protocol_t;
-	typedef boost::shared_ptr<Protocol_t> ProtocolPtr_t;
+		typedef Protocol_impl<Client_impl> Protocol_t;
+		typedef boost::shared_ptr<Protocol_t> ProtocolPtr_t;
 
-private:
-	typedef websocketpp::client::handler::ptr HandlerPtr_t;
-	typedef websocketpp::client WebsocketClient_t;
-	typedef boost::shared_ptr<WebsocketClient_t> WebsocketClientPtr_t;
-	typedef std::pair<String, Binary*> BinaryIn_t;
-	typedef std::vector<BinaryIn_t> BinaryInVector_t;
+	private:
+		typedef websocketpp::client::handler::ptr HandlerPtr_t;
+		typedef websocketpp::client WebsocketClient_t;
+		typedef boost::shared_ptr<WebsocketClient_t> WebsocketClientPtr_t;
+		typedef std::pair<String, Binary*> BinaryIn_t;
+		typedef std::vector<BinaryIn_t> BinaryInVector_t;
 
-public:
-	Client_impl(const String userID, const String password,
-			const String robotID) :
-			userID_(userID), password_(password), robotID_(robotID), connecting_(
-					false), protocol_(ProtocolPtr_t()), endpoint_(
-					WebsocketClientPtr_t())
-	{
-		if (!initialized_)
+	public:
+		Client_impl(const String userID, const String password,
+				const String robotID) :
+				userID_(userID), password_(password), robotID_(robotID), connecting_(
+						false), protocol_(ProtocolPtr_t()), endpoint_(
+						WebsocketClientPtr_t())
 		{
-			if (curl_global_init(CURL_GLOBAL_NOTHING))
-				throw ClientException("Can not initialize the curl library.");
+			if (!initialized_)
+			{
+				if (curl_global_init(CURL_GLOBAL_NOTHING))
+					throw ClientException(
+							"Can not initialize the curl library.");
 
-			initialized_ = true;
+				initialized_ = true;
+			}
 		}
-	}
 
-	void connect(const std::string &url, const ConnectCallback_t cb);
-	void connected();
-	void disconnect();
+		void connect(const std::string &url, const ConnectCallback_t cb);
+		void connected();
+		void disconnect();
 
-	void createContainer(const String &cTag) const;
-	void destroyContainer(const String &cTag) const;
+		void createContainer(const String &cTag) const;
+		void destroyContainer(const String &cTag) const;
 
-	void addNode(const String &cTag, const String &nTag, const String &pkg,
-			const String &exe, const String &args, const String &name,
-			const String &rosNamespace) const;
-	void removeNode(const String &cTag, const String &nTag) const;
+		void addNode(const String &cTag, const String &nTag, const String &pkg,
+				const String &exe, const String &args, const String &name,
+				const String &rosNamespace) const;
+		void removeNode(const String &cTag, const String &nTag) const;
 
-	void addParameter(const String &cTag, const String &name,
-			const int value) const;
-	void addParameter(const String &cTag, const String &name,
-			const String &value) const;
-	void addParameter(const String &cTag, const String &name,
-			const double value) const;
-	void addParameter(const String &cTag, const String &name,
-			const bool value) const;
-	void removeParameter(const String &cTag, const String &name) const;
-	void
-	addInterface(const String &eTag, const String &iTag,
-			const interface_t iType, const String &iCls,
-			const String &addr = "") const;
-	void removeInterface(const String &eTag, const String &iTag) const;
+		void addParameter(const String &cTag, const String &name,
+				const int value) const;
+		void addParameter(const String &cTag, const String &name,
+				const String &value) const;
+		void addParameter(const String &cTag, const String &name,
+				const double value) const;
+		void addParameter(const String &cTag, const String &name,
+				const bool value) const;
+		void removeParameter(const String &cTag, const String &name) const;
+		void
+		addInterface(const String &eTag, const String &iTag,
+				const interface_t iType, const String &iCls,
+				const String &addr = "") const;
+		void removeInterface(const String &eTag, const String &iTag) const;
 
-	void addConnection(const String &iTag1, const String &iTag2) const;
-	void addConnection(const String &eTag1, const String &iTag1,
-			const String &eTag2, const String &iTag2) const;
-	void removeConnection(const String &iTag1, const String &iTag2) const;
-	void removeConnection(const String &eTag1, const String &iTag1,
-			const String &eTag2, const String &iTag2) const;
+		void addConnection(const String &iTag1, const String &iTag2) const;
+		void addConnection(const String &eTag1, const String &iTag1,
+				const String &eTag2, const String &iTag2) const;
+		void removeConnection(const String &iTag1, const String &iTag2) const;
+		void removeConnection(const String &eTag1, const String &iTag1,
+				const String &eTag2, const String &iTag2) const;
 
-	ServiceClientPtr_t service(const String &iTag, const String &srvType,
-			const MsgCallback_t &cb);
-	PublisherPtr_t publisher(const String &iTag, const String &msgType);
-	SubscriberPtr_t subscriber(const String &iTag, const String &msgType,
-			const MsgCallback_t &cb);
+		ServiceClientPtr_t service(const String &iTag, const String &srvType,
+				const MsgCallback_t &cb);
+		PublisherPtr_t publisher(const String &iTag, const String &msgType);
+		SubscriberPtr_t subscriber(const String &iTag, const String &msgType,
+				const MsgCallback_t &cb);
 
-private:
-	void connectMaster(const std::string &url, std::string &robotURL,
-			std::string &key);
+	private:
+		void addParameter(const String &cTag, const String &name,
+				const Value &value) const;
+		void configComponent(const String &type, const Value &component) const;
+		void configConnection(const String &type, const String &iTag1,
+				const String &iTag2) const;
 
-	void addParameter(const String &cTag, const String &name,
-			const Value &value) const;
-	void configComponent(const String &type, const Value &component) const;
-	void configConnection(const String &type, const String &iTag1,
-			const String &iTag2) const;
+		const String userID_;
+		const String password_;
+		const String robotID_;
 
-	const String userID_;
-	const String password_;
-	const String robotID_;
+		bool connecting_;
+		ConnectCallback_t cb_;
+		ProtocolPtr_t protocol_;
+		boost::thread connectedCB_;
+		WebsocketClientPtr_t endpoint_;
 
-	bool connecting_;
-	ConnectCallback_t cb_;
-	ProtocolPtr_t protocol_;
-	boost::thread connectedCB_;
-	WebsocketClientPtr_t endpoint_;
-
-	static bool initialized_;
+		static bool initialized_;
 };
 
 typedef Client_impl<json_spirit::Config> Client;
@@ -412,11 +411,15 @@ void ServiceProvider_impl<Client>::receive(const typename Client::String &type,
 
 	// TODO: Run in separate thread
 	if (!cb_(msg, response))
-		return; // TODO: Service call failed; do something about it!
+	{
+		// TODO: Service call failed; do something about it!
+		std::cout << "Service call failed." << std::endl;
+		return;
+	}
 
 	ReceiverInterface_impl<Client>::protocol_->send(
-			ReceiverInterface_impl<Client>::tag_, ReceiverInterface_impl<Client>::type_,
-			response, msgID);
+			ReceiverInterface_impl<Client>::tag_,
+			ReceiverInterface_impl<Client>::type_, response, msgID);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -447,8 +450,8 @@ template<class Config> bool Client_impl<Config>::initialized_;
 
 struct curlMemory
 {
-	char *memory;
-	size_t size;
+		char *memory;
+		size_t size;
 };
 
 size_t curlWriteCB(void *contents, size_t size, size_t nmemb, void *userp)
@@ -469,26 +472,52 @@ size_t curlWriteCB(void *contents, size_t size, size_t nmemb, void *userp)
 }
 
 template<class Config>
-void Client_impl<Config>::connectMaster(const std::string &url,
-		std::string &robotURL, std::string &key)
+void Client_impl<Config>::connect(const std::string &master_url,
+		const ConnectCallback_t cb)
 {
-	curlMemory memory =
-	{ 0 };
+	// Declarations
+	CURL *curl;
+	curlMemory memory;
+	char err[CURL_ERROR_SIZE];
 	int rc;
 	long httprc;
+	std::ostringstream masterStream, robotStream;
+	char *url;
 
-	CURL *curl = curl_easy_init();
-	char *err = new char[CURL_ERROR_SIZE];
+	// Check whether a connection attempt is valid.
+	if (connecting_)
+		throw ClientException("Already a connection attempt in progress.");
+
+	if (protocol_ && endpoint_)
+		throw ClientException("Already a valid connection available.");
+
+	curl = curl_easy_init();
+	memset(&memory, 0, sizeof(curlMemory));
 
 	if (!curl)
 		throw ClientException("Can not initialize the curl session.");
 
-	if (!err)
-		throw ClientException(
-				"Not enough memory to allocated error message buffer.");
+	cb_ = cb;
+
+#ifdef DEBUG
+	std::cout << "Start connection with:" << std::endl;
+	std::cout << "    userID: " << userID_ << std::endl;
+	std::cout << "    password: " << password_ << std::endl;
+	std::cout << "    robotID: " << robotID_ << std::endl;
+#endif
+
+	// Make the initial HTTP request to the Master Process
+	connecting_ = true;
+
+	masterStream << master_url << "?userID=" << userID_ << "&version="
+			<< CLIENT_VERSION;
+	url = curl_easy_escape(curl, masterStream.str().c_str(), 0);
+
+	if (!url)
+		throw ClientException("Can not escape Master process URL.");
 
 	// set the options for the next request
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, err);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteCB);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &memory);
@@ -497,8 +526,7 @@ void Client_impl<Config>::connectMaster(const std::string &url,
 	// Perform the request
 	rc = curl_easy_perform(curl);
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httprc);
-
-	curl_easy_cleanup(curl); // always cleanup
+	curl_free(url);
 
 	if (rc != CURLE_OK)
 	{
@@ -507,15 +535,18 @@ void Client_impl<Config>::connectMaster(const std::string &url,
 
 		if (memory.memory)
 			free(memory.memory);
-		delete err;
+		curl_easy_cleanup(curl); // always cleanup
 
 		throw ClientException(msg);
 	}
 
 	if (httprc != 200)
 	{
-		std::string msg = "Received an error from Master Manager: ";
+		std::string msg = "Received an error from Master Process: ";
 		msg = msg.append(std::string(memory.memory));
+		free(memory.memory);
+		curl_easy_cleanup(curl); // always cleanup
+
 		throw ClientException(msg);
 	}
 
@@ -527,77 +558,39 @@ void Client_impl<Config>::connectMaster(const std::string &url,
 
 	if (!binaries.empty())
 		throw ClientException(
-				"Received message from Master Manager contains binary references.");
+				"Received message from Master Process contains binary references.");
 
 	if (messageVal.type() != json_spirit::obj_type)
 		throw ClientException(
-				"Received message from Master Manager has invalid JSON format.");
+				"Received message from Master Process has invalid JSON format.");
 
 	Object message = messageVal.get_obj();
 
-	Value keyVal = json_spirit::find_value<Object, String>(message, "key");
 	Value urlVal = json_spirit::find_value<Object, String>(message, "url");
 	Value curVal = json_spirit::find_value<Object, String>(message, "current");
 
-	if (keyVal.type() != json_spirit::str_type
-			|| urlVal.type() != json_spirit::str_type)
+	if (urlVal.type() != json_spirit::str_type)
 		throw ClientException(
-				"Received message from Master Manager has invalid JSON format.");
+				"Received message from Master Process has invalid JSON format.");
 
 	if (curVal.type() != json_spirit::null_type)
 	{
 		if (curVal.type() != json_spirit::str_type)
 			throw ClientException(
-					"Received message from Master Manager has invalid JSON format.");
+					"Received message from Master Process has invalid JSON format.");
 
 		std::cout << "There is a newer client version (version: '"
 				<< curVal.get_str() << "') available." << std::endl;
 	}
 
-	key = std::string(keyVal.get_str());
-	robotURL = std::string(urlVal.get_str());
-}
-
-template<class Config>
-void Client_impl<Config>::connect(const std::string &url,
-		const ConnectCallback_t cb)
-{
-	// Check whether a connection attempt is valid.
-	if (connecting_)
-		throw ClientException("Already a connection attempt in progress.");
-
-	if (protocol_ && endpoint_)
-		throw ClientException("Already a valid connection available.");
-
-	cb_ = cb;
-
 #ifdef DEBUG
-	std::cout << "Start connection with:" << std::endl;
-	std::cout << "    userID: " << userID_ << std::endl;
-	std::cout << "    password: " << password_ << std::endl;
-	std::cout << "    robotID: " << robotID_ << std::endl;
-#endif
-
-	// Make the initial HTTP request to the Master Manager
-	connecting_ = true;
-
-	std::string robotURL;
-	std::string key;
-
-	std::ostringstream mStream;
-	mStream << url << "?userID=" << userID_ << "&password=" << password_
-			<< "&robotID=" << robotID_ << "&version=" << CLIENT_VERSION;
-	connectMaster(mStream.str(), robotURL, key);
-
-#ifdef DEBUG
-	std::cout << "Received the following from Master Manager:" << std::endl;
-	std::cout << "    url: " << robotURL << std::endl;
-	std::cout << "    key: " << key << std::endl;
+	std::cout << "Received the following Robot URL from Master Process:" << std::endl;
+	std::cout << "    url: " << urlVal.get_str() << std::endl;
 #endif
 
 	protocol_ = ProtocolPtr_t(new Protocol_t(ClientPtr_t(this)));
-	HandlerPtr_t robotHandler(protocol_);
-	endpoint_ = WebsocketClientPtr_t(new WebsocketClient_t(robotHandler));
+	endpoint_ = WebsocketClientPtr_t(
+			new WebsocketClient_t(HandlerPtr_t(protocol_)));
 	connecting_ = false;
 
 #ifdef DEBUG_WEBSOCKET
@@ -608,10 +601,12 @@ void Client_impl<Config>::connect(const std::string &url,
 	endpoint_->elog().unset_level(websocketpp::log::elevel::ALL);
 #endif
 
-	std::ostringstream rStream;
-	rStream << robotURL << "?userID=" << userID_ << "&robotID=" << robotID_
-			<< "&key=" << key;
-	endpoint_->connect(rStream.str());
+	robotStream << urlVal.get_str() << "?userID=" << userID_ << "&robotID="
+			<< robotID_ << "&key=" << password_;
+	url = curl_easy_escape(curl, robotStream.str().c_str(), 0);
+	endpoint_->connect(std::string(url));
+	curl_free(url);
+
 	endpoint_->run(); // Blocking call
 }
 
