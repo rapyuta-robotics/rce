@@ -50,12 +50,14 @@ readline.set_completer(complete)
 def provision_config(root_path):
         """ Provision all required files as required for first runs.
         """
+        dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
+        dev_mode = dev_mode.strip().lower() == 'y'
         parser = SafeConfigParser()
         config_file = os.path.join(os.getenv('HOME'), '.rce','config.ini')
         path=os.path.join(os.getenv('HOME'), '.rce')
         config = {'global':{'gzip_lvl':9,
                             'platform':'local',
-                            'dev_mode':False,
+                            'dev_mode':dev_mode,
                             'password_file':os.path.join(os.getenv('HOME'), '.rce','creds')},
 
                   'network':{'local':'wlan0,wlan0,lxcbr0',
@@ -91,11 +93,13 @@ def provision_config(root_path):
 def provision_creds():
     from rce.util.settings import RCESettingsManager
     from rce.util.cred import RCECredChecker, _FIRST_RUN_MSG
-    cred_db = RCESettingsManager().PASSWORD_FILE
+    settings = RCESettingsManager()
+    cred_db = settings.PASSWORD_FILE
+    dev_mode = settings.DEV_MODE
+    
     cred_checker = RCECredChecker(cred_db)
     required_users = {'admin':'admin', 'adminInfra':'admin'}
-    dev_mode = raw_input('Do you want to autoprovision credentials in developer mode (Insecure)[y/N] : ')
-    dev_mode = dev_mode.strip().lower() == 'y'
+    
     
     if dev_mode:
             required_users['testUser'] = 'testUser'

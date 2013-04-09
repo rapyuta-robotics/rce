@@ -41,8 +41,8 @@ from rce.util.settings import RCESettingsManager
 if __name__ == '__main__':
     settings = RCESettingsManager()
     # Credentials checkers used in the cloud engine
-    extCred = RCECredChecker(settings.PASSWORD_FILE, settings.DEV_MODE)
-    intCred = RCEInternalChecker(settings.PASSWORD_FILE)
+    extCred = RCECredChecker()
+    intCred = RCEInternalChecker(extCred)
 
     main(reactor, intCred, extCred, settings.MASTER_PORT, settings.HTTP_PORT,
          settings.INT_IP, settings.RCE_INTERNAL_PORT, settings.RCE_CONSOLE_PORT,
