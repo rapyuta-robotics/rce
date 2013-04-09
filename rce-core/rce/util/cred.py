@@ -122,7 +122,7 @@ class RCECredChecker(object):
     _credCache = None
     _cacheTimestamp = 0
 
-    def __init__(self):
+    def __init__(self, provision=False):
         self.filename = RCESettingsManager().PASSWORD_FILE
         self.credentialInterfaces = (IUsernameHashedPassword,)
         self.scanner = re.compile(_RE)
@@ -138,11 +138,12 @@ class RCECredChecker(object):
             print('The user lacks privileges to access/modify '
                   'the password file.')
             exit()
-        if not os.path.exists(self.filename):
-            print('Creds file missing please run the provision script first')
-            exit()
+        if not provision:
+            if not os.path.exists(self.filename):
+                print('Creds file missing please run the provision script first')
+                exit()
 
-        
+
 
     def get_new_password(self, user):
         print (_NEW_PASS_PROMPT)
@@ -243,7 +244,7 @@ class RCECredChecker(object):
 
     def setUserMode(self, username, mode):
         """ Set the mode for a user
-            
+
             Default mode for a user is 1. Like in Unix Admin mode is 0.
             The rest are open to custom extensions later in the engine.
 
@@ -428,15 +429,15 @@ class RCEInternalChecker(object):
     """ RCE Internal Auth system
     """
     implements(ICredentialsChecker)
-    
+
     def __init__(self, cred_checker):
-        """ 
+        """
             @param cred_checker:    Cred Checker used to authenticate the cloud engine
             @type  cred_checker:    rce.util.cred.RCECredChecker
         """
         self._root_checker = cred_checker
         self.credentialInterfaces = (IUsernameHashedPassword,)
-        
+
     def add_checker(self,method):
         """ TODO: Add doc
         """
@@ -449,7 +450,7 @@ class RCEInternalChecker(object):
             return username
         else:
             return failure.Failure(error.UnauthorizedLogin())
-        
+
     def requestAvatarId(self, c):
         try:
             if c.username in ('container','robot'):
