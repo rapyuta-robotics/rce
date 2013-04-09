@@ -194,7 +194,7 @@ class RCE(object):
         self._connectedDeferred = None
         
         self._argList = [('userID', userID), ('robotID', robotID)]
-        self._password = sha256(password).digest()
+        self._password = sha256(password).hexdigest()
     
     def registerConnection(self, conn):
         """ Callback for RCERobotFactory.

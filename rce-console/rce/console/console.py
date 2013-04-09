@@ -692,7 +692,7 @@ class ConsoleClient(HistoricRecvLine):
             self._mode = 'Terminal'
             self._password = line
             cred = UsernamePassword(self._username,
-                                    sha256(self._password).digest())
+                                    sha256(self._password).hexdigest())
             usernameLogin = self._factory.login(cred)
             usernameLogin.addCallback(_cbConnected)
             usernameLogin.addErrback(_cbError, "Username/password login failed")
