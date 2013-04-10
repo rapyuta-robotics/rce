@@ -49,13 +49,9 @@ readline.set_completer(complete)
 
 
 # Helper function for config provisioning
-def provision_config(root_path):
+def provision_config(root_path,dev_mode):
     """ Provision all required files as required for first runs.
     """
-    dev_mode = raw_input('Do you want to autoprovision credentials for '
-                         'developer mode (Insecure)[y/N]: ')
-    dev_mode = dev_mode.strip().lower() == 'y'
-
     parser = SafeConfigParser()
     path = os.path.join(os.getenv('HOME'), '.rce')
     config_file = os.path.join(path, 'config.ini')
@@ -152,6 +148,9 @@ def _get_argparse():
 
     return parser
 
+def _get_dev_mode():
+    dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
+    return dev_mode.strip().lower() == 'y'
 
 def _get_container_path():
     while True:
@@ -201,9 +200,10 @@ if __name__ == '__main__':
             subprocess.call(cmd, shell=True)
 
         _add_container_directories(container_path)
+        dev_mode = _get_dev_mode()
 
         # build up the settings file
-        provision_config(container_path)
+        provision_config(container_path, dev_mode)
 
         # provision the cred db
         provision_creds()
@@ -211,7 +211,7 @@ if __name__ == '__main__':
         # create the container
         subprocess.call(_CONTAINER.format(container_path), shell=True)
 
-        cmds = (
+        cmds = [
             'adduser --disabled-password --disabled-login ros',
             'adduser --disabled-password --disabled-login '
             '--home /opt/rce/data rce',
@@ -220,7 +220,7 @@ if __name__ == '__main__':
             _INSTALL.format(_CONTAINER_PKGS),
             'git clone -b reorder https://github.com/IDSCETHZurich/rce.git', #TODO : switch branches on master merge
             'cd rce && sh install.sh'
-        )
+        ]
         if dev_mode:
             cmds.append('echo -e "admin\nadmin" | passwd')
         else:
@@ -234,7 +234,8 @@ if __name__ == '__main__':
         provision_creds()
     elif args.mode == 'config':
         container_path = _get_container_path()
-        _add_container_directories(container_path)
+        dev_mode = _get_dev_mode()
+        _add_container_directories(container_path, dev_mode)
         provision_config(container_path)
     else:
         raise ValueError('Invalid mode.')
