@@ -168,13 +168,15 @@ if __name__ == '__main__':
         # Create the container
         subprocess.call('sudo bash container.bash --path={0}'.format(container_path),shell=True)
         # Post Provision commands
-        box_packages='python-twisted-core python-twisted-web ros-fuerte-ros-comm ros-fuerte-common-msgs'
+        box_packages='python-twisted-core python-twisted-web ros-fuerte-ros-comm ros-fuerte-common-msgs git-core'
         commands = ['adduser --disabled-password --disabled-login ros',
                     'adduser --disabled-password --disabled-login --home /opt/rce/data rce',
                     'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list',
                     'curl http://packages.ros.org/ros.key | apt-key add -',
                     'apt-get update',
                     'echo "y" |apt-get install {0}'.format(box_packages),
+                    'git clone -b reorder https://github.com/IDSCETHZurich/rce.git' #TODO : switch branches on master merge
+                    'cd rce && sh install.sh'
                     'echo "Please change the root password"',
                     ]
         commands=(';').join(commands)
