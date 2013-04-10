@@ -197,37 +197,38 @@ if __name__ == '__main__':
     if args.mode == 'all':
         container_path = _get_container_path()
 
-        subprocess.call(_ROS_SRC, shell=True)
-        subprocess.call(_ROS_KEY, shell=True)
-        subprocess.call(_INSTALL.format(_HOST_PKGS), shell=True)
+        for cmd in (_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
+            subprocess.call(cmd, shell=True)
 
         _add_container_directories(container_path)
-
-        # Create the container
-        subprocess.call(_CONTAINER.format(container_path), shell=True)
-
-        # Post Provision commands
-        commands = (
-            'adduser --disabled-password --disabled-login ros',
-            'adduser --disabled-password --disabled-login --home /opt/rce/data rce',
-            'git clone -b reorder https://github.com/IDSCETHZurich/rce.git', #TODO : switch branches on master merge
-            'cd rce && sh install.sh',
-            'echo "Please change the root password"'
-            _ROS_SRC,
-            _ROS_KEY,
-            _INSTALL.format(_CONTAINER_PKGS)
-        )
-        commands = ';'.join(commands)
 
         # build up the settings file
         provision_config(container_path)
 
         # provision the cred db
         provision_creds()
-        ###
-        subprocess.call('sudo rce-make setup {0}'.format(commands), shell=True)
+
+        # create the container
+        subprocess.call(_CONTAINER.format(container_path), shell=True)
+
+        commands = (
+            'adduser --disabled-password --disabled-login ros',
+            'adduser --disabled-password --disabled-login --home /opt/rce/data rce',
+            _ROS_SRC,
+            _ROS_KEY,
+            _INSTALL.format(_CONTAINER_PKGS),
+            'git clone -b reorder https://github.com/IDSCETHZurich/rce.git', #TODO : switch branches on master merge
+            'cd rce && sh install.sh'
+        )
+        if dev_mode:
+            commands.append('echo -e "admin\nadmin" | passwd')
+        else:
+            commands.append('passwd -l root')
+        
+        commands = ';'.join(commands)
+        
+        # provision the container filesystem
         subprocess.call('echo "{0}" | sudo rce-make'.format(commands), shell=True)
-        ###
     elif args.mode == 'cred':
         provision_creds()
     elif args.mode == 'config':

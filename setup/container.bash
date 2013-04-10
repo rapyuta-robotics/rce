@@ -71,7 +71,7 @@ EOF
 
 download_ubuntu()
 {
-    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,lsb-release,language-pack-en,vim,wget,build-essential,curl
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,lsb-release,language-pack-en,vim,wget,build-essential,curl,sudo
 	
 	### Local
 	mirror=
