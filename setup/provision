@@ -224,9 +224,9 @@ if __name__ == '__main__':
             commands.append('echo -e "admin\nadmin" | passwd')
         else:
             commands.append('passwd -l root')
-        
+
         commands = ';'.join(commands)
-        
+
         # provision the container filesystem
         subprocess.call('echo "{0}" | sudo rce-make'.format(commands), shell=True)
     elif args.mode == 'cred':
