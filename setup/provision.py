@@ -180,7 +180,7 @@ def _add_container_directories(container_path):
 
 _HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
               'ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging')
-_CONTAINER_PKGS = ('python-twisted-core python-twisted-web '
+_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core '
                    'ros-fuerte-ros-comm ros-fuerte-common-msgs')
 
 _ROS_SRC = ("""sudo sh -c """
@@ -208,11 +208,11 @@ if __name__ == '__main__':
 
         # Post Provision commands
         commands = (
-            'su',
-            'adduser ros',
+            'adduser --disabled-password --disabled-login ros',
             'adduser --disabled-password --disabled-login --home /opt/rce/data rce',
-            'echo "Please change the root password"',
-            'passwd',
+            'git clone -b reorder https://github.com/IDSCETHZurich/rce.git', #TODO : switch branches on master merge
+            'cd rce && sh install.sh',
+            'echo "Please change the root password"'
             _ROS_SRC,
             _ROS_KEY,
             _INSTALL.format(_CONTAINER_PKGS)
@@ -224,7 +224,10 @@ if __name__ == '__main__':
 
         # provision the cred db
         provision_creds()
+        ###
         subprocess.call('sudo rce-make setup {0}'.format(commands), shell=True)
+        subprocess.call('echo "{0}" | sudo rce-make'.format(commands), shell=True)
+        ###
     elif args.mode == 'cred':
         provision_creds()
     elif args.mode == 'config':
