@@ -184,7 +184,7 @@ if __name__ == '__main__':
         for cmd in (_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
             subprocess.call(cmd, shell=True)
 
-        #_add_container_directories(container_path)
+        _add_container_directories(container_path)
         dev_mode = _get_dev_mode()
 
         # build up the settings file
