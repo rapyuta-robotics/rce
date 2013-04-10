@@ -47,11 +47,9 @@ readline.parse_and_bind("tab: complete")
 readline.set_completer(complete)
 
 # Helper function for config provisioning
-def provision_config(root_path):
+def provision_config(root_path, dev_mode):
         """ Provision all required files as required for first runs.
         """
-        dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
-        dev_mode = dev_mode.strip().lower() == 'y'
         parser = SafeConfigParser()
         config_file = os.path.join(os.getenv('HOME'), '.rce','config.ini')
         path=os.path.join(os.getenv('HOME'), '.rce')
@@ -151,11 +149,13 @@ if __name__ == '__main__':
             container_path = raw_input("Enter the root directory to store the RoboEarth Container Filesystem [Tab to autocomplete]: ")
             if os.path.exists(os.path.dirname(container_path)):
                 break
+        dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
+        dev_mode = dev_mode.strip().lower() == 'y'
         packages = 'lxc debootstrap python-twisted-core python-openssl ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging'
         subprocess.call("""sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'""",shell=True)
         subprocess.call('curl http://packages.ros.org/ros.key | sudo apt-key add -',shell=True)
         subprocess.call('sudo apt-get update',shell=True)
-        subprocess.call('echo "y" | sudo apt-get install {0}'.format(packages),shell=True)
+        subprocess.call('sudo apt-get -y install {0}'.format(packages),shell=True)
 
         for folder in ('data','config'):
             path = os.path.join(container_path,folder)
@@ -174,17 +174,22 @@ if __name__ == '__main__':
                     'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list',
                     'curl http://packages.ros.org/ros.key | apt-key add -',
                     'apt-get update',
-                    'echo "y" |apt-get install {0}'.format(box_packages),
+                    'apt-get install -y {0}'.format(box_packages),
                     'git clone -b reorder https://github.com/IDSCETHZurich/rce.git' #TODO : switch branches on master merge
-                    'cd rce && sh install.sh'
-                    'echo "Please change the root password"',
-                    ]
+                    'cd rce && sh install.sh']
+        if dev_mode:
+            commands.append('echo -e "admin\nadmin" | passwd')
+        else:
+            commands.append('passwd -l root')
+
         commands=(';').join(commands)
         # build up the settings file
-        provision_config(container_path)
+        provision_config(container_path, dev_mode)
         # provision the cred db
         provision_creds()
         subprocess.call('echo "{0}" | sudo rce-make'.format(commands),shell=True)
+        print "Almost There ! Set the root password to the container filesystem. "
+        print "Type in 'passwd' follow the prompts "
 
     elif args.mode == 'cred':
         provision_creds()
@@ -194,6 +199,8 @@ if __name__ == '__main__':
             container_path = raw_input("Enter the root directory to store the RoboEarth Container Filesystem [Tab to autocomplete]: ")
             if os.path.exists(os.path.dirname(container_path)):
                 break
+        dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
+        dev_mode = dev_mode.strip().lower() == 'y'
         for folder in ('data','config'):
             path = os.path.join(container_path,folder)
             try:
@@ -202,7 +209,7 @@ if __name__ == '__main__':
                 if exc.errno == errno.EEXIST and os.path.isdir(path):
                     Warning((path)+' exists ignoring...')
                 else: raise
-        provision_config(os.path.join(container_path,'rootfs'))
+        provision_config(container_path, dev_mode)
     else:
         raise ValueError('Invalid mode.')
 
