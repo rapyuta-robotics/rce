@@ -39,9 +39,10 @@ from twisted.spread.pb import Referenceable, Avatar
 from twisted.internet.defer import DeferredList
 
 # Custom imports
-from rce.error import InvalidRequest, AlreadyDead
+from rce.comm.error import InvalidRequest
+from rce.core.base import AlreadyDead
 from rce.slave.interface import Types
-from rce.util.name import isLegalName
+from rce.util.name import validateName
 
 class _Wrapper(object):
     """ Base class for Wrapper classes, which are used to store additional
@@ -156,7 +157,7 @@ class Robot(_Wrapper):
                                 i.e. 'std_msgs/Int32'.
             @type  clsName:     str
         """
-        if not isLegalName(iTag):
+        if not validateName(iTag):
             raise InvalidRequest('Interface tag is not a valid.')
         
         if iTag in self._interfaces:
@@ -277,7 +278,7 @@ class Container(_Wrapper):
                                 in the environment.
             @type  namespace:   str
         """
-        if not isLegalName(nTag):
+        if not validateName(nTag):
             raise InvalidRequest('Node tag is not a valid.')
         
         if nTag in self._nodes:
@@ -359,7 +360,7 @@ class Container(_Wrapper):
                                 use.
             @type  addr:        str
         """
-        if not isLegalName(iTag):
+        if not validateName(iTag):
             raise InvalidRequest('Interface tag is not a valid.')
         
         if iTag in self._interfaces:

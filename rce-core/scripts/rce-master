@@ -34,12 +34,12 @@
 from twisted.internet import reactor
 
 # rce specific imports
-from rce.core import main
+from rce.master import main
 from rce.util.cred import RCECredChecker, RCEInternalChecker
-from rce.util.settings import RCESettingsManager
+from rce.util.settings import getSettings
+settings = getSettings()
 
 if __name__ == '__main__':
-    settings = RCESettingsManager()
     # Credentials checkers used in the cloud engine
     extCred = RCECredChecker()
     #extCred = RCECredChecker(settings.PASSWORD_FILE)

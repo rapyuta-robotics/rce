@@ -31,7 +31,8 @@
 #
 
 # rce specific imports
-from settings import LOCALHOST_IP
+from rce.util.settings import getSettings
+settings = getSettings()
 
 
 def isLocalhost(ip):
@@ -44,4 +45,4 @@ def isLocalhost(ip):
                             False otherwise.
         @rtype:             bool
     """
-    return ip in (LOCALHOST_IP, 'localhost')
+    return ip in (settings.LOCALHOST_IP, 'localhost')

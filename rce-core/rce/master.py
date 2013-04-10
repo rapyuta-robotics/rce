@@ -276,7 +276,7 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     
     # Client Connections
     reactor.listenTCP(consolePort, PBServerFactory(consolePortal))
-    reactor.listenTCP(externalPort, Site(RobotResource()))
+    reactor.listenTCP(externalPort, Site(RobotResource(rce)))
     
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
