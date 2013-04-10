@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-#     setup/provision.py
+#     setup/provision
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #
@@ -211,9 +211,10 @@ if __name__ == '__main__':
         # create the container
         subprocess.call(_CONTAINER.format(container_path), shell=True)
 
-        commands = (
+        cmds = (
             'adduser --disabled-password --disabled-login ros',
-            'adduser --disabled-password --disabled-login --home /opt/rce/data rce',
+            'adduser --disabled-password --disabled-login '
+            '--home /opt/rce/data rce',
             _ROS_SRC,
             _ROS_KEY,
             _INSTALL.format(_CONTAINER_PKGS),
@@ -221,14 +222,14 @@ if __name__ == '__main__':
             'cd rce && sh install.sh'
         )
         if dev_mode:
-            commands.append('echo -e "admin\nadmin" | passwd')
+            cmds.append('echo -e "admin\nadmin" | passwd')
         else:
-            commands.append('passwd -l root')
+            cmds.append('passwd -l root')
 
-        commands = ';'.join(commands)
+        cmds = ';'.join(cmds)
 
         # provision the container filesystem
-        subprocess.call('echo "{0}" | sudo rce-make'.format(commands), shell=True)
+        subprocess.call('echo "{0}" | sudo rce-make'.format(cmds), shell=True)
     elif args.mode == 'cred':
         provision_creds()
     elif args.mode == 'config':
