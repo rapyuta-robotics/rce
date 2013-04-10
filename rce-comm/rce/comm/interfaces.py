@@ -31,25 +31,84 @@
 #     
 
 # zope specific imports
-from zope.interface import Attribute, Interface
+from zope.interface import Interface
 
 
-class IRobotFactory(Interface):
-    """ Interface which the Avatar for initial connections from the robots
-        to the Master has to implement.
+class IMasterRealm(Interface):
+    """ Interface which the Master realm has to implement.
     """
-    def createRobot(robotID): #@NoSelf
-        """ Create a new Robot object.
+    def requestURL(userID): #@NoSelf
+        """ Callback for Robot resource to retrieve the location of the Robot
+            process to which a websocket connection should be established.
             
-            @param robotID:     ID of the robot which tries to register himself
-                                to use the cloud engine.
+            @param userID:      User ID under which the robot will login.
+                                (Can be used to do optimizations in distributing
+                                the load.)
+            @type  userID:      str
+            
+            @return:            The IP address of Robot process to which a
+                                websocket connection should be established.
+                                (type: str)
+            @rtype:             twisted::Deferred
+        """
+
+
+class IRobotRealm(Interface):
+    """ Interface which the Robot realm has to implement.
+    """
+    def login(userID, robotID, password): #@NoSelf
+        """ Callback for Robot connection to login and authenticate.
+            
+            @param userID:      User ID under which the robot is logging in.
+            @type  userID:      str
+            
+            @param robotID:     Unique ID of the robot in the namespace of the
+                                user under which the robot is logging in.
             @type  robotID:     str
             
-            @return:            Key which should be used to authenticate the
-                                websocket connection and the IP address of
-                                responsible robot process as a tuple.
-                                (type: (str, str))
-            @rtype:             twisted::Deferred        
+            @param password:    Hashed password as hex-encoded string which is
+                                used to authenticate the user.
+            @type  password:    str
+            
+            @return:            Representation of the connection to the robot
+                                which is used in the Robot process.
+                                (type: rce.robot.Connection)
+            @rtype:             twisted::Deferred
+        """
+
+
+class IServersideProtocol(Interface):
+    """ Interface which the Protocol has to implement on the server side.
+    """
+    def sendDataMessage(iTag, clsName, msgID, msg): #@NoSelf
+        """ Send a data message to the robot client.
+                            
+            @param iTag:        Tag which is used to identify the interface to
+                                which this message should be sent.
+            @type  iTag:        str
+            
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+            
+            @param msgID:       Message ID which can be used to get a
+                                correspondence between request and response
+                                message for a service call.
+            @type  msgID:       str
+            
+            @param msg:         Message which should be sent. It has to be a
+                                JSON compatible dictionary where part or the
+                                complete message can be replaced by a StringIO
+                                instance which is interpreted as binary data.
+            @type  msg:         {str : {} / base_types / StringIO} / StringIO
+        """
+    
+    def sendErrorMessage(msg): #@NoSelf
+        """ Send an error message to the robot client.
+            
+            @param msg:         Error message which should be sent.
+            @type  msg:         str
         """
 
 
@@ -224,7 +283,7 @@ class IRobot(Interface):
 
 
 class IMessageReceiver(Interface):
-    """ Interface which declares the necessary callback for the communication\
+    """ Interface which declares the necessary callback for the communication
         client/server.
     """
     def processReceivedMessage(iTag, clsName, msgID, msg): #@NoSelf
@@ -249,22 +308,4 @@ class IMessageReceiver(Interface):
                                 complete message can be replaced by a StringIO
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
-        """
-
-
-class IRobotCredentials(Interface):
-    """ Interface which the used robot credentials has to implement.
-    """
-    userID = Attribute(""" User ID of the robot owner. """)
-    robotID = Attribute(""" Robot ID to identify the robot. """)
-    
-    def checkKey(key): #@NoSelf
-        """ Check if the provided key matches the stored key which has been
-            received from the client.
-            
-            @param key:         True value of the key which should be used to
-                                verify the credentials.
-            @type  key:         str
-            
-            @return:            True if the key matches; False otherwise.
         """

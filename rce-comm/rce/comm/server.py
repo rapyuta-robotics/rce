@@ -38,11 +38,12 @@ try:
 except ImportError:
     from StringIO import StringIO #@UnusedImport
 
+# zope specific imports
+from zope.interface import implements
+
 # twisted specific imports
 #from twisted.python import log
 from twisted.python.failure import Failure
-from twisted.internet.defer import fail
-from twisted.cred.credentials import UsernameHashedPassword
 from twisted.cred.error import UnauthorizedLogin
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
@@ -57,8 +58,9 @@ from rce.comm import types
 from rce.comm._version import MINIMAL_VERSION, CURRENT_VERSION
 from rce.comm.error import InvalidRequest, DeadConnection
 from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
-from rce.comm.interfaces import IRobotFactory, IRobot
-from rce.comm.cred import RobotCredentials
+from rce.comm.interfaces import IMasterRealm, IRobotRealm, \
+    IServersideProtocol, IRobot, IMessageReceiver
+from rce.util.interface import verifyObject
 
 
 class _VersionError(Exception):
@@ -67,79 +69,58 @@ class _VersionError(Exception):
     """
 
 
-def _render(request, code, ctype, msg):
-    """ Internally used method to render the response to a GET request.
-    """
-    request.setResponseCode(code)
-    request.setHeader('content-type', ctype)
-    request.write(msg)
-    request.finish()
-
-
-class MasterRobotAuthentication(Resource):
-    """ Twisted web.Resource which is used in the Master to authenticate new
+class RobotResource(Resource):
+    """ Twisted web.Resource which is used in the Master to distribute new
         robots connections.
     """
     isLeaf = True
     
-    def __init__(self, portal):
-        """ Initialize the authentication resource.
+    def __init__(self, realm):
+        """ Initialize the Robot resource.
             
-            @param portal:      Portal which is responsible for the
-                                authentication of the user and which will
-                                provide an Avatar for the user in the cloud
-                                engine to create a robot.
-            @type  portal:      twisted.cred.portal.Portal
+            @param realm:       Master realm implementing necessary callback
+                                methods.
+            @type  realm:       rce.comm.interfaces.IMasterRealm
         """
-        self._portal = portal
+        Resource.__init__(self)
+        
+        verifyObject(IMasterRealm, realm)
+        self._realm = realm
     
-    @staticmethod
-    def _create_robot((interface, avatar, logout), robotID):
-        """ Method is called by deferred when the connection has been
-            successfully authenticated and the robot should be created.
+    @classmethod
+    def _render(cls, request, code, ctype, msg):
+        """ Internally used method to render the response to a GET request.
         """
-        assert interface == IRobotFactory
-        assert callable(logout)
-        
-        def cb(loginInfo):
-            logout(avatar)
-            return loginInfo
-        
-        d = avatar.createRobot(robotID)
-        d.addCallback(cb)
-        return d
+        request.setResponseCode(code)
+        request.setHeader('content-type', ctype)
+        request.write(msg)
+        request.finish()
     
-    @staticmethod
-    def _build_response(self, (key, addr), version, request):
+    @classmethod
+    def _build_response(cls, addr, version, request):
         """ Internally used method to build the response to a GET request.
         """
-        msg = {'key' : key, 'url' : 'ws://{0}/'.format(addr)}
+        msg = {'url' : 'ws://{0}/'.format(addr)}
         
         if version != CURRENT_VERSION:
             msg['current'] = CURRENT_VERSION
         
-        _render(request, httpstatus.HTTP_STATUS_CODE_OK[0],
-                'application/json; charset=utf-8', json.dumps(msg))
+        cls._render(request, httpstatus.HTTP_STATUS_CODE_OK[0],
+                    'application/json; charset=utf-8', json.dumps(msg))
     
-    @staticmethod
-    def _handle_error(e, request):
+    @classmethod
+    def _handle_error(cls, e, request):
         """ Internally used method to process an error to a GET request.
         """
         if e.check(InvalidRequest):
             msg = e.getErrorMessage()
             code = httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0]
-        elif e.check(UnauthorizedLogin):
-            msg = e.getErrorMessage()
-            code = httpstatus.HTTP_STATUS_CODE_UNAUTHORIZED[0]
-        elif e.check(_VersionError):
-            msg = e.getErrorMessage()
-            code = httpstatus.HTTP_STATUS_CODE_GONE[0]
         else:
             e.printTraceback()
             msg = 'Fatal Error'
             code = httpstatus.HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR[0]
         
-        _render(request, code, 'text/plain; charset=utf-8', msg)
+        cls._render(request, code, 'text/plain; charset=utf-8', msg)
     
     def render_GET(self, request):
         """ This method is called by the twisted framework when a GET request
@@ -148,42 +129,42 @@ class MasterRobotAuthentication(Resource):
         # First check if the version is ok
         try:
             version = request.args['version']
-        except KeyError as e:
-            return fail(InvalidRequest('Request is missing parameter: '
-                                       '{0}'.format(e)))
+        except KeyError:
+            request.setResponseCode(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0])
+            request.setHeader('content-type', 'text/plain; charset=utf-8')
+            return "Request is missing parameter: 'version'"
         
         if len(version) != 1:
-            return fail(InvalidRequest("Parameter 'version' has to be unique "
-                                       'in request.'))
+            request.setResponseCode(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0])
+            request.setHeader('content-type', 'text/plain; charset=utf-8')
+            return "Parameter 'version' has to be unique in request."
         
         version = version[0]
         
         if version < MINIMAL_VERSION:
-            return fail(_VersionError('Client version is insufficient. '
-                                      'Minimal version is '
-                                      "'{0}'.".format(MINIMAL_VERSION)))
+            request.setResponseCode(httpstatus.HTTP_STATUS_CODE_GONE[0])
+            request.setHeader('content-type', 'text/plain; charset=utf-8')
+            return ('Client version is insufficient. Minimal version is '
+                    "'{0}'.".format(MINIMAL_VERSION))
         
         # Version is ok, now the GET request can be processed
         # Extract and check the arguments
         try:
             userID = request.args['userID']
-            robotID = request.args['robotID']
-            password = request.args['password']
-        except KeyError as e:
-            return fail(InvalidRequest('Request is missing parameter: '
-                                       '{0}'.format(e)))
+        except KeyError:
+            request.setResponseCode(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0])
+            request.setHeader('content-type', 'text/plain; charset=utf-8')
+            return "Request is missing parameter: 'userID'"
         
-        for name, param in (('userID', userID), ('robotID', robotID),
-                            ('password', password)):
-            if len(param) != 1:
-                return fail(InvalidRequest("Parameter '{0}' has to be unique "
-                                           'in request.'.format(name)))
+        if len(userID) != 1:
+            request.setResponseCode(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0])
+            request.setHeader('content-type', 'text/plain; charset=utf-8')
+            return "Parameter 'userID' has to be unique in request."
         
-        # Authenticate the user and get the RobotFactory avatar
-        d = self._portal.login(UsernameHashedPassword(userID[0], password[0]),
-                               None, IRobotFactory)
+        userID = userID[0]
         
-        d.addCallback(self._create_robot, robotID[0])
+        # Get the URL of a Robot process
+        d = self._realm.requestURL(userID)
         d.addCallback(self._build_response, version, request)
         d.addErrback(self._handle_error, request)
         
@@ -194,22 +175,23 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the
         robot manager.
     """
+    implements(IServersideProtocol)
+    
     # CONFIG
     MSG_QUEUE_TIMEOUT = 60
     
-    def __init__(self, portal):
+    def __init__(self, realm):
         """ Initialize the Protocol.
             
-            @param portal:      Portal which is responsible for the
-                                authentication of the websocket connection and
-                                which will provide an Avatar for the robot in
-                                the cloud engine.
-            @type  portal:      twisted.cred.portal.Portal
+            @param realm:       Robot realm implementing necessary callback
+                                methods.
+            @type  realm:       rce.comm.interfaces.IRobotRealm
         """
-        self._portal = portal
+        verifyObject(IRobotRealm, realm)
+        
+        self._realm = realm
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
-        self._logout = None
     
     def onConnect(self, req):
         """ Method is called by the Autobahn engine when a request to establish
@@ -226,33 +208,31 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         try:
             userID = params['userID']
             robotID = params['robotID']
-            key = params['key']
+            password = params['password']
         except KeyError as e:
             raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
                                 'Request is missing parameter: {0}'.format(e))
         
         for name, param in [('userID', userID), ('robotID', robotID),
-                            ('key', key)]:
+                            ('password', password)]:
             if len(param) != 1:
                 raise HttpException(httpstatus.HTTP_STATUS_CODE_BAD_REQUEST[0],
                                     "Parameter '{0}' has to be unique in "
                                     'request.'.format(name))
         
-        cred = RobotCredentials(userID[0], robotID[0], key[0])
-        d = self._portal.login(cred, self, IRobot)
+        d = self._realm.login(userID[0], robotID[0], password[0])
         d.addCallback(self._authenticate_success)
         d.addErrback(self._authenticate_failed)
         return d
     
-    def _authenticate_success(self, (interface, avatar, logout)):
+    def _authenticate_success(self, avatar):
         """ Method is called by deferred when the connection has been
             successfully authenticated while being in 'onConnect'.
         """
-        assert interface == IRobot
-        assert callable(logout)
+        verifyObject(IRobot, avatar)
+        verifyObject(IMessageReceiver, avatar)
         
         self._avatar = avatar
-        self._logout = logout
         self._assembler.start()
     
     def _authenticate_failed(self, e):
@@ -268,7 +248,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         else:
             e.printTraceback()
             code = httpstatus.HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR[0]
-            msg = 'Fatal Error'
+            msg = httpstatus.HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR[1]
         
         return Failure(HttpException(code, msg))
     
@@ -416,7 +396,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             raise InvalidRequest("Can not process 'DataMessage' request. "
                                  'Message ID can not be longer than 255.')
         
-        self._avatar.receivedFromClient(iTag, mType, msgID, msg)
+        self._avatar.processReceivedMessage(iTag, mType, msgID, msg)
     
     def onMessage(self, msg, binary):
         """ Method is called by the Autobahn engine when a message has been
@@ -462,7 +442,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                 binData[0] + binData[1].getvalue(), binary=True)
     
     def sendDataMessage(self, iTag, clsName, msgID, msg):
-        """ Callback for IRobot Avatar to send a data message to the robot
+        """ Callback for Connection object to send a data message to the robot
             using this websocket connection.
             
             @param iTag:        Tag which is used to identify the interface
@@ -490,7 +470,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                     'msgID' : msgID, 'msg' : msg}})
     
     def sendErrorMessage(self, msg):
-        """ Callback for IRobot Avatar to send an error message to the robot
+        """ Callback for Connection object to send an error message to the robot
             using this websocket connection.
             
             @param msg:         Message which should be sent to the robot.
@@ -502,6 +482,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Method is called by the Autobahn engine when the connection has
             been lost.
         """
+        ### TODO: LOGOUT!
         if self._avatar and self._logout:
             self._logout(self._avatar)
         
@@ -516,14 +497,12 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
     """ Factory which is used for the connections from the robots to the
         RoboEarth Cloud Engine.
     """
-    def __init__(self, portal, url, **kw):
+    def __init__(self, realm, url, **kw):
         """ Initialize the Factory.
             
-            @param portal:      Portal which is responsible for the
-                                authentication of the websocket connection and
-                                which will provide an Avatar for the robot in
-                                the cloud engine.
-            @type  portal:      twisted.cred.portal.Portal
+            @param realm:       Robot realm implementing necessary callback
+                                methods for the protocol.
+            @type  realm:       rce.comm.interfaces.IRobotRealm
             
             @param url:         URL where the websocket server factory will
                                 listen for connections. For more information
@@ -536,12 +515,12 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
         """
         WebSocketServerFactory.__init__(self, url, **kw)
         
-        self._portal = portal
+        self._realm = realm
     
     def buildProtocol(self, addr):
         """ Method is called by the twisted reactor when a new connection
             attempt is made.
         """
-        p = RobotWebSocketProtocol(self._portal)
+        p = RobotWebSocketProtocol(self._realm)
         p.factory = self
         return p

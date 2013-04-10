@@ -108,7 +108,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
         if isInIOThread():
             send(msg)
         else:
-            self._reactor.callFromThread(send, msg)
+            self._connection.reactor.callFromThread(send, msg)
     
     def onClose(self, *a):
         """ This method is called by twisted when the connection has been
@@ -168,7 +168,7 @@ class RCE(object):
     _SUFFIXES = ['Interface', 'Converter', 'Forwarder']
     _INTERFACES = [''.join(t) for t in itertools.product(_PREFIXES, _SUFFIXES)]
     
-    def __init__(self, receiver, userID, robotID, password):
+    def __init__(self, receiver, userID, robotID, password, reactor):
         """ Initialize the Connection.
             
             @param receiver:    Object which is responsible for the processing
@@ -186,18 +186,28 @@ class RCE(object):
             @param password:    Password which will be used to authenticate the
                                 connection.
             @type  password:    str
+            
+            @param reactor:     Reference to reactor which is used for this
+                                connection.
+            @type  reactor:     twisted::reactor
         """
         verifyObject(IMessageReceiver, receiver)
         
         self._receiver = receiver
+        self._userID = userID
+        self._robotID = robotID
+        self._password = sha256(password).digest()
+        self._reactor = reactor
         self._conn = None
         self._connectedDeferred = None
-        
-        self._argList = [('userID', userID), ('robotID', robotID)]
-        self._password = sha256(password).digest()
+    
+    @property
+    def reactor(self):
+        """ Reference to twisted::reactor. """
+        return self._reactor
     
     def registerConnection(self, conn):
-        """ Callback for RCERobotFactory.
+        """ Callback for RCERobotProtocol.
             
             @param conn:        Connection which should be registered.
             @type  conn:        rce.comm.client.RCERobotProtocol
@@ -213,7 +223,7 @@ class RCE(object):
             self._connectedDeferred = None
     
     def unregisterConnection(self, conn):
-        """ Callback for RCERobotFactory.
+        """ Callback for RCERobotProtocol.
             
             @param conn:        Connection which should be unregistered.
             @type  conn:        rce.comm.client.RCERobotProtocol
@@ -232,11 +242,11 @@ class RCE(object):
         """
         print('Connect to Master Manager on: {0}'.format(masterUrl))
         
-        args = self._argList+[('password', self._password),
-                              ('version', CURRENT_VERSION)]
+        args = urlencode((('userID', self._userID),
+                          ('version', CURRENT_VERSION)))
         
         try:
-            f = urlopen('{0}?{1}'.format(masterUrl, urlencode(args)))
+            f = urlopen('{0}?{1}'.format(masterUrl, args))
         except HTTPError as e:
             msg = e.read()
             
@@ -262,7 +272,8 @@ class RCE(object):
         print('Connect to Robot Manager on: {0}'.format(url))
         
         # Make websocket connection to Robot Manager
-        args = urlencode(self._argList+[('key', resp['key'])])
+        args = urlencode((('userID', self._userID), ('robotID', self._robotID),
+                          ('password', self._password)))
         factory = RCERobotFactory('{0}?{1}'.format(url, args), self)
         connectWS(factory)
     

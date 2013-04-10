@@ -32,11 +32,57 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
+from twisted.spread.pb import Avatar
 
 # rce specific imports
 from rce.util.network import isLocalhost
 from rce.core.network import Endpoint, Namespace
 from rce.core.base import Status
+
+
+class RobotEndpointAvatar(Avatar):
+    """ Avatar for internal PB connection form a Robot Endpoint.
+    """
+    def __init__(self, realm, endpoint):
+        """ Initialize the Robot Endpoint avatar.
+            
+            @param realm:       User realm from which a user object can be
+                                retrieved.
+            @type  realm:       # TODO: Check this
+            
+            @param endpoint:    Representation of the Robot Endpoint.
+            @type  endpoint:    rce.core.robot.RobotEndpoint
+        """
+        self._realm = realm
+        self._endpoint = endpoint
+
+    def perspective_setupProxy(self, robotProxy, userID, robotID):
+        """ Register a Robot namespace with the Master process.
+            
+            @param robotProxy:  Reference to the Robot namespace in the Robot
+                                process.
+            @type  robotProxy:  twisted.spread.pb.RemoteReference
+            
+            @param userID:      User ID of the robot owner.
+            @type  userID:      str
+            
+            @param robotID:     Unique ID which is used to identify the robot.
+            @type  robotID:     str
+            
+            @return:            Status object which can be used in the Robot
+                                process to inform the Master of status changes
+                                to the Robot namespace.
+            @rtype:             rce.core.base.Status
+        """
+        user = self._realm.getUser(userID)
+        status = user.createRobotWrapper(robotProxy, self._endpoint, robotID)
+        return status
+
+    def logout(self):
+        """ Callback which should be called upon disconnection of the Robot
+            Endpoint.
+        """
+        self._endpoint.destroy()
 
 
 class Robot(Namespace):
@@ -127,19 +173,14 @@ class RobotEndpoint(Endpoint):
         """
         return self.callRemote('getWebsocketAddress')
     
-    def createNamespace(self, user, robotID, key):
+    def createRobotProxy(self, robotID, remoteRobot):
         """ Create a Namespace object in the endpoint.
-            
-            @param user:        User instance to which this namespace will
-                                belong.
-            @type  user:        rce.master.user.User
             
             @param robotID:     ID of the robot which has to be created.
             @type  robotID:     str
             
-            @param uid:         Key which will be used to authenticate the
-                                webscoket connection.
-            @type  uid:         str
+            @param remoteRobot: Reference to Robot namespace in Robot process.
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
             
             @return:            New Robot instance.
             @rtype:             rce.master.robot.Robot
@@ -147,9 +188,8 @@ class RobotEndpoint(Endpoint):
         """
         robot = Robot(self)
         status = Status(robot)
-        self.callRemote('createNamespace', status, user, user.userID, robotID,
-                        key).chainDeferred(robot)
-        return robot
+        robot.callback(remoteRobot)
+        return robot, status
     
     def destroy(self):
         """ Method should be called to destroy the robot endpoint and will take

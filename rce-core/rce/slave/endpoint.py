@@ -60,6 +60,7 @@ class Endpoint(Referenceable):
                                 connections.
             @type  commPort:    int
         """
+        self._avatar = None
         self._reactor = reactor
         reactor.listenTCP(commPort, _RCEInternalServerFactory(self))
         

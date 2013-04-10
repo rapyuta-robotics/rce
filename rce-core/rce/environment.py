@@ -59,21 +59,19 @@ class Environment(Namespace):
     _MAP = [ServiceClientInterface, PublisherInterface,
             SubscriberInterface, ServiceProviderInterface]
     
-    def __init__(self, client, status, reactor):
+    def __init__(self, client, reactor):
         """ Initialize the Environment.
             
             @param client:      Environment Client which is responsible for
                                 monitoring the environment in this process.
             @type  client:      rce.robot.EnvironmentClient
             
-            @param status:      Status observer which is used to inform the
-                                Master of the environment's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-            
             @param reactor:     Reference to the twisted reactor used in this
                                 robot process.
             @type  reactor:     twisted::reactor
         """
+        Namespace.__init__(self)
+        
         self._client = client
         client.registerEnvironment(self)
         
@@ -82,8 +80,6 @@ class Environment(Namespace):
         
         self._nodes = set()
         self._parameters = set()
-        
-        Namespace.__init__(self, status)
     
     @property
     def reactor(self):
@@ -110,14 +106,6 @@ class Environment(Namespace):
     def unregisterParameter(self, parameter):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
-    
-    def registerInterface(self, interface):
-        assert interface not in self._interfaces
-        self._interfaces.add(interface)
-    
-    def unregisterInterface(self, interface):
-        assert interface in self._interfaces
-        self._interfaces.remove(interface)
     
     def remote_createNode(self, status, pkg, exe, args, name, namespace):
         """ Create a Node object in the environment namespace and
@@ -258,7 +246,9 @@ class EnvironmentClient(Endpoint):
             raise InternalError('The environment can have only one namespace '
                                 'at a time.')
         
-        return Environment(self, status, self._reactor)
+        env = Environment(self, self._reactor)
+        env.registerStatus(status)
+        return env
 
     def remote_addUsertoROSProxy(self, UserID, Key):
         """ Method to add username and key to rosproxy-environment bridge

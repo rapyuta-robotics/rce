@@ -168,6 +168,17 @@ class UserRemoveOptions(CustomOptions):
     )
 
 
+class UserUpdateOptions(CustomOptions):
+    """
+        Parameters for user update.
+    """
+    optParameters = (
+        ("username", "u", None, "Username"),
+        ("new_password", "p", None, "New Password"),
+        ("old_password", "o", None, "Old Password"),
+    )
+
+
 class UserOptions(CustomOptions):
     """
         Options for user command.
@@ -175,7 +186,7 @@ class UserOptions(CustomOptions):
     subCommands = (
         ('add', None, UserAddOptions, "Add User"),
         ('remove', None, UserRemoveOptions, "Remove User"),
-        ('update', None, UserAddOptions, "Update User"),
+        ('update', None, UserUpdateOptions, "Update User"),
     )
     optFlags = (
         ("list", "l", "List all Users"),
@@ -347,8 +358,11 @@ class ConsoleClient(HistoricRecvLine):
     def __init__(self, masterIP, consolePort):
         """ Initialize the ConsoleClient.
 
-            @param masterIP:    The IP of the master server
-            @type  masterIP:    string
+            @param masterIP:        The IP of the master server
+            @type  masterIP:        string
+            
+            @param consolePort:     Port of the master server
+            @type  consolePort:     int
         """
         self._user = None
         self._masterIP = masterIP
@@ -358,6 +372,7 @@ class ConsoleClient(HistoricRecvLine):
         self._password = None
         self._factory = None
         self._connected_rosapi_nodes = {}
+        self._privilege = None
 
     def showPrompt(self):
         """ Show the prompt >>>
@@ -375,6 +390,44 @@ class ConsoleClient(HistoricRecvLine):
         reactor.connectTCP(self._masterIP, self._console_port, self._factory) #@UndefinedVariable
         self.terminal.write("Username: ")
 
+    def lineReceived(self, line):
+        """ Manage state/mode after connection. Code uses states to take
+            credential input and then starts terminal input.
+            
+            @param line:    line typed on terminal
+            @type  line:    string
+        """
+        def _cbError(why, msg):
+            err(why, msg)
+            reactor.stop() #@UndefinedVariable
+
+        def _cbConnectionSuccess(view):
+            self._user = view
+            
+            if isinstance(self._user,dict):
+                self._privilege = 'console'
+            else:
+                self._privilege = 'admin'
+            
+            self.terminal.write('Connection to Master Established.')
+            self.showPrompt()
+        
+        if self._mode == 'Username':
+            self._mode = 'Password'
+            self._username = line
+            self.terminal.write('Password: ')
+        elif self._mode == 'Password':
+            self._mode = 'Terminal'
+            self._password = line
+            cred = UsernamePassword(self._username,
+                                    sha256(self._password).digest())
+            d = self._factory.login(cred)
+            d.addCallback(lambda p: p.callRemote("getUserView", True))
+            d.addCallback(_cbConnectionSuccess)
+            d.addErrback(_cbError, "Username/password login failed")
+        else:
+            self.parseInputLine(line)
+
     def parseInputLine(self, line):
         """ A function to route various commands entered via Console.
             
@@ -388,7 +441,17 @@ class ConsoleClient(HistoricRecvLine):
             else:
                 self.terminal.write('No such command')
         self.showPrompt()
-
+    
+    @staticmethod
+    def errorHandle(func):
+        def call(self, *args, **kwargs):
+            try:
+                func(self, *args, **kwargs)
+            except AttributeError:
+                self.terminal.write("Cannot use that command.")
+        return call
+    
+    @errorHandle
     def callToRosProxy(self, command, parameter):
         """ Function to handle call to ROSAPI Proxy Server.
             
@@ -419,29 +482,39 @@ class ConsoleClient(HistoricRecvLine):
             url, key = self._connected_rosapi_nodes[parameter]
             perform_action((url, key))
         except KeyError:
-            d = self._user.callRemote('get_rosapi_connect_info', parameter)
+            d = self._user['console'].callRemote('get_rosapi_connect_info',
+                                                 parameter)
             d.addCallback(perform_action)
             d.addErrback(lambda err: self.terminal.write("Problem "
                                 "in connection with master: "
                                 "{0}".format(err)))
-    
-    def callToUser(self, command, *args):
+ 
+    @errorHandle
+    def callToUser(self, command, domain, *args):
         """ A wrapper function for call to remote user.
             
             @param command:    The command to be executed
             @type  command:    string
         """
-        self._user.callRemote(command, *args)
-    
-    def callToUserAndDisplay(self, command, *args):
+        if domain == 'admin':
+            self._user.callRemote(command, *args)
+        else:
+            self._user[domain].callRemote(command, *args)
+
+    @errorHandle
+    def callToUserAndDisplay(self, command, domain, *args):
         """ A wrapper function around call to user and displaying the result
             
             @param command:    The command to be executed
             @type  command:    string
         """
-        d = self._user.callRemote(command, *args)
-        d.addCallback(lambda result: self.terminal.write(str(result)))
-
+        if domain == 'admin':
+            d = self._user.callRemote(command, *args)
+            d.addCallback(lambda result: self.terminal.write(str(result)))
+        else:
+            d = self._user[domain].callRemote(command, *args)
+            d.addCallback(lambda result: self.terminal.write(str(result)))
+            
     #Various commands follow
     def cmd_EXIT(self, line):
         """ Handler for exit command.
@@ -467,19 +540,29 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
             if cmd == 'add':
-                if (opts['username'] and opts['password']):
-                    self.callToUser('add_user', opts['username'],
+                if opts['username'] and opts['password']:
+                    self.callToUser('add_user', 'admin', opts['username'],
                                     opts['password'])
             elif cmd == 'remove':
                 if opts['username']:
-                    self.callToUser('remove_user', opts['username'])
+                    self.callToUser('remove_user', 'admin', opts['username'])
             elif cmd == 'update':
-                if (opts['username'] and opts['new_password']
-                    and opts['old_password']):
-                    self.callToUser('update_user', opts['username'],
-                                    opts['new_password'], opts['old_password'])
+                if self._privilege == 'console':
+                    if (opts['username'] and opts['new_password']
+                        and opts['old_password']):
+                        self.callToUser('update_user', 'console',
+                                        opts['username'], opts['new_password'],
+                                        opts['old_password'])
+                    else:
+                        self.terminal.write("BUG in usage")
+                elif self._privilege == 'admin':
+                    if opts['username'] and opts['new_password']:
+                        self.callToUser('update_user', 'admin',
+                                        opts['username'], opts['new_password'])
+                    else:
+                        self.terminal.write("BUG in usage")
             elif config['list']:
-                self.callToUserAndDisplay('list_users')
+                self.callToUserAndDisplay('list_users', 'admin')
 
     def cmd_CONTAINER(self, line):
         """ Handler for container command.
@@ -495,17 +578,17 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
             if config['start']:
-                self.callToUser('start_container', config['start'])
+                self.callToUser('createContainer', 'robot', config['start'])
             elif config['stop']:
-                self.callToUser('stop_container', config['stop'])
+                self.callToUser('destroyContainer', 'robot', config['stop'])
             elif config['services']:
                 self.callToRosProxy('services', config['services'])
             elif config['topics']:
                 self.callToRosProxy('topics', config['topics'])
             elif config['list']:
-                self.callToUserAndDisplay('list_containers')
+                self.callToUserAndDisplay('list_containers', 'console')
             elif config['username']:
-                self.callToUserAndDisplay('list_containers_by_user',
+                self.callToUserAndDisplay('list_containers_by_user', 'admin',
                                           config['username'])
     
     def cmd_NODE(self, line):
@@ -526,15 +609,17 @@ class ConsoleClient(HistoricRecvLine):
             if cmd == 'start':
                 if (opts['args'] and opts['ctag'] and opts['ntag']
                     and opts['pkg'] and opts['exe']):
-                    self.callToUser('start_node', opts['ctag'], opts['ntag'],
-                                    opts['pkg'], opts['exe'], opts['args'])
+                    self.callToUser('addNode', 'robot', opts['ctag'],
+                                    opts['ntag'], opts['pkg'], opts['exe'],
+                                    opts['args'])
                 elif (opts['ctag'] and opts['ntag']  and opts['pkg']
                       and opts['exe']):
-                    self.callToUser('start_node', opts['ctag'], opts['ntag'],
-                                    opts['pkg'], opts['exe'])
+                    self.callToUser('addNode', 'robot', opts['ctag'],
+                                    opts['ntag'], opts['pkg'], opts['exe'])
             elif cmd == 'stop':
                 if opts['ctag'] and opts['ntag']:
-                    self.callToUser('stop_node', opts['ctag'], opts['ntag'])
+                    self.callToUser('removeNode', 'robot', opts['ctag'],
+                                    opts['ntag'])
 
     def cmd_PARAMETER(self, line):
         """ Handler for parameter command.
@@ -553,11 +638,11 @@ class ConsoleClient(HistoricRecvLine):
         else:
             if cmd == 'add':
                 if opts['ctag'] and opts['name'] and opts['value']:
-                    self.callToUser('add_parameter', opts['ctag'],
+                    self.callToUser('addParameter', 'robot', opts['ctag'],
                                     opts['name'], opts['value'])
             elif cmd == 'remove':
                 if opts['ctag'] and opts['name']:
-                    self.callToUser('remove_parameter', opts['ctag'],
+                    self.callToUser('removeParameter', 'robot', opts['ctag'],
                                     opts['name'])
     
     def cmd_INTERFACE(self, line):
@@ -578,16 +663,16 @@ class ConsoleClient(HistoricRecvLine):
             if cmd == 'add':
                 if (opts['addr'] and opts['etag'] and opts['itag']
                     and opts['itype'] and opts['icls']):
-                    self.callToUser('add_interface', opts['etag'],
+                    self.callToUser('addInterface', 'robot', opts['etag'],
                                     opts['itag'], opts['itype'], opts['icls'],
                                     opts['addr'])
                 elif (opts['etag'] and opts['itag'] and opts['itype'] and
                       opts['icls']):
-                    self.callToUser('add_interface',  opts['etag'],
+                    self.callToUser('addInterface', 'robot', opts['etag'],
                                     opts['itag'], opts['itype'], opts['icls'])
             elif cmd == 'remove':
                 if opts['etag'] and opts['itag']:
-                    self.callToUser('remove_interface', opts['etag'],
+                    self.callToUser('removeInterface', 'robot', opts['etag'],
                                     opts['itag'])
     
     def cmd_CONNECTION(self, line):
@@ -607,11 +692,11 @@ class ConsoleClient(HistoricRecvLine):
         else:
             if cmd == 'add':
                 if opts['tag1'] and opts['tag2']:
-                    self.callToUser('add_connection', opts['tag1'],
+                    self.callToUser('addConnection', 'robot', opts['tag1'],
                                     opts['tag2'])
             elif cmd == 'remove':
                 if opts['tag1'] and opts['tag2']:
-                    self.callToUser('remove_connection', opts['tag1'],
+                    self.callToUser('removeConnection', 'robot', opts['tag1'],
                                     opts['tag2'])
                     
     def cmd_ROBOT(self, line):
@@ -627,9 +712,9 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
             if config['list']:
-                self.callToUserAndDisplay('list_robots')
+                self.callToUserAndDisplay('list_robots', 'console')
             elif config['username']:
-                self.callToUserAndDisplay('list_robots_by_user',
+                self.callToUserAndDisplay('list_robots_by_user', 'admin',
                                           config['username'])
 
     def cmd_MACHINE(self, line):
@@ -645,11 +730,12 @@ class ConsoleClient(HistoricRecvLine):
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
             if config['list']:
-                self.callToUserAndDisplay('list_machines')
+                self.callToUserAndDisplay('list_machines', 'admin')
             elif config['stats']:
-                self.callToUserAndDisplay('stats_machine', config['stats'])
+                self.callToUserAndDisplay('stats_machine', 'admin',
+                                          config['stats'])
             elif config['containers']:
-                self.callToUserAndDisplay('machine_containers',
+                self.callToUserAndDisplay('machine_containers', 'admin',
                                           config['containers'])
 
     def cmd_HELP(self, line):
@@ -667,37 +753,6 @@ class ConsoleClient(HistoricRecvLine):
         for config in configs:
             self.terminal.nextLine()
             config.opt_help()
-
-    def lineReceived(self, line):
-        """ Manage state/mode after connection. Code uses states to take 
-            credential input and then starts terminal input.
-            
-            @param line:    line typed on terminal
-            @type  line:    string
-        """
-        def _cbError(why, msg):
-            err(why, msg)
-            reactor.stop() #@UndefinedVariable
-
-        def _cbConnected(perspective):
-            self._user = perspective
-            self.terminal.write('Connection to Master Established.')
-            self.showPrompt()
-        
-        if self._mode == 'Username':
-            self._mode = 'Password'
-            self._username = line
-            self.terminal.write('Password: ')
-        elif self._mode == 'Password':
-            self._mode = 'Terminal'
-            self._password = line
-            cred = UsernamePassword(self._username,
-                                    sha256(self._password).digest())
-            usernameLogin = self._factory.login(cred)
-            usernameLogin.addCallback(_cbConnected)
-            usernameLogin.addErrback(_cbError, "Username/password login failed")
-        else:
-            self.parseInputLine(line)
 
 
 def runWithProtocol(klass, masterIP, port):

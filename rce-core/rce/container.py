@@ -276,7 +276,7 @@ class RCEContainer(Referenceable):
     def start(self):
         """ Method which starts the container.
         """
-        ### can raise iptc.xtables.XTablesError
+        # NOTE: can raise iptc.xtables.XTablesError
         # add remote rule for RCE internal communication
         self._remoteRule = iptc.Rule()
         self._remoteRule.protocol = 'tcp'

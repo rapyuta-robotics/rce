@@ -124,7 +124,8 @@ class _Connection(object):
         if self._rce:
             raise ConnectionError('There is already a connection registered.')
         
-        self._rce = RCE(self, self._userID, self._robotID, self._password)
+        self._rce = RCE(self, self._userID, self._robotID, self._password,
+                        self._reactor)
         
         # Setup forwarding
         self.sendMessage = self._rce.sendMessage

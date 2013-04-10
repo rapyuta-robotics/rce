@@ -39,15 +39,15 @@ from twisted.spread.pb import Referenceable, \
 class Namespace(Referenceable):
     """ Abstract base class for a Namespace in a slave process.
     """
-    def __init__(self, status):
+    def __init__(self):
         """ Initialize the Namespace.
-            
-            @param status:      Status observer which is used to inform the
-                                Master of the namespace's status.
-            @type  status:      twisted.spread.pb.RemoteReference
         """
-        self._status = status
+        self._status = None
         self._interfaces = set()
+
+    def registerStatus(self, status):
+        assert self._status is None
+        self._status = status
     
     def registerInterface(self, interface):
         assert interface not in self._interfaces
