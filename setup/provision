@@ -153,28 +153,13 @@ def _get_dev_mode():
     return dev_mode.strip().lower() == 'y'
 
 def _get_container_path():
-    while True:
-        path = raw_input('Enter the root directory to store the RoboEarth '
-                         'Container Filesystem [Tab to autocomplete]: ')
-        path = path.strip()
-
-        if os.path.exists(os.path.dirname(path)):
-            break
-    
-    return path
-
+    return raw_input('Enter the root directory to store the RoboEarth '
+                     'Container Filesystem [Tab to autocomplete]: ').strip()
 
 def _add_container_directories(container_path):
-    for folder in ('data', 'config'):
+    for folder in ('data', 'config', 'rootfs'):
         path = os.path.join(container_path, folder)
-
-        try:
-            os.makedirs(path)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(path):
-                Warning('{0} already exists ignoring...'.format(path))
-            else:
-                raise
+        subprocess.call('sudo mkdir -p {0}'.format(path), shell=True)
 
 
 _HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
@@ -199,7 +184,7 @@ if __name__ == '__main__':
         for cmd in (_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
             subprocess.call(cmd, shell=True)
 
-        _add_container_directories(container_path)
+        #_add_container_directories(container_path)
         dev_mode = _get_dev_mode()
 
         # build up the settings file
@@ -222,7 +207,7 @@ if __name__ == '__main__':
             'cd rce && sh install.sh'
         ]
         if dev_mode:
-            cmds.append('echo -e "admin\nadmin" | passwd')
+            cmds.append('echo "root:admin" | chpasswd')
         else:
             cmds.append('passwd -l root')
 
