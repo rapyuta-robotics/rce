@@ -50,7 +50,8 @@ from twisted.cred.credentials import UsernamePassword
 
 # rce specific imports
 from rce.container import main
-import settings
+from rce.util.settings import getSettings
+settings = getSettings()
 
 
 def _get_argparse():
@@ -69,8 +70,7 @@ def _get_argparse():
     
     parser.add_argument('--maxContainers', type=int,
                         help='Maximum Number of Containers to support on this '
-                             'machine.',
-                        default=settings.MAX_CONTAINER)
+                             'machine.', default=settings.MAX_CONTAINER)
 
     return parser
 
@@ -80,12 +80,12 @@ if __name__ == '__main__':
     
     # Credentials which should be used to login to Master process
     if settings.DEV_MODE:
-        cred = UsernamePassword('container', sha256('admin').digest())
-        passwd = sha256('admin').digest()
+        cred = UsernamePassword('container', sha256('admin').hexdigest())
+        passwd = sha256('admin').hexdigest()
     else:
         cred = UsernamePassword('container',
-                                sha256(args.InfraPassword).digest())
-        passwd = sha256(args.MasterPassword).digest()
+                                sha256(args.InfraPassword).hexdigest())
+        passwd = sha256(args.MasterPassword).hexdigest()
     
     main(reactor, cred, args.MasterIP, passwd, cred.password,
          settings.MASTER_PORT, settings.INT_IP, settings.BRIDGE_IP,

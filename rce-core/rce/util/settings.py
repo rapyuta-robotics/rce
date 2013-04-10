@@ -12,7 +12,7 @@
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
 #
-#     Copyright 2012 RoboEarth
+#     Copyright 2013 RoboEarth
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@
 #
 #
 
+# Python specific imports
 from ConfigParser import SafeConfigParser
 import os
 import socket
@@ -38,19 +39,37 @@ import struct
 import re
 import urllib2
 
-# Custom imports
-from name import validateName, IllegalName
+# rce specific imports
+from rce.util.name import validateName, IllegalName
 
 
-class RCESettingsManager(SafeConfigParser,object):
+# Global storage of config parser
+_settings = None
 
+
+def getSettings():
+    """
+    """
+    global _settings
+    if not _settings:
+        _settings = _RCESettingsManager()
+    return _settings
+
+
+class _RCESettingsManager(SafeConfigParser, object):
+    """ Configuration parser used for the cloud engine settings.
+    """
     def __init__(self, *args, **kargs):
-        super(RCESettingsManager, self).__init__(*args, **kargs)
+        """ Initialize the Configuration Parser. All arguments are passed to
+            the base class SafeConfigParser.
+        """
+        super(_RCESettingsManager, self).__init__(*args, **kargs)
         self.config_file = os.path.join(os.getenv('HOME'), '.rce','config.ini')
 
         # If it does not exist create it
         if not os.path.exists(self.config_file):
-            self._provision_config()
+            print('Config file missing please run the provision script first')
+            exit()
         self.read(self.config_file)
         self._build_properties()
         #check paths and packages
@@ -63,48 +82,6 @@ class RCESettingsManager(SafeConfigParser,object):
 
         self.CONVERTER_CLASSES = [self.get('converters',option) for
                                   option in self.options('converters')]
-
-    def _provision_config(self):
-        """ Provision all required files as required for first runs.
-        """
-
-        path=os.path.join(os.getenv('HOME'), '.rce')
-        config = {'global':{'gzip_lvl':9,
-                            'platform':'local',
-                            'dev_mode':False,
-                            'password_file':os.path.join(os.getenv('HOME'), '.rce','creds')},
-
-                  'network':{'local':'wlan0,wlan0,lxcbr0',
-                             'rackspace':'eth0,eth1,lxcbr0',
-                             'aws':'aws_dns,eth0,lxcbr0' },
-
-                  'converters':{'image':'rce.util.converters.image.ImageConverter',},
-
-                  'comm':{'http_port':9000,
-                          'ws_port':9010,
-                          'master_port':8080,
-                          'rce_internal_port':10030,
-                          'rce_console_port':8081,
-                          'ros_proxy_port':9020},
-
-                  'machine':{'max_container':10,
-                            'rootfs':'/opt/rce/container/rootfs',
-                            'conf_dir':'/opt/rce/container/config',
-                            'data_dir':'/opt/rce/container/data',
-                            'root_src_dir':'/opt/rce/framework'},
-
-                  'machine/packages':{'test_package':'/opt/rce/test,rce_test'}}
-
-        if not os.path.exists(path):
-            os.makedirs(path)
-        conf_file = open(self.config_file,'w')
-        for section,opts in config.iteritems():
-            self.add_section(section)
-            for key,val in opts.iteritems():
-                self.set(section, key, str(val))
-        self.write(conf_file)
-        conf_file.close()
-        del config,path
 
     @staticmethod
     def _getIP(ifname):
@@ -134,7 +111,7 @@ class RCESettingsManager(SafeConfigParser,object):
             return ifname
 
         # AWS Specific IP resolution method for the global ipv4 address
-        if ifname == 'aws_dns' :
+        if ifname == 'aws_dns':
             return urllib2.urlopen(_AWS_IP_V4_ADDR).read()
 
         s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -146,15 +123,6 @@ class RCESettingsManager(SafeConfigParser,object):
 
     def _checkProcessPkgPaths(self):
         """ Utility function to process the attribute ROOT_PKG_DIR from settings.
-
-            @param paths:       List of attribute ROOT_PKG_DIR from settings.py
-            @type  paths:       [(str, str/None)]
-
-            @return:            Processed list; each element of ROOT_PKG_DIR will
-                                be transformed into a tuple of source path and
-                                destination path which can than be used to
-                                extend the fstab file for the container creation.
-            @rtype:             [(str, str)]
 
             @raise:             ValueError
         """
@@ -186,12 +154,10 @@ class RCESettingsManager(SafeConfigParser,object):
 
     def _checkDirs(self):
         """ Check all the basic directories to see if the paths are valid.
-
         """
         self._checkPath(self.CONF_DIR, 'Configuration')
         self._checkPath(self.DATA_DIR, 'Data')
         self._checkPath(self.ROOTFS, 'Container file system')
-        self._checkPath(self.ROOT_SRC_DIR, 'RCE source')
 
     @staticmethod
     def _checkPath(path, description):
@@ -214,7 +180,6 @@ class RCESettingsManager(SafeConfigParser,object):
             raise ValueError('{0} directory does not exist: '
                              '{1}'.format(description, path))
 
-
     def _build_properties(self):
         for section in self.sections():
             if section in ('global','comm','machine'):
@@ -222,5 +187,4 @@ class RCESettingsManager(SafeConfigParser,object):
                     val = self.get(section,opt)
                     val = int(val) if val.isdigit() else val == 'True' if val in ('True','False') else val
                     setattr(self,opt.upper(),val)
-
 

@@ -196,15 +196,10 @@ class RCE(object):
         self._receiver = receiver
         self._userID = userID
         self._robotID = robotID
-        self._password = sha256(password).digest()
+        self._password = sha256(password).hexdigest()
         self._reactor = reactor
         self._conn = None
         self._connectedDeferred = None
-    
-    @property
-    def reactor(self):
-        """ Reference to twisted::reactor. """
-        return self._reactor
     
     def registerConnection(self, conn):
         """ Callback for RCERobotProtocol.

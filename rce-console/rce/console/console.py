@@ -420,7 +420,7 @@ class ConsoleClient(HistoricRecvLine):
             self._mode = 'Terminal'
             self._password = line
             cred = UsernamePassword(self._username,
-                                    sha256(self._password).digest())
+                                    sha256(self._password).hexdigest())
             d = self._factory.login(cred)
             d.addCallback(lambda p: p.callRemote("getUserView", True))
             d.addCallback(_cbConnectionSuccess)

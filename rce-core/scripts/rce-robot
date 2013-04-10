@@ -39,7 +39,8 @@ from twisted.cred.credentials import UsernamePassword
 
 # rce specific imports
 from rce.robot import main
-import settings
+from rce.util.settings import getSettings
+settings = getSettings()
 
 
 def _get_argparse():
@@ -62,9 +63,9 @@ if __name__ == '__main__':
     
     # Credentials which should be used to login to Master process
     if settings.DEV_MODE:
-        cred = UsernamePassword('robot', sha256('admin').digest())
+        cred = UsernamePassword('robot', sha256('admin').hexdigest())
     else:
-        cred = UsernamePassword('robot', sha256(args.InfraPassword).digest())
+        cred = UsernamePassword('robot', sha256(args.InfraPassword).hexdigest())
 
     main(reactor, cred, args.MasterIP, settings.MASTER_PORT, settings.EXT_IP,
          settings.WS_PORT, settings.RCE_INTERNAL_PORT, settings.ROOT_PKG_DIR,

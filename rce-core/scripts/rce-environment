@@ -48,7 +48,8 @@ from twisted.cred.credentials import UsernamePassword
 
 # rce specific imports
 from rce.environment import main
-import settings
+from rce.util.settings import getSettings
+settings = getSettings()
 
 
 if __name__ == '__main__':

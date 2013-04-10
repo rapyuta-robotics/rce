@@ -49,8 +49,8 @@ except ImportError:
 # rce specific imports
 from rce.util.error import InternalError
 from rce.slave.interface import Interface, InvalidResoureName
-import settings
-
+from rce.util.settings import getSettings
+settings = getSettings()
 
 # Compression level used
 GZIP_LVL = settings.GZIP_LVL
