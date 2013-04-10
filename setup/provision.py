@@ -154,7 +154,8 @@ if __name__ == '__main__':
         packages = 'lxc debootstrap python-twisted-core python-openssl ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging'
         subprocess.call("""sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'""",shell=True)
         subprocess.call('curl http://packages.ros.org/ros.key | sudo apt-key add -',shell=True)
-        subprocess.call('sudo apt-get update && sudo apt-get install {0}'.format(packages),shell=True)
+        subprocess.call('sudo apt-get update',shell=True)
+        subprocess.call('echo "y" | sudo apt-get install {0}'.format(packages),shell=True)
 
         for folder in ('data','config'):
             path = os.path.join(container_path,folder)
@@ -168,22 +169,20 @@ if __name__ == '__main__':
         subprocess.call('sudo bash container.bash --path={0}'.format(container_path),shell=True)
         # Post Provision commands
         box_packages='python-twisted-core python-twisted-web ros-fuerte-ros-comm ros-fuerte-common-msgs'
-        commands = ['su',
-                    'adduser ros',
+        commands = ['adduser --disabled-password --disabled-login ros',
                     'adduser --disabled-password --disabled-login --home /opt/rce/data rce',
-                    'echo "Please change the root password"',
-                    'passwd',
                     'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list',
                     'curl http://packages.ros.org/ros.key | apt-key add -',
-                    'apt-get update'
-                    'apt-get install {0}'.format(box_packages)
+                    'apt-get update',
+                    'echo "y" |apt-get install {0}'.format(box_packages),
+                    'echo "Please change the root password"',
                     ]
         commands=(';').join(commands)
         # build up the settings file
         provision_config(container_path)
         # provision the cred db
         provision_creds()
-        subprocess.call('sudo rce-make setup {0}'.format(commands),shell=True)
+        subprocess.call('echo "{0}" | sudo rce-make'.format(commands),shell=True)
 
     elif args.mode == 'cred':
         provision_creds()
