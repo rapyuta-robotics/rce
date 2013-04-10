@@ -152,11 +152,12 @@ if __name__ == '__main__':
         dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
         dev_mode = dev_mode.strip().lower() == 'y'
         packages = 'lxc debootstrap python-twisted-core python-openssl ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging'
-        subprocess.call("""sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'""",shell=True)
-        subprocess.call('curl http://packages.ros.org/ros.key | sudo apt-key add -',shell=True)
-        subprocess.call('sudo apt-get update',shell=True)
-        subprocess.call('sudo apt-get -y install {0}'.format(packages),shell=True)
-
+        commands = ["""sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'""",
+                    'curl http://packages.ros.org/ros.key | sudo apt-key add -',
+                    'sudo apt-get update && sudo apt-get -y install {0}'.format(packages)]
+        for command in command :
+            subprocess.call(command,shell=True)
+        
         for folder in ('data','config'):
             path = os.path.join(container_path,folder)
             try:
