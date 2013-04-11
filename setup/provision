@@ -159,7 +159,7 @@ def _get_dev_mode():
 
 
 def _get_container_path():
-    """ Ask whether for path to the container root directory.
+    """ Ask for path to the container root directory.
     """
     return raw_input('Enter the root directory to store the RoboEarth '
                      'Container Filesystem [Tab to autocomplete]: ').strip()
