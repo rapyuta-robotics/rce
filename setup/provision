@@ -49,8 +49,8 @@ readline.set_completer(complete)
 
 
 # Helper function for config provisioning
-def provision_config(root_path,dev_mode):
-    """ Provision all required files as required for first runs.
+def provision_config(root_path, dev_mode):
+    """ Provision settings.ini as required for first runs.
     """
     parser = SafeConfigParser()
     path = os.path.join(os.getenv('HOME'), '.rce')
@@ -67,7 +67,7 @@ def provision_config(root_path,dev_mode):
             'rackspace':'eth0,eth1,lxcbr0',
             'aws':'aws_dns,eth0,lxcbr0'
         },
-        'converters':{
+        'converters': {
             'image':'rce.util.converters.image.ImageConverter'
         },
         'comm': {
@@ -80,9 +80,9 @@ def provision_config(root_path,dev_mode):
         },
         'machine': {
             'max_container':10,
-            'rootfs':os.path.join(root_path,'rootfs'),
-            'conf_dir':os.path.join(root_path,'config'),
-            'data_dir':os.path.join(root_path,'data')
+            'rootfs':os.path.join(root_path, 'rootfs'),
+            'conf_dir':os.path.join(root_path, 'config'),
+            'data_dir':os.path.join(root_path, 'data')
         },
         'machine/packages': {
         }
@@ -102,10 +102,11 @@ def provision_config(root_path,dev_mode):
 
 # Helper function to provision the cred db
 def provision_creds():
-    from rce.util.settings import _RCESettingsManager
+    """ Provision cred database as required for first runs.
+    """
+    from rce.util.settings import getSettings
     from rce.util.cred import RCECredChecker, _FIRST_RUN_MSG
-    settings = _RCESettingsManager()
-    dev_mode = settings.DEV_MODE
+    dev_mode = getSettings().DEV_MODE
 
     cred_checker = RCECredChecker(True)
     required_users = {'admin':'admin', 'adminInfra':'admin'}
@@ -148,25 +149,38 @@ def _get_argparse():
 
     return parser
 
+
 def _get_dev_mode():
-    dev_mode = raw_input('Do you want to autoprovision credentials for developer mode (Insecure)[y/N] : ')
+    """ Ask whether the developer mode should be used.
+    """
+    dev_mode = raw_input('Do you want to autoprovision credentials '
+                         'for developer mode (Insecure)[y/N] : ')
     return dev_mode.strip().lower() == 'y'
 
+
 def _get_container_path():
+    """ Ask whether for path to the container root directory.
+    """
     return raw_input('Enter the root directory to store the RoboEarth '
                      'Container Filesystem [Tab to autocomplete]: ').strip()
 
+
 def _add_container_directories(container_path):
+    """ Add the necessary directories to the container root directory.
+    """
     for folder in ('data', 'config', 'rootfs'):
         path = os.path.join(container_path, folder)
         subprocess.call('sudo mkdir -p {0}'.format(path), shell=True)
 
 
+# List of packages which should be installed in the host and 
+# in the container filesystem
 _HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
               'ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging')
 _CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core '
                    'ros-fuerte-ros-comm ros-fuerte-common-msgs')
 
+# Basic shell commands
 _ROS_SRC = ("""sudo sh -c """
              """'echo "deb http://packages.ros.org/ros/ubuntu precise main" """
              """> /etc/apt/sources.list.d/ros-latest.list'""")
@@ -179,13 +193,15 @@ if __name__ == '__main__':
     args = _get_argparse().parse_args()
 
     if args.mode == 'all':
+        # Ask all the necessary questions
         container_path = _get_container_path()
+        dev_mode = _get_dev_mode()
 
+        # Install the packages in the host filesystem
         for cmd in (_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
             subprocess.call(cmd, shell=True)
 
         _add_container_directories(container_path)
-        dev_mode = _get_dev_mode()
 
         # build up the settings file
         provision_config(container_path, dev_mode)
@@ -218,8 +234,10 @@ if __name__ == '__main__':
     elif args.mode == 'cred':
         provision_creds()
     elif args.mode == 'config':
+        # Ask all the necessary questions
         container_path = _get_container_path()
         dev_mode = _get_dev_mode()
+        
         _add_container_directories(container_path, dev_mode)
         provision_config(container_path)
     else:

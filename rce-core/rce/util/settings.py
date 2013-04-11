@@ -120,7 +120,7 @@ class _RCESettingsManager(SafeConfigParser, object):
             return ifname
 
         # AWS Specific IP resolution method for the global ipv4 address
-        if ifname == 'aws_dns' :
+        if ifname == 'aws_dns':
             return urllib2.urlopen(_RCESettingsManager._AWS_IP_V4_ADDR).read()
 
         s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -139,12 +139,8 @@ class _RCESettingsManager(SafeConfigParser, object):
         pkgDir = []
         usedNames = set()
 
-        for path, name in [self.get('machine/packages', option).split(',')
-                           for option in self.options('machine/packages')]:
+        for name, path in self.items('machine/packages'):
             self._checkPath(path, 'ROS Package')
-
-            if not name:
-                name = os.path.basename(path)
 
             try:
                 validateName(name)
