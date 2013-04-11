@@ -141,26 +141,6 @@ iface eth0 inet static
 """
 
 
-def _checkExe(folder, exe):
-    """ Check if the executable is valid.
-        
-        @param folder:          Folder in which the executable is located.
-        @type  folder:          str
-        
-        @param exe:             Executable which should be checked.
-        @type  exe:             str
-        
-        @raise:                 ValueError, if executable is not valid.
-    """
-    path = os.path.join(folder, exe)
-    
-    if not os.path.isfile(path):
-        raise ValueError("'{0}' is not a file.".format(exe))
-    
-    if not os.access(path, os.X_OK):
-        raise ValueError("'{0}' is not a executable.".format(exe))
-
-
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
     """
@@ -240,7 +220,6 @@ class RCEContainer(Referenceable):
         # Add additional lines to fstab file of container
         self._container.extendFstab(rosDir, 'home/ros', False)
         self._container.extendFstab(rceDir, 'opt/rce/data', False)
-        self._container.extendFstab(client.srcDir, 'opt/rce/src', True)
         self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
                                     'etc/init/rceComm.conf', True)
         # TODO: For the moment there is no upstart launcher.
@@ -391,7 +370,7 @@ class ContainerClient(Referenceable):
     """
     def __init__(self, reactor, masterIP, masterPasswd, infraPasswd, intIP,
                  bridgeIP, envPort, rosproxyPort, rootfsDir, confDir, dataDir,
-                 srcDir, pkgDir):
+                 pkgDir):
         """ Initialize the Container Client.
             
             @param reactor:       Reference to the twisted reactor.
@@ -440,10 +419,6 @@ class ContainerClient(Referenceable):
                                   stored.
             @type  dataDir:       str
             
-            @param srcDir:        Filesystem path to the directory where the
-                                  source of the cloud engine is located.
-            @type  srcDir:        str
-            
             @param pkgDir:        Filesystem paths to the package directories
                                   as a list of tuples where each tuple contains
                                   the path to the directory in the host machine
@@ -468,13 +443,7 @@ class ContainerClient(Referenceable):
         self._rootfs = rootfsDir
         self._confDir = confDir
         self._dataDir = dataDir
-        self._srcDir = srcDir
         self._pkgDir = pkgDir
-        
-        # Validate executable paths
-        _checkExe(self._srcDir, 'environment.py') # TODO: Modify name of executable
-        _checkExe(self._srcDir, 'rosproxy.py') # TODO: Modify name of executable
-        #_checkExe(self._srcDir, 'launcher.py') # TODO: Modify name of executable
         
         for _, path in self._pkgDir:
             os.mkdir(os.path.join(self._rootfs, path))
@@ -529,11 +498,6 @@ class ContainerClient(Referenceable):
     def dataDir(self):
         """ Filesystem path of temporary data directory. """
         return self._dataDir
-    
-    @property
-    def srcDir(self):
-        """ Filesystem path of RCE source directory. """
-        return self._srcDir
     
     @property
     def pkgDirIter(self):
@@ -642,7 +606,7 @@ class ContainerClient(Referenceable):
 
 def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
          internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, srcDir, pkgDir, maxNr):
+         dataDir, pkgDir, maxNr):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -654,7 +618,7 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     
     client = ContainerClient(reactor, masterIP, masterPassword, infraPasswd,
                              internalIP, bridgeIP, envPort, rosproxyPort,
-                             rootfsDir, confDir, dataDir, srcDir, pkgDir)
+                             rootfsDir, confDir, dataDir, pkgDir)
     
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))

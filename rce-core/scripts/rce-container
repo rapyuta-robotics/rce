@@ -90,5 +90,5 @@ if __name__ == '__main__':
     main(reactor, cred, args.MasterIP, passwd, cred.password,
          settings.MASTER_PORT, settings.INT_IP, settings.BRIDGE_IP,
          settings.RCE_INTERNAL_PORT, settings.ROS_PROXY_PORT, settings.ROOTFS,
-         settings.CONF_DIR, settings.DATA_DIR, settings.ROOT_SRC_DIR,
+         settings.CONF_DIR, settings.DATA_DIR,
          settings.ROOT_PKG_DIR, args.maxContainers)
