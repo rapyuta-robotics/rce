@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #     setup/provision
@@ -32,9 +32,10 @@
 
 # Python specific imports
 import os
+import sys
 import readline
 import glob
-import subprocess
+from subprocess import check_call
 from ConfigParser import SafeConfigParser
 
 
@@ -117,7 +118,7 @@ def provision_creds():
                 cred_checker.getUser(username)
             except (KeyError, OSError, AttributeError):
                 cred_checker.addUser(username, required_users[username],
-                             provision=True)
+                                     provision=True)
         cred_checker.setUserMode('admin', 0)
         cred_checker.addUserGroups('admin', 'owner')
     else:
@@ -169,7 +170,7 @@ def _add_container_directories(container_path):
     """
     for folder in ('data', 'config', 'rootfs'):
         path = os.path.join(container_path, folder)
-        subprocess.call('sudo mkdir -p {0}'.format(path), shell=True)
+        check_call('sudo mkdir -p {0}'.format(path), shell=True)
 
 
 # List of packages which should be installed in the host and 
@@ -198,7 +199,7 @@ if __name__ == '__main__':
 
         # Install the packages in the host filesystem
         for cmd in (_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
-            subprocess.call(cmd, shell=True)
+            check_call(cmd, shell=True)
 
         _add_container_directories(container_path)
 
@@ -209,7 +210,8 @@ if __name__ == '__main__':
         provision_creds()
 
         # create the container
-        subprocess.call(_CONTAINER.format(container_path), shell=True)
+        check_call(_CONTAINER.format(container_path), shell=True,
+                   cwd=os.path.dirname(sys.argv[0]))
 
         cmds = [
             'adduser --disabled-password --disabled-login ros',
@@ -229,7 +231,7 @@ if __name__ == '__main__':
         cmds = ';'.join(cmds)
 
         # provision the container filesystem
-        subprocess.call('echo "{0}" | sudo rce-make'.format(cmds), shell=True)
+        check_call('echo "{0}" | sudo rce-make'.format(cmds), shell=True)
     elif args.mode == 'cred':
         provision_creds()
     elif args.mode == 'config':

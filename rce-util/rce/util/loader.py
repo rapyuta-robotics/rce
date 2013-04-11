@@ -71,12 +71,8 @@ import sys
 # ROS specific imports
 import rospkg
 
-# twisted specific imports
-from twisted.python import log
-from twisted.spread.pb import Error
 
-
-class ResourceNotFound(Error):
+class ResourceNotFound(Exception):
     """ Exception is raised by the Loader when a resource can not be found.
     """
 
@@ -360,9 +356,9 @@ class Loader(object):
                 
                 if os.access(p, os.X_OK):
                     if f in nodes:
-                        log.msg('Found multiple executables with the name '
-                                '"{0}" in ROS package "{1}". Only the first '
-                                'match will be kept'.format(f, pkg))
+                        print('Found multiple executables with the name '
+                              '"{0}" in ROS package "{1}". Only the first '
+                              'match will be kept.'.format(f, pkg))
                     else:
                         nodes[f] = p
             

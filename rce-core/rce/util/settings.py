@@ -79,7 +79,7 @@ class _RCESettingsManager(SafeConfigParser, object):
 
         # check if the config file exists
         if not os.path.exists(config_file):
-            print('Config file missing please run the provision script first')
+            print('Config file missing. Please run the provision script first.')
             exit()
 
         self.read(config_file)

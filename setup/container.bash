@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# template script for generating ubuntu oneiric container for LXC
+# template script for generating ubuntu container for LXC
 #
 # This script is based on lxc-debian (Daniel Lezcano <daniel.lezcano@free.fr>)
 #
@@ -9,7 +9,7 @@
 # Copyright ¬© 2010 Wilhelm Meier
 # Author: Wilhelm Meier <wilhelm.meier@fh-kl.de>
 #
-# With bugfixes and modifications for EC2 support by 
+# With bugfixes and modifications for EC2 support by
 # Daniil Kulchenko (daniil@kulchenko.com), Copyright ¬© 2011.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -40,12 +40,10 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
-    if [ -e $rootfs/etc/dhcp/dhclient.conf ] 
-    then
-	sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp/dhclient.conf
-    elif [ -e $rootfs/etc/dhcp3/dhclient.conf ] 
-    then
-	sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp3/dhclient.conf
+    if [ -e $rootfs/etc/dhcp/dhclient.conf ]; then
+        sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp/dhclient.conf
+    elif [ -e $rootfs/etc/dhcp3/dhclient.conf ]; then
+        sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp3/dhclient.conf
     fi
 
     # set the hostname
@@ -71,36 +69,35 @@ EOF
 
 download_ubuntu()
 {
-    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,lsb-release,language-pack-en,vim,wget,build-essential,curl,sudo
-	
-	### Local
-	mirror=
-	
-	### Rackspace
-	#mirror=http://mirror.rackspace.com/ubuntu/
-	
-	### Amacon EC2
-	#mirror=http://us-east-1.ec2.archive.ubuntu.com/ubuntu/
-	
-	
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,language-pack-en,build-essential,curl,sudo
+
+    ### Local
+    mirror=
+
+    ### Rackspace
+    #mirror=http://mirror.rackspace.com/ubuntu/
+
+    ### Amacon EC2
+    #mirror=http://us-east-1.ec2.archive.ubuntu.com/ubuntu/
+
     cache=$1
     arch=$2
 
     # check the mini ubuntu was not already downloaded
     mkdir -p "$cache/partial-$arch"
     if [ $? -ne 0 ]; then
-	echo "Failed to create '$cache/partial-$arch' directory"
-	return 1
+        echo "Failed to create '$cache/partial-$arch' directory"
+        return 1
     fi
 
     # download a mini ubuntu into a cache
     echo "Downloading ubuntu minimal ..."
     # Local
     debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages precise $cache/partial-$arch $mirror
-  
-  if [ $? -ne 0 ]; then
-	echo "Failed to download the rootfs, aborting."
-	return 1
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to download the rootfs, aborting."
+        return 1
     fi
 
     mv "$1/partial-$arch" "$1/rootfs-$arch"
@@ -128,40 +125,40 @@ install_ubuntu()
     rootfs=$1
     mkdir -p /var/lock/subsys/
     (
-	flock -n -x 200
-	if [ $? -ne 0 ]; then
-	    echo "Cache repository is busy."
-	    return 1
-	fi
+        flock -n -x 200
+        if [ $? -ne 0 ]; then
+            echo "Cache repository is busy."
+            return 1
+        fi
 
-	arch=$(arch)
-	if [ "$arch" == "x86_64" ]; then
-	    arch=amd64
-	fi
+        arch=$(arch)
+        if [ "$arch" == "x86_64" ]; then
+            arch=amd64
+        fi
 
-	if [ "$arch" == "i686" ]; then
-	    arch=i386
-	fi
+        if [ "$arch" == "i686" ]; then
+            arch=i386
+        fi
 
-	echo "Checking cache download in $cache/rootfs-$arch ... "
-	if [ ! -e "$cache/rootfs-$arch" ]; then
-	    download_ubuntu $cache $arch
-	    if [ $? -ne 0 ]; then
-		echo "Failed to download 'ubuntu base'"
-		return 1
-	    fi
-	fi
+        echo "Checking cache download in $cache/rootfs-$arch ... "
+        if [ ! -e "$cache/rootfs-$arch" ]; then
+            download_ubuntu $cache $arch
+            if [ $? -ne 0 ]; then
+                echo "Failed to download 'ubuntu base'"
+                return 1
+            fi
+        fi
 
-	echo "Copy $cache/rootfs-$arch to $rootfs ... "
-	copy_ubuntu $cache $arch $rootfs
-	if [ $? -ne 0 ]; then
-	    echo "Failed to copy rootfs"
-	    return 1
-	fi
+        echo "Copy $cache/rootfs-$arch to $rootfs ... "
+        copy_ubuntu $cache $arch $rootfs
+        if [ $? -ne 0 ]; then
+            echo "Failed to copy rootfs"
+            return 1
+        fi
 
-	return 0
+        return 0
 
-	) 200>/var/lock/subsys/lxc
+    ) 200>/var/lock/subsys/lxc
 
     return $?
 }
@@ -171,20 +168,20 @@ clean()
     cache="/var/cache/lxc/precise"
 
     if [ ! -e $cache ]; then
-	exit 0
+        exit 0
     fi
 
     # lock, so we won't purge while someone is creating a repository
     (
-	flock -n -x 200
-	if [ $? != 0 ]; then
-	    echo "Cache repository is busy."
-	    exit 1
-	fi
+        flock -n -x 200
+        if [ $? != 0 ]; then
+            echo "Cache repository is busy."
+            exit 1
+        fi
 
-	echo -n "Purging the download cache..."
-	rm --preserve-root --one-file-system -rf $cache && echo "Done." || exit 1
-	exit 0
+        echo -n "Purging the download cache..."
+        rm --preserve-root --one-file-system -rf $cache && echo "Done." || exit 1
+        exit 0
 
     ) 200>/var/lock/subsys/lxc
 }
@@ -207,11 +204,11 @@ eval set -- "$options"
 while true
 do
     case "$1" in
-	-h|--help)      usage $0 && exit 0;;
-	-p|--path)      path=$2; shift 2;;
-	-n|--name)      name=$2; shift 2;;
-	-c|--clean)     clean=$2; shift 2;;
-	--)             shift 1; break ;;
+        -h|--help)      usage $0 && exit 0;;
+        -p|--path)      path=$2; shift 2;;
+        -n|--name)      name=$2; shift 2;;
+        -c|--clean)     clean=$2; shift 2;;
+        --)             shift 1; break ;;
         *)              break ;;
     esac
 done
@@ -254,8 +251,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Provisioning other required directories and files"
-
-
 # basic source and conf files
 mkdir -p $rootfs/opt/rce
 mkdir -p $rootfs/opt/rce/packages
@@ -263,7 +258,6 @@ mkdir -p $rootfs/opt/rce/packages
 touch $rootfs/etc/init/rceComm.conf
 touch $rootfs/etc/init/rceLauncher.conf
 touch $rootfs/etc/init/rceRosapi.conf
-
 
 
 #The rest of the provisioning.
@@ -277,5 +271,3 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 cp $DIR/setup.sh $rootfs/opt/rce/setup.sh
 cp $DIR/rce.conf $rootfs/etc/init/rce.conf
-
-
