@@ -48,7 +48,8 @@ _settings = None
 
 
 def getSettings():
-    """
+    """ Get the cloud engine settings.
+        The configuration file is parsed only once and cached for later.
     """
     global _settings
     if not _settings:
@@ -59,29 +60,42 @@ def getSettings():
 class _RCESettingsManager(SafeConfigParser, object):
     """ Configuration parser used for the cloud engine settings.
     """
+    # case where in a custom setup the global IP address is preconfigured
+    # and does not necessarily bind to a network interface
+    # eg: ElasticIP or custom DNS routings
+    _IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
+                              '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
+    
+    # Internal AWS url metadata retrieval address for type 'public-ipv4'
+    _AWS_IP_V4_ADDR = 'http://169.254.169.254/latest/meta-data/public-ipv4'
+    
     def __init__(self, *args, **kargs):
-        """ Initialize the Configuration Parser. All arguments are passed to
-            the base class SafeConfigParser.
+        """ Initialize the RCE settings manager. Additional arguments are passed
+            to the __init__ of SafeConfigParser.
         """
         super(_RCESettingsManager, self).__init__(*args, **kargs)
-        self.config_file = os.path.join(os.getenv('HOME'), '.rce','config.ini')
 
-        # If it does not exist create it
-        if not os.path.exists(self.config_file):
+        config_file = os.path.join(os.getenv('HOME'), '.rce', 'config.ini')
+
+        # check if the config file exists
+        if not os.path.exists(config_file):
             print('Config file missing please run the provision script first')
             exit()
-        self.read(self.config_file)
+
+        self.read(config_file)
         self._build_properties()
-        #check paths and packages
+        
+        # check paths and packages
         self._checkProcessPkgPaths()
         self._checkDirs()
-        # set all the ip addrs
-        self.EXT_IP,self.INT_IP,self.BRIDGE_IP = [self._getIP(iface) for
-                    iface in self.get('network',self.PLATFORM).split(',')]
+        
+        # set all the IP addresses
+        self.EXT_IP, self.INT_IP, self.BRIDGE_IP = [self._getIP(iface)
+                for iface in self.get('network', self.PLATFORM).split(',')]
         self.LOCALHOST_IP = self._getIP('lo')
 
-        self.CONVERTER_CLASSES = [self.get('converters',option) for
-                                  option in self.options('converters')]
+        self.CONVERTER_CLASSES = [self.get('converters', option)
+                                  for option in self.options('converters')]
 
     @staticmethod
     def _getIP(ifname):
@@ -93,26 +107,21 @@ class _RCESettingsManager(SafeConfigParser, object):
 
                 PSF License (Python Software Foundation)
 
-            @param ifname:      Name of the network interface.
+            @param ifname:      Network interface descriptor; can be an IP
+                                address, a name of a network interface, or the
+                                string 'aws_dns' to dynamically resolve the IP
+                                address of the network interface.
             @type  finame:      str
 
             @return:            IP address as a string, i.e. x.x.x.x
             @rtype:             str
         """
-        # case where in a custom setup the global IP address is preconfigured
-        # and does not necessarily bind to a network interface
-        # eg: ElasticIP or custom DNS routings
-        _IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
-                        '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
-
-        # Internal AWS url metadata retrieval address for type 'public-ipv4'
-        _AWS_IP_V4_ADDR = 'http://169.254.169.254/latest/meta-data/public-ipv4'
-        if _IP_V4_REGEX.match(ifname):
+        if _RCESettingsManager._IP_V4_REGEX.match(ifname):
             return ifname
 
         # AWS Specific IP resolution method for the global ipv4 address
         if ifname == 'aws_dns':
-            return urllib2.urlopen(_AWS_IP_V4_ADDR).read()
+            return urllib2.urlopen(_RCESettingsManager._AWS_IP_V4_ADDR).read()
 
         s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(
@@ -122,19 +131,16 @@ class _RCESettingsManager(SafeConfigParser, object):
         )[20:24])
 
     def _checkProcessPkgPaths(self):
-        """ Utility function to process the attribute ROOT_PKG_DIR from settings.
+        """ Utility function to process the section 'machine/packages' from
+            settings.ini.
 
             @raise:             ValueError
         """
         pkgDir = []
         usedNames = set()
 
-        for path, name in [self.get('machine/packages',option).split(',')
-                             for option in self.options('machine/packages')]:
+        for name, path in self.items('machine/packages'):
             self._checkPath(path, 'ROS Package')
-
-            if not name:
-                name = os.path.basename(path)
 
             try:
                 validateName(name)
@@ -147,13 +153,15 @@ class _RCESettingsManager(SafeConfigParser, object):
 
             usedNames.add(name)
 
-            # TODO: Contains container specific configuration: 'opt/rce/packages'
+            # TODO: Contains container specific configuration: opt/rce/packages
             pkgDir.append((path, os.path.join('opt/rce/packages', name)))
 
         self.ROOT_PKG_DIR = pkgDir
 
     def _checkDirs(self):
         """ Check all the basic directories to see if the paths are valid.
+
+            @raise:             ValueError
         """
         self._checkPath(self.CONF_DIR, 'Configuration')
         self._checkPath(self.DATA_DIR, 'Data')
@@ -181,10 +189,16 @@ class _RCESettingsManager(SafeConfigParser, object):
                              '{1}'.format(description, path))
 
     def _build_properties(self):
+        """ Retrieve all settings, process them, and store them.
+        """
         for section in self.sections():
-            if section in ('global','comm','machine'):
+            if section in ('global', 'comm', 'machine'):
                 for opt in self.options(section):
-                    val = self.get(section,opt)
-                    val = int(val) if val.isdigit() else val == 'True' if val in ('True','False') else val
-                    setattr(self,opt.upper(),val)
+                    val = self.get(section, opt)
 
+                    if val.isdigit():
+                        val = int(val)
+                    elif val.lower() in ('true', 'false'):
+                        val = val.lower() == 'true'
+
+                    setattr(self, opt.upper(), val)
