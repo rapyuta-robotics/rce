@@ -351,6 +351,15 @@ class MachineOptions(CustomOptions):
     )
 
 
+def _errorHandle(func):
+        def call(self, *args, **kwargs):
+            try:
+                func(self, *args, **kwargs)
+            except AttributeError:
+                self.terminal.write("Cannot use that command.")
+        return call
+
+
 class ConsoleClient(HistoricRecvLine):
     """ The class creates the terminal and manages connections with Master
         and ROSAPI servers on specific containers
@@ -442,16 +451,7 @@ class ConsoleClient(HistoricRecvLine):
                 self.terminal.write('No such command')
         self.showPrompt()
     
-    @staticmethod
-    def errorHandle(func):
-        def call(self, *args, **kwargs):
-            try:
-                func(self, *args, **kwargs)
-            except AttributeError:
-                self.terminal.write("Cannot use that command.")
-        return call
-    
-    @errorHandle
+    @_errorHandle
     def callToRosProxy(self, command, parameter):
         """ Function to handle call to ROSAPI Proxy Server.
             
@@ -489,7 +489,7 @@ class ConsoleClient(HistoricRecvLine):
                                 "in connection with master: "
                                 "{0}".format(err)))
  
-    @errorHandle
+    @_errorHandle
     def callToUser(self, command, domain, *args):
         """ A wrapper function for call to remote user.
             
@@ -501,7 +501,7 @@ class ConsoleClient(HistoricRecvLine):
         else:
             self._user[domain].callRemote(command, *args)
 
-    @errorHandle
+    @_errorHandle
     def callToUserAndDisplay(self, command, domain, *args):
         """ A wrapper function around call to user and displaying the result
             

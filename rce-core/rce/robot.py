@@ -824,8 +824,8 @@ class RobotClient(Endpoint):
         Endpoint.terminate(self)
 
 
-def main(reactor, cred, masterIP, masterPort, extIP, extPort, commPort,
-         pkgPath, customConverters):
+def main(reactor, cred, masterIP, masterPort, consolePort,
+		extIP, extPort, commPort,pkgPath, customConverters):
     log.startLogging(sys.stdout)
     
     def _err(reason):
@@ -851,13 +851,14 @@ def main(reactor, cred, masterIP, masterPort, extIP, extPort, commPort,
         mod = __import__(module, fromlist=[className])
         converter.addCustomConverter(getattr(mod, className))
     
-    client = RobotClient(reactor, commPort, extIP, extPort, loader, converter)
+    client = RobotClient(reactor, masterIP, consolePort, commPort, extIP, 
+                         extPort, loader, converter)
     d = factory.login(cred, client)
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
     
     #portal = Portal(client, (client,))
-    robot = CloudEngineWebSocketFactory(client, reactor, masterIP,
+    robot = CloudEngineWebSocketFactory(client, 
                                         'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
     
