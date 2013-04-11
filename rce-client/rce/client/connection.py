@@ -140,6 +140,9 @@ class _Connection(object):
         self.removeInterface = self._rce.removeInterface
         self.addConnection = self._rce.addConnection
         self.removeConnection = self._rce.removeConnection
+        
+        # Connect
+        self._rce.connect(masterUrl, deferred)
     
     def disconnect(self):
         """ Disconnect from RCE.

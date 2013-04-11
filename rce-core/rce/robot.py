@@ -76,7 +76,7 @@ class Connection(object):
     """
     implements(IRobot, IMessageReceiver)
     
-    def __init__(self, userID, robotID):
+    def __init__(self, client, userID, robotID):
         """ Initialize the representation of a connection to a robot client.
             
             @param userID:      User ID of the robot owner
@@ -85,6 +85,8 @@ class Connection(object):
             @param robotID:     Unique ID which is used to identify the robot.
             @type  robotID:     str
         """
+        client.registerConnection(self)
+        self._client = client
         self._userID = userID
         self._robotID = robotID
         self._avatar = None
@@ -101,6 +103,27 @@ class Connection(object):
     def robotID(self):
         """ Robot ID used to identify the connected robot. """
         return self._robotID
+    
+    def destroy(self):
+        """
+        """
+        if self._protocol:
+            self._protocol.dropConnection()
+        
+        if self._client:
+            self._client.unregisterConnection(self)
+        
+        if self._view:
+            self._view.destroy()
+        
+        if self._namespace:
+            self._namespace.destroy()
+        
+        self._client = None
+        self._namespace = None
+        self._view = None
+        self._avatar = None
+        self._protocol = None
     
     ###
     ### Callbacks for RobotClient
@@ -130,6 +153,24 @@ class Connection(object):
         assert self._namespace is not None
         self._namespace.registerStatus(status)
     
+    def registerProtocol(self, protocol):
+        """ Register the client protocol.
+            
+            @param protocol:    Protocol which should be registered.
+            @type  protocol:    rce.comm.interfaces.IServersideProtocol
+        """
+        assert self._protocol is None
+        verifyObject(IServersideProtocol, protocol)
+        self._protocol = protocol
+    
+    def unregisterProtocol(self, connection, protocol):
+        """ Unregister the client protocol.
+            
+            @param protocol:    Protocol which should be unregistered.
+            @type  protocol:    rce.comm.interfaces.IServersideProtocol
+        """
+        self._protocol = None
+    
     ###
     ### Callbacks for View & Namespace
     ###
@@ -141,6 +182,12 @@ class Connection(object):
     
     
     def sendMessage(self, iTag, clsName, msgID, msg):
+        if not self._protocol:
+            # TODO: What should we do here?
+            #       One solution would be to queue the messages here for some
+            #       time...
+            return
+        
         self._protocol.sendDataMessage(iTag, clsName, msgID, msg)
         
     sendMessage.__doc__ = IServersideProtocol.get('sendDataMessage').getDoc()
@@ -370,6 +417,12 @@ class RobotView(object):
         d.addErrback(self._reportError)
     
     removeConnection.__doc__ = IRobot.get('removeConnection').getDoc()
+    
+    def destroy(self):
+        """
+        """
+        self._connection = None
+        self._view = None
 
 
 class Robot(Namespace):
@@ -382,7 +435,7 @@ class Robot(Namespace):
             ServiceClientForwarder, PublisherForwarder,
             SubscriberForwarder, ServiceProviderForwarder]
     
-    def __init__(self, client):
+    def __init__(self, client, connection):
         """ Initialize the Robot.
             
             @param client:      Robot Client which is responsible for
@@ -390,10 +443,7 @@ class Robot(Namespace):
             @type  client:      rce.robot.RobotClient
         """
         self._client = client
-        client.registerRobot(self)
-        
-        self._status = None
-        self._connection = None
+        self._connection = connection
         
         # The following replaces the call to Namespace.__init__()
         self._status = None
@@ -410,6 +460,12 @@ class Robot(Namespace):
     def loader(self):
         """ Reference to ROS components loader. """
         return self._client.loader
+    
+    def registerStatus(self, status):
+        """
+        """
+        assert self._status is None
+        self._status = status
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
@@ -468,12 +524,6 @@ class Robot(Namespace):
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
-        if not self._connection:
-            # TODO: What should we do here?
-            #       One solution would be to queue the messages here for some
-            #       time...
-            return
-        
         self._connection.sendMessage(iTag, msgType, msgID, msg)
     
     def remote_createInterface(self, status, uid, iType, msgType, tag):
@@ -522,23 +572,12 @@ class Robot(Namespace):
         assert tag in self._interfaces
         del self._interfaces[tag]
     
-    def remote_destroy(self):
-        """ Method should be called to destroy the robot and will take care
-            of destroying all objects owned by this robot as well as
-            deleting all circular references.
+    def destroy(self):
         """
-        if self._connection:
-            self._connection.dropConnection()
-        # Can not check here, because connection is unregistered when the
-        # connection is lost and dropConnection only requests to lose the
-        # connection
-        #assert self._connection is None
+        """
+        self._connection = None
         
-        if self._client:
-            self._client.unregisterRobot(self)
-            self._client = None
-        
-        # The following replaces the call to Namespace.destroy()
+        # The following replaces the call to Namespace.remote_destroy()
         for interface in self._interfaces.values():
             interface.remote_destroy()
         assert len(self._interfaces) == 0
@@ -554,6 +593,16 @@ class Robot(Namespace):
                 pass
             
             self._status = None
+    
+    def remote_destroy(self):
+        """ Method should be called to destroy the robot and will take care
+            of destroying all objects owned by this robot as well as
+            deleting all circular references.
+        """
+        if self._connection:
+            self._connection.destroy()
+        
+        self.destroy()
 
 
 class RobotClient(Endpoint):
@@ -564,6 +613,7 @@ class RobotClient(Endpoint):
     implements(IRealm, IRobotRealm)
     
     # CONFIG
+    CONNECT_TIMEOUT = 30
     RECONNECT_TIMEOUT = 10
     
     def __init__(self, reactor, masterIP, masterPort, commPort, extIP, extPort,
@@ -606,14 +656,13 @@ class RobotClient(Endpoint):
         """
         Endpoint.__init__(self, reactor, commPort)
         
-        self._msaterIP = masterIP
+        self._masterIP = masterIP
         self._masterPort = masterPort
         self._extAddress = '{0}:{1}'.format(extIP, extPort)
         self._converter = converter
         self._loader = loader
         
-        self._robots = set()
-        self._pendingRobots = {}
+        self._connections = set()
         self._deathCandidates = {}
     
     @property
@@ -628,62 +677,43 @@ class RobotClient(Endpoint):
         """ Reference to ROS components loader. """
         return self._loader
     
-    def registerRobot(self, robot):
-        assert robot not in self._robots
-        self._robots.add(robot)
+    def registerConnection(self, connection):
+        assert connection not in self._connections
+        self._connections.add(connection)
         
-        # Add the robot also to the death list
-        assert robot not in self._deathCandidates
-        deathCall = self._reactor.callLater(self.RECONNECT_TIMEOUT,
-                                            self._killRobot, robot)
-        self._deathCandidates[robot] = deathCall
+        # Add the connection also to the death candidates
+        assert connection not in self._deathCandidates
+        deathCall = self._reactor.callLater(self.CONNECT_TIMEOUT,
+                                            self._killConnection, connection)
+        self._deathCandidates[connection] = deathCall
+        
     
-    def unregisterRobot(self, robot):
-        assert robot in self._robots
+    def unregisterConnection(self, connection):
+        assert connection in self._connections
         
-        # First remove the robot from the death list if necessary
-        deathCall = self._deathCandidates.pop(robot, None)
-        
-        if deathCall:
+        # First remove the connection from the death candidates if necessary
+        deathCall = self._deathCandidates.pop(connection, None)
+        if deathCall and deathCall.active():
             deathCall.cancel()
         
-        # Unregister the robot
-        self._robots.remove(robot)
+        # Unregister the candidates
+        self._connections.remove(connection)
     
-    def _killRobot(self, robot):
-        """ Internally used method to destroy a robot whose reconnect timeout
-            was reached.
+    def _killConnection(self, connection):
+        """ Internally used method to destroy a connection whose reconnect
+            timeout was reached or which never as successfully connected.
             
-            @param robot:       Robot which should be destroyed.
-            @type  robot:       rce.robot.Robot
+            @param connection:  Connection which should be destroyed.
+            @type  connection:  rce.robot.Connection
         """
-        assert robot in self._robots
-        assert robot in self._deathCandidates
-        del self._deathCandidates[robot]
-        robot.remote_destroy()
-    
-    def connectionLost(self, robot):
-        """ Method is used by the Robot to signal to the client that he lost
-            the connection and should be marked for destruction.
-            
-            @param robot:       Robot which should be added to death list.
-            @type  robot:       rce.robot.Robots
-        """
-        assert robot not in self._deathCandidates
-        deathCall = self._reactor.callLater(self.RECONNECT_TIMEOUT,
-                                            self._killRobot, robot)
-        self._deathCandidates[robot] = deathCall
-    
-    def connectionEstablished(self, robot):
-        """ Method is used by the Robot to signal to the client that he has
-            a connection again and should be removed from the list of marked
-            robots.
-            
-            @param robot:       Robot which should be removed from death list.
-            @type  robot:       rce.robot.Robots
-        """
-        assert robot in self._deathCandidates
-        self._deathCandidates.pop(robot).cancel()
+        assert connection in self._connections
+        assert connection in self._deathCandidates
+        
+        deathCall = self._deathCandidates.pop(connection)
+        if deathCall.active():
+            deathCall.cancel()
+        
+        connection.destroy()
     
     def _cbAuthenticated(self, avatar, connection):
         """ Method is used internally as a callback which is called when the
@@ -717,7 +747,7 @@ class RobotClient(Endpoint):
             raise ForwardingError('Avatar reference is missing.')
         
         view = RobotView(view, connection)
-        namespace = Robot(self)
+        namespace = Robot(self, connection)
         connection.registerView(view)
         connection.registerNamespace(namespace)
         return self._avatar.callRemote('setupProxy', namespace,
@@ -770,27 +800,36 @@ class RobotClient(Endpoint):
         d.addCallback(self._cbRegistered, conn)
         return d
     
-    ###
-    ### TODO: Registration
-    def registerConnectionToRobot(self, protocol):
-        """ Register the client protocol with this Connection object.
+    def registerProtocol(self, connection, protocol):
+        """ Register the client protocol with a Connection object.
             
-            @param protocol:    Connection which should be registered.
+            @param connection:  Connection where the protocol should be
+                                registered.
+            @type  connection:  rce.robot.Connection
+            
+            @param protocol:    Protocol which should be registered.
+            @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
-        assert self._protocol is None
-        verifyObject(IServersideProtocol, protocol)
-        self._protocol = protocol
-        self._client.connectionEstablished(self)
+        assert connection not in self._deathCandidates
+        connection.registerProtocol(protocol)
+        self._deathCandidates.pop(connection).cancel()
     
-    def unregisterConnectionToRobot(self):
-        """ Unregister the client protocol with this Connection object.
+    def unregisterProtocol(self, connection, protocol):
+        """ Unregister the client protocol from a Connection object.
+            
+            @param connection:  Connection where the protocol should be
+                                unregistered.
+            @type  connection:  rce.robot.Connection
+            
+            @param protocol:    Protocol which should be unregistered.
+            @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
-        self._protocol = None
+        assert connection not in self._deathCandidates
+        deathCall = self._reactor.callLater(self.RECONNECT_TIMEOUT,
+                                            self._killConnection, connection)
+        self._deathCandidates[connection] = deathCall
         
-        if self._client:
-            self._client.connectionLost(self)
-    ### TODO: End
-    ###
+        connection.unregisterProtocol(protocol)
     
     def remote_getWebsocketAddress(self):
         """ Get the address of the websocket server running in this process.
@@ -810,16 +849,14 @@ class RobotClient(Endpoint):
                                 ready to stop the reactor.
             @rtype:             twisted::Deferred
         """
-        self._pendingRobots = {}
-        
         for call in self._deathCandidates.itervalues():
             call.cancel()
         
         self._deathCandidates = {}
         
-        for robot in self._robots.copy():
-            robot.remote_destroy()
-        assert len(self._robots) == 0
+        for connection in self._connections.copy():
+            connection.destroy()
+        assert len(self._connections) == 0
         
         Endpoint.terminate(self)
 

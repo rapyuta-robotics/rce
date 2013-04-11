@@ -75,6 +75,28 @@ class IRobotRealm(Interface):
                                 (type: rce.robot.Connection)
             @rtype:             twisted::Deferred
         """
+    
+    def registerProtocol(connection, protocol): #@NoSelf
+        """ Register the client protocol with a Connection object.
+            
+            @param connection:  Connection where the protocol should be
+                                registered.
+            @type  connection:  rce.robot.Connection
+            
+            @param protocol:    Protocol which should be registered.
+            @type  protocol:    # TODO: Determine type
+        """
+    
+    def unregisterProtocol(connection, protocol): #@NoSelf
+        """ Unregister the client protocol from a Connection object.
+            
+            @param connection:  Connection where the protocol should be
+                                unregistered.
+            @type  connection:  rce.robot.Connection
+            
+            @param protocol:    Protocol which should be unregistered.
+            @type  protocol:    # TODO: Determine type
+        """
 
 
 class IServersideProtocol(Interface):
@@ -109,6 +131,10 @@ class IServersideProtocol(Interface):
             
             @param msg:         Error message which should be sent.
             @type  msg:         str
+        """
+    
+    def dropConnection(): #@NoSelf
+        """ Request that the protocol drops the connection to the client.
         """
 
 

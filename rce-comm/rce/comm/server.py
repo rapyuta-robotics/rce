@@ -232,6 +232,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         verifyObject(IRobot, avatar)
         verifyObject(IMessageReceiver, avatar)
         
+        self._realm.registerProtocol(avatar, self)
         self._avatar = avatar
         self._assembler.start()
     
@@ -482,14 +483,12 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Method is called by the Autobahn engine when the connection has
             been lost.
         """
-        ### TODO: LOGOUT!
-        if self._avatar and self._logout:
-            self._logout(self._avatar)
+        if self._avatar:
+            self._realm.registerProtocol(self._avatar, self)
         
         self._assembler.stop()
         
         self._avatar = None
-        self._logout = None
         self._assembler = None
 
 
