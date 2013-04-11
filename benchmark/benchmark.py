@@ -40,7 +40,7 @@ from twisted.internet.defer import Deferred
 import sys
 sys.path.append('../pyrce')
 
-from connection import Connection
+from rce.client.connection import Connection
 
 
 class TestBase(object):

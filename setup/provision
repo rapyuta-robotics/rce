@@ -32,7 +32,6 @@
 
 # Python specific imports
 import os
-import errno
 import readline
 import glob
 import subprocess

@@ -12,7 +12,7 @@ install_pkg() {
     
     cd $1
     rm -rf build dist *.egg-info
-    python setup.py develop
+    python setup.py install
     cd ..
     
     printf "\n\n"
