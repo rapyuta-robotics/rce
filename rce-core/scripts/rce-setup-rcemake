@@ -51,8 +51,8 @@ _STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']
 
 
 def up():
-    mounts = [(pkg[0], os.path.join(settings.ROOTFS, pkg[1]))
-              for pkg in settings.ROOT_PKG_DIR]
+    mounts = [(pkg[0], os.path.join(settings.rootfs, pkg[1]))
+              for pkg in settings.packages]
 
     # Create all the necessary mount points
     for mount in mounts:
@@ -60,7 +60,7 @@ def up():
 
     # Add the system relevant directories which have to be mounted as well and
     # mount all directories
-    for source, target in [(path, os.path.join(settings.ROOTFS, path[1:]))
+    for source, target in [(path, os.path.join(settings.rootfs, path[1:]))
                            for path in _STD_DIR] + mounts:
         try:
             subprocess.check_output(['mount', '--bind', source, target])
@@ -72,19 +72,19 @@ def up():
                 sys.stderr.write('\tOutput: {0}'.format(e.output))
 
     # Return the directory to the root of the container filesystem
-    sys.stdout.write(settings.ROOTFS)
+    sys.stdout.write(settings.rootfs)
 
 
 def down():
-    mounts = [os.path.join(settings.ROOTFS, pkg[1])
-              for pkg in settings.ROOT_PKG_DIR]
+    mounts = [os.path.join(settings.rootfs, pkg[1])
+              for pkg in settings.packages]
 
     stdDir = _STD_DIR[:]
     stdDir.reverse()
 
     # Add the system relevant directories which have to be unmounted as well in
     # reversed order and unmount all directories
-    for target in mounts + [os.path.join(settings.ROOTFS, path[1:])
+    for target in mounts + [os.path.join(settings.rootfs, path[1:])
                             for path in stdDir]:
         try:
             subprocess.check_output(['umount', target])

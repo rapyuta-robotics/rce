@@ -52,9 +52,6 @@ from rce.slave.interface import Interface, InvalidResoureName
 from rce.util.settings import getSettings
 settings = getSettings()
 
-# Compression level used
-GZIP_LVL = settings.GZIP_LVL
-
 
 class ConversionError(Exception):
     """ Exception is raised in case a ROS message could not be converted.
@@ -327,6 +324,8 @@ class SubscriberConverter(_ConverterBase):
 class _ForwarderBase(_AbstractConverter):
     """ Class which implements the basic functionality of a Forwarder.
     """
+    _GZIP_LVL =  settings.gzip_lvl
+
     def receive(self, clsName, msgID, msg):
         """ Unwrap and inflate a JSON encoded ROS message.
             
@@ -367,8 +366,8 @@ class _ForwarderBase(_AbstractConverter):
                                 message.
             @type  remoteID:    uuid.UUID
         """
-        self._sendToClient(StringIO(zlib.compress(msg, GZIP_LVL)), msgID,
-                           protocol, remoteID)
+        self._sendToClient(StringIO(zlib.compress(msg, self._GZIP_LVL)),
+                           msgID, protocol, remoteID)
 
 
 class ServiceClientForwarder(_ForwarderBase):

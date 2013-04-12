@@ -49,10 +49,6 @@ from twisted.cred import error
 from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
-#rce specific imports
-from rce.util.settings import getSettings
-settings = getSettings()
-
 
 ### AES Encryption Stuff
 # AES Encryptors strength depends on input password length, ensure it with
@@ -125,8 +121,10 @@ class RCECredChecker(object):
     _credCache = None
     _cacheTimestamp = 0
 
-    def __init__(self, provision=False):
-        self.filename = settings.PASSWORD_FILE
+    def __init__(self, password_file, provision=False):
+        """
+        """
+        self.filename = password_file
         self.scanner = re.compile(_RE)
         pass_re = re.compile(_PASS_RE)
         self.pass_validator = lambda x: True if pass_re.match(x) else False

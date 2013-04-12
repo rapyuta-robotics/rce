@@ -63,14 +63,14 @@ def _get_argparse():
     parser.add_argument('MasterIP', type=str,
                         help='IP address of Master Process.')
     
-    if not settings.DEV_MODE:
+    if not settings.dev_mode:
         parser.add_argument('MasterPassword', type=str, help='Admin Password')
         parser.add_argument('InfraPassword', type=str,
                             help='Admin-Infrastructure Password')
     
     parser.add_argument('--maxContainers', type=int,
                         help='Maximum Number of Containers to support on this '
-                             'machine.', default=settings.MAX_CONTAINER)
+                             'machine.', default=settings.max_container)
 
     return parser
 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     args = _get_argparse().parse_args()
     
     # Credentials which should be used to login to Master process
-    if settings.DEV_MODE:
+    if settings.dev_mode:
         cred = UsernamePassword('container', sha256('admin').hexdigest())
         passwd = sha256('admin').hexdigest()
     else:
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         passwd = sha256(args.MasterPassword).hexdigest()
     
     main(reactor, cred, args.MasterIP, passwd, cred.password,
-         settings.MASTER_PORT, settings.INT_IP, settings.BRIDGE_IP,
-         settings.RCE_INTERNAL_PORT, settings.ROS_PROXY_PORT, settings.ROOTFS,
-         settings.CONF_DIR, settings.DATA_DIR,
-         settings.ROOT_PKG_DIR, args.maxContainers)
+         settings.internal_port, settings.internal_IP, settings.container_IP,
+         settings.comm_port, settings.ros_proxy_port, settings.rootfs,
+         settings.conf_dir, settings.data_dir, settings.packages,
+         args.maxContainers)

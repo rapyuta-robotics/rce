@@ -48,34 +48,80 @@ readline.parse_and_bind("tab: complete")
 readline.set_completer(complete)
 
 
+# Interactive input functions
+def _get_dev_mode():
+    """ Ask whether the developer mode should be used.
+    """
+    while 1:
+        dev_mode = raw_input('Do you want to autoprovision credentials '
+                             'for developer mode (Insecure)[y/N]: ')
+        dev_mode = dev_mode.strip().lower()
+
+        if dev_mode in ('n', ''):
+            return False
+        elif dev_mode  == 'y':
+            return True
+
+
+def _get_container_path():
+    """ Ask for path to the container root directory.
+    """
+    _DEFAULT = '/opt/rce/container'
+
+    path = raw_input('Enter the root directory to store the RoboEarth '
+                     'Container Filesystem [{0}]: '.format(_DEFAULT))
+    path = path.strip()
+
+    if path == '':
+        return _DEFAULT
+
+    return path
+
+
+def _get_interface(channel, default):
+    """ Ask for the name of the interface or IP address for the used
+        communcication channels.
+    """
+    ifname = raw_input('Enter the interface name or IP address for the '
+                       '{0} communication [{1}]: '.format(channel,
+                                                          default))
+    ifname = ifname.strip()
+
+    if ifname == '':
+        return default
+
+    return ifname
+
+
 # Helper function for config provisioning
-def provision_config(root_path, dev_mode):
+def provision_config(root_path, dev_mode, config_file, pw_file):
     """ Provision settings.ini as required for first runs.
     """
     parser = SafeConfigParser()
-    path = os.path.join(os.getenv('HOME'), '.rce')
-    config_file = os.path.join(path, 'config.ini')
+
+    network = {}
+
+    for name, descr, default in (('external_if', 'external', 'eth0'),
+                                 ('internal_if', 'internal', 'eth0'),
+                                 ('container_if', 'container', 'lxcbr0')):
+        network[name] = _get_interface(descr, default)
+
     config = {
         'global': {
             'gzip_lvl':9,
-            'platform':'local',
             'dev_mode':dev_mode,
-            'password_file':os.path.join(path, 'creds')
+            'password_file':pw_file
         },
-        'network': {
-            'local':'eth0,eth0,lxcbr0',
-            'rackspace':'eth0,eth1,lxcbr0',
-            'aws':'aws_dns,eth0,lxcbr0'
-        },
+        'network' : network,
         'converters': {
             'image':'rce.util.converters.image.ImageConverter'
         },
         'comm': {
             'http_port':9000,
             'ws_port':9010,
-            'master_port':8080,
-            'rce_internal_port':10030,
-            'rce_console_port':8081,
+            'internal_port':8080,
+            'external_port':8081,
+            'comm_port':10030,
             'ros_proxy_port':9020
         },
         'machine': {
@@ -93,22 +139,22 @@ def provision_config(root_path, dev_mode):
         for key, val in opts.iteritems():
             parser.set(section, key, str(val))
 
+    path = os.path.dirname(config_file)
+
     if not os.path.exists(path):
         os.makedirs(path)
-    
+
     with open(config_file, 'w') as f:
         parser.write(f)
 
 
 # Helper function to provision the cred db
-def provision_creds():
+def provision_creds(dev_mode, pw_file):
     """ Provision cred database as required for first runs.
     """
-    from rce.util.settings import getSettings
     from rce.util.cred import RCECredChecker, _FIRST_RUN_MSG
-    dev_mode = getSettings().DEV_MODE
 
-    cred_checker = RCECredChecker(True)
+    cred_checker = RCECredChecker(pw_file, True)
     required_users = {'admin':'admin', 'adminInfra':'admin'}
 
     if dev_mode:
@@ -144,42 +190,29 @@ def _get_argparse():
                             description='Provision the base settings for the'
                             ' RoboEarth Cloud Engine ')
 
-    parser.add_argument('mode', choices=['all', 'cred', 'config'],
+    parser.add_argument('mode', choices=['all', 'cred', 'config', 'container', 'clean'],
                         help='Flag to select set up instead of tear down.', )
 
     return parser
 
 
-def _get_dev_mode():
-    """ Ask whether the developer mode should be used.
-    """
-    dev_mode = raw_input('Do you want to autoprovision credentials '
-                         'for developer mode (Insecure)[y/N] : ')
-    return dev_mode.strip().lower() == 'y'
-
-
-def _get_container_path():
-    """ Ask for path to the container root directory.
-    """
-    return raw_input('Enter the root directory to store the RoboEarth '
-                     'Container Filesystem [Tab to autocomplete]: ').strip()
-
-
+''' # TODO: Unused?
 def _add_container_directories(container_path):
     """ Add the necessary directories to the container root directory.
     """
     for folder in ('data', 'config', 'rootfs'):
         path = os.path.join(container_path, folder)
         check_call('sudo mkdir -p {0}'.format(path), shell=True)
+'''
 
 
-# List of packages which should be installed in the host and 
+# List of packages which should be installed in the host and
 # in the container filesystem
 _BASE_PREP = ('curl python-setuptools python-dev')
 _HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
               'ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging')
-_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev'
-                   'ros-fuerte-ros-comm ros-fuerte-common-msgs python-setuptools')
+_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev '
+                   'ros-fuerte-ros-comm ros-fuerte-common-msgs')
 
 # Basic shell commands
 _ROS_SRC = ("""sudo sh -c """
@@ -188,29 +221,61 @@ _ROS_SRC = ("""sudo sh -c """
 _ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
 _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
 _CONTAINER = 'sudo bash container.bash --path={0}'
+_CONTAINER_CLEAN = 'sudo bash setup/container.bash --clean'
+_CLEAN = 'sudo rm -r {0}'
 
 
 if __name__ == '__main__':
+    from rce.util.settings import PATH, getSettings
     args = _get_argparse().parse_args()
 
-    if args.mode == 'all':
-        # Ask all the necessary questions
-        container_path = _get_container_path()
-        dev_mode = _get_dev_mode()
+    if args.mode == 'clean':
+        check_call(_CONTAINER_CLEAN, shell=True,
+                   cwd=os.path.dirname(sys.argv[0]))
 
+        if not os.path.exists(PATH):
+            exit(0)
+
+        try:
+            settings = getSettings()
+        except ValueError:
+            settings = None
+
+        os.remove(PATH)
+
+        if settings:
+            check_call(_CLEAN.format(settings.rootfs), shell=True)
+            check_call(_CLEAN.format(settings.conf_dir), shell=True)
+            check_call(_CLEAN.format(settings.data_dir), shell=True)
+            os.remove(settings.pw_file)
+
+        exit(0)
+
+    if args.mode in ('all', 'config'):
+        # Ask all the necessary questions
+        dev_mode = _get_dev_mode()
+        container_path = _get_container_path()
+        pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
+
+        # Build up the settings file
+        provision_config(container_path, dev_mode, PATH, pw_file)
+    else:
+        settings = getSettings()
+        dev_mode = settings.dev_mode
+        container_path = os.path.dirname(settings.rootfs)
+        pw_file = settings.pw_file
+
+    if args.mode in ('all', 'cred'):
+        # Provision the cred db
+        provision_creds(dev_mode, pw_file)
+
+    if args.mode in ('all', 'container'):
         # Install the packages in the host filesystem
-        for cmd in (_INSTALL.format(_BASE_PREP),_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
+        for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC, _ROS_KEY,
+                    _INSTALL.format(_HOST_PKGS)):
             check_call(cmd, shell=True)
 
-        _add_container_directories(container_path)
-
-        # build up the settings file
-        provision_config(container_path, dev_mode)
-
-        # provision the cred db
-        provision_creds()
-
-        # create the container
+        # Create the container
         check_call(_CONTAINER.format(container_path), shell=True,
                    cwd=os.path.dirname(sys.argv[0]))
 
@@ -231,16 +296,5 @@ if __name__ == '__main__':
 
         cmds = ';'.join(cmds)
 
-        # provision the container filesystem
+        # Provision the container filesystem
         check_call('echo "{0}" | sudo rce-make'.format(cmds), shell=True)
-    elif args.mode == 'cred':
-        provision_creds()
-    elif args.mode == 'config':
-        # Ask all the necessary questions
-        container_path = _get_container_path()
-        dev_mode = _get_dev_mode()
-        
-        _add_container_directories(container_path)
-        provision_config(container_path, dev_mode)
-    else:
-        raise ValueError('Invalid mode.')

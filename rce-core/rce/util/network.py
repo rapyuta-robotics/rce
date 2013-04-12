@@ -45,4 +45,4 @@ def isLocalhost(ip):
                             False otherwise.
         @rtype:             bool
     """
-    return ip in (settings.LOCALHOST_IP, 'localhost')
+    return ip in (settings.localhost_IP, 'localhost')

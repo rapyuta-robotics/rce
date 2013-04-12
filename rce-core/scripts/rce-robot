@@ -51,7 +51,7 @@ def _get_argparse():
 
     parser.add_argument('MasterIP', type=str,
                         help='IP address of Master Process.')
-    if not settings.DEV_MODE:
+    if not settings.dev_mode:
         parser.add_argument('InfraPassword', type=str,
                             help='Admin-Infrastructure Password')
 
@@ -62,11 +62,11 @@ if __name__ == '__main__':
     args = _get_argparse().parse_args()
     
     # Credentials which should be used to login to Master process
-    if settings.DEV_MODE:
+    if settings.dev_mode:
         cred = UsernamePassword('robot', sha256('admin').hexdigest())
     else:
         cred = UsernamePassword('robot', sha256(args.InfraPassword).hexdigest())
 
-    main(reactor, cred, args.MasterIP, settings.MASTER_PORT, settings.RCE_CONSOLE_PORT,
-        settings.EXT_IP, settings.WS_PORT, settings.RCE_INTERNAL_PORT, 
-        settings.ROOT_PKG_DIR, settings.CONVERTER_CLASSES)
+    main(reactor, cred, args.MasterIP, settings.internal_port,
+         settings.external_port, settings.external_IP, settings.ws_port,
+         settings.comm_port, settings.packages, settings.converters)

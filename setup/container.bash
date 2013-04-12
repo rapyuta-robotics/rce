@@ -69,7 +69,7 @@ EOF
 
 download_ubuntu()
 {
-    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,language-pack-en,build-essential,curl,sudo
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,language-pack-en,build-essential,python-setuptools,curl,sudo
 
     ### Local
     mirror=
@@ -93,6 +93,7 @@ download_ubuntu()
     # download a mini ubuntu into a cache
     echo "Downloading ubuntu minimal ..."
     # Local
+    echo "debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages precise $cache/partial-$arch $mirror"
     debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages precise $cache/partial-$arch $mirror
 
     if [ $? -ne 0 ]; then
@@ -258,7 +259,6 @@ mkdir -p $rootfs/opt/rce/packages
 touch $rootfs/etc/init/rceComm.conf
 touch $rootfs/etc/init/rceLauncher.conf
 touch $rootfs/etc/init/rceRosapi.conf
-
 
 #The rest of the provisioning.
 SOURCE="${BASH_SOURCE[0]}"
