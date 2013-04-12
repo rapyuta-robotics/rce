@@ -79,7 +79,7 @@ class Container(Proxy):
                     for p in self._pending:
                         p.callback(result)
                     
-                    self._pending = None
+                    self._pending = set()
                 
                 addr = self.callRemote('getPort')
                 addr.addCallback(lambda port: IPv4Address('TCP',
