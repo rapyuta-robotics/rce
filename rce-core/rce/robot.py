@@ -800,7 +800,7 @@ class RobotClient(Endpoint):
         d.addCallback(self._cbRegistered, conn)
         return d
     
-    def registerProtocol(self, connection, protocol):
+    def registerWebsocketProtocol(self, connection, protocol):
         """ Register the client protocol with a Connection object.
             
             @param connection:  Connection where the protocol should be
@@ -814,7 +814,7 @@ class RobotClient(Endpoint):
         connection.registerProtocol(protocol)
         self._deathCandidates.pop(connection).cancel()
     
-    def unregisterProtocol(self, connection, protocol):
+    def unregisterWebsocketProtocol(self, connection, protocol):
         """ Unregister the client protocol from a Connection object.
             
             @param connection:  Connection where the protocol should be

@@ -54,5 +54,5 @@ if __name__ == '__main__':
     # Credentials which should be used to login to Master process
     cred = UsernamePassword(sys.argv[4], sys.argv[5])
     
-    main(reactor, cred, sys.argv[1], sys.argv[2],
-         sys.argv[3], sys.argv[4])
+    main(reactor, cred, sys.argv[1], int(sys.argv[2]),
+         int(sys.argv[3]), sys.argv[4])
