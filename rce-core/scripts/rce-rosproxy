@@ -30,14 +30,22 @@
 #     
 #     
 
+if __name__ == '__main__':
+    # Before we start to import everything check if we have the right amount of
+    # arguments
+    import os
+    import sys
+    
+    if len(sys.argv) != 6:
+        print('Usage: {0} [proxyPort]'.format(os.path.basename(sys.argv[0])))
+  
+
 # twisted specific imports
 from twisted.internet import reactor
 
 # rce specific imports
 from rce.rosproxy import main
-from rce.util.settings import getSettings
-settings = getSettings()
 
 
 if __name__ == '__main__':
-    main(reactor, settings.ROS_PROXY_PORT)
+    main(reactor, int(sys.argv[1]))

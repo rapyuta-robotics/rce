@@ -59,7 +59,6 @@ from rce.util.network import isLocalhost
 #    writeCertToFile, writeKeyToFile
 
 
-# TODO: Modify name of executable
 _UPSTART_COMM = """
 # description
 author "Dominique Hunziker"
@@ -80,8 +79,7 @@ script
 end script
 """
 
-# TODO: rosapi upstart script can be made static
-# TODO: Modify name of executable
+
 _UPSTART_ROSAPI = """
 # description
 author "Mayank Singh"
@@ -98,7 +96,7 @@ script
     . /opt/rce/setup.sh
 
     #start rosapi node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-rosproxy
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-rosproxy {proxyPort}
 end script
 """
 
@@ -244,7 +242,7 @@ class RCEContainer(Referenceable):
                                          uid=uid, passwd=passwd))
 
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
-            f.write(_UPSTART_ROSAPI)
+            f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
 
         # TODO: For the moment there is no upstart launcher.
 #        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
