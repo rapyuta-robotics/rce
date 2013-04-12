@@ -484,7 +484,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             been lost.
         """
         if self._avatar:
-            self._realm.registerProtocol(self._avatar, self)
+            self._realm.unregisterProtocol(self._avatar, self)
         
         self._assembler.stop()
         

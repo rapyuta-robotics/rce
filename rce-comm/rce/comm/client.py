@@ -201,6 +201,10 @@ class RCE(object):
         self._conn = None
         self._connectedDeferred = None
     
+    @property
+    def reactor(self):
+        return self._reactor
+
     def registerConnection(self, conn):
         """ Callback for RCERobotProtocol.
             
