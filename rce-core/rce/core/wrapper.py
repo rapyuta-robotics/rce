@@ -157,8 +157,11 @@ class Robot(_Wrapper):
                                 i.e. 'std_msgs/Int32'.
             @type  clsName:     str
         """
-        if not validateName(iTag):
-            raise InvalidRequest('Interface tag is not a valid.')
+        
+        try:
+            validateName(iTag)
+        except Exception as e :     
+            raise InvalidRequest('Interface tag is not a valid.'+e.message)
         
         if iTag in self._interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "
@@ -278,8 +281,10 @@ class Container(_Wrapper):
                                 in the environment.
             @type  namespace:   str
         """
-        if not validateName(nTag):
-            raise InvalidRequest('Node tag is not a valid.')
+        try:
+            validateName(nTag)
+        except Exception as e :
+            raise InvalidRequest('Node tag is not a valid.'+e.message)
         
         if nTag in self._nodes:
             raise InvalidRequest("Can not use the same node tag '{0}' in the "
@@ -360,8 +365,10 @@ class Container(_Wrapper):
                                 use.
             @type  addr:        str
         """
-        if not validateName(iTag):
-            raise InvalidRequest('Interface tag is not a valid.')
+        try:
+            validateName(iTag)
+        except Exception as e :
+            raise InvalidRequest('Interface tag is not a valid.'+e.message)
         
         if iTag in self._interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "
