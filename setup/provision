@@ -175,10 +175,11 @@ def _add_container_directories(container_path):
 
 # List of packages which should be installed in the host and 
 # in the container filesystem
+_BASE_PREP = ('curl python-setuptools python-dev')
 _HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
               'ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging')
-_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core '
-                   'ros-fuerte-ros-comm ros-fuerte-common-msgs')
+_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev'
+                   'ros-fuerte-ros-comm ros-fuerte-common-msgs python-setuptools')
 
 # Basic shell commands
 _ROS_SRC = ("""sudo sh -c """
@@ -198,7 +199,7 @@ if __name__ == '__main__':
         dev_mode = _get_dev_mode()
 
         # Install the packages in the host filesystem
-        for cmd in (_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
+        for cmd in (_INSTALL.format(_BASE_PREP),_ROS_SRC, _ROS_KEY, _INSTALL.format(_HOST_PKGS)):
             check_call(cmd, shell=True)
 
         _add_container_directories(container_path)
