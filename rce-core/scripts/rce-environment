@@ -36,8 +36,8 @@ if __name__ == '__main__':
     import os
     import sys
     
-    if len(sys.argv) != 4:
-        print('Usage: {0} [masterIP] [uid] '
+    if len(sys.argv) != 6:
+        print('Usage: {0} [masterIP] [masterPort] [internalPort] [uid] '
               '[passwd]'.format(os.path.basename(sys.argv[0])))
         exit(1)
 
@@ -48,13 +48,11 @@ from twisted.cred.credentials import UsernamePassword
 
 # rce specific imports
 from rce.environment import main
-from rce.util.settings import getSettings
-settings = getSettings()
 
 
 if __name__ == '__main__':
     # Credentials which should be used to login to Master process
-    cred = UsernamePassword(sys.argv[2], sys.argv[3])
+    cred = UsernamePassword(sys.argv[4], sys.argv[5])
     
-    main(reactor, cred, sys.argv[1], settings.MASTER_PORT,
-         settings.RCE_INTERNAL_PORT, sys.argv[2])
+    main(reactor, cred, sys.argv[1], sys.argv[2],
+         sys.argv[3], sys.argv[4])

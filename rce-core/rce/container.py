@@ -76,7 +76,7 @@ script
     . /opt/rce/setup.sh
 
     # start environment node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {uid} {passwd}
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
 end script
 """
 
@@ -238,7 +238,9 @@ class RCEContainer(Referenceable):
         passwd = encodeAES(cipher(self._client._masterPasswd),
                            salter(uid, self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
-            f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
+            f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP, 
+                                         masterPort=self._client.masterPort, 
+                                         internalPort=self._client.envPort,
                                          uid=uid, passwd=passwd))
 
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
@@ -368,9 +370,9 @@ class ContainerClient(Referenceable):
 
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, masterPasswd, infraPasswd, intIP,
-                 bridgeIP, envPort, rosproxyPort, rootfsDir, confDir, dataDir,
-                 pkgDir):
+    def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd, 
+                 intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir, 
+                 dataDir, pkgDir):
         """ Initialize the Container Client.
 
             @param reactor:       Reference to the twisted reactor.
@@ -378,7 +380,11 @@ class ContainerClient(Referenceable):
 
             @param masterIP:      IP address of the Master process.
             @type  masterIP:      str
-
+            
+            @param masterPort:    Port of the Master process used for internal
+                                  communications.
+            @type  masterPort:    int
+            
             @param masterPasswd:  SHA 256 Digested Master Password.
             @type  masterPasswd:  str
 
@@ -431,7 +437,8 @@ class ContainerClient(Referenceable):
         self._internalIP = intIP
         self._envPort = envPort
         self._rosproxyPort = rosproxyPort
-
+        self._masterPort = masterPort
+        
         if isLocalhost(masterIP):
             self._masterIP = bridgeIP
         else:
@@ -469,6 +476,11 @@ class ContainerClient(Referenceable):
     def internalIP(self):
         """ IP address of this process in the internal network. """
         return self._internalIP
+
+    @property
+    def masterPort(self):
+        """ Port of the master process used for internal communications. """
+        return self._masterPort
 
     @property
     def envPort(self):
@@ -616,9 +628,9 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
 
-    client = ContainerClient(reactor, masterIP, masterPassword, infraPasswd,
-                             internalIP, bridgeIP, envPort, rosproxyPort,
-                             rootfsDir, confDir, dataDir, pkgDir)
+    client = ContainerClient(reactor, masterIP, masterPort, masterPassword, 
+                             infraPasswd, internalIP, bridgeIP, envPort, 
+                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir)
 
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
