@@ -240,7 +240,7 @@ if __name__ == '__main__':
         container_path = _get_container_path()
         dev_mode = _get_dev_mode()
         
-        _add_container_directories(container_path, dev_mode)
-        provision_config(container_path)
+        _add_container_directories(container_path)
+        provision_config(container_path, dev_mode)
     else:
         raise ValueError('Invalid mode.')

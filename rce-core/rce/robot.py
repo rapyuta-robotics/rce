@@ -163,7 +163,7 @@ class Connection(object):
         verifyObject(IServersideProtocol, protocol)
         self._protocol = protocol
     
-    def unregisterProtocol(self, connection, protocol):
+    def unregisterProtocol(self, protocol):
         """ Unregister the client protocol.
             
             @param protocol:    Protocol which should be unregistered.
@@ -800,7 +800,7 @@ class RobotClient(Endpoint):
         d.addCallback(self._cbRegistered, conn)
         return d
     
-    def registerProtocol(self, connection, protocol):
+    def registerWebsocketProtocol(self, connection, protocol):
         """ Register the client protocol with a Connection object.
             
             @param connection:  Connection where the protocol should be
@@ -810,11 +810,11 @@ class RobotClient(Endpoint):
             @param protocol:    Protocol which should be registered.
             @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
-        assert connection not in self._deathCandidates
+        assert connection in self._deathCandidates
         connection.registerProtocol(protocol)
         self._deathCandidates.pop(connection).cancel()
     
-    def unregisterProtocol(self, connection, protocol):
+    def unregisterWebsocketProtocol(self, connection, protocol):
         """ Unregister the client protocol from a Connection object.
             
             @param connection:  Connection where the protocol should be

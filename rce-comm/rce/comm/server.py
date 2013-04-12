@@ -232,7 +232,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         verifyObject(IRobot, avatar)
         verifyObject(IMessageReceiver, avatar)
         
-        self._realm.registerProtocol(avatar, self)
+        self._realm.registerWebsocketProtocol(avatar, self)
         self._avatar = avatar
         self._assembler.start()
     
@@ -484,7 +484,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             been lost.
         """
         if self._avatar:
-            self._realm.registerProtocol(self._avatar, self)
+            self._realm.unregisterWebsocketProtocol(self._avatar, self)
         
         self._assembler.stop()
         

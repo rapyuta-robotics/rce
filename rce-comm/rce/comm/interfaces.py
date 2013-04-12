@@ -76,7 +76,7 @@ class IRobotRealm(Interface):
             @rtype:             twisted::Deferred
         """
     
-    def registerProtocol(connection, protocol): #@NoSelf
+    def registerWebsocketProtocol(connection, protocol): #@NoSelf
         """ Register the client protocol with a Connection object.
             
             @param connection:  Connection where the protocol should be
@@ -87,7 +87,7 @@ class IRobotRealm(Interface):
             @type  protocol:    # TODO: Determine type
         """
     
-    def unregisterProtocol(connection, protocol): #@NoSelf
+    def unregisterWebsocketProtocol(connection, protocol): #@NoSelf
         """ Unregister the client protocol from a Connection object.
             
             @param connection:  Connection where the protocol should be

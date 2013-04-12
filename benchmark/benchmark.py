@@ -3,7 +3,7 @@
 #     
 #     benchmark.py
 #     
-#     This file is part of the RoboEarth Cloud Engine benchmark.
+#     This file is part of the RoboEarth Cloud Engine framework.
 #     
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
@@ -30,16 +30,16 @@
 #     
 #     
 
+# Python specific imports
 import time
 import random
 import string
 import json
 
+# twisted specific imports
 from twisted.internet.defer import Deferred
 
-import sys
-sys.path.append('../pyrce')
-
+# rce specific imports
 from rce.client.connection import Connection
 
 

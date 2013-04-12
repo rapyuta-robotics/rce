@@ -33,6 +33,7 @@
 # Python specific imports
 import time
 from datetime import datetime
+from functools import partial
 
 try:
     from cStringIO import StringIO, InputType, OutputType
@@ -224,7 +225,7 @@ class Converter(object):
                 convFunc = self._encode
             
             if listBool:
-                convFunc = lambda attr: map(convFunc, attr)
+                convFunc = partial(map, convFunc)
             
             try:
                 data[slotName] = convFunc(getattr(rosMsg, slotName))
@@ -288,11 +289,11 @@ class Converter(object):
             elif slotType in self._customTypes and _checkIsStringIO(field):
                 convFunc = self._customTypes[slotType][0]().decode
             else:
-                cls = self._loader.loadMsg(*slotType.split('/'))
-                convFunc = lambda d: self._decode(cls, d)
+                convFunc = partial(self._decode,
+                                   self._loader.loadMsg(*slotType.split('/')))
             
             if listBool:
-                convFunc = lambda f: map(convFunc, f)
+                convFunc = partial(map, convFunc)
             
             setattr(rosMsg, slotName, convFunc(field))
 
