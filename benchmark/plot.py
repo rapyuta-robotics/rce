@@ -3,7 +3,7 @@
 #     
 #     plot.py
 #     
-#     This file is part of the RoboEarth Cloud Engine benchmark.
+#     This file is part of the RoboEarth Cloud Engine framework.
 #     
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
