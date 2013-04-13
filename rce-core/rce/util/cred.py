@@ -69,7 +69,7 @@ pad = lambda s: s + (_BLOCK_SIZE - len(str(s)) % _BLOCK_SIZE) * _PADDING
 # encrypt with AES, encode with base64
 encodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 cipher = lambda passwd: AES.new(passwd.decode('hex'))
-salter = lambda u, p: sha256(u+p).hexdigest()
+salter = lambda u, p: sha256(u + p).hexdigest()
 
 # one-liner to format user-info to write to the credentials file
 formatUser = lambda name, pw, mode, groups: '\t'.join((name, pw, mode,
@@ -87,7 +87,7 @@ _DEFAULT_USER_MODE = '1'    # should be as many digits as the above e.g.:
 _DEFAULT_GROUPS = ('user',)
 
 ### Used Regex patterns
-_RE = r'(\w+)\s(.+)\s(\d{'+str(_MODE_LENGTH)+'})\s(.+)'
+_RE = r'(\w+)\s(.+)\s(\d{' + str(_MODE_LENGTH) + '})\s(.+)'
 _PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 
 ### Used doc strings
@@ -114,9 +114,9 @@ class RCECredChecker(object):
     """The RCE file-based, text-based username/password database.
     """
     implements(ICredentialsChecker)
-    
+
     credentialInterfaces = (IUsernameHashedPassword,)
-    
+
     cache = False
     _credCache = None
     _cacheTimestamp = 0
@@ -381,7 +381,7 @@ class RCECredChecker(object):
         except KeyError:
                 raise CredentialError('No such user')
 
-    def passwd(self,username, new_password, control_mode):
+    def passwd(self, username, new_password, control_mode):
         """ Change password for the username.
 
             In admin mode you need to set the boolean indicating admin Mode.
@@ -438,7 +438,7 @@ class RCEInternalChecker(object):
         self._root_checker = cred_checker
         self.credentialInterfaces = (IUsernameHashedPassword,)
 
-    def add_checker(self,method):
+    def add_checker(self, method):
         """ TODO: Add doc
         """
         self.checkUidValidity = method
@@ -453,7 +453,7 @@ class RCEInternalChecker(object):
 
     def requestAvatarId(self, c):
         try:
-            if c.username in ('container','robot'):
+            if c.username in ('container', 'robot'):
                 p = self._root_checker.getUser('adminInfra').password
                 user = c.username
             else: # it is the environment uuid
@@ -465,7 +465,7 @@ class RCEInternalChecker(object):
 
                 infra = self._root_checker.getUser('adminInfra').password
                 main = self._root_checker.getUser('admin').password
-                p = encodeAES(cipher(main), salter(c.username,infra))
+                p = encodeAES(cipher(main), salter(c.username, infra))
                 user = 'environment'
         except KeyError:
             return defer.fail(error.UnauthorizedLogin())

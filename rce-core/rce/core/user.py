@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-core/rce/core/user.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2013 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
-#     \author/s: Dominique Hunziker 
-#     
-#     
+#
+#     \author/s: Dominique Hunziker
+#
+#
 
 # twisted specific imports
 from twisted.spread.pb import Avatar, Error
@@ -52,26 +52,26 @@ class User(Avatar):
     """
     def __init__(self, realm, userID):
         """ Initialize the User.
-            
+
             @param realm:       The realm of the RoboEarth Cloud Engine master.
             @type  realm:       rce.master.core.RoboEarthCloudEngine
-            
+
             @param userID:      The user ID associated with the user.
             @type  userID:      str
         """
         self._realm = realm
         self._userID = userID
-        
+
         self._role = None
         self._robots = {}
         self._containers = {}
         self._connections = {}
-    
+
     @property
     def userID(self):
         """ User ID of this User. """
         return self._userID
-    
+
     @property
     def role(self):
         """ Role of the user. """
@@ -89,24 +89,24 @@ class User(Avatar):
 
     def createRobotWrapper(self, robotNamespace, location, robotID):
         """ Create a new Robot Wrapper.
-            
+
             # TODO: Add description of arguments
-            
+
             @raise:             rce.util.name.IllegalName,
                                 rce.core.user.InvalidRequest
         """
         validateName(robotID)
-        
+
         if (robotID in self._robots or robotID in self._containers):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
-        
+
         robot, status = location.createRobotProxy(robotID, robotNamespace)
         robot = Robot(robot)
         self._robots[robotID] = robot
         robot.notifyOnDeath(self._robotDied)
         return status
-    
+
     def perspective_getUserView(self, console=True):
         """
         """
@@ -127,7 +127,7 @@ class User(Avatar):
         else:
             raise InvalidRequest('Can not get a non existent endpoint '
                                  "'{0}'.".format(tag))
-    
+
     def _containerDied(self, container):
         if self._containers:
             for key, value in self._containers.iteritems():
@@ -137,7 +137,7 @@ class User(Avatar):
         else:
             print('Received notification for dead Container, '
                   'but User is already destroyed.')
-    
+
     def _robotDied(self, robot):
         if self._robots:
             for key, value in self._robots.iteritems():
@@ -147,7 +147,7 @@ class User(Avatar):
         else:
             print('Received notification for dead Robot, '
                   'but User is already destroyed.')
-    
+
     def _connectionDied(self, connection):
         if self._connections:
             for key, value in self._connections.iteritems():
@@ -157,7 +157,7 @@ class User(Avatar):
         else:
             print('Received notification for dead Connection, '
                   'but User is already destroyed.')
-    
+
     def destroy(self):
         """ Method should be called to destroy the user and will take care of
             destroying all objects owned by this User as well as deleting all
@@ -165,19 +165,19 @@ class User(Avatar):
         """
         for connection in self._connections.itervalues():
             connection.dontNotifyOnDeath(self._connectionDied)
-        
+
         for container in self._containers.itervalues():
             container.dontNotifyOnDeath(self._containerDied)
-        
+
         for robot in self._robots.itervalues():
             robot.dontNotifyOnDeath(self._robotDied)
-        
+
         for container in self._containers.itervalues():
             container.destroy()
-        
+
         for robot in self._robots.itervalues():
             robot.destroy()
-        
+
         self._connections = None
         self._containers = None
         self._robots = None

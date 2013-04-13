@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-console/rce/console/console.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2013 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
+#
 #     \author/s: Mayank Singh
-#     
-#     
+#
+#
 
 # Python specific imports
 import sys
@@ -57,7 +57,7 @@ class CustomOptions(usage.Options):
     """
     def __init__(self, terminal):
         """ Initialize the CustomOptions Class
-        
+
             @param terminal:    Reference to the running terminal
             @type  terminal:    ConsoleClient.terminal
         """
@@ -369,7 +369,7 @@ class ConsoleClient(HistoricRecvLine):
 
             @param masterIP:        The IP of the master server
             @type  masterIP:        string
-            
+
             @param consolePort:     Port of the master server
             @type  consolePort:     int
         """
@@ -402,7 +402,7 @@ class ConsoleClient(HistoricRecvLine):
     def lineReceived(self, line):
         """ Manage state/mode after connection. Code uses states to take
             credential input and then starts terminal input.
-            
+
             @param line:    line typed on terminal
             @type  line:    string
         """
@@ -412,15 +412,15 @@ class ConsoleClient(HistoricRecvLine):
 
         def _cbConnectionSuccess(view):
             self._user = view
-            
-            if isinstance(self._user,dict):
+
+            if isinstance(self._user, dict):
                 self._privilege = 'console'
             else:
                 self._privilege = 'admin'
-            
+
             self.terminal.write('Connection to Master Established.')
             self.showPrompt()
-        
+
         if self._mode == 'Username':
             self._mode = 'Password'
             self._username = line
@@ -439,7 +439,7 @@ class ConsoleClient(HistoricRecvLine):
 
     def parseInputLine(self, line):
         """ A function to route various commands entered via Console.
-            
+
             @param line:    The text entered on the Console
             @type  line:    string
         """
@@ -450,22 +450,22 @@ class ConsoleClient(HistoricRecvLine):
             else:
                 self.terminal.write('No such command')
         self.showPrompt()
-    
+
     @_errorHandle
     def callToRosProxy(self, command, parameter):
         """ Function to handle call to ROSAPI Proxy Server.
-            
+
             @param command:      The command to execute in ROS environment.
             @type  command:      string
-            
+
             @param parameter:    A parameter for the command.
             @type  parameter:    string
         """
-        def perform_action((url,key)):
-            self._connected_rosapi_nodes[parameter] = (url,key)
+        def perform_action((url, key)):
+            self._connected_rosapi_nodes[parameter] = (url, key)
             argList = [('userID', self._username), ('action', command),
                        ('key', key)]
-            
+
             try:
                 f = urlopen('{0}?{1}'.format(url, urlencode(argList)))
                 response = json.loads(f.read())
@@ -488,11 +488,11 @@ class ConsoleClient(HistoricRecvLine):
             d.addErrback(lambda err: self.terminal.write("Problem "
                                 "in connection with master: "
                                 "{0}".format(err)))
- 
+
     @_errorHandle
     def callToUser(self, command, domain, *args):
         """ A wrapper function for call to remote user.
-            
+
             @param command:    The command to be executed
             @type  command:    string
         """
@@ -504,7 +504,7 @@ class ConsoleClient(HistoricRecvLine):
     @_errorHandle
     def callToUserAndDisplay(self, command, domain, *args):
         """ A wrapper function around call to user and displaying the result
-            
+
             @param command:    The command to be executed
             @type  command:    string
         """
@@ -514,11 +514,11 @@ class ConsoleClient(HistoricRecvLine):
         else:
             d = self._user[domain].callRemote(command, *args)
             d.addCallback(lambda result: self.terminal.write(str(result)))
-            
+
     #Various commands follow
     def cmd_EXIT(self, line):
         """ Handler for exit command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
@@ -526,12 +526,12 @@ class ConsoleClient(HistoricRecvLine):
 
     def cmd_USER(self, line):
         """ Handler for user command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = UserOptions(self.terminal)
-        
+
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -566,12 +566,12 @@ class ConsoleClient(HistoricRecvLine):
 
     def cmd_CONTAINER(self, line):
         """ Handler for container command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = ContainerOptions(self.terminal)
-        
+
         try:
             config.parseOptions(line)
         except usage.UsageError as errortext:
@@ -590,15 +590,15 @@ class ConsoleClient(HistoricRecvLine):
             elif config['username']:
                 self.callToUserAndDisplay('list_containers_by_user', 'admin',
                                           config['username'])
-    
+
     def cmd_NODE(self, line):
         """ Handler for node command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = NodeOptions(self.terminal)
-        
+
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -623,12 +623,12 @@ class ConsoleClient(HistoricRecvLine):
 
     def cmd_PARAMETER(self, line):
         """ Handler for parameter command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = ParameterOptions(self.terminal)
-        
+
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -644,15 +644,15 @@ class ConsoleClient(HistoricRecvLine):
                 if opts['ctag'] and opts['name']:
                     self.callToUser('removeParameter', 'robot', opts['ctag'],
                                     opts['name'])
-    
+
     def cmd_INTERFACE(self, line):
         """ Handler for interface command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = InterfaceOptions(self.terminal)
-        
+
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -674,15 +674,15 @@ class ConsoleClient(HistoricRecvLine):
                 if opts['etag'] and opts['itag']:
                     self.callToUser('removeInterface', 'robot', opts['etag'],
                                     opts['itag'])
-    
+
     def cmd_CONNECTION(self, line):
         """ Handler for connection command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         config = ConnectionOptions(self.terminal)
-        
+
         try:
             config.parseOptions(line)
             cmd = config.subCommand
@@ -698,10 +698,10 @@ class ConsoleClient(HistoricRecvLine):
                 if opts['tag1'] and opts['tag2']:
                     self.callToUser('removeConnection', 'robot', opts['tag1'],
                                     opts['tag2'])
-                    
+
     def cmd_ROBOT(self, line):
         """ Handler for robot command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
@@ -719,7 +719,7 @@ class ConsoleClient(HistoricRecvLine):
 
     def cmd_MACHINE(self, line):
         """ Handler for machine command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
@@ -740,16 +740,16 @@ class ConsoleClient(HistoricRecvLine):
 
     def cmd_HELP(self, line):
         """ Handler for help command.
-            
+
             @param line:    line input from terminal.
             @type  line:    string
         """
         configs = [UserOptions(self.terminal), ContainerOptions(self.terminal),
                    NodeOptions(self.terminal), ParameterOptions(self.terminal),
-                   InterfaceOptions(self.terminal), 
+                   InterfaceOptions(self.terminal),
                    ConnectionOptions(self.terminal),
                    RobotOptions(self.terminal), MachineOptions(self.terminal)]
-        
+
         for config in configs:
             self.terminal.nextLine()
             config.opt_help()
@@ -757,7 +757,7 @@ class ConsoleClient(HistoricRecvLine):
 
 def runWithProtocol(klass, masterIP, port):
     """ Function overridden from twisted.conch.stdio to allow Ctrl+C interrupt
-        
+
         @param klass:     A callable which will be invoked with
                           *a, **kw and should return an ITerminalProtocol
                           implementor. This will be invoked when a connection
@@ -769,7 +769,7 @@ def runWithProtocol(klass, masterIP, port):
     fd = sys.stdin.fileno()
     oldSettings = termios.tcgetattr(fd)
     tty.setcbreak(fd)
-    
+
     try:
         p = ServerProtocol(klass, masterIP, port)
         stdio.StandardIO(p)

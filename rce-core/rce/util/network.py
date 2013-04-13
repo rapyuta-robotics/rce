@@ -37,10 +37,10 @@ settings = getSettings()
 
 def isLocalhost(ip):
     """ Check if the IP address matches the loopback address.
-        
+
         @param ip:          IP address which should be checked
         @type  ip:          str
-        
+
         @return:            True if the address is the loopback address;
                             False otherwise.
         @rtype:             bool

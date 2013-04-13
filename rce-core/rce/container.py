@@ -236,8 +236,8 @@ class RCEContainer(Referenceable):
         passwd = encodeAES(cipher(self._client._masterPasswd),
                            salter(uid, self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
-            f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP, 
-                                         masterPort=self._client.masterPort, 
+            f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
+                                         masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
                                          uid=uid, passwd=passwd))
 
@@ -368,8 +368,8 @@ class ContainerClient(Referenceable):
 
         There can be only one Container Client per machine.
     """
-    def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd, 
-                 intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir, 
+    def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
+                 intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
                  dataDir, pkgDir):
         """ Initialize the Container Client.
 
@@ -378,11 +378,11 @@ class ContainerClient(Referenceable):
 
             @param masterIP:      IP address of the Master process.
             @type  masterIP:      str
-            
+
             @param masterPort:    Port of the Master process used for internal
                                   communications.
             @type  masterPort:    int
-            
+
             @param masterPasswd:  SHA 256 Digested Master Password.
             @type  masterPasswd:  str
 
@@ -436,7 +436,7 @@ class ContainerClient(Referenceable):
         self._envPort = envPort
         self._rosproxyPort = rosproxyPort
         self._masterPort = masterPort
-        
+
         if isLocalhost(masterIP):
             self._masterIP = bridgeIP
         else:
@@ -626,8 +626,8 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     factory = PBClientFactory()
     reactor.connectTCP(masterIP, masterPort, factory)
 
-    client = ContainerClient(reactor, masterIP, masterPort, masterPassword, 
-                             infraPasswd, internalIP, bridgeIP, envPort, 
+    client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
+                             infraPasswd, internalIP, bridgeIP, envPort,
                              rosproxyPort, rootfsDir, confDir, dataDir, pkgDir)
 
     d = factory.login(cred, (client, maxNr))

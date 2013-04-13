@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-core/rce/util/container.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2012 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
-#     \author/s: Dominique Hunziker 
-#     
-#     
+#
+#     \author/s: Dominique Hunziker
+#
+#
 
 # Python specific imports
 import os
@@ -111,21 +111,21 @@ class Container(object):
     """
     def __init__(self, reactor, rootfs, conf, hostname, ip):
         """ Initialize the Container.
-            
+
             @param reactor:     Reference to the twisted::reactor
             @type  reactor:     twisted::reactor
-            
+
             @param rootfs:      Filesystem path of the root directory of the
                                 container filesystem.
             @type  rootfs:      str
-            
+
             @param conf:        Filesystem path of folder where configuration
                                 files for the container should be stored.
             @type  conf:        str
-            
+
             @param hostname:    Host name of the container.
             @type  hostname:    str
-            
+
             @param ip:          IP address which the container should use.
                                 Use '0.0.0.0' for DHCP.
             @type  ip:          str
@@ -136,35 +136,35 @@ class Container(object):
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
         self._ip = ip
-        
+
         if not os.path.isabs(conf):
             raise ValueError('Container configuration directory is not an '
                              'absolute path.')
-        
+
         if not os.path.isdir(conf):
             raise ValueError('Container Configuration directory does not '
                              'exist: {0}'.format(conf))
-        
+
         if os.path.exists(self._conf):
             raise ValueError('There is already a config file in the container '
                              "configuration directory '{0}'.".format(conf))
-        
+
         if os.path.exists(self._fstab):
             raise ValueError('There is already a fstab file in the container '
                              "configuration directory '{0}'.".format(conf))
-        
+
         self._fstabExt = []
-    
+
     def extendFstab(self, src, fs, ro):
         """ Add a line to the Fstab file using bind.
-            
+
             @param src:     Source path in host filesystem.
             @type  src:     str
-            
+
             @param fs:      Path in container filesystem to which the source
                             should be bind.
             @type  fs:      str
-            
+
             @param ro:      Flag to indicate whether bind should be read-only
                             or not.
             @type  ro:      bool
@@ -172,37 +172,37 @@ class Container(object):
         self._fstabExt.append(_FSTAB_BIND.format(srcDir=src,
                                                  fsDir=pjoin(self._rootfs, fs),
                                                  ro=',ro' if ro else ''))
-    
+
     def _setup(self):
         """ Setup necessary files.
         """
         with open(self._conf, 'w') as f:
             f.write(_CONFIG.format(hostname=self._hostname, fs=self._rootfs,
                                    fstab=self._fstab, ip=self._ip))
-        
+
         with open(self._fstab, 'w') as f:
             f.write(_FSTAB_BASE.format(
                 proc=pjoin(self._rootfs, 'proc'),
                 devpts=pjoin(self._rootfs, 'dev/pts'),
                 sysfs=pjoin(self._rootfs, 'sys')))
             f.writelines(self._fstabExt)
-    
+
     def start(self, name):
         """ Start the container.
-            
+
             @param name:    Name of the container which should be started.
             @type  name:    str
-            
+
             @return:        Deferred whose callback is triggered on success or
                             whose errback is triggered on failure with an
                             error message.
             @rtype:         twisted::Deferred
         """
         self._setup()
-        
+
         log.msg("Start container '{0}'".format(name))
         deferred = Deferred()
-        
+
         try:
             dfrd = getProcessValue('/usr/bin/lxc-start',
                                    ('-n', name, '-f', self._conf, '-d'),
@@ -215,21 +215,21 @@ class Container(object):
                                        'Received exit code {0} from '
                                        'lxc-start.'.format(retVal))
                     deferred.errback(Failure(e))
-            
+
             dfrd.addCallback(cb)
         except OSError:
             e = ContainerError('Insufficient system resources to start a new '
                                'process.')
             deferred.errback(Failure(e))
-        
+
         return deferred
-    
+
     def stop(self, name):
         """ Stop the container.
-            
+
             @param name:        Name of the container which should be stopped.
             @type  name:        str
-            
+
             @param command:     Deferred whose callback is triggered on success
                                 or whose errback is triggered on failure with
                                 an error message.
@@ -237,11 +237,11 @@ class Container(object):
         """
         log.msg("Stop container '{0}'".format(name))
         deferred = Deferred()
-        
+
         try:
             dfrd = getProcessValue('/usr/bin/lxc-stop', ('-n', name),
                                    env=os.environ, reactor=self._reactor)
-            
+
             def cb(retVal):
                 if retVal == 0:
                     deferred.callback('Container successfully stopped.')
@@ -250,41 +250,41 @@ class Container(object):
                                        'Received exit code {0} from '
                                        'lxc-stop.'.format(retVal))
                     deferred.errback(Failure(e))
-            
+
             dfrd.addCallback(cb)
         except OSError:
             e = ContainerError('Insufficient system resources to stop a '
                                'process.')
             deferred.errback(Failure(e))
-        
+
         return deferred
-    
+
 #    def execute(self, name, command):
 #        """ Execute a command inside the container.
-#            
+#
 #            @param name:        Name of the container which will execute the
 #                                command.
 #            @type  name:        str
-#            
+#
 #            @param command:     Command which should be executed.
 #            @type  command:     [str]
 #        """
 #        def cb(_):
 #            print('\nSuccessful.')
 #            self._reactor.stop()
-#        
+#
 #        def eb(err):
 #            print('\n{0}'.format(err.getErrorMessage()))
 #            self._reactor.stop()
-#        
+#
 #        deferred = Deferred()
 #        deferred.addCallbacks(cb, eb)
-#        
+#
 #        self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
 #                         False)
-#        
+#
 #        protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
-#        
+#
 #        try:
 #            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf, '--']
 #            cmd += command

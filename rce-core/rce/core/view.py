@@ -289,7 +289,7 @@ class RobotView(Viewable):
                                  '{1}.'.format(Types.decode(ifA.iType),
                                                Types.decode(ifB.iType)))
 
-        key = hash(tagA)^hash(tagB)
+        key = int(md5(tagA).hexdigest(), 16) ^ int(md5(tagB).hexdigest(), 16)
 
         if key in clientAvatar._connections:
             raise InvalidRequest('Can not add the same connection twice.')
@@ -311,7 +311,7 @@ class RobotView(Viewable):
                                     testRobot/logPublisher
             @type  tagX:        str
         """
-        key = hash(tagA)^hash(tagB)
+        key = int(md5(tagA).hexdigest(), 16) ^ int(md5(tagB).hexdigest(), 16)
 
         try:
             connection = clientAvatar._connections.pop(key)
@@ -326,6 +326,8 @@ class RobotView(Viewable):
 
 
 class NormalConsoleView(Viewable):
+    """
+    """
     def view_update_user(self, clientAvatar, username, password, old_password):
         """ Remote call to edit user information.
 

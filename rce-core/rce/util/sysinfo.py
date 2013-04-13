@@ -47,7 +47,7 @@ import re
 import stat
 import time
 
-from collections import namedtuple,defaultdict
+from collections import namedtuple, defaultdict
 
 # Necessary Object Declarations
 
@@ -519,7 +519,7 @@ def usage_percent(used, total, _round=None):
 
 def get_sys_meminfo():
     f = open('/proc/meminfo', 'r')
-    total=free=buffers=cached = active = inactive = None
+    total = free = buffers = cached = active = inactive = None
     try:
         for line in f:
             if line.startswith('MemTotal:'):
@@ -569,7 +569,7 @@ def network_io_counters():
         colon = line.find(':')
         assert colon > 0, line
         name = line[:colon].strip()
-        fields = line[colon+1:].strip().split()
+        fields = line[colon + 1:].strip().split()
         bytes_recv = int(fields[0])
         packets_recv = int(fields[1])
         errin = int(fields[2])
@@ -934,7 +934,7 @@ class Process(object):
 
     _mmap_base_fields = ['path', 'rss', 'size', 'pss', 'shared_clean',
                          'shared_dirty', 'private_clean', 'private_dirty',
-                         'referenced', 'anonymous', 'swap',]
+                         'referenced', 'anonymous', 'swap']
     nt_mmap_grouped = namedtuple('mmap', ' '.join(_mmap_base_fields))
     nt_mmap_ext = namedtuple('mmap', 'addr perms ' + ' '.join(_mmap_base_fields))
 

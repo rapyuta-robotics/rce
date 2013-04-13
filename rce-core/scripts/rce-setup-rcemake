@@ -108,7 +108,7 @@ def _get_argparse():
                                         'chroot.')
 
     parser.add_argument('action', choices=['up', 'down'],
-                        help='Flag to select set up instead of tear down.', )
+                        help='Flag to select set up instead of tear down.')
 
     return parser
 

@@ -113,7 +113,7 @@ def _getIP(ifname):
         @return:                IP address as a string, i.e. x.x.x.x
         @rtype:                 str
     """
-    s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     try:
         return socket.inet_ntoa(fcntl.ioctl(
@@ -397,7 +397,7 @@ class _RCESettingsParser(SafeConfigParser, object):
             @param section:     Section from which the option should be
                                 retrieved.
             @type  section:     str
-    
+
             @param option:      Option which should be parsed for an IP address.
             @type  option:      str
 

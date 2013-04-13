@@ -196,16 +196,6 @@ def _get_argparse():
     return parser
 
 
-''' # TODO: Unused?
-def _add_container_directories(container_path):
-    """ Add the necessary directories to the container root directory.
-    """
-    for folder in ('data', 'config', 'rootfs'):
-        path = os.path.join(container_path, folder)
-        check_call('sudo mkdir -p {0}'.format(path), shell=True)
-'''
-
-
 # List of packages which should be installed in the host and
 # in the container filesystem
 _BASE_PREP = ('curl python-setuptools python-dev')

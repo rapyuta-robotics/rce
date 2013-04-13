@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-core/rce/util/converter.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2012 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
-#     \author/s: Dominique Hunziker 
-#     
-#     
+#
+#     \author/s: Dominique Hunziker
+#
+#
 
 # Python specific imports
 import time
@@ -38,12 +38,12 @@ from functools import partial
 try:
     from cStringIO import StringIO, InputType, OutputType
     from StringIO import StringIO as pyStringIO
-    
+
     def _checkIsStringIO(obj):
         return isinstance(obj, (InputType, OutputType, pyStringIO))
 except ImportError:
     from StringIO import StringIO
-    
+
     def _checkIsStringIO(obj):
         return isinstance(obj, StringIO)
 
@@ -77,7 +77,7 @@ class _DurationConverter(object):
     """ Convert ROS Duration type to JSON style and back.
     """
     implements(ICustomROSConverter)
-    
+
     def decode(self, data):
         """ Generate a rospy.rostime.Duration instance based on the given data
             which should be a string representation of a float.
@@ -97,7 +97,7 @@ class _TimeConverter(object):
     """ Convert ROS Time type to JSON style and back.
     """
     implements(ICustomROSConverter)
-    
+
     def decode(self, data):
         """ Generate a rospy.rostime.Time instance based on the given data of
             the form 'YYYY-MM-DDTHH:MM:SS.mmmmmm' (ISO 8601).
@@ -157,41 +157,41 @@ class Converter(object):
 
     _SPECIAL_TYPES = {  'time'     : _TimeConverter,
                         'duration' : _DurationConverter }
-    
+
     def __init__(self, loader):
         """ Initialize the Converter.
-            
+
             @param loader:      Used loader for ROS resources.
             @type  loader:      Loader
         """
         self._loader = loader
         self._customTypes = {}
-    
+
     def addCustomConverter(self, converter):
         """ Register a new custom Converter.
-            
+
             @raise:     rce.error.InternalError,
                         rce.util.interfaces.InterfaceError
         """
         verifyClass(ICustomROSConverter, converter)
-        
+
         if converter.MESSAGE_TYPE in self._customTypes:
             raise InternalError('There are multiple Converters given for '
                                 'message type "{0}".'.format(
                                     converter.MESSAGE_TYPE))
-        
+
         try:
             pkg, name = package_resource_name(converter.MESSAGE_TYPE)
         except ValueError:
             raise InternalError('msg type is not valid. Has to be of the from '
                                 'pkg/msg, i.e. std_msgs/Int8.')
-        
+
         self._customTypes[converter.MESSAGE_TYPE] = (converter,
             self._loader.loadMsg(pkg, name))
-    
+
     def removeCustomConverter(self, msgType):
         """ Unregister a custom Converter.
-            
+
             @param msgType:     Message type of ROS message as a string, i.e.
                                 'std_msgs/Int8', for which the converter should
                                 be removed.
@@ -202,7 +202,7 @@ class Converter(object):
         except KeyError:
             InternalError('Tried to remove a custom converter which was '
                           'never added.')
-    
+
     def _encode(self, rosMsg):
         """ Internally used method which is responsible for the heavy lifting.
         """
@@ -214,7 +214,7 @@ class Converter(object):
                 slotType = slotType[:-2]
             else:
                 listBool = False
-            
+
             if slotType in self._BASE_TYPES:
                 convFunc = self._BASE_TYPES[slotType]
             elif slotType in self._SPECIAL_TYPES:
@@ -223,10 +223,10 @@ class Converter(object):
                 convFunc = self._customTypes[slotType][0]().encode
             else:
                 convFunc = self._encode
-            
+
             if listBool:
                 convFunc = partial(map, convFunc)
-            
+
             try:
                 data[slotName] = convFunc(getattr(rosMsg, slotName))
             except ValueError as e:
@@ -234,7 +234,7 @@ class Converter(object):
                                      rosMsg.__class__.__name__, slotName, e))
 
         return data
-    
+
     def encode(self, rosMsg):
         """ Generate JSON compatible data from a ROS message.
 
@@ -252,13 +252,13 @@ class Converter(object):
         if not isinstance(rosMsg, Message):
             raise TypeError('Given rosMsg object is not an instance of '
                             'genpy.message.Message.')
-        
+
         for converter, cls in self._customTypes.itervalues():
             if isinstance(rosMsg, cls):
                 return converter().encode(rosMsg)
-        
+
         return self._encode(rosMsg)
-    
+
     def _decode(self, msgCls, data):
         """ Internally used method which is responsible for the heavy lifting.
         """
@@ -273,13 +273,13 @@ class Converter(object):
                 slotType = slotType[:-2]
             else:
                 listBool = False
-            
+
             field = data[slotName]
-            
+
             if listBool and not isinstance(field, (list, tuple)):
                 raise TypeError('Given data does not match the definition of '
                                 'the ROS message.')
-            
+
             if slotType == 'string':
                 convFunc = _stringify
             elif slotType in self._BASE_TYPES:
@@ -291,14 +291,14 @@ class Converter(object):
             else:
                 convFunc = partial(self._decode,
                                    self._loader.loadMsg(*slotType.split('/')))
-            
+
             if listBool:
                 convFunc = partial(map, convFunc)
-            
+
             setattr(rosMsg, slotName, convFunc(field))
 
         return rosMsg
-    
+
     def decode(self, msgCls, data):
         """ Generate a ROS message from JSON compatible data.
 
@@ -321,5 +321,5 @@ class Converter(object):
             for converter, cls in self._customTypes.itervalues():
                 if msgCls == cls:
                     return converter().decode(msgCls, data)
-        
+
         return self._decode(msgCls, data)

@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-core/rce/rosproxy.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2013 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
+#
 #     \author/s: Mayank Singh
-#     
-#     
+#
+#
 
 # Python specific imports
 import httplib
@@ -80,11 +80,11 @@ class ConsoleROSProxyAuthentication(Resource):
     """ Authenticator and Request handler for the ROS Proxy Web Server.
     """
     isLeaf = True
-    
+
     def __init__(self):
         self._ros = ROSProxy()
         self._dbFile = "/opt/rce/data/rosenvbridge.db"
-    
+
     def _checkDB(self, userID, key):
         """ Method to check the rosproxy database to authenticate a web
             request.
@@ -118,16 +118,16 @@ class ConsoleROSProxyAuthentication(Resource):
         except KeyError as e:
             return fail(InvalidRequest('Request is missing parameter: '
                                        '{0}'.format(e)))
-        
+
         if not self._checkDB(userID[0], key[0]):
             return fail(UnauthorizedLogin("Unknown user or key"))
-        
+
         for name, param in [('action', action), ('userID', userID),
                             ('key', key)]:
             if len(param) != 1:
                 return fail(InvalidRequest("Parameter '{0}' has to be unique "
                                            'in request.'.format(name)))
-        
+
         return self.parseInputLine(action)
 
     def parseInputLine(self, action):
@@ -143,12 +143,12 @@ class ConsoleROSProxyAuthentication(Resource):
             else:
                 return fail(InvalidRequest("No such action"))
         return succeed(output)
-                
+
     def cmd_SERVICES(self):
         """ Handler for services call.
         """
         return self._ros.get_services()
-    
+
     def cmd_TOPICS(self):
         """ Handler for topics call.
         """
@@ -159,10 +159,10 @@ class ConsoleROSProxyAuthentication(Resource):
             the realm.
         """
         msg = {'key' : output}
-        
+
         self._render_GET(request, httplib.OK,
                          'application/json; charset=utf-8', json.dumps(msg))
-    
+
     def _processGETErr(self, e, request):
         """ Internally used method to process an error to a GET request from
             the realm.
@@ -181,9 +181,9 @@ class ConsoleROSProxyAuthentication(Resource):
             e.printTraceback()
             msg = 'Fatal Error'
             code = httplib.INTERNAL_SERVER_ERROR
-        
+
         self._render_GET(request, code, 'text/plain; charset=utf-8', msg)
-    
+
     def _render_GET(self, request, code, ctype, msg):
         """ Internally used method to render the response to a GET request.
         """
@@ -199,22 +199,22 @@ class ConsoleROSProxyAuthentication(Resource):
         d = self._processGETReq(request.args)
         d.addCallback(self._processGETResp, request)
         d.addErrback(self._processGETErr, request)
-        
+
         return NOT_DONE_YET
 
 
 def main(reactor, rosproxyPort):
     f = open('/opt/rce/data/rosproxy.log', 'w')
     log.startLogging(f)
-    
+
     def terminate():
         reactor.callFromThread(reactor.stop)
 
     rospy.on_shutdown(terminate)
-    
+
     #HTTP Server
     reactor.listenTCP(rosproxyPort, Site(ConsoleROSProxyAuthentication()))
-    
+
     reactor.run(installSignalHandlers=False)
-    
+
     f.close()

@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # the necessary super user privileges
     import os
     import sys
-    
+
     if os.getuid() != 0:
         print('{0} has to be run as super '
               'user.'.format(os.path.basename(sys.argv[0])))
@@ -62,12 +62,12 @@ def _get_argparse():
 
     parser.add_argument('MasterIP', type=str,
                         help='IP address of Master Process.')
-    
+
     if not settings.dev_mode:
         parser.add_argument('MasterPassword', type=str, help='Admin Password')
         parser.add_argument('InfraPassword', type=str,
                             help='Admin-Infrastructure Password')
-    
+
     parser.add_argument('--maxContainers', type=int,
                         help='Maximum Number of Containers to support on this '
                              'machine.', default=settings.max_container)
@@ -77,7 +77,7 @@ def _get_argparse():
 
 if __name__ == '__main__':
     args = _get_argparse().parse_args()
-    
+
     # Credentials which should be used to login to Master process
     if settings.dev_mode:
         cred = UsernamePassword('container', sha256('admin').hexdigest())
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         cred = UsernamePassword('container',
                                 sha256(args.InfraPassword).hexdigest())
         passwd = sha256(args.MasterPassword).hexdigest()
-    
+
     main(reactor, cred, args.MasterIP, passwd, cred.password,
          settings.internal_port, settings.internal_IP, settings.container_IP,
          settings.comm_port, settings.ros_proxy_port, settings.rootfs,

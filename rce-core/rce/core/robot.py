@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-core/rce/core/robot.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2013 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
-#     \author/s: Dominique Hunziker 
-#     
-#     
+#
+#     \author/s: Dominique Hunziker
+#
+#
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
@@ -45,11 +45,11 @@ class RobotEndpointAvatar(Avatar):
     """
     def __init__(self, realm, endpoint):
         """ Initialize the Robot Endpoint avatar.
-            
+
             @param realm:       User realm from which a user object can be
                                 retrieved.
             @type  realm:       # TODO: Check this
-            
+
             @param endpoint:    Representation of the Robot Endpoint.
             @type  endpoint:    rce.core.robot.RobotEndpoint
         """
@@ -58,17 +58,17 @@ class RobotEndpointAvatar(Avatar):
 
     def perspective_setupProxy(self, robotProxy, userID, robotID):
         """ Register a Robot namespace with the Master process.
-            
+
             @param robotProxy:  Reference to the Robot namespace in the Robot
                                 process.
             @type  robotProxy:  twisted.spread.pb.RemoteReference
-            
+
             @param userID:      User ID of the robot owner.
             @type  userID:      str
-            
+
             @param robotID:     Unique ID which is used to identify the robot.
             @type  robotID:     str
-            
+
             @return:            Status object which can be used in the Robot
                                 process to inform the Master of status changes
                                 to the Robot namespace.
@@ -91,16 +91,16 @@ class Robot(Namespace):
     """
     def __init__(self, endpoint):
         """ Initialize the Robot.
-            
+
             @param endpoint:    Endpoint in which the robot was created.
             @type  endpoint:    rce.master.network.Endpoint
         """
         super(Robot, self).__init__(endpoint)
-    
+
     def getWebsocketAddress(self):
         """ Get the address which can be used to connect to this robot
             namespace.
-            
+
             @return:            Address of the endpoint containing the robot
                                 namespace. The address has the form
                                     [IP]:[port] (type: str)
@@ -116,41 +116,41 @@ class RobotEndpoint(Endpoint):
     """
     def __init__(self, network, distributor, root, port):
         """ Initialize the Environment Endpoint.
-            
+
             @param network:     Network to which the endpoint belongs.
             @type  network:     rce.master.network.Network
-            
+
             @param distributor: Distributor which is responsible for assigning
                                 new robot websocket connections to robot
                                 endpoints.
             @type  container:   rce.master.robot.Distributor
-            
+
             @param root:        Reference to top level of data structure.
             @type  root:        rce.master.core.RoboEarthCloudEngine
-            
+
             @param port:        Port where the robot process is listening for
                                 connections to other endpoints.
             @type  port:        int
         """
         super(RobotEndpoint, self).__init__(network)
-        
+
         self._distributor = distributor
         distributor.registerRobotProcess(self)
-        
+
         self._root = root
         self._port = port
-    
+
     @property
     def active(self):
         """ The number of active robot websocket connections in the
             robot process.
         """
         return len(self._namespaces)
-    
+
     def getAddress(self):
         """ Get the address of the robot endpoint's internal communication
             server.
-            
+
             @return:            Address of the robot endpoint's internal
                                 communication server.
                                 (type: twisted.internet.address.IPv4Address)
@@ -160,28 +160,28 @@ class RobotEndpoint(Endpoint):
             ip = remote.broker.transport.getPeer().host
             ip = self._root.getInternalIP() if isLocalhost(ip) else ip
             return IPv4Address('TCP', ip, self._port)
-        
+
         return self().addCallback(cb)
-    
+
     def getWebsocketAddress(self):
         """ Get the address which can be used to connect to the robot
             namespaces which belong to this endpoint.
-            
+
             @return:            Address of the endpoint process. The address
                                 has the form [IP]:[port] (type: str)
             @rtype:             twisted::Deferred
         """
         return self.callRemote('getWebsocketAddress')
-    
+
     def createRobotProxy(self, robotID, remoteRobot):
         """ Create a Namespace object in the endpoint.
-            
+
             @param robotID:     ID of the robot which has to be created.
             @type  robotID:     str
-            
+
             @param remoteRobot: Reference to Robot namespace in Robot process.
             @type  remoteRobot: twisted.spread.pb.RemoteReference
-            
+
             @return:            New Robot instance.
             @rtype:             rce.master.robot.Robot
                                 (subclass of rce.master.base.Proxy)
@@ -190,7 +190,7 @@ class RobotEndpoint(Endpoint):
         status = Status(robot)
         robot.callback(remoteRobot)
         return robot, status
-    
+
     def destroy(self):
         """ Method should be called to destroy the robot endpoint and will take
             care of destroying all objects owned by this RobotEndpoint as well
