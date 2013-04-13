@@ -1,34 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#     
+#
 #     rce-client/rce/client/interface.py
-#     
+#
 #     This file is part of the RoboEarth Cloud Engine framework.
-#     
+#
 #     This file was originally created for RoboEearth
 #     http://www.roboearth.org/
-#     
+#
 #     The research leading to these results has received funding from
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
-#     
+#
 #     Copyright 2012 RoboEarth
-#     
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
-#     
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-#     
+#
 #     Unless required by applicable law or agreed to in writing, software
 #     distributed under the License is distributed on an "AS IS" BASIS,
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-#     
-#     \author/s: Dominique Hunziker 
-#     
-#     
+#
+#     \author/s: Dominique Hunziker
+#
+#
 
 # Python specific imports
 import zlib
@@ -65,7 +65,7 @@ class _Publisher(object):
         self._conn = conn
         self._iTag = iTag
         self._msgType = msgType
-    
+
     def publish(self, msg):
         """ Publish a message.
         """
@@ -83,11 +83,11 @@ class _Subscriber(object):
         self._iTag = iTag
         self._msgType = msgType
         self._cb = cb
-        
+
         conn.registerInterface(iTag, self, False)
         self._subscribed = True
         print('Subscriber to RCE Interface "{0}" is up.'.format(iTag))
-    
+
     def unsubscribe(self):
         """ Unsubscribe from Interface. Afterwards no more messages are given
             to the registered callback.
@@ -97,15 +97,15 @@ class _Subscriber(object):
             self._subscribed = False
             print('Subscriber to RCE Interface "{0}" is '
                   'down.'.format(self._iTag))
-    
+
     def callback(self, msgType, msg, _):
         """ Callback for Connection.
         """
         if not msgType == self._msgType:
             raise TypeError('Received unexpected message type.')
-        
+
         self._cb(msg)
-    
+
     def __del__(self):
         """ Finalize the Subscriber.
         """
@@ -122,24 +122,24 @@ class _Service(object):
         self._conn = conn
         self._iTag = iTag
         self._srvType = srvType
-        
+
         self._responses = {}
-        
+
         conn.registerInterface(iTag, self, True)
         self._subscribed = True
         print('Service Client to RCE Interface "{0}" is up.'.format(iTag))
-    
+
     def callback(self, srvType, msg, msgID):
         """ Callback for Connection.
         """
         if not srvType == self._srvType:
             raise TypeError('Received unexpected message type.')
-        
+
         deferred = self._responses.pop(msgID, None)
-        
+
         if deferred:
             deferred.callback(msg)
-    
+
     def __del__(self):
         """ Finalize the Service.
         """
@@ -167,15 +167,15 @@ class Service(_Service):
         """ Initialize the Service.
         """
         super(Service, self).__init__(conn, iTag, srvType)
-        
+
         self._cb = cb
-    
+
     def call(self, msg, cb=None):
         """ Call the Service.
-            
+
             @param msg:     Request message which should be sent.
             @type  msg:     JSON compatible dictionary.
-            
+
             @param cb:      Callback function which will be called with the
                             response message as argument. If parameter is
                             omitted the default callback is tried as fall-back.
@@ -183,15 +183,15 @@ class Service(_Service):
         """
         if not cb:
             cb = self._cb
-        
+
         if not callable(cb):
             raise TypeError('Callback has to be callable.')
-        
+
         uid = uuid4().hex
         deferred = Deferred()
         deferred.addCallback(cb)
         self._responses[uid] = deferred
-        
+
         self._conn.sendMessage(self._iTag, self._srvType, msg, uid)
 
 
@@ -203,17 +203,17 @@ if HAS_ROS:
             """ Initialize the Publisher.
             """
             super(ROSPublisher, self).__init__(conn, iTag, msgType)
-            
+
             self._addr = addr
-            
+
             self._sub = rospy.Subscriber(addr, rospy.AnyMsg, self._rosCB)
             print('Local ROS Subscriber on topic "{0}" is up.'.format(addr))
-        
+
         def _rosCB(self, msg):
             """ Internally used callback for ROS Subscriber.
             """
             self.publish(StringIO(zlib.compress(msg._buff, _GZIP_LVL)))
-        
+
         def __del__(self):
             """ Finalize the Publisher.
             """
@@ -221,8 +221,8 @@ if HAS_ROS:
                 self._sub.unregister()
                 print('Local ROS Subscriber on topic "{0}" is '
                       'down.'.format(self._addr))
-    
-    
+
+
     class ROSSubscriber(_Subscriber):
         """ Representation of a Subscriber Interface using ROS.
         """
@@ -231,36 +231,36 @@ if HAS_ROS:
             """
             super(ROSSubscriber, self).__init__(conn, iTag, msgType,
                                                 self._callback)
-            
+
             args = msgType.split('/')
-        
+
             if len(args) != 2:
                 raise ValueError('Message type is not valid. Has to be of the '
                                  'form pkg/msg, i.e. std_msgs/Int8.')
-            
+
             self._pub = rospy.Publisher(addr, conn.loader.loadMsg(*args))
             print('Local ROS Publisher on topic "{0}" is up.'.format(addr))
-        
+
         def _callback(self, msg):
             """ Internally used method to send received messages to the ROS
                 Publisher.
             """
             rosMsg = rospy.AnyMsg()
             rosMsg._buff = zlib.decompress(msg.getvalue())
-            
+
             self._pub.publish(rosMsg)
-        
+
         def __del__(self):
             """ Finalize the Subscriber.
             """
             super(ROSSubscriber, self).__del__()
-            
+
             if hasattr(self, '_pub'):
                 self._pub.unregister()
                 print('Local ROS Publisher on topic "{0}" is '
                       'down.'.format(self._addr))
-    
-    
+
+
     class ROSService(_Service):
         """ Representation of a Service Interface using ROS.
         """
@@ -268,70 +268,70 @@ if HAS_ROS:
             """ Initialize the Service.
             """
             super(ROSService, self).__init__(conn, iTag, srvType)
-            
+
             self._pendingLock = Lock()
             self._pending = {}
-            
+
             args = srvType.split('/')
-            
+
             if len(args) != 2:
                 raise ValueError('Service type is not valid. Has to be of the '
                                  'form pkg/srv, i.e. std_msgs/Int8.')
-        
+
             srvCls = conn.loader.loadSrv(*args)
             srvCls._request_class = rospy.AnyMsg
             srvCls._response_class = rospy.AnyMsg
-            
+
             self._service = rospy.Service(addr, srvCls, self._rosCB)
             print('Local ROS Service on address "{0}" is up.'.format(addr))
-        
+
         def _rosCB(self, req):
             """ Internally used callback for ROS Service.
             """
             event = Event()
-            
+
             uid = uuid4().hex
             deferred = Deferred()
             deferred.addCallback(self._callback, uid, event)
             self._responses[uid] = deferred
-            
+
             msg = StringIO(zlib.compress(req._buff, _GZIP_LVL))
-            
+
             self._conn.sendMessage(self._iTag, self._srvType, msg, uid)
             event.wait()
-            
+
             with self._pendingLock:
                 response = self._pending.pop(uid, None)
-            
+
             if not isinstance(response, genpy.message.Message):
                 raise Exception('Interrupted.') # TODO: Change exception?
-            
+
             return response
-        
+
         def _callback(self, msg, uid, event):
             """ Internally used method to send received message to the ROS
                 Service as response.
             """
             rosMsg = rospy.AnyMsg()
             rosMsg._buff = zlib.decompress(msg.getvalue())
-            
+
             with self._pendingLock:
                 self._pending[uid] = rosMsg
-            
+
             event.set()
-        
+
         def __del__(self):
             """ Finalize the Service.
             """
             super(ROSService, self).__del__()
-            
+
             if hasattr(self, '_service'):
                 self._service.shutdown()
                 print('Local ROS Service on address "{0}" is '
                       'down.'.format(self._addr))
-            
+
             with self._pendingLock:
                 for event in self._pending.itervalues():
                     event.set()
-                
+
                 self._pending = {}

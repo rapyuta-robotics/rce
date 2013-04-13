@@ -203,6 +203,7 @@ class RCE(object):
     
     @property
     def reactor(self):
+        """ Reference to twisted::reactor. """
         return self._reactor
 
     def registerConnection(self, conn):
@@ -236,10 +237,11 @@ class RCE(object):
         self._conn = None
         print('Connection closed.')
     
-    def _masterConnect(self, masterUrl):
-        """ Internally used method to connect to the Master process.
+    def _getRobotURL(self, masterUrl):
+        """ Internally used method to connect to the Master process to get
+            a URL of a Robot process.
         """
-        print('Connect to Master Manager on: {0}'.format(masterUrl))
+        print('Connect to Master Process on: {0}'.format(masterUrl))
         
         args = urlencode((('userID', self._userID),
                           ('version', CURRENT_VERSION)))
@@ -268,7 +270,7 @@ class RCE(object):
             print("Warning: There is a newer client (version: '{0}') "
                   'available.'.format(current))
         
-        print('Connect to Robot Manager on: {0}'.format(url))
+        print('Connect to Robot Process on: {0}'.format(url))
         
         # Make websocket connection to Robot Manager
         args = urlencode((('userID', self._userID), ('robotID', self._robotID),
@@ -294,7 +296,7 @@ class RCE(object):
         def eb(e):
             print(e.getErrorMessage())
         
-        connection = deferToThread(self._masterConnect, masterUrl)
+        connection = deferToThread(self._getRobotURL, masterUrl)
         connection.addCallbacks(self._robotConnect, eb)
     
     def close(self):
