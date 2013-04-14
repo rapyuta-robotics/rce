@@ -43,7 +43,6 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python import log
 from twisted.cred.credentials import UsernamePassword
-from twisted.cred.portal import IRealm
 from twisted.spread.pb import PBClientFactory, \
     DeadReferenceError, PBConnectionLost
 
@@ -105,7 +104,7 @@ class Connection(object):
         return self._robotID
 
     def destroy(self):
-        """
+        """ # TODO: Add doc
         """
         if self._protocol:
             self._protocol.dropConnection()
@@ -130,25 +129,25 @@ class Connection(object):
     ###
 
     def registerAvatar(self, avatar):
-        """
+        """ # TODO: Add doc
         """
         assert self._avatar is None
         self._avatar = avatar
 
     def registerView(self, view):
-        """
+        """ # TODO: Add doc
         """
         assert self._view is None
         self._view = view
 
     def registerNamespace(self, namespace):
-        """
+        """ # TODO: Add doc
         """
         assert self._namespace is None
         self._namespace = namespace
 
     def registerStatus(self, status):
-        """
+        """ # TODO: Add doc
         """
         assert self._namespace is not None
         self._namespace.registerStatus(status)
@@ -419,7 +418,7 @@ class RobotView(object):
     removeConnection.__doc__ = IRobot.get('removeConnection').getDoc()
 
     def destroy(self):
-        """
+        """ # TODO: Add doc
         """
         self._connection = None
         self._view = None
@@ -462,7 +461,7 @@ class Robot(Namespace):
         return self._client.loader
 
     def registerStatus(self, status):
-        """
+        """ # TODO: Add doc
         """
         assert self._status is None
         self._status = status
@@ -573,7 +572,7 @@ class Robot(Namespace):
         del self._interfaces[tag]
 
     def destroy(self):
-        """
+        """ # TODO: Add doc
         """
         self._connection = None
 
@@ -606,11 +605,10 @@ class Robot(Namespace):
 
 
 class RobotClient(Endpoint):
-    """ Realm as well as Credentials Checker for the twisted cred system which
-        is used for the connections to the robots. It is responsible for
-        storing all robots (namespaces).
+    """ Realm for the connections to the robots. It is responsible for storing
+        all connections.
     """
-    implements(IRealm, IRobotRealm)
+    implements(IRobotRealm)
 
     # CONFIG
     CONNECT_TIMEOUT = 30
@@ -787,7 +785,7 @@ class RobotClient(Endpoint):
             @return:            Representation of the connection to the robot
                                 which is used in the Robot process.
                                 (type: rce.robot.Connection)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         conn = Connection(self, userID, robotID)
 
@@ -832,10 +830,10 @@ class RobotClient(Endpoint):
         connection.unregisterProtocol(protocol)
 
     def remote_getWebsocketAddress(self):
-        """ Get the address of the websocket server running in this process.
+        """ Get the address of the WebSocket server running in this process.
 
             @return:            Address which can be used to connect to the
-                                cloud engine using a websocket connection. The
+                                cloud engine using a WebSocket connection. The
                                 address has the form [IP]:[port]
             @rtype:             str
         """
@@ -847,7 +845,7 @@ class RobotClient(Endpoint):
 
             @return:            Deferred which fires as soon as the client is
                                 ready to stop the reactor.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         for call in self._deathCandidates.itervalues():
             call.cancel()

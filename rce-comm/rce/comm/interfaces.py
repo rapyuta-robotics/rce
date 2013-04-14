@@ -39,7 +39,7 @@ class IMasterRealm(Interface):
     """
     def requestURL(userID): #@NoSelf
         """ Callback for Robot resource to retrieve the location of the Robot
-            process to which a websocket connection should be established.
+            process to which a WebSocket connection should be established.
 
             @param userID:      User ID under which the robot will login.
                                 (Can be used to do optimizations in distributing
@@ -47,9 +47,9 @@ class IMasterRealm(Interface):
             @type  userID:      str
 
             @return:            The IP address of Robot process to which a
-                                websocket connection should be established.
+                                WebSocket connection should be established.
                                 (type: str)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
 
 
@@ -73,7 +73,7 @@ class IRobotRealm(Interface):
             @return:            Representation of the connection to the robot
                                 which is used in the Robot process.
                                 (type: rce.robot.Connection)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
 
     def registerWebsocketProtocol(connection, protocol): #@NoSelf
@@ -84,7 +84,7 @@ class IRobotRealm(Interface):
             @type  connection:  rce.robot.Connection
 
             @param protocol:    Protocol which should be registered.
-            @type  protocol:    # TODO: Determine type
+            @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
 
     def unregisterWebsocketProtocol(connection, protocol): #@NoSelf
@@ -95,7 +95,7 @@ class IRobotRealm(Interface):
             @type  connection:  rce.robot.Connection
 
             @param protocol:    Protocol which should be unregistered.
-            @type  protocol:    # TODO: Determine type
+            @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
 
 

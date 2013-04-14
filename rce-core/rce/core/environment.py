@@ -42,7 +42,7 @@ class Node(Proxy):
         """ Initialize the Node.
 
             @param namespace:   Namespace in which the node was created.
-            @type  namespace:   rce.master.network.Namespace
+            @type  namespace:   rce.core.network.Namespace
         """
         super(Node, self).__init__()
 
@@ -66,7 +66,7 @@ class Parameter(Proxy):
         """ Initialize the Parameter.
 
             @param namespace:   Namespace in which the parameter was created.
-            @type  namespace:   rce.master.network.Namespace
+            @type  namespace:   rce.core.network.Namespace
         """
         super(Parameter, self).__init__()
 
@@ -91,7 +91,7 @@ class Environment(Namespace):
         """ Initialize the Environment.
 
             @param endpoint:    Endpoint in which the environment was created.
-            @type  endpoint:    rce.master.network.Endpoint
+            @type  endpoint:    rce.core.network.Endpoint
         """
         super(Environment, self).__init__(endpoint)
 
@@ -196,10 +196,10 @@ class EnvironmentEndpoint(Endpoint):
         """ Initialize the Environment Endpoint.
 
             @param network:     Network to which the endpoint belongs.
-            @type  network:     rce.master.network.Network
+            @type  network:     rce.core.network.Network
 
             @param container:   Container in which the enpoint is living.
-            @type  container:   rce.master.container.Container
+            @type  container:   rce.core.container.Container
         """
         super(EnvironmentEndpoint, self).__init__(network)
 
@@ -212,7 +212,7 @@ class EnvironmentEndpoint(Endpoint):
             @return:            Address of the environment endpoint's internal
                                 communication server.
                                 (type: twisted.internet.address.IPv4Address)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return self._container.getAddress()
 
@@ -221,7 +221,7 @@ class EnvironmentEndpoint(Endpoint):
 
             @return:            New Environment instance.
             @rtype:             rce.master.environment.Environment
-                                (subclass of rce.master.base.Proxy)
+                                (subclass of rce.core.base.Proxy)
         """
         environment = Environment(self)
         status = Status(environment)

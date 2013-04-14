@@ -45,10 +45,10 @@ class Container(Proxy):
         """ Initialize the Container.
 
             @param machine:     Machine in which the container was created.
-            @type  machine:     rce.master.machine.Machine
+            @type  machine:     rce.core.machine.Machine
 
-            @param userID:        UserID of the user who created the container.
-            @type  userID:        str
+            @param userID:      ID of the user who created the container.
+            @type  userID:      str
         """
         super(Container, self).__init__()
         self._userID = userID
@@ -67,7 +67,8 @@ class Container(Proxy):
             @return:            twisted::IPv4Address which can be used to
                                 connect to the ServerFactory of the cloud
                                 engine internal communication protocol.
-            @rtype:             twisted::Deferred
+                                (type: twisted.internet.address.IPv4Address)
+            @rtype:             twisted.internet.defer.Deferred
         """
         if self._address is None:
             if not self._pending:

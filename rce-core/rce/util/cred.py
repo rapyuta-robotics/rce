@@ -106,7 +106,7 @@ _NEW_PASS_PROMPT = ('\nNote: The password must be between 4-20 characters long '
 
 
 class CredentialError(Exception):
-    """ TODO: Add doc
+    """ Exception is raised if the CredChecker encountered an error.
     """
 
 
@@ -121,16 +121,23 @@ class RCECredChecker(object):
     _credCache = None
     _cacheTimestamp = 0
 
-    def __init__(self, password_file, provision=False):
+    def __init__(self, pw_file, provision=False):
+        """ Initialize the credentials checker for the RoboEarth Cloud Engine.
+
+            @param pw_file:     Path to the credentials database.
+            @type  pw_file:     str
+
+            @param provision:   Flag which is set if the database is going to
+                                be provisioned.
+            @type  provision:   bool
         """
-        """
-        self.filename = password_file
+        self.filename = pw_file
         self.scanner = re.compile(_RE)
         pass_re = re.compile(_PASS_RE)
         self.pass_validator = lambda x: True if pass_re.match(x) else False
 
         # Run some basic tests to check if the settings file is valid
-        if self.filename is None :
+        if self.filename is None:
             print('Settings variable PASSWORD_FILE not set')
             exit()
 
@@ -146,6 +153,16 @@ class RCECredChecker(object):
                 exit()
 
     def get_new_password(self, user):
+        """ Method which is used to interactively get a new password from the
+            user.
+
+            @param user:        User ID of the user for which a new password
+                                has to be entered.
+            @type  user:        str
+
+            @return:            The new password for the user.
+            @rtype:             str
+        """
         print (_NEW_PASS_PROMPT)
         msg_pw = "Enter a password for the user '{0}': ".format(user)
         msg_cf = "Please confirm the password for the user '{0}': ".format(user)
@@ -161,6 +178,7 @@ class RCECredChecker(object):
                 print('Passwords do not match.')
 
     def __getstate__(self):
+        # TODO: Why do we have this method?
         d = dict(vars(self))
         for k in ('_credCache', '_cacheTimestamp'):
             try:
@@ -170,7 +188,8 @@ class RCECredChecker(object):
         return d
 
     def _cbPasswordMatch(self, matched, username):
-        """ Internal method in case of success
+        """ Internal method which is called in case the password could be
+            successfully matched.
         """
         if matched:
             return username
@@ -178,7 +197,7 @@ class RCECredChecker(object):
             return failure.Failure(error.UnauthorizedLogin())
 
     def _loadCredentials(self):
-        """ Internal method to read file.
+        """ Internal method to read the credentials database.
         """
         # TODO: Add error handling in case the file has an invalid format
         with open(self.filename) as f:
@@ -188,7 +207,7 @@ class RCECredChecker(object):
                                          set(parts[3].split(':')))
 
     def getUser(self, username):
-        """ Fetch username from db or cache, internal method
+        """ Fetch username from db or cache. (Internal method)
         """
         if (self._credCache is None or
             os.path.getmtime(self.filename) > self._cacheTimestamp):
@@ -432,7 +451,8 @@ class RCEInternalChecker(object):
 
     def __init__(self, cred_checker):
         """
-            @param cred_checker:    Cred Checker used to authenticate the cloud engine
+            @param cred_checker:    Cred Checker used to authenticate the cloud
+                                    engine
             @type  cred_checker:    rce.util.cred.RCECredChecker
         """
         self._root_checker = cred_checker

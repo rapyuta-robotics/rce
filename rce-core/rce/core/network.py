@@ -87,10 +87,10 @@ class Network(object):
 
             @param epX:         The endpoint which is part of the connection
                                 that should be retrieved.
-            @type  epX:         rce.master.network.Endpoint
+            @type  epX:         rce.core.network.Endpoint
 
             @return:            Connection between the two endpoints.
-            @rtype:             rce.master.network.EndpointConnection
+            @rtype:             rce.core.network.EndpointConnection
         """
         if epA not in self._endpoints or epB not in self._endpoints:
             raise InternalError('Endpoint is not part of this network.')
@@ -119,10 +119,10 @@ class Network(object):
         """ Create a connection between two interfaces.
 
             @param interfaceX:  The interface which should be connected.
-            @type  interfaceX:  rce.master.network.Interface
+            @type  interfaceX:  rce.core.network.Interface
 
             @return:            Connection between the two interfaces.
-            @rtype:             rce.master.network.Connection
+            @rtype:             rce.core.network.Connection
         """
         assert interfaceA != interfaceB
 
@@ -159,7 +159,7 @@ class Endpoint(Proxy):
         """ Initialize the Endpoint.
 
             @param network:     Network to which the endpoint belongs.
-            @type  network:     rce.master.network.Network
+            @type  network:     rce.core.network.Network
         """
         super(Endpoint, self).__init__()
 
@@ -180,7 +180,7 @@ class Endpoint(Proxy):
             @return:            Address of the endpoint's internal
                                 communication server.
                                 (type: twisted.internet.address.IPv4Address)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         raise NotImplementedError('Endpoint can not be used directly.')
 
@@ -210,8 +210,8 @@ class Endpoint(Proxy):
         """ Create a Namespace object in the endpoint.
 
             @return:            New namespace instance.
-            @rtype:             rce.master.namespace.Namespace
-                                (subclass of rce.master.base.Proxy)
+            @rtype:             rce.core.namespace.Namespace
+                                (subclass of rce.core.base.Proxy)
         """
         raise NotImplementedError('Endpoint can not be used directly.')
 
@@ -220,8 +220,8 @@ class Endpoint(Proxy):
             used to connect two interfaces which are in the same endpoint.
 
             @return:            Loopback protocol.
-            @rtype:             rce.master.network.Protocol
-                                (subclass of rce.master.base.Proxy)
+            @rtype:             rce.core.network.Protocol
+                                (subclass of rce.core.base.Proxy)
         """
         if not self._loopback:
             self._loopback = Protocol(self)
@@ -245,16 +245,16 @@ class Endpoint(Proxy):
 
             @param auth:        Authenticator which is used to validate the
                                 key from the other side.
-            @type  auth:        rce.master.network._ConnectionValidator
+            @type  auth:        rce.core.network._ConnectionValidator
 
             @param status:      Status object which the endpoint can use to
                                 inform the Master of the status of the protocol
                                 which will be created for the connection.
-            @type  status:      rce.master.base.Status
+            @type  status:      rce.core.base.Status
 
             @return:            None. Deferred fires as soon as the endpoint is
                                 ready for the connection attempt.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return self.callRemote('prepareConnection', connID, key, auth, status)
 
@@ -275,7 +275,7 @@ class Endpoint(Proxy):
             @type  addr:        (str, int)
 
             @return:            None.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return self.callRemote('connect', connID, addr)
 
@@ -328,15 +328,15 @@ class Endpoint(Proxy):
 
             @param interface:   Interface which belongs to this endpoint and
                                 which is on one side of the connection.
-            @type  interface:   rce.master.network.Interface
+            @type  interface:   rce.core.network.Interface
 
             @param protocol:    Protocol which belongs to this endpoint and
                                 which is on one side of the connection.
-            @type  protocol:    rce.master.network.Protocol
+            @type  protocol:    rce.core.network.Protocol
 
             @return:            Connection between the interface and the
                                 protocol.
-            @rtype:             rce.master.network.InterfaceConnection
+            @rtype:             rce.core.network.InterfaceConnection
         """
         try:
             connectionI = self._interfaces[interface]
@@ -414,8 +414,8 @@ class Namespace(Proxy):
             @type  clsName:     str
 
             @return:            New Interface instance.
-            @rtype:             rce.master.network.Interface
-                                (subclass of rce.master.base.Proxy)
+            @rtype:             rce.core.network.Interface
+                                (subclass of rce.core.base.Proxy)
         """
         uid = self._endpoint.getUID()
         interface = Interface(self._endpoint, self, uid)
@@ -456,10 +456,10 @@ class Interface(Proxy):
         """ Initialize the Interface.
 
             @param endpoint:    Endpoint in which the interface is created.
-            @type  endpoint:    rce.master.network.Endpoint
+            @type  endpoint:    rce.core.network.Endpoint
 
             @param namespace:   Namespace in which the interface is created.
-            @type  namespace:   rce.master.network.Namespace
+            @type  namespace:   rce.core.network.Namespace
 
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -511,7 +511,7 @@ class Interface(Proxy):
             @type  remoteID:    uuid.UUID
 
             @return:            None.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return protocol().addCallback(self._remoteID, remoteID, 'connect')
 
@@ -524,14 +524,14 @@ class Interface(Proxy):
                                 other side, i.e. the other endpoint. (Could
                                 also be the loopback protocol which would mean
                                 that both interfaces are in the same endpoint.)
-            @type  protocol:    rce.master.network.Protocol
+            @type  protocol:    rce.core.network.Protocol
 
             @param remoteID:    Unique ID of the interface at the other side
                                 of the connection, i.e. in the other endpoint.
             @type  remoteID:    uuid.UUID
 
             @return:            None.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         def eb(failure):
             failure.trap(PBConnectionLost)
@@ -569,7 +569,7 @@ class Protocol(Proxy):
         """ Initialize the Protocol.
 
             @param endpoint:    Endpoint in which the protocol was created.
-            @type  endpoint:    rce.master.network.Endpoint
+            @type  endpoint:    rce.core.network.Endpoint
         """
         super(Protocol, self).__init__()
 
@@ -618,8 +618,9 @@ class _ConnectionValidator(Referenceable):
         """ Get the result of the validation as soon as its available.
 
             @return:            Protocol instance which sent the validation
-                                request. (type: twisted::RemoteReference)
-            @rtype:             twisted::Deferred
+                                request.
+                                (type: twisted.spred.pb.RemoteReference)
+            @rtype:             twisted.internet.defer.Deferred
         """
         # For now only one Deferred is used for the result as there is no
         # reason to have a list here
@@ -638,7 +639,7 @@ class _ConnectionValidator(Referenceable):
             @param protocol:    Protocol who is responsible for the
                                 validation request and one partner of the
                                 new connection.
-            @type  protocol:    twisted::RemoteReference
+            @type  protocol:    twisted.spread.pb.RemoteReference
 
             @return:            None
         """
@@ -665,7 +666,7 @@ class EndpointConnection(object):
             The connection will be scheduled to be created here.
 
             @param endpointX:   Endpoint which is part of the new connection.
-            @type  endpointX:   rce.master.network.Endpoint
+            @type  endpointX:   rce.core.network.Endpoint
         """
         assert endpointA != endpointB
 
@@ -741,7 +742,7 @@ class EndpointConnection(object):
             @type  connID:      str
 
             @return:            None.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return self._clientEndpoint.connect(connID, (addr.host, addr.port))
 
@@ -785,12 +786,12 @@ class EndpointConnection(object):
             the given endpoint.
 
             @param endpoint:    Endpoint to which the protocol has to belong.
-            @type  endpoint:    rce.master.network.Endpoint
+            @type  endpoint:    rce.core.network.Endpoint
 
             @return:            Protocol which belongs to the endpoint and is
                                 part of this connection.
-            @rtype:             rce.master.network.Protocol
-                                (subclass of rce.master.base.Proxy)
+            @rtype:             rce.core.network.Protocol
+                                (subclass of rce.core.base.Proxy)
         """
         if not (self._serverProtocol and self._serverEndpoint and
                 self._clientProtocol and self._clientEndpoint):
@@ -827,11 +828,11 @@ class InterfaceConnection(object):
 
             @param interface:   Interface which is on one side of the
                                 connection.
-            @type  interface:   rce.master.network.Interface
+            @type  interface:   rce.core.network.Interface
 
             @param protocol:    Protocol which is on one side of the
                                 connection.
-            @type  protocol:    rce.master.network.Protocol
+            @type  protocol:    rce.core.network.Protocol
         """
         assert protocol._endpoint == interface._endpoint
 
@@ -888,7 +889,7 @@ class Connection(object):
 
             @param connectionX: Interface-Protocol connection which is part
                                 of the connection.
-            @type  connectionX: rce.master.network.InterfaceConnection
+            @type  connectionX: rce.core.network.InterfaceConnection
         """
         assert connectionA != connectionB
 

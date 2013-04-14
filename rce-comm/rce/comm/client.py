@@ -72,7 +72,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
         self._registered = False
 
     def onOpen(self):
-        """ This method is called by twisted as soon as the websocket
+        """ This method is called by twisted as soon as the WebSocket
             connection has been successfully established.
         """
         self._assembler.start()
@@ -272,7 +272,7 @@ class RCE(object):
 
         print('Connect to Robot Process on: {0}'.format(url))
 
-        # Make websocket connection to Robot Manager
+        # Make WebSocket connection to Robot Manager
         args = urlencode((('userID', self._userID), ('robotID', self._robotID),
                           ('password', self._password)))
         factory = RCERobotFactory('{0}?{1}'.format(url, args), self)
@@ -281,12 +281,12 @@ class RCE(object):
     def connect(self, masterUrl, deferred):
         """ Connect to RCE.
 
-            @param masterUrl:   URL of Authentication Handler of Master Manager
+            @param masterUrl:   URL of Master process.
             @type  masterUrl:   str
 
             @param deferred:    Deferred which is called as soon as the
                                 connection was successfully established.
-            @type  deferred:    twisted::Deferred
+            @type  deferred:    twisted.internet.defer.Deferred
 
             @raise:             ConnectionError, if no connection could be
                                 established.
@@ -296,9 +296,14 @@ class RCE(object):
         def eb(e):
             print(e.getErrorMessage())
 
+            if self._connectedDeferred:
+                self._connectedDeferred.errback(e)
+                self._connectedDeferred = None
+
         d = deferToThreadPool(self._reactor, self._reactor.getThreadPool(),
                               self._getRobotURL, masterUrl)
-        d.addCallbacks(self._robotConnect, eb)
+        d.addCallback(self._robotConnect)
+        d.addErrback(eb)
 
     def close(self):
         """ Disconnect from RCE.
@@ -326,7 +331,7 @@ class RCE(object):
             @type  dest:        str
 
             @param msgType:     ROS Message type in format "pkg/msg", e.g.
-                                    'std_msgs/String'
+                                'std_msgs/String'
             @type  msgType:     str
 
             @param msg:         Message which should be sent in form of a

@@ -172,7 +172,7 @@ class RoboEarthCloudEngine(object):
 
     def requestURL(self, userID):
         """ Callback for Robot resource to retrieve the location of the Robot
-            process to which a websocket connection should be established.
+            process to which a WebSocket connection should be established.
 
             @param userID:      User ID under which the robot will login.
                                 (Can be used to do optimizations in distributing
@@ -180,9 +180,9 @@ class RoboEarthCloudEngine(object):
             @type  userID:      str
 
             @return:            The IP address of Robot process to which a
-                                websocket connection should be established.
+                                WebSocket connection should be established.
                                 (type: str)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         try:
             location = self._distributor.getNextLocation()
@@ -200,9 +200,9 @@ class RoboEarthCloudEngine(object):
             @type  userID:        str
 
             @return:            New Namespace and Container instance.
-            @rtype:             (rce.master.environment.Environment,
-                                 rce.master.container.Container)
-                                (subclasses of rce.master.base.Proxy)
+            @rtype:             (rce.core.environment.Environment,
+                                 rce.core.container.Container)
+                                (subclasses of rce.core.base.Proxy)
         """
         while 1:
             uid = uuid4().hex
@@ -237,7 +237,7 @@ class RoboEarthCloudEngine(object):
             @type  interfaceX:  rce.master.network.Interface
 
             @return:            New Connection instance.
-            @rtype:             rce.master.network.Connection
+            @rtype:             rce.core.network.Connection
         """
         return self._network.createConnection(interfaceA, interfaceB)
 

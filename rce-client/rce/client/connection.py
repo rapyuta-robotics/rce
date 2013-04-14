@@ -107,7 +107,7 @@ class _Connection(object):
 
             @param deferred:    Deferred which is called as soon as the
                                 connection was successfully established.
-            @type  deferred:    twisted::Deferred
+            @type  deferred:    twisted.internet.defer.Deferred
 
             @raise:             ConnectionError, if no connection could be
                                 established.

@@ -49,6 +49,7 @@ _settings = None
 # Path where the configuration file can be found
 PATH = os.path.join(os.getenv('HOME'), '.rce', 'config.ini')
 
+
 def getSettings():
     """ Get the cloud engine settings.
         The configuration file is parsed only once and cached for later.

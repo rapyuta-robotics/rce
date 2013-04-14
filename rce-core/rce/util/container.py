@@ -156,7 +156,7 @@ class Container(object):
         self._fstabExt = []
 
     def extendFstab(self, src, fs, ro):
-        """ Add a line to the Fstab file using bind.
+        """ Add a line to the fstab file using bind.
 
             @param src:     Source path in host filesystem.
             @type  src:     str
@@ -196,7 +196,7 @@ class Container(object):
             @return:        Deferred whose callback is triggered on success or
                             whose errback is triggered on failure with an
                             error message.
-            @rtype:         twisted::Deferred
+            @rtype:         twisted.internet.defer.Deferred
         """
         self._setup()
 
@@ -233,7 +233,7 @@ class Container(object):
             @param command:     Deferred whose callback is triggered on success
                                 or whose errback is triggered on failure with
                                 an error message.
-            @type  command:     twisted::Deferred
+            @type  command:     twisted.internet.defer.Deferred
         """
         log.msg("Stop container '{0}'".format(name))
         deferred = Deferred()

@@ -255,7 +255,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
 
     def processCompleteMessage(self, msg):
         """ Process complete messages by calling the appropriate handler for
-            the manager. (Called by client.protocol.MessageAssembler)
+            the manager. (Called by rce.comm.assembler.MessageAssembler)
         """
         try:
             msgType = msg['type']

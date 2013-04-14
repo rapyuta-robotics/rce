@@ -52,7 +52,7 @@ class RobotProcessError(Exception):
 
 class Distributor(object):
     """ The Distributor is responsible for selecting the appropriate robot
-        process to create a websocket connection. It therefore also keeps track
+        process to create a WebSocket connection. It therefore also keeps track
         of all the robot processes registered with the cloud engine.
 
         There should only one instance running in the Master process.
@@ -73,11 +73,11 @@ class Distributor(object):
 
     def getNextLocation(self):
         """ Get the next endpoint running in an robot process to create a new
-            robot websocket connection.
+            robot WebSocket connection.
 
             @return:            Next robot endpoint.
-            @rtype:             rce.master.robot.RobotEndpoint
-                                (subclass of rce.master.base.Proxy)
+            @rtype:             rce.core.robot.RobotEndpoint
+                                (subclass of rce.core.base.Proxy)
         """
         try:
             return min(self._robots, key=lambda r: r.active)
@@ -99,7 +99,7 @@ class LoadBalancer(object):
         """ Initialize the Load Balancer.
 
             @param root:        Reference to top level of data structure.
-            @type  root:        rce.master.core.RoboEarthCloudEngine
+            @type  root:        rce.master.RoboEarthCloudEngine
         """
         self._root = root
 
@@ -111,14 +111,14 @@ class LoadBalancer(object):
 
             @param ref:         Remote reference to the ContainerClient in the
                                 container process.
-            @type  ref:         twisted::RemoteReference
+            @type  ref:         twisted.spread.pb.RemoteReference
 
             @param maxNr:       The maximum number of container which are
                                 allowed in the machine.
             @type  maxNr:       int
 
             @return:            New Machine instance.
-            @rtype:             rce.master.machine.Machine
+            @rtype:             rce.core.machine.Machine
         """
         machine = Machine(ref, maxNr, self._root)
         self._machines.add(machine)
@@ -128,7 +128,7 @@ class LoadBalancer(object):
         """ Destroy a Machine object.
 
             @param machine:     Machine instance which should be destroyed.
-            @type  machine:     rce.master.machine.Machine
+            @type  machine:     rce.core.machine.Machine
         """
         try:
             self._machines.remove(machine)
@@ -172,7 +172,7 @@ class LoadBalancer(object):
             @type  userID:      str
 
             @return:            New Container instance.
-            @rtype:             rce.master.container.Container
+            @rtype:             rce.core.container.Container
         """
         return self._getNextMachine(userID).createContainer(uid, userID)
 
@@ -194,14 +194,14 @@ class Machine(object):
 
             @param ref:         Remote reference to the ContainerClient in the
                                 container process.
-            @type  ref:         twisted::RemoteReference
+            @type  ref:         twisted.spread.pb.RemoteReference
 
             @param maxNr:       The maximum number of container which are
                                 allowed in the machine.
             @type  maxNr:       int
 
             @param root:        Reference to top level of data structure.
-            @type  root:        rce.master.core.RoboEarthCloudEngine
+            @type  root:        rce.master.RoboEarthCloudEngine
         """
         self._ref = ref
         self._maxNr = maxNr
@@ -245,7 +245,7 @@ class Machine(object):
             @type  userID:      str
 
             @return:            New Container instance.
-            @rtype:             rce.master.container.Container
+            @rtype:             rce.core.container.Container
         """
         if len(self._containers) >= self._maxNr:
             raise MaxNumberExceeded('You have run out of your container '

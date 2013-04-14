@@ -86,14 +86,14 @@ class RobotEndpointAvatar(Avatar):
 
 
 class Robot(Namespace):
-    """ Representation of a namespace which has a websocket connection from a
+    """ Representation of a namespace which has a WebSocket connection from a
         robot assigned and is part of the cloud engine internal communication.
     """
     def __init__(self, endpoint):
         """ Initialize the Robot.
 
             @param endpoint:    Endpoint in which the robot was created.
-            @type  endpoint:    rce.master.network.Endpoint
+            @type  endpoint:    rce.core.network.Endpoint
         """
         super(Robot, self).__init__(endpoint)
 
@@ -104,14 +104,14 @@ class Robot(Namespace):
             @return:            Address of the endpoint containing the robot
                                 namespace. The address has the form
                                     [IP]:[port] (type: str)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return self._endpoint.getWebsocketAddress()
 
 
 class RobotEndpoint(Endpoint):
     """ Representation of an endpoint which is a process that acts as a server
-        for websocket connections from robots and is part of the cloud engine
+        for WebSocket connections from robots and is part of the cloud engine
         internal communication.
     """
     def __init__(self, network, distributor, root, port):
@@ -121,12 +121,12 @@ class RobotEndpoint(Endpoint):
             @type  network:     rce.master.network.Network
 
             @param distributor: Distributor which is responsible for assigning
-                                new robot websocket connections to robot
+                                new robot WebSocket connections to robot
                                 endpoints.
-            @type  container:   rce.master.robot.Distributor
+            @type  container:   rce.core.robot.Distributor
 
             @param root:        Reference to top level of data structure.
-            @type  root:        rce.master.core.RoboEarthCloudEngine
+            @type  root:        rce.master.RoboEarthCloudEngine
 
             @param port:        Port where the robot process is listening for
                                 connections to other endpoints.
@@ -154,7 +154,7 @@ class RobotEndpoint(Endpoint):
             @return:            Address of the robot endpoint's internal
                                 communication server.
                                 (type: twisted.internet.address.IPv4Address)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         def cb(remote):
             ip = remote.broker.transport.getPeer().host
@@ -169,7 +169,7 @@ class RobotEndpoint(Endpoint):
 
             @return:            Address of the endpoint process. The address
                                 has the form [IP]:[port] (type: str)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         return self.callRemote('getWebsocketAddress')
 
@@ -183,8 +183,8 @@ class RobotEndpoint(Endpoint):
             @type  remoteRobot: twisted.spread.pb.RemoteReference
 
             @return:            New Robot instance.
-            @rtype:             rce.master.robot.Robot
-                                (subclass of rce.master.base.Proxy)
+            @rtype:             rce.core.robot.Robot
+                                (subclass of rce.core.base.Proxy)
         """
         robot = Robot(self)
         status = Status(robot)

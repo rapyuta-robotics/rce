@@ -169,7 +169,7 @@ class Endpoint(Referenceable):
             @type  remoteKey:   str
 
             @return:            True if the connection should be accepted.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         try:
             key, auth, status = self._pendingConnections[connID]
@@ -208,7 +208,7 @@ class Endpoint(Referenceable):
 
             @return:            Deferred which fires as soon as the client is
                                 ready to stop the reactor.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         self._pendingConnections = {}
 

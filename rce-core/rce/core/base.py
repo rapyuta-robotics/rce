@@ -37,11 +37,8 @@ from twisted.internet.defer import Deferred, succeed, fail
 from twisted.spread.pb import RemoteReference, Referenceable, \
     DeadReferenceError, PBConnectionLost
 
-
-class AlreadyDead(Exception):
-    """ Exception is raised when a death notifier callback is registered with
-        an already dead object.
-    """
+# rce specific imports
+from rce.core.error import AlreadyDead
 
 
 class Status(Referenceable):
@@ -53,7 +50,7 @@ class Status(Referenceable):
 
             @param proxy:       Proxy which should be informed of status
                                 changes.
-            @type  proxy:       rce.master.base.Proxy
+            @type  proxy:       rce.core.base.Proxy
         """
         self._proxy = proxy
         proxy._registerStatus(self)
@@ -96,21 +93,21 @@ class Proxy(object):
 
     def _registerStatus(self, status):
         """ Method should only be used by a Status instance to register itself
-            with the proxy.
+            with the Proxy.
         """
         assert self.__status is None
         self.__status = status
 
     def callRemote(self, _name, *args, **kw):
         """ Make a call to the RemoteReference and return the result as a
-            Deferred. It exists to allow queueing of calls to remote reference
+            Deferred. It exists to allow queuing of calls to remote reference
             before the remote reference has arrived.
 
             For more information refer to twisted.spread.pb.RemoteReference.
 
             @param _name:       Name of the method which should be called.
                                 The prefix 'remote_' will be added to the name
-                                in the remote object to select the mehtod which
+                                in the remote object to select the method which
                                 should be called.
             @type  _name:       str
 
@@ -122,7 +119,7 @@ class Proxy(object):
 
             @return:            Deferred which will fire with the result of the
                                 call or a Failure if there was a problem.
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         if self.__failure is not None:
             d = fail(self.__failure)
@@ -210,7 +207,7 @@ class Proxy(object):
 
             @return:            Reference to the RemoteObject instance.
                                 (type: rce.master.base.RemoteReference)
-            @rtype:             twisted::Deferred
+            @rtype:             twisted.internet.defer.Deferred
         """
         if self.__failure is not None:
             return fail(self.__failure)
@@ -242,10 +239,10 @@ class Proxy(object):
         return failure
 
     def __notify(self, failure):
-        """ Method is used as a callback to inform the proxy that a failure
+        """ Method is used as a callback to inform the Proxy that a failure
             occurred.
         """
-        # if the proxy already stores a failure then do nothing
+        # if the Proxy already stores a failure then do nothing
         if self.__failure:
             return
 
@@ -257,7 +254,7 @@ class Proxy(object):
         if self.__status:
             self.__status.cancel()
 
-        # Mark that the proxy is a failure and doesn't store remote reference.
+        # Mark that the Proxy is a failure and doesn't store remote reference.
         self.__failure = failure
         self.__status = None
 
