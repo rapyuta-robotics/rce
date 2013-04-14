@@ -65,15 +65,16 @@ def recursiveBinarySearch(multidict):
         with a reference to a binary message. Returns a list of all binary
         messages and the modified JSON string message.
 
-        @param multidict:   JSON message which might contain StringIO instances
-                            and which should be prepared for sending.
-        @type  multidict:   { str : ... }
+        @param multidict:       JSON message which might contain StringIO
+                                instances and which should be prepared for
+                                sending.
+        @type  multidict:       { str : ... }
 
-        @return:        A list of tuples containing the URI and the matching
-                        StringIO instance. Also the modified JSON message where
-                        the StringIO instances have been replaced with the URIs
-                        is returned.
-        @rtpye:         ((str, StringIO), { str: ... })
+        @return:                A list of tuples containing the URI and the
+                                matching StringIO instance. Also the modified
+                                JSON message where the StringIO instances have
+                                been replaced with the URIs is returned.
+        @rtype:                 ((str, StringIO), { str : ... })
     """
     uriBinary = []
     keys = []
@@ -126,11 +127,11 @@ class _IncompleteMsg(object):
                                 belongs.
             @type  assembler:   client.assembler.MessageAssembler
 
-            @param msg:     Incomplete message as a dictionary.
-            @type  msg:     dict
+            @param msg:         Incomplete message as a dictionary.
+            @type  msg:         dict
 
-            @param uris:    Return value of _recursiveURISearch
-            @type  nr:      [ (str, dict, str) ]
+            @param uris:        Return value of _recursiveURISearch
+            @type  nr:          [ (str, dict, str) ]
         """
         self._assembler = assembler
         self._msg = msg
