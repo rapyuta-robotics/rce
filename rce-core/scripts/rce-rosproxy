@@ -30,16 +30,6 @@
 #
 #
 
-if __name__ == '__main__':
-    # Before we start to import everything check if we have the right amount of
-    # arguments
-    import os
-    import sys
-
-    if len(sys.argv) != 6:
-        print('Usage: {0} [proxyPort]'.format(os.path.basename(sys.argv[0])))
-
-
 # twisted specific imports
 from twisted.internet import reactor
 
@@ -47,5 +37,19 @@ from twisted.internet import reactor
 from rce.rosproxy import main
 
 
+def _get_argparse():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(prog='rce-rosproxy',
+                            description='RCE ROS proxy Process.')
+
+    parser.add_argument('proxyPort', type=int,
+                        help='Port where the HTTP server is listening for '
+                             'requests.')
+
+    return parser
+
+
 if __name__ == '__main__':
-    main(reactor, int(sys.argv[1]))
+    args = _get_argparse().parse_args()
+    main(reactor, args.proxyPort)

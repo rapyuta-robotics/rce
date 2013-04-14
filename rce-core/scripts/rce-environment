@@ -30,17 +30,6 @@
 #
 #
 
-if __name__ == '__main__':
-    # Before we start to import everything check if we have the right amount of
-    # arguments
-    import os
-    import sys
-
-    if len(sys.argv) != 6:
-        print('Usage: {0} [masterIP] [masterPort] [internalPort] [uid] '
-              '[passwd]'.format(os.path.basename(sys.argv[0])))
-        exit(1)
-
 
 # twisted specific imports
 from twisted.internet import reactor
@@ -50,9 +39,35 @@ from twisted.cred.credentials import UsernamePassword
 from rce.environment import main
 
 
-if __name__ == '__main__':
-    # Credentials which should be used to login to Master process
-    cred = UsernamePassword(sys.argv[4], sys.argv[5])
+def _get_argparse():
+    from argparse import ArgumentParser
 
-    main(reactor, cred, sys.argv[1], int(sys.argv[2]),
-         int(sys.argv[3]), sys.argv[4])
+    parser = ArgumentParser(prog='rce-environment',
+                            description='RCE Environment Client Process.')
+
+    parser.add_argument('masterIP', type=str,
+                        help='IP address of Master Process.')
+    parser.add_argument('masterPort', type=int,
+                        help='Port where the Master Process is listening for '
+                             'internal Perspective Broker connections.')
+    parser.add_argument('internalPort', type=int,
+                        help='Port where the Endpoints are listening for '
+                             'data communications.')
+    parser.add_argument('uid', type=str,
+                        help='Unique ID which is used to identify this '
+                             'environment endpoint.')
+    parser.add_argument('password', type=str,
+                        help='Password used to authenticate this '
+                             'environment endpoint.')
+
+    return parser
+
+
+if __name__ == '__main__':
+    args = _get_argparse().parse_args()
+
+    # Credentials which should be used to login to Master process
+    cred = UsernamePassword(args.uid, args.password)
+
+    main(reactor, cred, args.masterIP, args.masterPort, args.internalPort,
+         args.uid)

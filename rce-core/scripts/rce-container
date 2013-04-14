@@ -57,15 +57,15 @@ settings = getSettings()
 def _get_argparse():
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(prog='container',
-                            description='RCE Container Client Slave.')
+    parser = ArgumentParser(prog='rce-container',
+                            description='RCE Container Client Process.')
 
-    parser.add_argument('MasterIP', type=str,
+    parser.add_argument('masterIP', type=str,
                         help='IP address of Master Process.')
 
     if not settings.dev_mode:
-        parser.add_argument('MasterPassword', type=str, help='Admin Password')
-        parser.add_argument('InfraPassword', type=str,
+        parser.add_argument('masterPassword', type=str, help='Admin Password')
+        parser.add_argument('infraPassword', type=str,
                             help='Admin-Infrastructure Password')
 
     parser.add_argument('--maxContainers', type=int,
@@ -84,10 +84,10 @@ if __name__ == '__main__':
         passwd = sha256('admin').hexdigest()
     else:
         cred = UsernamePassword('container',
-                                sha256(args.InfraPassword).hexdigest())
-        passwd = sha256(args.MasterPassword).hexdigest()
+                                sha256(args.infraPassword).hexdigest())
+        passwd = sha256(args.masterPassword).hexdigest()
 
-    main(reactor, cred, args.MasterIP, passwd, cred.password,
+    main(reactor, cred, args.masterIP, passwd, cred.password,
          settings.internal_port, settings.internal_IP, settings.container_IP,
          settings.comm_port, settings.ros_proxy_port, settings.rootfs,
          settings.conf_dir, settings.data_dir, settings.packages,

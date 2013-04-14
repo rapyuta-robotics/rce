@@ -49,10 +49,10 @@ def _get_argparse():
     parser = ArgumentParser(prog='robot',
                             description='RCE Robot Client Process.')
 
-    parser.add_argument('MasterIP', type=str,
+    parser.add_argument('masterIP', type=str,
                         help='IP address of Master Process.')
     if not settings.dev_mode:
-        parser.add_argument('InfraPassword', type=str,
+        parser.add_argument('infraPassword', type=str,
                             help='Admin-Infrastructure Password')
 
     return parser
@@ -65,8 +65,8 @@ if __name__ == '__main__':
     if settings.dev_mode:
         cred = UsernamePassword('robot', sha256('admin').hexdigest())
     else:
-        cred = UsernamePassword('robot', sha256(args.InfraPassword).hexdigest())
+        cred = UsernamePassword('robot', sha256(args.infraPassword).hexdigest())
 
-    main(reactor, cred, args.MasterIP, settings.internal_port,
+    main(reactor, cred, args.masterIP, settings.internal_port,
          settings.external_port, settings.external_IP, settings.ws_port,
          settings.comm_port, settings.packages, settings.converters)
