@@ -445,7 +445,7 @@ if HAS_ROS:
             return ROSSubscriber(self, iTag, msgType, addr)
 
         def serviceClient(self, iTag, srvType, addr):
-            """ Create a Service Provider using ROS.
+            """ Create a Service Client using ROS.
 
                 @param iTag:        Unique tag which will be used to identify
                                     the service.
