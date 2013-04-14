@@ -44,8 +44,8 @@ from twisted.internet.defer import Deferred
 from rce.client.connection import ConnectionError, ROSConnection
 
 
-_MAP = {#'ServiceClientConverter'  : '???', TODO: Add a service-provider interface
-        'ServiceProviderConverter' : 'service',
+_MAP = {'ServiceClientConverter'   : 'serviceProvider',
+        'ServiceProviderConverter' : 'serviceClient',
         'PublisherConverter'       : 'subscriber',
         'SubscriberConverter'      : 'publisher'}
 

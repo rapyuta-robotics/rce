@@ -40,10 +40,12 @@ from zope.interface import implements
 from rce.comm.interfaces import IRobot, IMessageReceiver
 from rce.comm.client import RCE
 from rce.client.interface import HAS_ROS
-from rce.client.interface import Publisher, Subscriber, Service
+from rce.client.interface import Publisher, Subscriber, \
+    ServiceClient, ServiceProvider
 
 if HAS_ROS:
-    from rce.client.interface import ROSPublisher, ROSSubscriber, ROSService
+    from rce.client.interface import ROSPublisher, ROSSubscriber, \
+        ROSServiceClient, ROSServiceProvider
     from rce.util.loader import Loader
 
 
@@ -138,7 +140,7 @@ class _Connection(object):
             @type  iTag:        str
 
             @param iface:       Interface instance which should be registered.
-            @type  iface:       pyrce.interface._Subscriber/_Publisher/_Service
+            @type  iface:       rce.client.interface.*
 
             @param unique:      Flag to indicate whether Interface should be
                                 unique for its tag or not.
@@ -159,7 +161,7 @@ class _Connection(object):
 
             @param iface:       Interface instance which should be
                                 unregistered.
-            @type  iface:       pyrce.interface._Subscriber/_Publisher/_Service
+            @type  iface:       rce.client.interface.*
         """
         if iTag not in self._interfaces:
             raise ValueError('No Interface register with tag '
@@ -299,8 +301,11 @@ class Connection(_Connection):
             @type  iTag:        str
 
             @param msgType:     ROS message which will be published, e.g.
-                                    'std_msgs/String'
+                                'std_msgs/String'
             @type  msgType:     str
+
+            @return:            New Publisher instance.
+            @rtype:             rce.client.interface.Publisher
         """
         return Publisher(self, iTag, msgType)
 
@@ -318,14 +323,17 @@ class Connection(_Connection):
             @param cb:          Callback which will takes as single argument
                                 the received message.
             @type  cb:          callable
+
+            @return:            New Subscriber instance.
+            @rtype:             rce.client.interface.Subscriber
         """
         if not callable(cb):
             raise TypeError('Callback has to be callable.')
 
         return Subscriber(self, iTag, msgType, cb)
 
-    def service(self, iTag, srvType, cb=None):
-        """ Create a Service.
+    def serviceClient(self, iTag, srvType, cb=None):
+        """ Create a Service Client.
 
             @param iTag:        Unique tag which will be used to identify the
                                 service.
@@ -336,13 +344,45 @@ class Connection(_Connection):
 
             @param cb:          Can be used to specify a default callback for
                                 received service responses; it should take the
-                                repsonse as the single argument.
-            @type  cb:          callbable
+                                response as the single argument.
+            @type  cb:          callable
+
+            @return:            New Service Client instance.
+            @rtype:             rce.client.interface.ServiceClient
         """
         if cb and not callable(cb):
             raise TypeError('Callback has to be callable.')
 
-        return Service(self, iTag, srvType, cb)
+        return ServiceClient(self, iTag, srvType, cb)
+
+    def serviceProvider(self, iTag, srvType, cb, *args):
+        """ Create a Service Provider.
+
+            @param iTag:        Unique tag which will be used to identify the
+                                service.
+            @type  iTag:        str
+
+            @param srvType:     ROS Service which will be provided.
+            @type  srvType:     str
+
+            @param cb:          Callback which will be called when a request has
+                                been received. The callback will receive the
+                                request as first argument and all additional
+                                arguments. The callback should return the
+                                response message if the request was successful
+                                and None otherwise.
+            @type  cb:          callable
+
+            @param *args:       All additional arguments are passed to the
+                                callback.
+
+            @return:            New Service Provider instance.
+            @rtype:             rce.client.interface.ServiceProvider
+        """
+        if cb and not callable(cb):
+            raise TypeError('Callback has to be callable.')
+
+        return ServiceProvider(self, iTag, srvType, cb, args)
 
 
 if HAS_ROS:
@@ -366,47 +406,74 @@ if HAS_ROS:
         def publisher(self, iTag, msgType, addr):
             """ Create a Publisher using ROS.
 
-            @param iTag:        Unique tag which will be used to identify the
-                                publisher.
-            @type  iTag:        str
+                @param iTag:        Unique tag which will be used to identify
+                                    the publisher.
+                @type  iTag:        str
 
-            @param msgType:     ROS message which will be published, e.g.
+                @param msgType:     ROS message which will be published, e.g.
                                     'std_msgs/String'
-            @type  msgType:     str
+                @type  msgType:     str
 
-            @param addr:        Topic where the publisher will listen for
-                                messages which should be published to the RCE.
-            @type  addr:        str
+                @param addr:        Topic where the publisher will listen for
+                                    messages which should be published to the
+                                    cloud engine.
+                @type  addr:        str
+
+                @return:            New Publisher instance.
+                @rtype:             rce.client.interface.ROSPublisher
             """
             return ROSPublisher(self, iTag, msgType, addr)
 
         def subscriber(self, iTag, msgType, addr):
             """ Create a Subscriber using ROS.
 
-            @param iTag:        Unique tag which will be used to identify the
-                                subscriber.
-            @type  iTag:        str
+                @param iTag:        Unique tag which will be used to identify
+                                    the subscriber.
+                @type  iTag:        str
 
-            @param msgType:     ROS message to which will be subscribed, e.g.
-                                    'std_msgs/String'
-            @type  msgType:     str
+                @param msgType:     ROS message to which will be subscribed,
+                                    e.g. 'std_msgs/String'
+                @type  msgType:     str
 
-            @param addr:        Topic where the subscriber will publish
-                                received messages from to the RCE.
-            @type  addr:        str
+                @param addr:        Topic where the subscriber will publish
+                                    received messages from to the RCE.
+                @type  addr:        str
+
+                @return:            New Subscriber instance.
+                @rtype:             rce.client.interface.ROSSubscriber
             """
             return ROSSubscriber(self, iTag, msgType, addr)
 
-        def service(self, iTag, srvType, addr):
-            """ Create a Service using ROS.
+        def serviceClient(self, iTag, srvType, addr):
+            """ Create a Service Provider using ROS.
 
-            @param iTag:        Unique tag which will be used to identify the
-                                service.
-            @type  iTag:        str
+                @param iTag:        Unique tag which will be used to identify
+                                    the service.
+                @type  iTag:        str
 
-            @param srvType:     ROS Service which will used.
-            @type  srvType:     str
+                @param srvType:     ROS Service which will used.
+                @type  srvType:     str
 
-            @param addr:        Address where the service will be available.
+                @param addr:        Address where the service will be available.
+
+                @return:            New Service Client instance.
+                @rtype:             rce.client.interface.ROSServiceClient
             """
-            return ROSService(self, iTag, srvType, addr)
+            return ROSServiceClient(self, iTag, srvType, addr)
+
+        def serviceProvider(self, iTag, srvType, addr):
+            """ Create a Service Provider using ROS.
+
+                @param iTag:        Unique tag which will be used to identify
+                                    the service.
+                @type  iTag:        str
+
+                @param srvType:     ROS Service which will be provided.
+                @type  srvType:     str
+
+                @param addr:        Address where the service will be available.
+
+                @return:            New Service Provider instance.
+                @rtype:             rce.client.interface.ROSServiceProvider
+            """
+            return ROSServiceProvider(self, iTag, srvType, addr)

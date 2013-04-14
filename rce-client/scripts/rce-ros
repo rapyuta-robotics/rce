@@ -41,11 +41,11 @@ def _get_argparse():
     from argparse import ArgumentParser, FileType
 
     parser = ArgumentParser(prog='ROS Client',
-                            description='Client for the RoboEarth Cloud Engine'
-                                        ' providing an Interface for ROS based'
-                                        ' communications.')
+                            description='Client for the RoboEarth Cloud Engine '
+                                        'providing an Interface for ROS based '
+                                        'communications.')
 
-    parser.add_argument('config', help='Configuration file.',
+    parser.add_argument('config', help='rce-ros client configuration file.',
                         type=FileType('r'))
 
     return parser
