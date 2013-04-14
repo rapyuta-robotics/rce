@@ -42,7 +42,7 @@ from zope.interface import implements
 
 # twisted specific imports
 from twisted.python.threadable import isInIOThread
-from twisted.internet.threads import deferToThread
+from twisted.internet.threads import deferToThreadPool
 
 # Autobahn specific imports
 from autobahn.websocket import connectWS, WebSocketClientFactory, \
@@ -65,7 +65,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
 
             @param conn:        Connection instance which provides callback
                                 functions.
-            @type  conn:        pyrce.connection._Connection
+            @type  conn:        rce.comm.client.RCE
         """
         self._connection = conn
         self._assembler = MessageAssembler(self, 60)
@@ -110,7 +110,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
         else:
             self._connection.reactor.callFromThread(send, msg)
 
-    def onClose(self, *a):
+    def onClose(self, *args):
         """ This method is called by twisted when the connection has been
             closed.
         """
@@ -134,12 +134,12 @@ class RCERobotFactory(WebSocketClientFactory):
     def __init__(self, url, conn):
         """ Initialize the factory.
 
-            @param url:         URL of the Robot Manager.
+            @param url:         URL of the Robot process.
             @type  url:         str
 
             @param conn:        Connection instance which provides callback
                                 functions.
-            @type  conn:        pyrce.connection._Connection
+            @type  conn:        rce.comm.client.RCE
         """
         WebSocketClientFactory.__init__(self, url)
         self._connection = conn
@@ -296,8 +296,9 @@ class RCE(object):
         def eb(e):
             print(e.getErrorMessage())
 
-        connection = deferToThread(self._getRobotURL, masterUrl)
-        connection.addCallbacks(self._robotConnect, eb)
+        d = deferToThreadPool(self._reactor, self._reactor.getThreadPool(),
+                              self._getRobotURL, masterUrl)
+        d.addCallbacks(self._robotConnect, eb)
 
     def close(self):
         """ Disconnect from RCE.
@@ -308,7 +309,10 @@ class RCE(object):
     def _sendMessage(self, msgType, msgData):
         """ Internally used method to send messages via RCERobotProtocol.
 
-            @param msg:         Message which should be sent.
+            @param msgType:     String describing the type of the message.
+            @type  msgType:     str
+
+            @param msgData:     Message which should be sent.
         """
         if not self._conn:
             raise ConnectionError('No connection registered.')
