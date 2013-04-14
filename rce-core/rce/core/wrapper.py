@@ -30,11 +30,11 @@
 #
 #
 
-# Custom imports
-from rce.comm.error import InvalidRequest
-from rce.core.base import AlreadyDead
-from rce.slave.interface import Types
+# rce specific imports
 from rce.util.name import validateName, IllegalName
+from rce.core.error import InvalidRequest, AlreadyDead
+from rce.slave.interface import Types
+
 
 class _Wrapper(object):
     """ Base class for Wrapper classes, which are used to store additional
@@ -45,7 +45,7 @@ class _Wrapper(object):
         """ Initialize the Wrapper around the object 'obj'.
 
             @param obj:         Object which should be wrapped.
-            @type  obj:         rce.master.base.Proxy
+            @type  obj:         rce.core.base.Proxy
         """
         self._obj = obj
         obj.notifyOnDeath(self._selfDied)
@@ -105,24 +105,19 @@ class Robot(_Wrapper):
 
             @param namespace:   Namespace of the Robot object which should be
                                 wrapped.
-            @type  namespace:   rce.master.robot.Robot
-
-            @param key:         Key which is used by the robot to authenticate
-                                the connection between the robot and the cloud
-                                engine.
-            @type  key:         str
+            @type  namespace:   rce.core.robot.Robot
         """
         super(Robot, self).__init__(namespace)
 
         self._interfaces = {}
 
     def getConnectInfo(self):
-        """ Get the information necessary to the robot to establish a websocket
+        """ Get the information necessary to the robot to establish a WebSocket
             connection.
 
             @return:            The authentication key and address which are
-                                used for the websocket connection.
-            @rtype:             twisted::Deferred
+                                used for the WebSocket connection.
+            @rtype:             twisted.internet.defer.Deferred
         """
         d = self._obj.getWebsocketAddress()
         d.addCallback(lambda addr: addr)
@@ -152,8 +147,8 @@ class Robot(_Wrapper):
 
         try:
             validateName(iTag)
-        except IllegalName:
-            raise InvalidRequest('Interface tag is not a valid.')
+        except IllegalName as e:
+            raise InvalidRequest('Interface tag is invalid: {0}'.format(e))
 
         if iTag in self._interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "
@@ -192,7 +187,7 @@ class Robot(_Wrapper):
             @type  iTag:        str
 
             @return:            Wrapped interface instance which was requested.
-            @rtype:             rce.master.user.Interface
+            @rtype:             rce.core.user.Interface
         """
         try:
             return self._interfaces[iTag]
@@ -232,10 +227,10 @@ class Container(_Wrapper):
 
             @param namespace:   Namespace of the Container object which should
                                 be wrapped.
-            @type  namespace:   rce.master.environment.Environment
+            @type  namespace:   rce.core.environment.Environment
 
             @param container:   Reference to Container.
-            @type  container:   rce.master.container.Container
+            @type  container:   rce.core.container.Container
         """
         super(Container, self).__init__(namespace)
 
@@ -397,7 +392,7 @@ class Container(_Wrapper):
             @type  iTag:        str
 
             @return:            Wrapped interface instance which was requested.
-            @rtype:             rce.master.user.Interface
+            @rtype:             rce.core.user.Interface
         """
         try:
             return self._interfaces[iTag]
@@ -485,7 +480,7 @@ class Interface(_Wrapper):
         """ Initialize the Interface wrapper.
 
             @param interface:   Interface which should be wrapped.
-            @type  interface:   rce.master.network.Interface
+            @type  interface:   rce.core.network.Interface
 
             @param iType:       Type of the interface encoded as an integer.
                                 Refer to rce.slave.interface.Types for more

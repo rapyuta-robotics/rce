@@ -31,17 +31,13 @@
 #
 
 # twisted specific imports
-from twisted.spread.pb import Avatar, Error
+from twisted.spread.pb import Avatar
 
 # rce specific imports
-from rce.util.name import validateName
-from rce.core.view import AdminConsoleView, NormalConsoleView, RobotView
+from rce.util.name import validateName, IllegalName
+from rce.core.error import InvalidRequest
+from rce.core.view import MonitorView, AdminMonitorView, ControlView
 from rce.core.wrapper import Robot
-
-
-class InvalidRequest(Error):
-    """ Exception is raised if the request can not be processed.
-    """
 
 
 class User(Avatar):
@@ -54,7 +50,7 @@ class User(Avatar):
         """ Initialize the User.
 
             @param realm:       The realm of the RoboEarth Cloud Engine master.
-            @type  realm:       rce.master.core.RoboEarthCloudEngine
+            @type  realm:       rce.core.RoboEarthCloudEngine
 
             @param userID:      The user ID associated with the user.
             @type  userID:      str
@@ -62,40 +58,31 @@ class User(Avatar):
         self._realm = realm
         self._userID = userID
 
-        self._role = None
-        self._robots = {}
-        self._containers = {}
-        self._connections = {}
+        self.robots = {}
+        self.containers = {}
+        self.connections = {}
+
+    @property
+    def realm(self):
+        """ Realm to which this User belongs. """
+        return self._realm
 
     @property
     def userID(self):
         """ User ID of this User. """
         return self._userID
 
-    @property
-    def role(self):
-        """ Role of the user. """
-        return self._role
-
-    @property
-    def robots(self):
-        """ Robots owned by this User. """
-        return self._robots
-
-    @property
-    def containers(self):
-        """" Containers used by this User. """
-        return self._containers
-
     def createRobotWrapper(self, robotNamespace, location, robotID):
         """ Create a new Robot Wrapper.
 
             # TODO: Add description of arguments
 
-            @raise:             rce.util.name.IllegalName,
-                                rce.core.user.InvalidRequest
+            @raise:             rce.core.error.InvalidRequest
         """
-        validateName(robotID)
+        try:
+            validateName(robotID)
+        except IllegalName as e:
+            raise InvalidRequest('Robot ID is invalid: {0}'.format(e))
 
         if (robotID in self._robots or robotID in self._containers):
             raise InvalidRequest('ID is already used for a container '
@@ -113,13 +100,24 @@ class User(Avatar):
         if self._userID == 'admin' and not console:
             raise InvalidRequest('Administrator cannot login via robot')
         elif self._userID == 'admin':
-            return AdminConsoleView()
+            return AdminMonitorView()
         elif not console:
-            return RobotView()
+            return ControlView()
         else:
-            return {'console': NormalConsoleView(), 'robot': RobotView()}
+            return {'console': MonitorView(), 'robot': ControlView()}
 
-    def _getEndpoint(self, tag):
+    def getEndpoint(self, tag):
+        """ Get an endpoint of the user matching the given tag.
+
+            @param tag:         Tag which is used to identify the endpoint which
+                                should be returned.
+            @type  tag:         str
+
+            @return:            Endpoint which was requested.
+            @rtype:             rce.core.network.Endpoint
+
+            @raise:             rce.core.error.InvalidRequest
+        """
         if tag in self._robots:
             return self._robots[tag]
         elif tag in self._containers:
@@ -128,31 +126,39 @@ class User(Avatar):
             raise InvalidRequest('Can not get a non existent endpoint '
                                  "'{0}'.".format(tag))
 
-    def _containerDied(self, container):
-        if self._containers:
-            for key, value in self._containers.iteritems():
-                if value == container:
-                    del self._containers[key]
+    def containerDied(self, container):
+        """ Callback which is used to inform the user of the death of a
+            container.
+        """
+        if self.containers:
+            for uid, candidate in self.containers.iteritems():
+                if candidate == container:
+                    del self.containers[uid]
                     break
         else:
             print('Received notification for dead Container, '
                   'but User is already destroyed.')
 
-    def _robotDied(self, robot):
-        if self._robots:
-            for key, value in self._robots.iteritems():
-                if value == robot:
-                    del self._robots[key]
+    def robotDied(self, robot):
+        """ Callback which is used to inform the user of the death of a robot.
+        """
+        if self.robots:
+            for uid, candidate in self.robots.iteritems():
+                if candidate == robot:
+                    del self.robots[uid]
                     break
         else:
             print('Received notification for dead Robot, '
                   'but User is already destroyed.')
 
-    def _connectionDied(self, connection):
-        if self._connections:
-            for key, value in self._connections.iteritems():
-                if value == connection:
-                    del self._connections[key]
+    def connectionDied(self, connection):
+        """ Callback which is used to inform the user of the death of a
+            connection.
+        """
+        if self.connections:
+            for uid, candidate in self.connections.iteritems():
+                if candidate == connection:
+                    del self.connections[uid]
                     break
         else:
             print('Received notification for dead Connection, '
