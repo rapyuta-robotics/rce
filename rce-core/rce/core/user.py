@@ -84,14 +84,14 @@ class User(Avatar):
         except IllegalName as e:
             raise InvalidRequest('Robot ID is invalid: {0}'.format(e))
 
-        if (robotID in self._robots or robotID in self._containers):
+        if (robotID in self.robots or robotID in self.containers):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
 
         robot, status = location.createRobotProxy(robotID, robotNamespace)
         robot = Robot(robot)
-        self._robots[robotID] = robot
-        robot.notifyOnDeath(self._robotDied)
+        self.robots[robotID] = robot
+        robot.notifyOnDeath(self.robotDied)
         return status
 
     def perspective_getUserView(self, console=True):
@@ -118,10 +118,10 @@ class User(Avatar):
 
             @raise:             rce.core.error.InvalidRequest
         """
-        if tag in self._robots:
-            return self._robots[tag]
-        elif tag in self._containers:
-            return self._containers[tag]
+        if tag in self.robots:
+            return self.robots[tag]
+        elif tag in self.containers:
+            return self.containers[tag]
         else:
             raise InvalidRequest('Can not get a non existent endpoint '
                                  "'{0}'.".format(tag))
@@ -169,21 +169,21 @@ class User(Avatar):
             destroying all objects owned by this User as well as deleting all
             circular references.
         """
-        for connection in self._connections.itervalues():
-            connection.dontNotifyOnDeath(self._connectionDied)
+        for connection in self.connections.itervalues():
+            connection.dontNotifyOnDeath(self.connectionDied)
 
-        for container in self._containers.itervalues():
-            container.dontNotifyOnDeath(self._containerDied)
+        for container in self.containers.itervalues():
+            container.dontNotifyOnDeath(self.containerDied)
 
-        for robot in self._robots.itervalues():
-            robot.dontNotifyOnDeath(self._robotDied)
+        for robot in self.robots.itervalues():
+            robot.dontNotifyOnDeath(self.robotDied)
 
-        for container in self._containers.itervalues():
+        for container in self.containers.itervalues():
             container.destroy()
 
-        for robot in self._robots.itervalues():
+        for robot in self.robots.itervalues():
             robot.destroy()
 
-        self._connections = None
-        self._containers = None
-        self._robots = None
+        self.connections = None
+        self.containers = None
+        self.robots = None

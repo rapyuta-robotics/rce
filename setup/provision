@@ -190,7 +190,8 @@ def _get_argparse():
                             description='Provision the base settings for the'
                             ' RoboEarth Cloud Engine ')
 
-    parser.add_argument('mode', choices=['all', 'cred', 'config', 'container', 'clean'],
+    parser.add_argument('mode', choices=['all', 'cred', 'config', 'container',
+                                         'clean'],
                         help='Flag to select set up instead of tear down.', )
 
     return parser
@@ -276,7 +277,7 @@ if __name__ == '__main__':
             _ROS_SRC,
             _ROS_KEY,
             _INSTALL.format(_CONTAINER_PKGS),
-            'git clone -b reorder https://github.com/IDSCETHZurich/rce.git', #TODO : switch branches on master merge
+            'git clone https://github.com/IDSCETHZurich/rce.git',
             'cd rce && sh install.sh'
         ]
         if dev_mode:
