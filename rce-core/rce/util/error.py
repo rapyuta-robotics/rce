@@ -43,3 +43,13 @@ class MaxNumberExceeded(Error):
     """ Indicates that a quantity has exceeded an upper limit.
     """
 
+
+class AlreadyDead(Error):
+    """ Exception is raised when a death notifier callback is registered with
+        an already dead object.
+    """
+
+
+class InvalidRequest(Error):
+    """ Exception is used to signal an invalid request.
+    """

@@ -40,7 +40,7 @@ from twisted.spread.pb import Viewable
 
 # rce specific imports
 from rce.util.name import validateName, IllegalName
-from rce.core.error import InvalidRequest
+from rce.util.error import InvalidRequest
 from rce.core.wrapper import Container
 from rce.slave.interface import Types
 
