@@ -52,5 +52,5 @@ setup(
     scripts=['scripts/rce-make', 'scripts/rce-setup-rcemake',
              'scripts/rce-master', 'scripts/rce-container',
              'scripts/rce-robot', 'scripts/rce-environment',
-             'scripts/rce-rosproxy']
+             'scripts/rce-rosproxy', 'scripts/rce-maintain']
 )
