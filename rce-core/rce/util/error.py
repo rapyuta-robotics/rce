@@ -37,19 +37,3 @@ from twisted.spread.pb import Error
 class InternalError(Error):
     """ This class is used to signal an internal error.
     """
-
-
-class MaxNumberExceeded(Error):
-    """ Indicates that a quantity has exceeded an upper limit.
-    """
-
-
-class AlreadyDead(Error):
-    """ Exception is raised when a death notifier callback is registered with
-        an already dead object.
-    """
-
-
-class InvalidRequest(Error):
-    """ Exception is used to signal an invalid request.
-    """

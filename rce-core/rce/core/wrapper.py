@@ -32,7 +32,7 @@
 
 # rce specific imports
 from rce.util.name import validateName, IllegalName
-from rce.util.error import InvalidRequest, AlreadyDead
+from rce.core.error import InvalidRequest, AlreadyDead
 from rce.slave.interface import Types
 
 

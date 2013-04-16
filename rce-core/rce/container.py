@@ -51,10 +51,11 @@ from twisted.spread.pb import Referenceable, PBClientFactory, \
     DeadReferenceError, PBConnectionLost
 
 # rce specific imports
-from rce.util.error import InternalError, MaxNumberExceeded
+from rce.util.error import InternalError
 from rce.util.container import Container
 from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
+from rce.core.error import MaxNumberExceeded
 #from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
