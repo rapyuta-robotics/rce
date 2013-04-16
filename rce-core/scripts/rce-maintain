@@ -41,7 +41,7 @@ def _get_argparse():
                             description='Maintanance utility for the'
                             ' RoboEarth Cloud Engine ')
 
-    parser.add_argument('mode', choices=['all', 'rce', 'rootfs'])
+    parser.add_argument('mode', choices=['all', 'rce', 'rootfs', 'packages'])
 
     return parser
 
@@ -70,6 +70,10 @@ if __name__ == '__main__':
         check_call(_GIT_UPDATE, shell=True)
         print "Updating the Cloud Engine on the container rootfs"
         check_call('echo "{0}" | sudo rce-make'.format(_GIT_UPDATE), shell=True)
+    
+    elif args.mode == 'packages':
+        pass
+        #TODO : This is where hooks for using the packages delivery mechanism from the machine would fall into place
     
     else:
         print "Invalid mode"
