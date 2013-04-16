@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     rce-core/rce-environment
+#     rce-core/rce-maintain
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #
@@ -34,47 +34,52 @@
 from subprocess import check_call
 from ConfigParser import SafeConfigParser
 
+
 def _get_argparse():
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(prog='rce-maintaine',
-                            description='Maintanance utility for the'
-                            ' RoboEarth Cloud Engine ')
+    parser = ArgumentParser(prog='rce-maintain',
+                            description='Maintenance utility for the '
+                                        'RoboEarth Cloud Engine.')
 
     parser.add_argument('mode', choices=['all', 'rce', 'rootfs', 'packages'])
 
     return parser
 
+
 _INSTALL = 'sudo apt-get update && sudo apt-get -y upgrade'
-_GIT_UPDATE= 'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && git clone https://github.com/IDSCETHZurich/rce.git && cd rce && sudo sh install.sh'
+_GIT_UPDATE = ('mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
+               'git clone https://github.com/IDSCETHZurich/rce.git && '
+               'cd rce && sudo sh install.sh')
 
 
 if __name__ == '__main__':
     from rce.util.settings import PATH, getSettings
     args = _get_argparse().parse_args()
-    
-    if args.mode == 'all':
-        print "Updating packages on the host system"
-        check_call(_INSTALL, shell=True)
-        print "Updating RoboEarth Cloud Engine on the host system"
-        check_call(_GIT_UPDATE, shell=True)
-        print "Updating packages and the Cloud Engine on the container rootfs"
-        check_call('echo "{0}" | sudo rce-make'.format((';').join((_INSTALL, _GIT_UPDATE)), shell=True))
 
-    elif args.mode == 'rootfs':
-        print "Updating packages and the Cloud Engine on the container rootfs"
-        check_call('echo "{0}" | sudo rce-make'.format((';').join((_INSTALL, _GIT_UPDATE)), shell=True))
-    
-    elif args.mode == 'rce':
-        print "Updating Cloud Engine on the host system"
+    msg = []
+    cmd = []
+
+    if args.mode == 'all':
+        print('Updating packages on the host system')
+        check_call(_INSTALL, shell=True)
+
+    if args.mode in ('all', 'rootfs'):
+        msg.append('packages')
+        cmd.append(_INSTALL)
+
+    if args.mode in ('all', 'rce'):
+        print('Updating the RoboEarth Cloud Engine on the host system')
         check_call(_GIT_UPDATE, shell=True)
-        print "Updating the Cloud Engine on the container rootfs"
-        check_call('echo "{0}" | sudo rce-make'.format(_GIT_UPDATE), shell=True)
-    
-    elif args.mode == 'packages':
+
+    if args.mode in ('all', 'rootfs', 'rce'):
+        msg.append('the RoboEarth Cloud Engine')
+        cmd.append(_GIT_UPDATE)
+        print('Updating {0} on the container system'.format(' and '.join(msg)))
+        check_call('echo "{0}" | sudo rce-make'.format(';'.join(cmd)),
+                   shell=True)
+
+    if args.mode == 'packages':
         pass
-        #TODO : This is where hooks for using the packages delivery mechanism from the machine would fall into place
-    
-    else:
-        print "Invalid mode"
-        exit()
+        # TODO: This is where hooks for using the packages delivery
+        #       mechanism from the machine would fall into place
