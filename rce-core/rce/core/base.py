@@ -38,7 +38,7 @@ from twisted.spread.pb import RemoteReference, Referenceable, \
     DeadReferenceError, PBConnectionLost
 
 # rce specific imports
-from rce.core.error import AlreadyDead
+from rce.util.error import AlreadyDead
 
 
 class Status(Referenceable):

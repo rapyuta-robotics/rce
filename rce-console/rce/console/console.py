@@ -174,10 +174,17 @@ class UserUpdateOptions(CustomOptions):
     """
     optParameters = (
         ("username", "u", None, "Username"),
-        ("new_password", "p", None, "New Password"),
-        ("old_password", "o", None, "Old Password"),
+        ("password", "p", None, "New Password"),
     )
 
+class UserChangePasswordOptions(CustomOptions):
+    """
+        Parameters for changing password by a non-admin.
+    """
+    optParameters = (
+        ("new", "p", None, "New Password"),
+        ("old", "o", None, "Old Password"),
+    )
 
 class UserOptions(CustomOptions):
     """
@@ -187,6 +194,7 @@ class UserOptions(CustomOptions):
         ('add', None, UserAddOptions, "Add User"),
         ('remove', None, UserRemoveOptions, "Remove User"),
         ('update', None, UserUpdateOptions, "Update User"),
+        ('passwd', None, UserChangePasswordOptions, "Change Password"),
     )
     optFlags = (
         ("list", "l", "List all Users"),
@@ -546,21 +554,14 @@ class ConsoleClient(HistoricRecvLine):
             elif cmd == 'remove':
                 if opts['username']:
                     self.callToUser('remove_user', 'admin', opts['username'])
-            elif cmd == 'update':
-                if self._privilege == 'console':
-                    if (opts['username'] and opts['new_password']
-                        and opts['old_password']):
-                        self.callToUser('update_user', 'console',
-                                        opts['username'], opts['new_password'],
-                                        opts['old_password'])
-                    else:
-                        self.terminal.write("BUG in usage")
-                elif self._privilege == 'admin':
-                    if opts['username'] and opts['new_password']:
-                        self.callToUser('update_user', 'admin',
-                                        opts['username'], opts['new_password'])
-                    else:
-                        self.terminal.write("BUG in usage")
+            elif cmd == 'update':           
+                if opts['username'] and opts['password']:
+                    self.callToUser('update_user', 'admin',
+                                    opts['username'], opts['password'])
+            elif cmd == 'passwd':
+                if opts['new'] and opts['old']:
+                    self.callToUser('update_user', 'console', opts['new'], 
+									opts['old'])
             elif config['list']:
                 self.callToUserAndDisplay('list_users', 'admin')
 

@@ -35,7 +35,7 @@ from twisted.spread.pb import Avatar
 
 # rce specific imports
 from rce.util.name import validateName, IllegalName
-from rce.core.error import InvalidRequest
+from rce.util.error import InvalidRequest
 from rce.core.view import MonitorView, AdminMonitorView, ControlView
 from rce.core.wrapper import Robot
 
