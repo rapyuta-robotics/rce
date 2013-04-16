@@ -554,14 +554,14 @@ class ConsoleClient(HistoricRecvLine):
             elif cmd == 'remove':
                 if opts['username']:
                     self.callToUser('remove_user', 'admin', opts['username'])
-            elif cmd == 'update':           
+            elif cmd == 'update':
                 if opts['username'] and opts['password']:
                     self.callToUser('update_user', 'admin',
                                     opts['username'], opts['password'])
             elif cmd == 'passwd':
                 if opts['new'] and opts['old']:
-                    self.callToUser('update_user', 'console', opts['new'], 
-									opts['old'])
+                    self.callToUser('update_user', 'console', opts['new'],
+                                    opts['old'])
             elif config['list']:
                 self.callToUserAndDisplay('list_users', 'admin')
 
