@@ -253,6 +253,10 @@ fi
 
 echo "Provisioning other required directories and files"
 # basic source and conf files
+
+mkdir -p $path/config
+mkdir -p $path/data
+
 mkdir -p $rootfs/opt/rce
 mkdir -p $rootfs/opt/rce/packages
 
