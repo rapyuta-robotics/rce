@@ -251,7 +251,8 @@ if __name__ == '__main__':
         # Build up the settings file
         provision_config(container_path, dev_mode, PATH, pw_file)
         if dev_mode:
-            os.remove(pw_file)
+            if os.path.exists(pw_file):
+                os.remove(pw_file)
             provision_creds(dev_mode, pw_file)
     else:
         settings = getSettings()
