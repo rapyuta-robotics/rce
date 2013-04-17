@@ -359,7 +359,6 @@ class _Settings(object):
         settings._packages = tuple(settings._packages)
 
         # Validate paths
-        _path_exists(settings._pw_file, 'Credentials database')
         _valid_dir(settings._rootfs, 'Container file system')
         _valid_dir(settings._conf_dir, 'Configuration directory')
         _valid_dir(settings._data_dir, 'Data directory')

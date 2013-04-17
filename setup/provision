@@ -53,7 +53,7 @@ def _get_dev_mode():
     """ Ask whether the developer mode should be used.
     """
     while 1:
-        dev_mode = raw_input('Do you want to autoprovision credentials '
+        dev_mode = raw_input('Do you want to auto-provision/recreate credentials '
                              'for developer mode (Insecure)[y/N]: ')
         dev_mode = dev_mode.strip().lower()
 
@@ -250,6 +250,9 @@ if __name__ == '__main__':
 
         # Build up the settings file
         provision_config(container_path, dev_mode, PATH, pw_file)
+        if dev_mode:
+            os.remove(pw_file)
+            provision_creds(dev_mode, pw_file)
     else:
         settings = getSettings()
         dev_mode = settings.dev_mode
