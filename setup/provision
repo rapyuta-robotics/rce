@@ -261,6 +261,10 @@ if __name__ == '__main__':
 
     if args.mode in ('all', 'cred'):
         # Provision the cred db
+        if dev_mode:
+            print ('It appears Developer  Mode is set in the config file. '
+                   'Auto-provisioning default password file. '
+                   'Change this option in the config to change this behavior')
         provision_creds(dev_mode, pw_file)
 
     if args.mode in ('all', 'container'):
