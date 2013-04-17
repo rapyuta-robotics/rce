@@ -57,6 +57,7 @@ Install and Platform Notes
         The network interface that is globally accessible :
             For AWS EC2 set it to : aws_dns
             For Rackspace set it to : eth0
+            Alternately provide the IPv4 address for the corresponding interface : x.x.x.x
 
     d. Internal communication interface : default eth0
         The network interface that is internally used between the nodes of the cloud engine :
@@ -64,6 +65,7 @@ Install and Platform Notes
         This distinction is made as the internal networks generally have much lower latencies and higher speeds which could massively benefit the cloud engine)
             For AWS EC2 set it to : eth0
             For Rackspace set it to : eth1
+            Alternately provide the IPv4 address for the corresponding interface : x.x.x.x
 
     e. Internal container communication interface : default lxcbr0
         The network interface that is internally used between the containers on the same physical host/ cloud instance (Its is not the same as [d])
