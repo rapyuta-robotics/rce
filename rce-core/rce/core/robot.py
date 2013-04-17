@@ -222,10 +222,6 @@ class RobotEndpoint(Endpoint):
 	    @param remoteRobot: Reference to Robot namespace in Robot process.
             @type  remoteRobot: twisted.spread.pb.RemoteReference
         """
-	deathCandidate = None
 	for robot in self._robots:
-	    if robot.__obj == remoteRobot:
-		deathCandidate = robot
+	    if robot.destroyExternal(remoteRobot):
 		break
-	if deathCandidate:
-	    deathCandidate.destroy()
