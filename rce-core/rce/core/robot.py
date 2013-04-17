@@ -56,12 +56,21 @@ class RobotEndpointAvatar(Avatar):
         self._realm = realm
         self._endpoint = endpoint
 
-    def perspective_setupProxy(self, robotProxy, userID, robotID):
+    def perspective_robotDied(self, remoteRobot):
+	""" Notify that a remote robot namespace died.
+
+	    @param remoteRobot: Reference to the Robot namespace in the Robot
+                                process.
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
+	"""
+	self._endpoint.destroyRobot(remoteRobot)
+
+    def perspective_setupProxy(self, remoteRobot, userID, robotID):
         """ Register a Robot namespace with the Master process.
 
-            @param robotProxy:  Reference to the Robot namespace in the Robot
+            @param remoteRobot: Reference to the Robot namespace in the Robot
                                 process.
-            @type  robotProxy:  twisted.spread.pb.RemoteReference
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
 
             @param userID:      User ID of the robot owner.
             @type  userID:      str
@@ -75,7 +84,7 @@ class RobotEndpointAvatar(Avatar):
             @rtype:             rce.core.base.Status
         """
         user = self._realm.getUser(userID)
-        status = user.createRobotWrapper(robotProxy, self._endpoint, robotID)
+        status = user.createRobotWrapper(remoteRobot, self._endpoint, robotID)
         return status
 
     def logout(self):
@@ -139,6 +148,7 @@ class RobotEndpoint(Endpoint):
 
         self._root = root
         self._port = port
+	self._robots = set()
 
     @property
     def active(self):
@@ -187,6 +197,7 @@ class RobotEndpoint(Endpoint):
                                 (subclass of rce.core.base.Proxy)
         """
         robot = Robot(self)
+	self._robots.add(robot)
         status = Status(robot)
         robot.callback(remoteRobot)
         return robot, status
@@ -203,3 +214,18 @@ class RobotEndpoint(Endpoint):
             super(RobotEndpoint, self).destroy()
         else:
             print('robot.RobotEndpoint destroy() called multiple times...')
+
+    def destroyRobot(self, remoteRobot):
+	""" Method should be called to destroy the robot proxy referenced by the
+	    remote Robot namespace.
+	    
+	    @param remoteRobot: Reference to Robot namespace in Robot process.
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
+        """
+	deathCandidate = None
+	for robot in self._robots:
+	    if robot.__obj == remoteRobot:
+		deathCandidate = robot
+		break
+	if deathCandidate:
+	    deathCandidate.destroy()

@@ -741,7 +741,7 @@ class RobotClient(Endpoint):
                                 which is used in the Robot process.
             @type  connection:  rce.robot.Connection
         """
-        if not self._avatar:
+        if not self._avatar: #This is RobotEndpointAvatar and not User Avatar.
             raise ForwardingError('Avatar reference is missing.')
 
         view = RobotView(view, connection)
