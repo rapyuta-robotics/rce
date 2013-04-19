@@ -440,10 +440,10 @@ class Robot(Namespace):
             @param client:      Robot Client which is responsible for
                                 monitoring the robots in this process.
             @type  client:      rce.robot.RobotClient
-	    
-	    @param connection:  The connection manager for robot namespaces.
-	    
-	    @type client:       rce.robot.Connection
+            
+            @param connection:  The connection manager for robot namespaces.
+            
+            @type client:       rce.robot.Connection
         """
         self._client = client
         self._connection = connection
@@ -591,7 +591,7 @@ class Robot(Namespace):
                     log.err(failure)
 
             try:
-		self._client._avatar.callRemote('died').addErrback(eb)
+                self._client._avatar.callRemote('died').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
 
@@ -752,7 +752,7 @@ class RobotClient(Endpoint):
         connection.registerNamespace(namespace)
         self._avatar.callRemote('setupProxy', namespace,
                                 connection.userID, connection.robotID)
-	return connection
+        return connection
 
     def login(self, userID, robotID, password):
         """ Callback for Robot connection to login and authenticate.
@@ -845,7 +845,7 @@ class RobotClient(Endpoint):
 
 
 def main(reactor, cred, masterIP, masterPort, consolePort,
-		extIP, extPort, commPort, pkgPath, customConverters):
+                extIP, extPort, commPort, pkgPath, customConverters):
     log.startLogging(sys.stdout)
 
     def _err(reason):
