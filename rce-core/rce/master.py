@@ -51,7 +51,7 @@ from rce.comm.server import RobotResource
 from rce.core.machine import LoadBalancer, ContainerProcessError, \
     Distributor, RobotProcessError
 from rce.core.network import Network
-from rce.core.environment import EnvironmentEndpoint
+from rce.core.environment import EnvironmentEndpoint, EnvironmentEndpointAvatar
 from rce.core.robot import RobotEndpoint, RobotEndpointAvatar
 from rce.core.user import User
 
@@ -139,8 +139,8 @@ class RoboEarthCloudEngine(object):
         elif avatarId == 'environment':
             endpoint = self._pendingContainer.pop(mind[1])
             endpoint.callback(mind[0])
-            avatar = Avatar() # TODO: At the moment does nothing
-            detach = lambda: endpoint.destroy()
+            avatar = EnvironmentEndpointAvatar(self, endpoint)
+            detach = lambda: avatar.logout()
             print('Connection to Environment process established.')
         else:
             raise InternalError('Invalid avatar ID received.')

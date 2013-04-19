@@ -242,3 +242,27 @@ class EnvironmentEndpoint(Endpoint):
         print('Destroying Connection to Environment Process.')
         self._container = None
         super(EnvironmentEndpoint, self).destroy()
+
+
+class EnvironmentEndpointAvatar(Avatar):
+    """ Avatar for internal PB connection form a Environment Endpoint.
+    """
+    def __init__(self, realm, endpoint):
+        """ Initialize the Robot Endpoint avatar.
+
+            @param realm:       User realm from which a user object can be
+                                retrieved.
+            @type  realm:       # TODO: Check this
+
+            @param endpoint:    Representation of the Robot Endpoint.
+            @type  endpoint:    rce.core.robot.RobotEndpoint
+        """
+        self._realm = realm
+        self._endpoint = endpoint
+
+    def logout(self):
+        """ Callback which should be called upon disconnection of the Robot
+            Endpoint.
+        """
+        self._endpoint.destroy()
+

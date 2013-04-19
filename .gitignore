@@ -1,9 +1,9 @@
 *~
 *.pyc
 *.so
-*/.settings/
-*/.project
-*/.pydevproject
+.settings/
+.project
+.pydevproject
 */.cproject
 rce-*/build/
 rce-*/dist/
