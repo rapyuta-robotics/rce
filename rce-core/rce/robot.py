@@ -129,7 +129,7 @@ class Connection(object):
     ###
 
     def registerAvatar(self, avatar):
-        """ # TODO: Add doc
+        """ Register User Avatar.
         """
         assert self._avatar is None
         self._avatar = avatar
@@ -440,6 +440,10 @@ class Robot(Namespace):
             @param client:      Robot Client which is responsible for
                                 monitoring the robots in this process.
             @type  client:      rce.robot.RobotClient
+	    
+	    @param connection:  The connection manager for robot namespaces.
+	    
+	    @type client:       rce.robot.Connection
         """
         self._client = client
         self._connection = connection
@@ -581,17 +585,15 @@ class Robot(Namespace):
             interface.remote_destroy()
         assert len(self._interfaces) == 0
 
-        if self._status:
+        if self._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
                     log.err(failure)
 
             try:
-                self._status.callRemote('died').addErrback(eb)
+		self._client._avatar.callRemote('died').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
-
-            self._status = None
 
     def remote_destroy(self):
         """ Method should be called to destroy the robot and will take care
@@ -748,25 +750,9 @@ class RobotClient(Endpoint):
         namespace = Robot(self, connection)
         connection.registerView(view)
         connection.registerNamespace(namespace)
-        return self._avatar.callRemote('setupProxy', namespace,
-                                       connection.userID, connection.robotID)
-
-    def _cbRegistered(self, status, connection):
-        """ Method is used internally as a callback which is called when the
-            Robot namespace for a newly connected robot has been successfully
-            registered which the Master process.
-
-            @param status:      Status object returned by the Master process
-                                which is used to inform the Master process of
-                                status changes of the Robot namespace.
-            @type  status:      twisted.spread.pb.RemoteReference
-
-            @param connection:  Representation of the connection to the robot
-                                which is used in the Robot process.
-            @type  connection:  rce.robot.Connection
-        """
-        connection.registerStatus(status)
-        return connection
+        self._avatar.callRemote('setupProxy', namespace,
+                                connection.userID, connection.robotID)
+	return connection
 
     def login(self, userID, robotID, password):
         """ Callback for Robot connection to login and authenticate.
@@ -795,7 +781,6 @@ class RobotClient(Endpoint):
         d = factory.login(UsernamePassword(userID, password))
         d.addCallback(self._cbAuthenticated, conn)
         d.addCallback(self._cbConnected, conn)
-        d.addCallback(self._cbRegistered, conn)
         return d
 
     def registerWebsocketProtocol(self, connection, protocol):

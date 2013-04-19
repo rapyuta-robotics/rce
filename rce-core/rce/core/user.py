@@ -88,11 +88,10 @@ class User(Avatar):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
 
-        robot, status = location.createRobotProxy(robotID, robotNamespace)
+        robot = location.createRobotProxy(robotID, robotNamespace)
         robot = Robot(robot)
         self.robots[robotID] = robot
         robot.notifyOnDeath(self.robotDied)
-        return status
 
     def perspective_getUserView(self, console=True):
         """
