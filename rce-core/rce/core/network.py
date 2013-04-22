@@ -36,7 +36,7 @@ from uuid import uuid4
 # twisted specific imports
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, DeferredList
-from twisted.spread.pb import Referenceable, Error, PBConnectionLost
+from twisted.spread.pb import Referenceable, Error, PBConnectionLost, Avatar
 
 # rce specific imports
 from rce.util.error import InternalError
@@ -417,7 +417,56 @@ class Endpoint(Proxy):
         for interface in self._interfaces:
             if interface.destroyExternal(remoteInterface):
                 break
+
+
+class EndpointAvatar(Avatar):
+    """ Avatar for internal PB connection from an Endpoint.
+    """
+    def __init__(self, realm, endpoint):
+        """ Initialize the Endpoint avatar.
+
+            @param realm:       User realm from which a user object can be
+                                retrieved.
+            @type  realm:       # TODO: Check this
+
+            @param endpoint:    Representation of the Endpoint.
+            @type  endpoint:    rce.core.network.Endpoint
+        """
+        self._realm = realm
+        self._endpoint = endpoint
+
+    def perspective_interfaceDied(self, remoteInterface):
+        """ Notify that a remote interface died.
+
+            @param remoteInterface: Reference to the Interface in the Robot
+                                    process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyInterface(remoteInterface)
+
+    def perspective_protocolDied(self, remoteProtocol):
+        """ Notify that a remote protocol died.
+
+            @param remoteProtocol: Reference to the Protocol in the Robot
+                                    process.
+            @type  remoteProtocol: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyProtocol(remoteProtocol)
         
+    def perspective_namespaceDied(self, remoteNamespace):
+        """ Notify that a remote namespace died.
+
+            @param remoteNamespace: Reference to the Namespace in the Robot
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyNamespace(remoteNamespace)
+
+    def logout(self):
+        """ Callback which should be called upon disconnection of the Endpoint.
+        """
+        self._endpoint.destroy()
+
 
 class Namespace(Proxy):
     """ Representation of a namespace, which is part of the cloud engine

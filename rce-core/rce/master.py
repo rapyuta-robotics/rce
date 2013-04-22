@@ -49,7 +49,7 @@ from rce.util.cred import CredentialError
 from rce.comm.interfaces import IMasterRealm
 from rce.comm.server import RobotResource
 from rce.core.machine import LoadBalancer, ContainerProcessError, \
-    Distributor, RobotProcessError
+    Distributor, RobotProcessError, MachineAvatar
 from rce.core.network import Network
 from rce.core.environment import EnvironmentEndpoint, EnvironmentEndpointAvatar
 from rce.core.robot import RobotEndpoint, RobotEndpointAvatar
@@ -126,8 +126,8 @@ class RoboEarthCloudEngine(object):
         #     'container', 'robot', and 'environment'
         if avatarId == 'container':
             machine = self._balancer.createMachine(mind[0], mind[1])
-            avatar = Avatar() # TODO: At the moment does nothing
-            detach = lambda: self._balancer.destroyMachine(machine)
+            avatar = MachineAvatar(machine, self._balancer)
+            detach = lambda: avatar.logout()
             print('Connection to Container process established.')
         elif avatarId == 'robot':
             endpoint = RobotEndpoint(self._network, self._distributor, self,

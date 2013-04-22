@@ -32,92 +32,11 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
-from twisted.spread.pb import Avatar
 
 # rce specific imports
 from rce.util.network import isLocalhost
-from rce.core.network import Endpoint, Namespace
+from rce.core.network import Endpoint, Namespace, EndpointAvatar
 from rce.core.base import Status
-
-
-class RobotEndpointAvatar(Avatar):
-    """ Avatar for internal PB connection form a Robot Endpoint.
-    """
-    def __init__(self, realm, endpoint):
-        """ Initialize the Robot Endpoint avatar.
-
-            @param realm:       User realm from which a user object can be
-                                retrieved.
-            @type  realm:       # TODO: Check this
-
-            @param endpoint:    Representation of the Robot Endpoint.
-            @type  endpoint:    rce.core.robot.RobotEndpoint
-        """
-        self._realm = realm
-        self._endpoint = endpoint
-
-    def perspective_robotDied(self, remoteRobot):
-        """ Notify that a remote robot namespace died.
-
-            @param remoteRobot: Reference to the Robot namespace in the Robot
-                                process.
-            @type  remoteRobot: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyRobot(remoteRobot)
-
-    def perspective_interfaceDied(self, remoteInterface):
-        """ Notify that a remote interface died.
-
-            @param remoteInterface: Reference to the Interface in the Robot
-                                    process.
-            @type  remoteInterface: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyInterface(remoteInterface)
-
-    def perspective_protocolDied(self, remoteProtocol):
-        """ Notify that a remote protocol died.
-
-            @param remoteProtocol: Reference to the Protocol in the Robot
-                                    process.
-            @type  remoteProtocol: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyProtocol(remoteProtocol)
-        
-    def perspective_namespaceDied(self, remoteNamespace):
-        """ Notify that a remote namespace died.
-
-            @param remoteNamespace: Reference to the Namespace in the Robot
-                                    process.
-            @type  remoteNamespace: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyNamespace(remoteNamespace)
-
-    def perspective_setupProxy(self, remoteRobot, userID, robotID):
-        """ Register a Robot namespace with the Master process.
-
-            @param remoteRobot: Reference to the Robot namespace in the Robot
-                                process.
-            @type  remoteRobot: twisted.spread.pb.RemoteReference
-
-            @param userID:      User ID of the robot owner.
-            @type  userID:      str
-
-            @param robotID:     Unique ID which is used to identify the robot.
-            @type  robotID:     str
-
-            @return:            Status object which can be used in the Robot
-                                process to inform the Master of status changes
-                                to the Robot namespace.
-            @rtype:             rce.core.base.Status
-        """
-        user = self._realm.getUser(userID)
-        user.createRobotWrapper(remoteRobot, self._endpoint, robotID)
-
-    def logout(self):
-        """ Callback which should be called upon disconnection of the Robot
-            Endpoint.
-        """
-        self._endpoint.destroy()
 
 
 class Robot(Namespace):
@@ -250,3 +169,38 @@ class RobotEndpoint(Endpoint):
         for robot in self._robots:
             if robot.destroyExternal(remoteRobot):
                 break
+
+
+class RobotEndpointAvatar(EndpointAvatar):
+    """ Avatar for internal PB connection form a Robot Endpoint.
+    """
+    def perspective_robotDied(self, remoteRobot):
+        """ Notify that a remote robot namespace died.
+
+            @param remoteRobot: Reference to the Robot namespace in the Robot
+                                process.
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyRobot(remoteRobot)
+
+    def perspective_setupProxy(self, remoteRobot, userID, robotID):
+        """ Register a Robot namespace with the Master process.
+
+            @param remoteRobot: Reference to the Robot namespace in the Robot
+                                process.
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
+
+            @param userID:      User ID of the robot owner.
+            @type  userID:      str
+
+            @param robotID:     Unique ID which is used to identify the robot.
+            @type  robotID:     str
+
+            @return:            Status object which can be used in the Robot
+                                process to inform the Master of status changes
+                                to the Robot namespace.
+            @rtype:             rce.core.base.Status
+        """
+        user = self._realm.getUser(userID)
+        user.createRobotWrapper(remoteRobot, self._endpoint, robotID)
+

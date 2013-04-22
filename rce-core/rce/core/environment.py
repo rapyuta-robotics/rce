@@ -32,7 +32,7 @@
 
 # rce specific imports
 from rce.core.base import Proxy, Status
-from rce.core.network import Endpoint, Namespace
+from rce.core.network import Endpoint, Namespace, EndpointAvatar
 
 
 class Node(Proxy):
@@ -267,22 +267,9 @@ class EnvironmentEndpoint(Endpoint):
         super(EnvironmentEndpoint, self).destroy()
 
 
-class EnvironmentEndpointAvatar(Avatar):
-    """ Avatar for internal PB connection form a Environment Endpoint.
+class EnvironmentEndpointAvatar(EndpointAvatar):
+    """ Avatar for internal PB connection from an Environment Endpoint.
     """
-    def __init__(self, realm, endpoint):
-        """ Initialize the Robot Endpoint avatar.
-
-            @param realm:       User realm from which a user object can be
-                                retrieved.
-            @type  realm:       # TODO: Check this
-
-            @param endpoint:    Representation of the Robot Endpoint.
-            @type  endpoint:    rce.core.robot.RobotEndpoint
-        """
-        self._realm = realm
-        self._endpoint = endpoint
-
     def perspective_nodeDied(self, remoteNode):
         """ Notify that a remote node died.
 
@@ -300,37 +287,3 @@ class EnvironmentEndpointAvatar(Avatar):
             @type  remoteParameter: twisted.spread.pb.RemoteReference
         """
         self._endpoint._environment.destroyParameter(remoteParameter)
-        
-    def perspective_interfaceDied(self, remoteInterface):
-        """ Notify that a remote interface died.
-
-            @param remoteInterface: Reference to the Interface in the Environment
-                                    process.
-            @type  remoteInterface: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyInterface(remoteInterface)
-
-    def perspective_protocolDied(self, remoteProtocol):
-        """ Notify that a remote protocol died.
-
-            @param remoteProtocol: Reference to the Protocol in the Environment
-                                    process.
-            @type  remoteProtocol: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyProtocol(remoteProtocol)
-        
-    def perspective_namespaceDied(self, remoteNamespace):
-        """ Notify that a remote namespace died.
-
-            @param remoteNamespace: Reference to the Namespace in the Environment
-                                    process.
-            @type  remoteNamespace: twisted.spread.pb.RemoteReference
-        """
-        self._endpoint.destroyNamespace(remoteNamespace)
-
-    def logout(self):
-        """ Callback which should be called upon disconnection of the Robot
-            Endpoint.
-        """
-        self._endpoint.destroy()
-

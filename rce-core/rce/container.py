@@ -348,17 +348,15 @@ class RCEContainer(Referenceable):
             else:
                 self._terminating = succeed(None)
 
-        if self._status:
+        if self._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
                     log.err(failure)
 
             try:
-                self._status.callRemote('died').addErrback(eb)
+                self._client._avatar.callRemote('containerDied').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
-
-            self._status = None
 
         return self._terminating
 
