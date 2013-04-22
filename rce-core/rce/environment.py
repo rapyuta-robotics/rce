@@ -107,13 +107,9 @@ class Environment(Namespace):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
 
-    def remote_createNode(self, status, pkg, exe, args, name, namespace):
+    def remote_createNode(self, pkg, exe, args, name, namespace):
         """ Create a Node object in the environment namespace and
             therefore in the endpoint.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the node's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param pkg:         Name of ROS package where the node can be
                                 found.
@@ -135,15 +131,11 @@ class Environment(Namespace):
                                 in the environment.
             @type  namespace:   str
         """
-        return Node(self, status, pkg, exe, args, name, namespace)
+        return Node(self, pkg, exe, args, name, namespace)
 
-    def remote_createParameter(self, status, name, value):
+    def remote_createParameter(self, name, value):
         """ Create a Parameter object in the environment namespace and
             therefore in the endpoint.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the parameter's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param name:        Name of the parameter which should be added.
             @type  name:        str
@@ -151,7 +143,7 @@ class Environment(Namespace):
             @param value:       Value of the parameter which should be added.
             @type  value:       str, int, float, bool, list
         """
-        return Parameter(self, status, name, value)
+        return Parameter(self, name, value)
 
     def remote_createInterface(self, status, uid, iType, clsName, addr):
         """ Create an Interface object in the environment namespace and

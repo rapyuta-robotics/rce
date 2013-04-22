@@ -81,15 +81,11 @@ class Node(Referenceable, ArgumentMixin):
     _STOP_ESCALATION = [('INT', 15), ('TERM', 2), ('KILL', None)]
     _LOG_DIR = '/opt/rce/data'# TODO: After splitting process: '/home/ros'
 
-    def __init__(self, owner, status, pkg, exe, args, name, namespace):
+    def __init__(self, owner, pkg, exe, args, name, namespace):
         """ Initialize and start the Node.
 
             @param owner:       Environment in which the node will be created.
             @type  owner:       rce.environment.Environment
-
-            @param status:      Status observer which is used to inform the
-                                Master of the node's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param pkg:         Name of ROS package where the node can be
                                 found.
@@ -120,7 +116,6 @@ class Node(Referenceable, ArgumentMixin):
         owner.registerNode(self)
         self._owner = owner
 
-        self._status = status
         self._reactor = owner.reactor
         self._call = None
 
@@ -183,17 +178,15 @@ class Node(Referenceable, ArgumentMixin):
             self._owner.unregisterNode(self)
             self._owner = None
 
-        if self._status:
+        if self._owner._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
                     log.err(failure)
 
             try:
-                self._status.callRemote('died').addErrback(eb)
+                self._owner._client._avatar.callRemote('nodeDied').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
-
-            self._status = None
 
     def remote_destroy(self):
         """ Method should be called to stop/kill this node.

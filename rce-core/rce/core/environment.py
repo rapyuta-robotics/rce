@@ -122,8 +122,7 @@ class Environment(Namespace):
             @type  nspace:      str
         """
         node = Node(self)
-        status = Status(node)
-        self.callRemote('createNode', status, pkg, exe, args, name,
+        self.callRemote('createNode', pkg, exe, args, name,
                         nspace).chainDeferred(node)
         return node
 
@@ -140,8 +139,7 @@ class Environment(Namespace):
             @type  value:       str, int, float, bool, list
         """
         parameter = Parameter(self)
-        status = Status(parameter)
-        self.callRemote('createParameter', status, name,
+        self.callRemote('createParameter', name,
                         value).chainDeferred(parameter)
         return parameter
 
@@ -186,6 +184,29 @@ class Environment(Namespace):
         assert len(self._parameters) == 0
 
         super(Environment, self).destroy()
+    
+    def destroyNode(self, remoteNode):
+        """ Method should be called to destroy the node proxy referenced by the
+            remote node namespace.
+            
+            @param remoteNode: Reference to Node Namespace in Environment process.
+            @type  remoteNode: twisted.spread.pb.RemoteReference
+        """
+        for nodes in self._nodes:
+            if node.destroyExternal(remoteNode):
+                break
+
+    def destroyParameter(self, remoteParameter):
+        """ Method should be called to destroy the parameter proxy referenced by
+            the remote parameter namespace.
+            
+            @param remoteParameter: Reference to Parameter Namespace in 
+                                    Environment process.
+            @type  remoteParameter: twisted.spread.pb.RemoteReference
+        """
+        for parameter in self._parameters:
+            if parameter.destroyExternal(remoteParameter):
+                break
 
 
 class EnvironmentEndpoint(Endpoint):
@@ -204,6 +225,7 @@ class EnvironmentEndpoint(Endpoint):
         super(EnvironmentEndpoint, self).__init__(network)
 
         self._container = container
+        self._environment = None
 
     def getAddress(self):
         """ Get the address of the environment endpoint's internal
@@ -224,6 +246,7 @@ class EnvironmentEndpoint(Endpoint):
                                 (subclass of rce.core.base.Proxy)
         """
         environment = Environment(self)
+        self._environment = environment
         status = Status(environment)
         self.callRemote('createNamespace', status).chainDeferred(environment)
         return environment
@@ -259,6 +282,24 @@ class EnvironmentEndpointAvatar(Avatar):
         """
         self._realm = realm
         self._endpoint = endpoint
+
+    def perspective_nodeDied(self, remoteNode):
+        """ Notify that a remote node died.
+
+            @param remoteNode: Reference to the Node in the Environment
+                               process.
+            @type  remoteNode: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint._environment.destroyNode(remoteNode)
+
+    def perspective_parameterDied(self, remoteParameter):
+        """ Notify that a remote parameter died.
+
+            @param remoteParameter: Reference to the Parameter in the Environment
+                                    process.
+            @type  remoteParameter: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint._environment.destroyNode(remoteNode)
 
     def logout(self):
         """ Callback which should be called upon disconnection of the Robot
