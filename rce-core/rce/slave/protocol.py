@@ -200,7 +200,7 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
         different Endpoint are able to communicate.
     """
     # CONFIG
-    MAX_LENGTH = 1000000  # Maximal message length in bytes
+    MAX_LENGTH = 30000000  # Maximal message length in bytes
 
     _MSG_ID_STRUCT = struct.Struct('!B')
     _TRUE = struct.pack('!?', True)
@@ -332,3 +332,6 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
         """
         self.transport.loseConnection()
 
+    def lengthLimitExceeded(self, length):
+        print('LENGTH LIMIT EXCEEDED {0}'.format(length))
+        Int32StringReceiver.lengthLimitExceeded(self, length)
