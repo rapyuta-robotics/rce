@@ -49,11 +49,12 @@ class _Protocol(Referenceable):
     """ Abstract base class for a internal Protocol which interacts with the
         Endpoint, Namespace, and Interfaces in a slave process.
     """
-    def __init__(self):
+    def __init__(self, endpoint):
         """ Initialize the Protocol.
         """
         self._status = None
         self._receivers = {}
+        self._endpoint = endpoint
 
     def registerStatus(self, status):
         """ Register status observer for the Master process.
@@ -172,13 +173,13 @@ class _Protocol(Referenceable):
 
             self._receivers = None
 
-        if self._status:
+        if self._endpoint._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
                     log.err(failure)
 
             try:
-                return self._status.callRemote('died').addErrback(eb)
+                return self._endpoint._avatar.callRemote('protocolDied').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 return succeed(None)
 
@@ -212,9 +213,8 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
             @param endpoint:    Endpoint for which this Protocol is created.
             @type  endpoint:    rce.slave.endpoint.Endpoint
         """
-        _Protocol.__init__(self)
+        _Protocol.__init__(self, endpoint)
 
-        self._endpoint = endpoint
         endpoint.registerProtocol(self)
 
         self._initialized = False

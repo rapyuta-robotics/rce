@@ -51,7 +51,7 @@ class _ROSInterfaceBase(Interface):
     """ Abstract base class which provides the basics for the ROS-side
         interfaces.
     """
-    def __init__(self, owner, status, uid, clsName, addr):
+    def __init__(self, owner, uid, clsName, addr):
         """ Initialize the ROS-side Interface.
 
             @param owner:       Namespace to which this interface belongs.
@@ -76,7 +76,7 @@ class _ROSInterfaceBase(Interface):
 
             @raise:             rce.util.loader.ResourceNotFound
         """
-        Interface.__init__(self, owner, status, uid)
+        Interface.__init__(self, owner, uid)
 
         self._name = addr
         self._reactor = owner.reactor
@@ -85,8 +85,8 @@ class _ROSInterfaceBase(Interface):
 class ServiceClientInterface(_ROSInterfaceBase):
     """ Class which is used as a Service-Client Interface.
     """
-    def __init__(self, owner, status, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
 
         try:
             pkg, name = package_resource_name(clsName)
@@ -130,8 +130,8 @@ class ServiceClientInterface(_ROSInterfaceBase):
 class ServiceProviderInterface(_ROSInterfaceBase):
     """ Class which is used as a Service-Provider Interface.
     """
-    def __init__(self, owner, status, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
 
         try:
             pkg, name = package_resource_name(clsName)
@@ -216,8 +216,8 @@ class ServiceProviderInterface(_ROSInterfaceBase):
 class PublisherInterface(_ROSInterfaceBase):
     """ Class which is used as a Publisher Interface.
     """
-    def __init__(self, owner, status, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, status, uid, clsName, addr)
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
 
         try:
             pkg, name = package_resource_name(clsName)

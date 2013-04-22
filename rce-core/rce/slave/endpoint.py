@@ -92,7 +92,7 @@ class Endpoint(Referenceable):
             @rtype:             rce.slave.protocol.Loopback
         """
         if not self._loopback:
-            self._loopback = Loopback()
+            self._loopback = Loopback(self)
 
         return self._loopback
 

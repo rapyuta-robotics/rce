@@ -65,6 +65,33 @@ class RobotEndpointAvatar(Avatar):
         """
         self._endpoint.destroyRobot(remoteRobot)
 
+    def perspective_interfaceDied(self, remoteInterface):
+        """ Notify that a remote interface died.
+
+            @param remoteInterface: Reference to the Interface in the Robot
+                                    process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyInterface(remoteInterface)
+
+    def perspective_protocolDied(self, remoteProtocol):
+        """ Notify that a remote protocol died.
+
+            @param remoteProtocol: Reference to the Protocol in the Robot
+                                    process.
+            @type  remoteProtocol: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyProtocol(remoteProtocol)
+        
+    def perspective_namespaceDied(self, remoteNamespace):
+        """ Notify that a remote namespace died.
+
+            @param remoteNamespace: Reference to the Namespace in the Robot
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyNamespace(remoteNamespace)
+
     def perspective_setupProxy(self, remoteRobot, userID, robotID):
         """ Register a Robot namespace with the Master process.
 

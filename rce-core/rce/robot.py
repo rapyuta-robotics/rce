@@ -529,7 +529,7 @@ class Robot(Namespace):
         """
         self._connection.sendMessage(iTag, msgType, msgID, msg)
 
-    def remote_createInterface(self, status, uid, iType, msgType, tag):
+    def remote_createInterface(self, uid, iType, msgType, tag):
         """ Create an Interface object in the robot namespace and therefore in
             the endpoint.
 
@@ -559,7 +559,7 @@ class Robot(Namespace):
             @rtype:             rce.master.network.Interface
                                 (subclass of rce.master.base.Proxy)
         """
-        return self._MAP[iType](self, status, UUID(bytes=uid), msgType, tag)
+        return self._MAP[iType](self, UUID(bytes=uid), msgType, tag)
 
     def registerInterface(self, interface):
         # "Special" method to account for 'dict' instead of standard 'set'

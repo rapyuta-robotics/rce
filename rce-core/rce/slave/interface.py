@@ -106,15 +106,11 @@ class InvalidResoureName(Error):
 class Interface(Referenceable):
     """ Abstract base class for an Interface in a slave process.
     """
-    def __init__(self, owner, status, uid):
+    def __init__(self, owner, uid):
         """ Initialize the Interface.
 
             @param owner:       Namespace for which the Interface is created.
             @param owner:       rce.slave.namespace.Namespace
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -123,7 +119,6 @@ class Interface(Referenceable):
         self._owner = owner
         owner.registerInterface(self)
 
-        self._status = status
         self._uid = uid
         self._protocols = {}
 
@@ -205,17 +200,15 @@ class Interface(Referenceable):
             self._owner.unregisterInterface(self)
             self._owner = None
 
-        if self._status:
+        if self._owner._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
                     log.err(failure)
 
             try:
-                self._status.callRemote('died').addErrback(eb)
+                self._owner._client._avatar.callRemote('interfaceDied').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
-
-            self._status = None
 
     def start(self):
         """ This method is used to setup the interface.

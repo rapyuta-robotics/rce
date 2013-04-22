@@ -145,7 +145,7 @@ class Environment(Namespace):
         """
         return Parameter(self, name, value)
 
-    def remote_createInterface(self, status, uid, iType, clsName, addr):
+    def remote_createInterface(self, uid, iType, clsName, addr):
         """ Create an Interface object in the environment namespace and
             therefore in the endpoint.
 
@@ -171,7 +171,7 @@ class Environment(Namespace):
                                 use.
             @type  addr:        str
         """
-        return self._MAP[iType](self, status, UUID(bytes=uid), clsName, addr)
+        return self._MAP[iType](self, UUID(bytes=uid), clsName, addr)
 
     def remote_destroy(self):
         """ Method should be called to destroy the environment and will take

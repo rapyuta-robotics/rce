@@ -206,8 +206,8 @@ class Environment(Namespace):
         """
         for parameter in self._parameters:
             if parameter.destroyExternal(remoteParameter):
-                break
-
+                break        
+    
 
 class EnvironmentEndpoint(Endpoint):
     """ Representation of an endpoint which is a process that lives inside a
@@ -299,7 +299,34 @@ class EnvironmentEndpointAvatar(Avatar):
                                     process.
             @type  remoteParameter: twisted.spread.pb.RemoteReference
         """
-        self._endpoint._environment.destroyNode(remoteNode)
+        self._endpoint._environment.destroyParameter(remoteParameter)
+        
+    def perspective_interfaceDied(self, remoteInterface):
+        """ Notify that a remote interface died.
+
+            @param remoteInterface: Reference to the Interface in the Environment
+                                    process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyInterface(remoteInterface)
+
+    def perspective_protocolDied(self, remoteProtocol):
+        """ Notify that a remote protocol died.
+
+            @param remoteProtocol: Reference to the Protocol in the Environment
+                                    process.
+            @type  remoteProtocol: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyProtocol(remoteProtocol)
+        
+    def perspective_namespaceDied(self, remoteNamespace):
+        """ Notify that a remote namespace died.
+
+            @param remoteNamespace: Reference to the Namespace in the Environment
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyNamespace(remoteNamespace)
 
     def logout(self):
         """ Callback which should be called upon disconnection of the Robot

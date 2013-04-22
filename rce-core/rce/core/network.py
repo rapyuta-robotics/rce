@@ -382,6 +382,42 @@ class Endpoint(Proxy):
 
         super(Endpoint, self).destroy()
 
+    def destroyNamespace(self, remoteNamespace):
+        """ Method should be called to destroy the namespace proxy referenced by
+            the remote namespace.
+            
+            @param remoteNamespace: Reference to Namespace in 
+                                    Remote process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        for namespace in self._namespaces:
+            if namespace.destroyExternal(remoteNamespace):
+                break
+    
+    def destroyProtocol(self, remoteProtocol):
+        """ Method should be called to destroy the protocol proxy referenced by
+            the remote namespace.
+            
+            @param remoteProtocol: Reference to Protocol in 
+                                    Remote process.
+            @type  remoteProtocol: twisted.spread.pb.RemoteReference
+        """
+        for protocol in self._protocols:
+            if protocol.destroyExternal(remoteProtocol):
+                break
+    
+    def destroyInterface(self, remoteInterface):
+        """ Method should be called to destroy the interface proxy referenced by
+            the remote namespace.
+            
+            @param remoteInterface: Reference to Interface in 
+                                    Remote process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        for interface in self._interfaces:
+            if interface.destroyExternal(remoteInterface):
+                break
+        
 
 class Namespace(Proxy):
     """ Representation of a namespace, which is part of the cloud engine
@@ -419,8 +455,7 @@ class Namespace(Proxy):
         """
         uid = self._endpoint.getUID()
         interface = Interface(self._endpoint, self, uid)
-        status = Status(interface)
-        self.callRemote('createInterface', status, uid.bytes, iType, clsName,
+        self.callRemote('createInterface', uid.bytes, iType, clsName,
                         addr).chainDeferred(interface)
         return interface
 

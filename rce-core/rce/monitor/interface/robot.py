@@ -68,15 +68,11 @@ class _AbstractConverter(Interface):
     """ Abstract base class which provides the basics for the robot-side
         interfaces.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
+    def __init__(self, owner, uid, clsName, tag):
         """ Initialize the robot-side Interface.
 
             @param owner:       Namespace to which this interface belongs.
             @type  owner:       rce.robot.Robot
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -95,7 +91,7 @@ class _AbstractConverter(Interface):
         self._clsName = clsName
         self._tag = tag
 
-        Interface.__init__(self, owner, status, uid)
+        Interface.__init__(self, owner, uid)
 
     @property
     def tag(self):
@@ -120,8 +116,8 @@ class _AbstractConverter(Interface):
 class _ConverterBase(_AbstractConverter):
     """ Class which implements the basic functionality of a Converter.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
-        _AbstractConverter.__init__(self, owner, status, uid, clsName, tag)
+    def __init__(self, owner, uid, clsName, tag):
+        _AbstractConverter.__init__(self, owner, uid, clsName, tag)
 
         self._converter = owner.converter
 
@@ -215,8 +211,8 @@ class _ConverterBase(_AbstractConverter):
 class ServiceClientConverter(_ConverterBase):
     """ Class which is used as a Service-Client Converter.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
-        _ConverterBase.__init__(self, owner, status, uid, clsName, tag)
+    def __init__(self, owner, uid, clsName, tag):
+        _ConverterBase.__init__(self, owner, uid, clsName, tag)
 
         self._pendingRequests = {}
 
@@ -373,8 +369,8 @@ class _ForwarderBase(_AbstractConverter):
 class ServiceClientForwarder(_ForwarderBase):
     """ Class which is used as a Service-Client Forwarder.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
-        _ForwarderBase.__init__(self, owner, status, uid, clsName, tag)
+    def __init__(self, owner, uid, clsName, tag):
+        _ForwarderBase.__init__(self, owner, uid, clsName, tag)
 
         self._pendingRequests = {}
 
