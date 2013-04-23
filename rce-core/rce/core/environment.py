@@ -31,7 +31,7 @@
 #
 
 # rce specific imports
-from rce.core.base import Proxy, Status
+from rce.core.base import Proxy
 from rce.core.network import Endpoint, Namespace, EndpointAvatar
 
 
@@ -247,8 +247,7 @@ class EnvironmentEndpoint(Endpoint):
         """
         environment = Environment(self)
         self._environment = environment
-        status = Status(environment)
-        self.callRemote('createNamespace', status).chainDeferred(environment)
+        self.callRemote('createNamespace').chainDeferred(environment)
         return environment
 
     def registerConsole(self, userID, key):

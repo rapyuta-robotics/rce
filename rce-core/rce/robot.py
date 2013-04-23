@@ -146,12 +146,6 @@ class Connection(object):
         assert self._namespace is None
         self._namespace = namespace
 
-    def registerStatus(self, status):
-        """ # TODO: Add doc
-        """
-        assert self._namespace is not None
-        self._namespace.registerStatus(status)
-
     def registerProtocol(self, protocol):
         """ Register the client protocol.
 
@@ -449,7 +443,6 @@ class Robot(Namespace):
         self._connection = connection
 
         # The following replaces the call to Namespace.__init__()
-        self._status = None
         self._interfaces = {}
 
     @property
@@ -463,12 +456,6 @@ class Robot(Namespace):
     def loader(self):
         """ Reference to ROS components loader. """
         return self._client.loader
-
-    def registerStatus(self, status):
-        """ # TODO: Add doc
-        """
-        assert self._status is None
-        self._status = status
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
@@ -532,10 +519,6 @@ class Robot(Namespace):
     def remote_createInterface(self, uid, iType, msgType, tag):
         """ Create an Interface object in the robot namespace and therefore in
             the endpoint.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.

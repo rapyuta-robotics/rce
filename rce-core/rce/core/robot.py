@@ -36,7 +36,6 @@ from twisted.internet.address import IPv4Address
 # rce specific imports
 from rce.util.network import isLocalhost
 from rce.core.network import Endpoint, Namespace, EndpointAvatar
-from rce.core.base import Status
 
 
 class Robot(Namespace):
@@ -195,11 +194,6 @@ class RobotEndpointAvatar(EndpointAvatar):
 
             @param robotID:     Unique ID which is used to identify the robot.
             @type  robotID:     str
-
-            @return:            Status object which can be used in the Robot
-                                process to inform the Master of status changes
-                                to the Robot namespace.
-            @rtype:             rce.core.base.Status
         """
         user = self._realm.getUser(userID)
         user.createRobotWrapper(remoteRobot, self._endpoint, robotID)

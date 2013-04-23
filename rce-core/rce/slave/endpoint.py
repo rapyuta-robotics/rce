@@ -69,15 +69,10 @@ class Endpoint(Referenceable):
         self._pendingConnections = {}
         self._protocols = set()
 
-    def remote_createNamespace(self, status, *args, **kw):
+    def remote_createNamespace(self, *args, **kw):
         """ Remote callable method to create a namespace in this endpoint.
 
             Method has to be implemented!
-
-            @param status:      Reference to status object in Master which is
-                                used to inform the Master of the death of the
-                                namespace.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @return:            New Namespace instance.
             @rtype:             rce.slave.namespace.Namespace
@@ -96,7 +91,7 @@ class Endpoint(Referenceable):
 
         return self._loopback
 
-    def remote_prepareConnection(self, connID, key, auth, status):
+    def remote_prepareConnection(self, connID, key, auth):
         """ Prepare the endpoint for the connection attempt by adding the
             necessary connection information to the remote process.
 
@@ -112,14 +107,9 @@ class Endpoint(Referenceable):
             @param auth:        Authenticator which is used to validate the
                                 key received from the other side.
             @type  auth:        twisted.spread.pb.RemoteReference
-
-            @param status:      Status object which the endpoint can use to
-                                inform the Master of the status of the protocol
-                                which will be created for the connection.
-            @type  status:      twisted.spread.pb.RemoteReference
         """
         assert connID not in self._pendingConnections
-        self._pendingConnections[connID] = [key, auth, status]
+        self._pendingConnections[connID] = [key, auth]
 
     def remote_connect(self, connID, addr):
         """ Connect to the endpoint with the given address using the
@@ -172,12 +162,10 @@ class Endpoint(Referenceable):
             @rtype:             twisted.internet.defer.Deferred
         """
         try:
-            key, auth, status = self._pendingConnections[connID]
+            key, auth = self._pendingConnections[connID]
         except KeyError:
             return fail(Failure(ConnectionError('Connection was not '
                                                 'expected.')))
-
-        protocol.registerStatus(status)
 
         try:
             if key:

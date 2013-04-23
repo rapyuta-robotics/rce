@@ -40,7 +40,7 @@ from twisted.spread.pb import Referenceable, Error, PBConnectionLost, Avatar
 
 # rce specific imports
 from rce.util.error import InternalError
-from rce.core.base import Proxy, Status, AlreadyDead
+from rce.core.base import Proxy, AlreadyDead
 
 
 class ConnectionError(Error):
@@ -229,7 +229,7 @@ class Endpoint(Proxy):
 
         return self._loopback
 
-    def prepareConnection(self, connID, key, auth, status):
+    def prepareConnection(self, connID, key, auth):
         """ Prepare the endpoint for the connection attempt by adding the
             necessary connection information to the remote process. When the
             returned Deferred fires the endpoint is ready for the connection.
@@ -247,16 +247,11 @@ class Endpoint(Proxy):
                                 key from the other side.
             @type  auth:        rce.core.network._ConnectionValidator
 
-            @param status:      Status object which the endpoint can use to
-                                inform the Master of the status of the protocol
-                                which will be created for the connection.
-            @type  status:      rce.core.base.Status
-
             @return:            None. Deferred fires as soon as the endpoint is
                                 ready for the connection attempt.
             @rtype:             twisted.internet.defer.Deferred
         """
-        return self.callRemote('prepareConnection', connID, key, auth, status)
+        return self.callRemote('prepareConnection', connID, key, auth)
 
     def connect(self, connID, addr):
         """ Tell the endpoint to connect to the given address using the
@@ -761,9 +756,6 @@ class EndpointConnection(object):
         self._serverProtocol = Protocol(endpointA)
         self._clientProtocol = Protocol(endpointB)
 
-        serverStatus = Status(self._serverProtocol)
-        clientStatus = Status(self._clientProtocol)
-
         # Create the keys used to validate the connection
         connectionID = uuid4().bytes
         serverKey = uuid4().bytes
@@ -780,9 +772,9 @@ class EndpointConnection(object):
         authenticator.addErrback(self._logError)
 
         readyServer = endpointA.prepareConnection(connectionID, serverKey,
-                                                  authClient, serverStatus)
+                                                  authClient)
         readyClient = endpointB.prepareConnection(connectionID, clientKey,
-                                                  authServer, clientStatus)
+                                                  authServer)
         ready = DeferredList([readyServer, readyClient])
         ready.addCallback(self._getAddress)
         ready.addCallback(self._connect, connectionID)

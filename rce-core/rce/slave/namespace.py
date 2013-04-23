@@ -44,10 +44,6 @@ class Namespace(Referenceable):
         """
         self._interfaces = set()
 
-    def registerStatus(self, status):
-        assert self._status is None
-        self._status = status
-
     def registerInterface(self, interface):
         assert interface not in self._interfaces
         self._interfaces.add(interface)
@@ -56,14 +52,10 @@ class Namespace(Referenceable):
         assert interface in self._interfaces
         self._interfaces.remove(interface)
 
-    def remote_createInterface(self, status, *args, **kw):
+    def remote_createInterface(self, *args, **kw):
         """ Remote callable method to create an interface in this namespace.
 
             Method has to be implemented!
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @return:            New Interface instance.
             @rtype:             rce.slave.interface.Interface

@@ -52,19 +52,8 @@ class _Protocol(Referenceable):
     def __init__(self, endpoint):
         """ Initialize the Protocol.
         """
-        self._status = None
         self._receivers = {}
         self._endpoint = endpoint
-
-    def registerStatus(self, status):
-        """ Register status observer for the Master process.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-        """
-        assert self._status is None
-        self._status = status
 
     def sendMessage(self, interface, msg, msgID, remoteID=None):
         """ Send a message received from an Interface to the other side.
@@ -182,8 +171,6 @@ class _Protocol(Referenceable):
                 return self._endpoint._avatar.callRemote('protocolDied').addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 return succeed(None)
-
-            self._status = None
 
 
 class Loopback(_Protocol):

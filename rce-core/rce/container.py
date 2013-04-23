@@ -143,16 +143,12 @@ iface eth0 inet static
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
     """
-    def __init__(self, client, status, nr, uid):
+    def __init__(self, client, nr, uid):
         """ Initialize the deployment container.
 
             @param client:      Container client which is responsible for
                                 monitoring the containers in this machine.
             @type  client:      rce.container.ContainerClient
-
-            @param status:      Status observer which is used to inform the
-                                Master of the container's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param nr:          Unique number which will be used for the IP
                                 address and the hostname of the container.
@@ -166,7 +162,6 @@ class RCEContainer(Referenceable):
         self._client = client
         client.registerContainer(self)
 
-        self._status = status
         self._nr = nr
         self._name = 'C{0}'.format(nr)
         self._terminating = None
@@ -548,12 +543,8 @@ class ContainerClient(Referenceable):
         """
         return self._networkConf
 
-    def remote_createContainer(self, status, uid):
+    def remote_createContainer(self, uid):
         """ Create a new Container.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the container's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param uid:         Unique ID which the environment process inside
                                 the container needs to login to the Master
@@ -568,7 +559,7 @@ class ContainerClient(Referenceable):
         except KeyError:
             raise MaxNumberExceeded('Can not manage any additional container.')
 
-        container = RCEContainer(self, status, nr, uid)
+        container = RCEContainer(self, nr, uid)
         return container.start().addCallback(lambda _: container)
 
     def registerContainer(self, container):

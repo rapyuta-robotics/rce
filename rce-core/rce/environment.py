@@ -149,10 +149,6 @@ class Environment(Namespace):
         """ Create an Interface object in the environment namespace and
             therefore in the endpoint.
 
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
             @type  uid:         str
@@ -224,12 +220,8 @@ class EnvironmentClient(Endpoint):
         assert self._environment == environment
         self._environment = None
 
-    def remote_createNamespace(self, status):
+    def remote_createNamespace(self):
         """ Create the Environment namespace.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the environment's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @return:            The new Environment namespace instance.
             @rtype:             rce.environment.Environment
@@ -239,7 +231,6 @@ class EnvironmentClient(Endpoint):
                                 'at a time.')
 
         env = Environment(self, self._reactor)
-        env.registerStatus(status)
         return env
 
     def remote_addUsertoROSProxy(self, userID, key):

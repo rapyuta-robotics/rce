@@ -57,10 +57,6 @@ class _ROSInterfaceBase(Interface):
             @param owner:       Namespace to which this interface belongs.
             @type  owner:       rce.environment.Environment
 
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
             @type  uid:         uuid.UUID

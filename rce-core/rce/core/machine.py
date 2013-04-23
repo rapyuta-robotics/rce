@@ -40,7 +40,6 @@ from twisted.spread.pb import Avatar
 from rce.util.error import InternalError
 from rce.util.network import isLocalhost
 from rce.core.error import MaxNumberExceeded
-from rce.core.base import Status
 from rce.core.container import Container
 
 
