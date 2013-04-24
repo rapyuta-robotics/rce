@@ -62,15 +62,29 @@ def _get_dev_mode():
         elif dev_mode == 'y':
             return True
 
+def _get_deployment_type():
+    """Some amount of automation for deployment convenience """
+    _DEPLOYS = ['local', 'other', 'aws', 'rackspace']
+    _DEFAULT = 0
+
+
+    version = raw_input('Select the deployment platform for easier auto configuration'
+                    '\n{deploys}\nChoice [{0}]:'.format(_DEFAULT,
+                    deploys=('\n').join('{0} -> {1}'.format(*a)
+                             for a in enumerate(_DEPLOYS))))
+    version = _DEFAULT if version == '' else int(version)
+
+    return _RELEASES[version]
+
 
 def _get_rosrel_version():
     """Ask which version of ROS the user wishes to deploy"""
     _DEFAULT = 0
-    _RELEASES = ['fuetre', 'groovy', 'hydro (experimental)']
+    _RELEASES = ['fuerte', 'groovy', 'hydro (experimental)']
 
     version = raw_input('Select the ROS Release you wish to deploy ?'
-                    '\n{distros}\nChoice [{0}]:'.format(_DEFAULT,
-                    distros=('\n').join('{0} -> {1}'.format(*a)
+                    '\n{releases}\nChoice [{0}]:'.format(_DEFAULT,
+                    releases=('\n').join('{0} -> {1}'.format(*a)
                              for a in enumerate(_RELEASES))))
     version = _DEFAULT if version == '' else int(version)
 
@@ -83,8 +97,8 @@ def _get_baserel_version():
     _RELEASES = ['precise (12.04 LTS)', 'quantal (12.10)', 'raring  (13.04)']
 
     version = raw_input('Select the base container Ubuntu Release ?'
-                    '\n{distros}\nChoice [{0}]:'.format(_DEFAULT,
-                    distros=('\n').join('{0} -> {1}'.format(*a)
+                    '\n{releases}\nChoice [{0}]:'.format(_DEFAULT,
+                    releases=('\n').join('{0} -> {1}'.format(*a)
                              for a in enumerate(_RELEASES))))
     version = _DEFAULT if version == '' else int(version)
 
@@ -122,17 +136,28 @@ def _get_interface(channel, default):
 
 
 # Helper function for config provisioning
-def provision_config(root_path, dev_mode, config_file, pw_file, rosrel, baserel):
+def provision_config(root_path, dev_mode, config_file, pw_file, rosrel, baserel, deploy):
     """ Provision settings.ini as required for first runs.
     """
     parser = SafeConfigParser()
 
     network = {}
 
-    for name, descr, default in (('external_if', 'external', 'eth0'),
-                                 ('internal_if', 'internal', 'eth0'),
-                                 ('container_if', 'container', 'lxcbr0')):
-        network[name] = _get_interface(descr, default)
+    if deploy == 'aws':
+        network['external_if'] = 'aws_dns'
+        network['internal_if'] = 'eth0'
+        network['container_if'] = 'lxcbr0'
+
+    elif deploy == 'rackspace':
+        network['external_if'] = 'eth0'
+        network['internal_if'] = 'eth1'
+        network['container_if'] = 'lxcbr0'
+
+    else:
+        for name, descr, default in (('external_if', 'external', 'eth0'),
+                                     ('internal_if', 'internal', 'eth0'),
+                                     ('container_if', 'container', 'lxcbr0')):
+            network[name] = _get_interface(descr, default)
 
     config = {
         'global': {
@@ -241,7 +266,7 @@ _ROS_SRC = ("""sudo sh -c """
              """> /etc/apt/sources.list.d/ros-latest.list'""")
 _ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
 _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
-_CONTAINER = 'sudo bash container.bash --baserel={0} --path={0} --rosrel={2}'
+_CONTAINER = 'sudo bash container.bash --baserel={0} --path={1} --rosrel={2}'
 _CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={0} --clean'
 _CLEAN = 'sudo rm -r {0}'
 
@@ -293,9 +318,12 @@ if __name__ == '__main__':
         pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
         rosrel = _get_rosrel_version()
         baserel = _get_baserel_version()
+        deploy = _get_deployment_type()
+
 
         # Build up the settings file
-        provision_config(container_path, dev_mode, PATH, pw_file, rosrel, baserel)
+        provision_config(container_path, dev_mode, PATH,
+                         pw_file, rosrel, baserel, deploy)
         if dev_mode:
             if os.path.exists(pw_file):
                 os.remove(pw_file)
