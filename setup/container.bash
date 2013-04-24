@@ -71,18 +71,12 @@ download_ubuntu()
 {
     packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,dhcp3-client,ssh,language-pack-en,build-essential,python-setuptools,curl,sudo
 
-    ### Local
-    mirror=
-
-    ### Rackspace
-    #mirror=http://mirror.rackspace.com/ubuntu/
-
-    ### Amacon EC2
-    #mirror=http://us-east-1.ec2.archive.ubuntu.com/ubuntu/
-
     cache=$1
     arch=$2
     baserel=$3
+
+	echo "Setting optimum mirror from host machine."
+	mirror=`cat /etc/apt/sources.list | grep '^deb ' | head -1 | tr " " "\n" | head -2 | tail -1` 
 
     # check the mini ubuntu was not already downloaded
     mkdir -p "$cache/partial-$arch"
