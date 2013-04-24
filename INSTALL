@@ -30,62 +30,71 @@ Install and Platform Notes
 
 1. Official support for Ubuntu 12.04 LTS and ROS Fuerte.
 
-2. Can be deployed on a platform of your choice:  Virtualbox,VMware, IaaS such as AWS and RackSpace, Local Commodity Machines
+2. Can be deployed on a platform of your choice:
+        Virtualbox
+        VMware
+        IaaS such as AWS and RackSpace
+        Local Commodity Machines
 
-3. For more technical details please visit www.rapyuta.org
+3. For more technical details please visit: www.rapyuta.org
 
-4. Understanding the Install Options :
-   ===================================
+4. Understanding the Install Options:
+   ==================================
 
-    a. autoprovision mode : for production deployments say N (default)
-        The system will later prompt you to setup the passwords for the 'admin' and 'adminInfra' accounts.
-        Principally for testing purposes, if 'y' is selected here it sets the default usernames and passwords as follows :
-        user       : password
-        =====================
-        admin      : admin
-        adminInfra : admin
-        testUser   : testUser
+    a. autoprovision mode: [ default: N ]
+        Should not be used for production deployments, but only for development.
+        The system will later prompt you to setup the passwords for the 'admin'
+        and 'adminInfra' accounts.
+        If 'y' is selected, it sets the default usernames and passwords as follows:
+            user       : password
+            =====================
+            admin      : admin
+            adminInfra : admin
+            testUser   : testUser
 
-    b. Container filesystem directory : [ default /opt/rce/container]
+    b. Container filesystem directory: [ default: /opt/rce/container ]
         The purposes and contents of the directories are as follows.
-        Note : 'path' here refers to he selected path:
-            path/rootfs - Holds the root filesystem in the
-            path/data   - Per container instance temporary data
-            path/config - per container instance configuration
+            directory   - description
+            =========================
+            path/rootfs - Contains the root filesystem of the container
+            path/data   - Contains temporary data for each container instance
+            path/config - Contains configuration data for each container instance
+        Note : 'path' here refers to the selected path.
 
-    c. External communication interface : default eth0
-        The network interface that is globally accessible :
-            For AWS EC2 set it to : aws_dns
-            For Rackspace set it to : eth0
-            Alternately provide the IPv4 address for the corresponding interface : x.x.x.x
+    c. External communication interface: [ default: eth0 ]
+        The globally accessible network interface:
+            For AWS EC2 set it to:   aws_dns
+            For Rackspace set it to: eth0
+            Alternately provide the IPv4 address for the corresponding interface: x.x.x.x
 
-    d. Internal communication interface : default eth0
-        The network interface that is internally used between the nodes of the cloud engine :
-        (This could be same as external but often varies esp in specialized setups of IaaS platforms such as EC2 or Rackspace
-        This distinction is made as the internal networks generally have much lower latencies and higher speeds which could massively benefit the cloud engine)
-            For AWS EC2 set it to : eth0
-            For Rackspace set it to : eth1
-            Alternately provide the IPv4 address for the corresponding interface : x.x.x.x
+    d. Internal communication interface: [ default: eth0 ]
+        The network interface used to communicate between the nodes of the cloud engine.
+        This could be the same network interface as for the external communication, but
+        often varies. Especially in specialized setups of IaaS platforms such as EC2 or
+        Rackspace this distinction is made, because the internal networks generally have
+        much lower latencies and higher speeds which could massively benefit the cloud engine.
+            For AWS EC2 set it to:   eth0
+            For Rackspace set it to: eth1
+            Alternately provide the IPv4 address for the corresponding interface: x.x.x.x
 
-    e. Internal container communication interface : default lxcbr0
-        The network interface that is internally used between the containers on the same physical host/ cloud instance (Its is not the same as [d])
-        Unless speciliased lxc setups are carried out , this would be lxcbr0
-
-
-
+    e. Internal container communication interface : [ default: lxcbr0 ]
+        The network interface used to communicate between the containers on the same
+        physical host/cloud instance (It is not the same as [d])
+        Unless specialized lxc setups are carried out, this would be lxcbr0.
 
 
 Installation
 ============
 
-I. Fetch and Install RCE :
+I. Fetch and Install RCE:
 
     1. Grab the source:
          git clone https://github.com/IDSCETHZurich/rce.git
     2. Run the install script:
          cd rce
          sudo ./install.sh
-         (This will build and install all depends and packages to run the RoboEarth cloud engine)
+         (This will build and install all dependencies and packages to run the
+         RoboEarth cloud engine)
 
 II. Setup the cloud engine.
 
