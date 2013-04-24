@@ -574,7 +574,7 @@ class Robot(Namespace):
                     log.err(failure)
 
             try:
-                self._client._avatar.callRemote('robotDied', self).addErrback(eb)
+                self._client._avatar.callRemote('namespaceDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
 
