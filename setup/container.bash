@@ -82,6 +82,7 @@ download_ubuntu()
 
     cache=$1
     arch=$2
+    baserel=$3
 
     # check the mini ubuntu was not already downloaded
     mkdir -p "$cache/partial-$arch"
@@ -93,8 +94,8 @@ download_ubuntu()
     # download a mini ubuntu into a cache
     echo "Downloading ubuntu minimal ..."
     # Local
-    echo "debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages precise $cache/partial-$arch $mirror"
-    debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages precise $cache/partial-$arch $mirror
+    echo "debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages $baserel $cache/partial-$arch $mirror"
+    debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages $baserel $cache/partial-$arch $mirror
 
     if [ $? -ne 0 ]; then
         echo "Failed to download the rootfs, aborting."
@@ -122,8 +123,9 @@ copy_ubuntu()
 
 install_ubuntu()
 {
-    cache="/var/cache/lxc/precise"
     rootfs=$1
+    baserel=$2
+    cache="/var/cache/lxc/$baserel"
     mkdir -p /var/lock/subsys/
     (
         flock -n -x 200
@@ -143,7 +145,7 @@ install_ubuntu()
 
         echo "Checking cache download in $cache/rootfs-$arch ... "
         if [ ! -e "$cache/rootfs-$arch" ]; then
-            download_ubuntu $cache $arch
+            download_ubuntu $cache $arch $baserel
             if [ $? -ne 0 ]; then
                 echo "Failed to download 'ubuntu base'"
                 return 1
@@ -166,7 +168,8 @@ install_ubuntu()
 
 clean()
 {
-    cache="/var/cache/lxc/precise"
+    baserel=$1
+    cache="/var/cache/lxc/$baserel"
 
     if [ ! -e $cache ]; then
         exit 0
@@ -190,12 +193,12 @@ clean()
 usage()
 {
     cat <<EOF
-$1 -h|--help -p|--path=<path> --clean
+$1 -h|--help -p|--baserel=<precise|quantal|raring> --path=<path> --rosrel=<fuerte|groovy|hydro> --clean
 EOF
     return 0
 }
 
-options=$(getopt -o hp:n:c -l help,path:,name:,clean -- "$@")
+options=$(getopt -o hp:n:c -l help,path:,rosrel:,baserel:,name:,clean -- "$@")
 if [ $? -ne 0 ]; then
     usage $(basename $0)
     exit 1
@@ -207,6 +210,8 @@ do
     case "$1" in
         -h|--help)      usage $0 && exit 0;;
         -p|--path)      path=$2; shift 2;;
+        -r|--rosrel)   rosrel=$2; shift 2;;
+        -b|--baserel)    baserel=$2; shift 2;;
         -n|--name)      name=$2; shift 2;;
         -c|--clean)     clean=$2; shift 2;;
         --)             shift 1; break ;;
@@ -214,8 +219,13 @@ do
     esac
 done
 
+if [ -z "$baserel" ]; then
+    echo "'baserel' parameter is required"
+    exit 1
+fi
+
 if [ ! -z "$clean" -a -z "$path" ]; then
-    clean || exit 1
+    clean $baserel || exit 1
     exit 0
 fi
 
@@ -230,6 +240,11 @@ if [ -z "$path" ]; then
     exit 1
 fi
 
+if [ -z "$rosrel" ]; then
+    echo "'rosrel' parameter is required"
+    exit 1
+fi
+
 if [ "$(id -u)" != "0" ]; then
     echo "This script should be run as 'root'"
     exit 1
@@ -239,7 +254,7 @@ mkdir -p $path
 
 rootfs=$path/rootfs
 
-install_ubuntu $rootfs
+install_ubuntu $rootfs $baserel
 if [ $? -ne 0 ]; then
     echo "failed to install ubuntu"
     exit 1
@@ -274,4 +289,7 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 cp $DIR/setup.sh $rootfs/opt/rce/setup.sh
+sed -i "s/rosrel/$rosrel/g" $rootfs/opt/rce/setup.sh
+
 cp $DIR/rce.conf $rootfs/etc/init/rce.conf
+sed -i "s/rosrel/$rosrel/g" $rootfs/etc/init/rce.conf 
