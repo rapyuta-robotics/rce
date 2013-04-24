@@ -41,7 +41,7 @@ from ConfigParser import SafeConfigParser
 
 # Setup the python interpreter path autocomplete.
 def complete(text, state):
-    return (glob.glob(text+'*')+[None])[state]
+    return (glob.glob(text + '*') + [None])[state]
 
 readline.set_completer_delims(' \t\n;')
 readline.parse_and_bind("tab: complete")
@@ -59,20 +59,38 @@ def _get_dev_mode():
 
         if dev_mode in ('n', ''):
             return False
-        elif dev_mode  == 'y':
+        elif dev_mode == 'y':
             return True
 
-def _get_rosditro_version():
+
+def _get_rosrel_version():
     """Ask which version of ROS the user wishes to deploy"""
-    _DEFAULT  = '0'
-    _DISTROS = ['fuetre','groovy']
-    
-    version = input('Select the intended ROS distribution you wish to deploy ?'
-                    '\nfuerte :0'
-                    '\ngroovy :1'
-                    '\nChoice [{0}]:'.format(_DEFAULT))
-    return _DISTROS[version]
-    
+    _DEFAULT = 0
+    _RELEASES = ['fuetre', 'groovy', 'hydro (experimental)']
+
+    version = raw_input('Select the ROS Release you wish to deploy ?'
+                    '\n{distros}\nChoice [{0}]:'.format(_DEFAULT,
+                    distros=('\n').join('{0} -> {1}'.format(*a)
+                             for a in enumerate(_RELEASES))))
+    version = _DEFAULT if version == '' else int(version)
+
+    return _RELEASES[version].split()[0]
+
+
+def _get_baserel_version():
+    """Ask which version of ROS the user wishes to deploy"""
+    _DEFAULT = 0
+    _RELEASES = ['precise (12.04 LTS)', 'quantal (12.10)', 'raring  (13.04)']
+
+    version = raw_input('Select the base container Ubuntu Release ?'
+                    '\n{distros}\nChoice [{0}]:'.format(_DEFAULT,
+                    distros=('\n').join('{0} -> {1}'.format(*a)
+                             for a in enumerate(_RELEASES))))
+    version = _DEFAULT if version == '' else int(version)
+
+    return _RELEASES[version].split()[0]
+
+
 def _get_container_path():
     """ Ask for path to the container root directory.
     """
@@ -104,7 +122,7 @@ def _get_interface(channel, default):
 
 
 # Helper function for config provisioning
-def provision_config(root_path, dev_mode, config_file, pw_file, rosdistro):
+def provision_config(root_path, dev_mode, config_file, pw_file, rosrel, baserel):
     """ Provision settings.ini as required for first runs.
     """
     parser = SafeConfigParser()
@@ -121,7 +139,8 @@ def provision_config(root_path, dev_mode, config_file, pw_file, rosdistro):
             'gzip_lvl':9,
             'dev_mode':dev_mode,
             'password_file':pw_file,
-            'rosdistro': rosdistro
+            'rosrel': rosrel,
+            'baserel': baserel
         },
         'network' : network,
         'converters': {
@@ -203,7 +222,7 @@ def _get_argparse():
 
     parser.add_argument('mode', choices=['all', 'cred', 'config', 'container',
                                          'clean'],
-                        help='Flag to select set up instead of tear down.', )
+                        help='Flag to select set up instead of tear down.',)
 
     return parser
 
@@ -212,9 +231,9 @@ def _get_argparse():
 # in the container filesystem
 _BASE_PREP = ('curl python-setuptools python-dev')
 _HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
-              'ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging')
+              'ros-{rosrel}-ros-comm ros-{rosrel}-common-msgs python-imaging')
 _CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev '
-                   'ros-fuerte-ros-comm ros-fuerte-common-msgs')
+                   'ros-{rosrel}-ros-comm ros-{rosrel}-common-msgs')
 
 # Basic shell commands
 _ROS_SRC = ("""sudo sh -c """
@@ -222,8 +241,8 @@ _ROS_SRC = ("""sudo sh -c """
              """> /etc/apt/sources.list.d/ros-latest.list'""")
 _ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
 _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
-_CONTAINER = 'sudo bash container.bash --path={0}'
-_CONTAINER_CLEAN = 'sudo bash setup/container.bash --clean'
+_CONTAINER = 'sudo bash container.bash --baserel={0} --path={0} --rosrel={2}'
+_CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={0} --clean'
 _CLEAN = 'sudo rm -r {0}'
 
 
@@ -232,7 +251,21 @@ if __name__ == '__main__':
     args = _get_argparse().parse_args()
 
     if args.mode == 'clean':
-        check_call(_CONTAINER_CLEAN, shell=True,
+        try:
+            baserel = getSettings().baserel
+        except:
+            candidates = os.listdir('/var/cache/lxc')
+            while True:
+                try:
+                    choice = input('Select the cache which you wish to clean.'
+                            '\n{distros}\nChoice :'.format(distros=('\n').join(
+                        '{0} -> {1}'.format(*a) for a in enumerate(candidates))))
+                    baserel = candidates[choice]
+                    break;break
+                except (NameError, IndexError):
+                    pass
+
+        check_call(_CONTAINER_CLEAN.format(baserel), shell=True,
                    cwd=os.path.dirname(sys.argv[0]))
 
         if not os.path.exists(PATH):
@@ -258,19 +291,26 @@ if __name__ == '__main__':
         dev_mode = _get_dev_mode()
         container_path = _get_container_path()
         pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
-        rosdistro = _get_rosditro_version()
+        rosrel = _get_rosrel_version()
+        baserel = _get_baserel_version()
 
         # Build up the settings file
-        provision_config(container_path, dev_mode, PATH, pw_file, rosdistro)
+        provision_config(container_path, dev_mode, PATH, pw_file, rosrel)
         if dev_mode:
             if os.path.exists(pw_file):
                 os.remove(pw_file)
             provision_creds(dev_mode, pw_file)
     else:
-        settings = getSettings()
+        try:
+            settings = getSettings()
+        except:
+            print ('To run this {0} mode you must have a valid configuration.'
+                   'Please recreate it first.'.format(args.mode))
         dev_mode = settings.dev_mode
         container_path = os.path.dirname(settings.rootfs)
         pw_file = settings.pw_file
+        rosrel = settings.rosrel
+        baserel = settings.baserel
 
     if args.mode in ('all', 'cred'):
         # Provision the cred db
@@ -283,12 +323,12 @@ if __name__ == '__main__':
     if args.mode in ('all', 'container'):
         # Install the packages in the host filesystem
         for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC, _ROS_KEY,
-                    _INSTALL.format(_HOST_PKGS)):
+                    _INSTALL.format(_HOST_PKGS.format(rosrel=rosrel))):
             check_call(cmd, shell=True)
 
         # Create the container
-        check_call(_CONTAINER.format(container_path), shell=True,
-                   cwd=os.path.dirname(sys.argv[0]))
+        check_call(_CONTAINER.format(baserel, container_path, rosrel),
+                   shell=True, cwd=os.path.dirname(sys.argv[0]))
 
         cmds = [
             'adduser --disabled-password --disabled-login ros',
@@ -296,7 +336,7 @@ if __name__ == '__main__':
             '--home /opt/rce/data rce',
             _ROS_SRC,
             _ROS_KEY,
-            _INSTALL.format(_CONTAINER_PKGS),
+            _INSTALL.format(_CONTAINER_PKGS.format(rosrel=rosrel)),
             'git clone https://github.com/IDSCETHZurich/rce.git',
             'cd rce && sh install.sh'
         ]
