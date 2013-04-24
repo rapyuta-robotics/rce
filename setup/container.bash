@@ -210,8 +210,8 @@ do
     case "$1" in
         -h|--help)      usage $0 && exit 0;;
         -p|--path)      path=$2; shift 2;;
-        -r|--rosrel)   rosrel=$2; shift 2;;
-        -b|--baserel)    baserel=$2; shift 2;;
+        -r|--rosrel)    rosrel=$2; shift 2;;
+        -b|--baserel)   baserel=$2; shift 2;;
         -n|--name)      name=$2; shift 2;;
         -c|--clean)     clean=$2; shift 2;;
         --)             shift 1; break ;;
