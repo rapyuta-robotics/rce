@@ -65,7 +65,7 @@ class Namespace(Referenceable):
 
     def remote_destroy(self):
         """ Method should be called to destroy the namespace and will take care
-            of destroying all interfaes owned by this namespace as well as
+            of destroying all interfaces owned by this namespace as well as
             deleting all circular references.
         """
         for interface in self._interfaces.copy():

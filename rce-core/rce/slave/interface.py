@@ -123,6 +123,7 @@ class Interface(Referenceable):
         self._protocols = {}
 
         self._ready = False
+        self._callstoDestroy = 0
 
     @property
     def UID(self):
@@ -194,6 +195,9 @@ class Interface(Referenceable):
         """ Method should be called to destroy the interface and will take care
             of deleting all circular references.
         """
+        if not self._owner:
+            return
+
         self.stop()
 
         if self._owner._client._avatar:
