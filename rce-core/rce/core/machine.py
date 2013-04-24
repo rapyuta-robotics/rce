@@ -283,7 +283,7 @@ class Machine(object):
     def destroyContainer(self, remoteContainer):
         """ Destroy Container proxy
         """
-        for container in self._containers():
+        for container in self._containers:
             if container.destroyExternal(remoteContainer):
                 break
 

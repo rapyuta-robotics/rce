@@ -94,10 +94,6 @@ class Parameter(Referenceable, ArgumentMixin):
 
             self._registered = False
 
-        if self._owner:
-            self._owner.unregisterParameter(self)
-            self._owner = None
-
         if self._owner._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
@@ -107,3 +103,7 @@ class Parameter(Referenceable, ArgumentMixin):
                 self._owner._client._avatar.callRemote('parameterDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
+
+        if self._owner:
+            self._owner.unregisterParameter(self)
+            self._owner = None

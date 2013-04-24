@@ -174,10 +174,6 @@ class Node(Referenceable, ArgumentMixin):
             log.msg('Node ({0}) terminated with exit code: '
                     '{1}'.format(self._name, exitCode))
 
-        if self._owner:
-            self._owner.unregisterNode(self)
-            self._owner = None
-
         if self._owner._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
@@ -187,6 +183,10 @@ class Node(Referenceable, ArgumentMixin):
                 self._owner._client._avatar.callRemote('nodeDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
+                
+        if self._owner:
+            self._owner.unregisterNode(self)
+            self._owner = None  
 
     def remote_destroy(self):
         """ Method should be called to stop/kill this node.

@@ -196,10 +196,6 @@ class Interface(Referenceable):
         """
         self.stop()
 
-        if self._owner:
-            self._owner.unregisterInterface(self)
-            self._owner = None
-
         if self._owner._client._avatar:
             def eb(failure):
                 if not failure.check(PBConnectionLost):
@@ -209,6 +205,10 @@ class Interface(Referenceable):
                 self._owner._client._avatar.callRemote('interfaceDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
+                
+        if self._owner:
+            self._owner.unregisterInterface(self)
+            self._owner = None
 
     def start(self):
         """ This method is used to setup the interface.
