@@ -39,7 +39,7 @@ from subprocess import check_call
 from ConfigParser import SafeConfigParser
 
 
-# Setup the python interpreter path autocomplete.
+# Setup the Python interpreter path auto-complete.
 def complete(text, state):
     return (glob.glob(text + '*') + [None])[state]
 
@@ -53,8 +53,9 @@ def _get_dev_mode():
     """ Ask whether the developer mode should be used.
     """
     while 1:
-        dev_mode = raw_input('Do you want to auto-provision/recreate credentials '
-                             'for developer mode (Insecure)[y/N]: ')
+        dev_mode = raw_input('Do you want to auto-provision/recreate '
+                             'credentials database for developer mode '
+                             '(Insecure) [y/N]: ')
         dev_mode = dev_mode.strip().lower()
 
         if dev_mode in ('n', ''):
@@ -62,47 +63,54 @@ def _get_dev_mode():
         elif dev_mode == 'y':
             return True
 
+
+def _select_option(question, options, default=None):
+    """ Ask for a selection from an option of a list of options.
+    """
+    print(question)
+
+    for i, opt in enumerate(options):
+        print('{0} -> {1}'.format(i, opt))
+
+    if default is None:
+        opt = raw_input('Selection: ')
+    else:
+        opt = raw_input('Selection [{0}]: '.format(default))
+
+    try:
+        opt = options[int(opt)]
+    except (ValueError, IndexError):
+        if default is None:
+            opt = None
+        else:
+            opt = options[default]
+
+    return opt
+
+
 def _get_deployment_type():
-    """Some amount of automation for deployment convenience """
-    _DEPLOYS = ['local', 'other', 'aws', 'rackspace']
-    _DEFAULT = 0
+    """ Some amount of automation for deployment convenience.
+    """
+    return _select_option('Enter the deployment platform for easier auto '
+                          'configuration.',
+                          ('local', 'other', 'aws', 'rackspace'), 0)
 
 
-    version = raw_input('Select the deployment platform for easier auto configuration'
-                    '\n{deploys}\nChoice [{0}]:'.format(_DEFAULT,
-                    deploys=('\n').join('{0} -> {1}'.format(*a)
-                             for a in enumerate(_DEPLOYS))))
-    version = _DEFAULT if version == '' else int(version)
-
-    return _RELEASES[version]
-
-
-def _get_rosrel_version():
-    """Ask which version of ROS the user wishes to deploy"""
-    _DEFAULT = 0
-    _RELEASES = ['fuerte', 'groovy', 'hydro (experimental)']
-
-    version = raw_input('Select the ROS Release you wish to deploy ?'
-                    '\n{releases}\nChoice [{0}]:'.format(_DEFAULT,
-                    releases=('\n').join('{0} -> {1}'.format(*a)
-                             for a in enumerate(_RELEASES))))
-    version = _DEFAULT if version == '' else int(version)
-
-    return _RELEASES[version].split()[0]
+def _get_ros_release():
+    """ Ask for ROS release to deploy.
+    """
+    opt = _select_option('Enter the ROS release to deploy in the container.',
+                         ('fuerte', 'groovy', 'hydro (experimental)'), 0)
+    return opt.split()[0]
 
 
-def _get_baserel_version():
-    """Ask which version of ROS the user wishes to deploy"""
-    _DEFAULT = 0
-    _RELEASES = ['precise (12.04 LTS)', 'quantal (12.10)', 'raring  (13.04)']
-
-    version = raw_input('Select the base container Ubuntu Release ?'
-                    '\n{releases}\nChoice [{0}]:'.format(_DEFAULT,
-                    releases=('\n').join('{0} -> {1}'.format(*a)
-                             for a in enumerate(_RELEASES))))
-    version = _DEFAULT if version == '' else int(version)
-
-    return _RELEASES[version].split()[0]
+def _get_base_release():
+    """ Ask for ubuntu release the user to deploy.
+    """
+    opt = _select_option('Enter the Ubuntu release to deploy in the container.',
+                         ('precise (12.04 LTS)', 'quantal (12.10)',
+                          'raring (13.04)'), 0)
+    return opt.split()[0]
 
 
 def _get_container_path():
@@ -125,8 +133,7 @@ def _get_interface(channel, default):
         communication channels.
     """
     ifname = raw_input('Enter the interface name or IP address for the '
-                       '{0} communication [{1}]: '.format(channel,
-                                                          default))
+                       '{0} communication [{1}]: '.format(channel, default))
     ifname = ifname.strip()
 
     if ifname == '':
@@ -136,42 +143,38 @@ def _get_interface(channel, default):
 
 
 # Helper function for config provisioning
-def provision_config(root_path, dev_mode, config_file, pw_file, rosrel, baserel, deploy):
+def provision_config(root_path, dev_mode, config_file, pw_file, ros_release,
+                     base_release, deploy):
     """ Provision settings.ini as required for first runs.
     """
     parser = SafeConfigParser()
 
-    network = {}
-
     if deploy == 'aws':
-        network['external_if'] = 'aws_dns'
-        network['internal_if'] = 'eth0'
-        network['container_if'] = 'lxcbr0'
-
+        network = {'external_if':'aws_dns',
+                   'internal_if':'eth0',
+                   'container_if':'lxcbr0'}
     elif deploy == 'rackspace':
-        network['external_if'] = 'eth0'
-        network['internal_if'] = 'eth1'
-        network['container_if'] = 'lxcbr0'
-
+        network = {'external_if':'eth0',
+                   'internal_if':'eth1',
+                   'container_if':'lxcbr0'}
     else:
-        for name, descr, default in (('external_if', 'external', 'eth0'),
-                                     ('internal_if', 'internal', 'eth0'),
-                                     ('container_if', 'container', 'lxcbr0')):
-            network[name] = _get_interface(descr, default)
+        network = {'external_if':_get_interface('external', 'eth0'),
+                   'internal_if':_get_interface('internal', 'eth0'),
+                   'container_if':_get_interface('container', 'lxcbr0')}
 
     config = {
-        'global': {
+        'global':{
             'gzip_lvl':9,
             'dev_mode':dev_mode,
             'password_file':pw_file,
-            'rosrel': rosrel,
-            'baserel': baserel
+            'ros_release':ros_release,
+            'base_release':base_release
         },
-        'network' : network,
-        'converters': {
+        'network':network,
+        'converters':{
             'image':'rce.util.converters.image.ImageConverter'
         },
-        'comm': {
+        'comm':{
             'http_port':9000,
             'ws_port':9010,
             'internal_port':8080,
@@ -179,14 +182,13 @@ def provision_config(root_path, dev_mode, config_file, pw_file, rosrel, baserel,
             'comm_port':10030,
             'ros_proxy_port':9020
         },
-        'machine': {
+        'machine':{
             'max_container':10,
             'rootfs':os.path.join(root_path, 'rootfs'),
             'conf_dir':os.path.join(root_path, 'config'),
             'data_dir':os.path.join(root_path, 'data')
         },
-        'machine/packages': {
-        }
+        'machine/packages':{}
     }
 
     for section, opts in config.iteritems():
@@ -205,7 +207,7 @@ def provision_config(root_path, dev_mode, config_file, pw_file, rosrel, baserel,
 
 # Helper function to provision the cred db
 def provision_creds(dev_mode, pw_file):
-    """ Provision cred database as required for first runs.
+    """ Provision credentials database as required for first runs.
     """
     from rce.util.cred import RCECredChecker, _FIRST_RUN_MSG
 
@@ -242,12 +244,12 @@ def _get_argparse():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(prog='provision',
-                            description='Provision the base settings for the'
-                            ' RoboEarth Cloud Engine ')
+                            description='Provision the base settings for the '
+                                        'RoboEarth Cloud Engine.')
 
     parser.add_argument('mode', choices=['all', 'cred', 'config', 'container',
                                          'clean'],
-                        help='Flag to select set up instead of tear down.',)
+                        help='# TODO: Add documentation')
 
     return parser
 
@@ -255,19 +257,25 @@ def _get_argparse():
 # List of packages which should be installed in the host and
 # in the container filesystem
 _BASE_PREP = ('curl python-setuptools python-dev')
-_HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
-              'ros-{rosrel}-ros-comm ros-{rosrel}-common-msgs python-imaging')
-_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev '
-                   'ros-{rosrel}-ros-comm ros-{rosrel}-common-msgs')
+_HOST_PKGS = ('lxc debootstrap python-openssl '
+              'ros-{ros}-ros-comm ros-{ros}-common-msgs python-imaging')
+_CONTAINER_PKGS = ('git-core python-dev '
+                   'ros-{ros}-ros-comm ros-{ros}-common-msgs')
+# TODO: Check if working
+#_HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
+#              'ros-{ros}-ros-comm ros-{ros}-common-msgs python-imaging')
+#_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev '
+#                   'ros-{ros}-ros-comm ros-{ros}-common-msgs')
 
 # Basic shell commands
 _ROS_SRC = ("""sudo sh -c """
-             """'echo "deb http://packages.ros.org/ros/ubuntu precise main" """
+             """'echo "deb http://packages.ros.org/ros/ubuntu {base} main" """
              """> /etc/apt/sources.list.d/ros-latest.list'""")
 _ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
 _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
-_CONTAINER = 'sudo bash container.bash --baserel={0} --path={1} --rosrel={2}'
-_CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={0} --clean'
+_CONTAINER = ('sudo bash container.bash --baserel={base} --path={path} '
+              '--rosrel={ros}')
+_CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={base} --clean'
 _CLEAN = 'sudo rm -r {0}'
 
 
@@ -277,20 +285,16 @@ if __name__ == '__main__':
 
     if args.mode == 'clean':
         try:
-            baserel = getSettings().baserel
-        except:
+            baserel = getSettings().base_release
+        except: # TODO: Add specific except class
+            baserel = None
             candidates = os.listdir('/var/cache/lxc')
-            while True:
-                try:
-                    choice = input('Select the cache which you wish to clean.'
-                            '\n{distros}\nChoice :'.format(distros=('\n').join(
-                        '{0} -> {1}'.format(*a) for a in enumerate(candidates))))
-                    baserel = candidates[choice]
-                    break;break
-                except (NameError, IndexError):
-                    pass
 
-        check_call(_CONTAINER_CLEAN.format(baserel), shell=True,
+            while baserel is None:
+                baserel = _select_option('Select the cache which you wish to '
+                                         'clean.', candidates)
+
+        check_call(_CONTAINER_CLEAN.format(base=baserel), shell=True,
                    cwd=os.path.dirname(sys.argv[0]))
 
         if not os.path.exists(PATH):
@@ -316,58 +320,65 @@ if __name__ == '__main__':
         dev_mode = _get_dev_mode()
         container_path = _get_container_path()
         pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
-        rosrel = _get_rosrel_version()
-        baserel = _get_baserel_version()
+        rosrel = _get_ros_release()
+        baserel = _get_base_release()
         deploy = _get_deployment_type()
 
-
         # Build up the settings file
-        provision_config(container_path, dev_mode, PATH,
-                         pw_file, rosrel, baserel, deploy)
+        provision_config(container_path, dev_mode, PATH, pw_file,
+                         rosrel, baserel, deploy)
+
         if dev_mode:
             if os.path.exists(pw_file):
                 os.remove(pw_file)
+
             provision_creds(dev_mode, pw_file)
     else:
         try:
             settings = getSettings()
         except:
-            print ('To run this {0} mode you must have a valid configuration.'
-                   'Please recreate it first.'.format(args.mode))
+            print("To run '{0}' mode you must have a valid configuration. "
+                  'Please recreate it first.'.format(args.mode))
+            exit(1) # TODO: Is it necessary to exit?
+                    #       (I assume it is based on the printed error message)
+
         dev_mode = settings.dev_mode
         container_path = os.path.dirname(settings.rootfs)
         pw_file = settings.pw_file
-        rosrel = settings.rosrel
-        baserel = settings.baserel
+        rosrel = settings.ros_release
+        baserel = settings.base_release
 
     if args.mode in ('all', 'cred'):
         # Provision the cred db
         if dev_mode:
-            print ('It appears Developer  Mode is set in the config file. '
-                   'Auto-provisioning default password file. '
-                   'Change this option in the config to change this behavior')
+            print('It appears Developer Mode is set in the config file. '
+                  'Auto-provisioning default password file. '
+                  'Change this option in the config to change this behavior.')
+
         provision_creds(dev_mode, pw_file)
 
     if args.mode in ('all', 'container'):
         # Install the packages in the host filesystem
-        for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC, _ROS_KEY,
-                    _INSTALL.format(_HOST_PKGS.format(rosrel=rosrel))):
+        for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC.format(baserel),
+                    _ROS_KEY, _INSTALL.format(_HOST_PKGS.format(ros=rosrel))):
             check_call(cmd, shell=True)
 
         # Create the container
-        check_call(_CONTAINER.format(baserel, container_path, rosrel),
-                   shell=True, cwd=os.path.dirname(sys.argv[0]))
+        check_call(_CONTAINER.format(base=baserel, path=container_path,
+                                     ros=rosrel), shell=True,
+                   cwd=os.path.dirname(sys.argv[0]))
 
         cmds = [
             'adduser --disabled-password --disabled-login ros',
             'adduser --disabled-password --disabled-login '
             '--home /opt/rce/data rce',
-            _ROS_SRC,
+            _ROS_SRC.format(TODO), # TODO: Need the ubuntu release of hsot filesystem
             _ROS_KEY,
             _INSTALL.format(_CONTAINER_PKGS.format(rosrel=rosrel)),
             'git clone https://github.com/IDSCETHZurich/rce.git',
             'cd rce && sh install.sh'
         ]
+
         if dev_mode:
             cmds.append('echo "root:admin" | chpasswd')
         else:
