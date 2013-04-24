@@ -670,8 +670,8 @@ class Protocol(Proxy):
             of destroying all objects owned by this Protocol as well as
             deleting all circular references.
         """
-	if not self._endpoint:
-	    return
+        if not self._endpoint:
+            return
         self._endpoint.unregisterProtocol(self)
         self._endpoint = None
 

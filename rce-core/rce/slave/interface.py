@@ -123,7 +123,6 @@ class Interface(Referenceable):
         self._protocols = {}
 
         self._ready = False
-        self._callstoDestroy = 0
 
     @property
     def UID(self):
