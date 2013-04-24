@@ -62,7 +62,17 @@ def _get_dev_mode():
         elif dev_mode  == 'y':
             return True
 
-
+def _get_rosditro_version():
+    """Ask which version of ROS the user wishes to deploy"""
+    _DEFAULT  = '0'
+    _DISTROS = ['fuetre','groovy']
+    
+    version = input('Select the intended ROS distribution you wish to deploy ?'
+                    '\nfuerte :0'
+                    '\ngroovy :1'
+                    '\nChoice [{0}]:'.format(_DEFAULT))
+    return _DISTROS[version]
+    
 def _get_container_path():
     """ Ask for path to the container root directory.
     """
@@ -80,7 +90,7 @@ def _get_container_path():
 
 def _get_interface(channel, default):
     """ Ask for the name of the interface or IP address for the used
-        communcication channels.
+        communication channels.
     """
     ifname = raw_input('Enter the interface name or IP address for the '
                        '{0} communication [{1}]: '.format(channel,
@@ -94,7 +104,7 @@ def _get_interface(channel, default):
 
 
 # Helper function for config provisioning
-def provision_config(root_path, dev_mode, config_file, pw_file):
+def provision_config(root_path, dev_mode, config_file, pw_file, rosdistro):
     """ Provision settings.ini as required for first runs.
     """
     parser = SafeConfigParser()
@@ -110,7 +120,8 @@ def provision_config(root_path, dev_mode, config_file, pw_file):
         'global': {
             'gzip_lvl':9,
             'dev_mode':dev_mode,
-            'password_file':pw_file
+            'password_file':pw_file,
+            'rosdistro': rosdistro
         },
         'network' : network,
         'converters': {
@@ -247,9 +258,10 @@ if __name__ == '__main__':
         dev_mode = _get_dev_mode()
         container_path = _get_container_path()
         pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
+        rosdistro = _get_rosditro_version()
 
         # Build up the settings file
-        provision_config(container_path, dev_mode, PATH, pw_file)
+        provision_config(container_path, dev_mode, PATH, pw_file, rosdistro)
         if dev_mode:
             if os.path.exists(pw_file):
                 os.remove(pw_file)
