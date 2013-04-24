@@ -138,6 +138,8 @@ class _Settings(object):
         self._gzip_lvl = None
         self._dev_mode = None
         self._pw_file = None
+        self._rosrel = None
+        self._baserel = None
 
         # Network
         self._external_ip = None
@@ -180,6 +182,18 @@ class _Settings(object):
         """ Path to the credentials database.
         """
         return self._pw_file
+    
+    @property
+    def rosrel(self):
+        """ Path to the credentials database.
+        """
+        return self._rosrel
+    
+    @property
+    def baserel(self):
+        """ Path to the credentials database.
+        """
+        return self._baserel
 
     @property
     def external_IP(self):
@@ -309,6 +323,8 @@ class _Settings(object):
         settings._gzip_lvl = parser.getint('global', 'gzip_lvl')
         settings._dev_mode = parser.getboolean('global', 'dev_mode')
         settings._pw_file = parser.get('global', 'password_file')
+        settings._rosrel = parser.get('global', 'rosrel')
+        settings._baserel = parser.get('global', 'baserel')
 
         # Network
         settings._external_ip = parser.getIP('network', 'external_if')
