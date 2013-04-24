@@ -184,7 +184,7 @@ class Node(Referenceable, ArgumentMixin):
                     log.err(failure)
 
             try:
-                self._owner._client._avatar.callRemote('nodeDied').addErrback(eb)
+                self._owner._client._avatar.callRemote('nodeDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
 

@@ -206,7 +206,7 @@ class Interface(Referenceable):
                     log.err(failure)
 
             try:
-                self._owner._client._avatar.callRemote('interfaceDied').addErrback(eb)
+                self._owner._client._avatar.callRemote('interfaceDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass
 

@@ -79,6 +79,6 @@ class Namespace(Referenceable):
                     log.err(failure)
 
             try:
-                self._client._avatar.callRemote('namespaceDied').addErrback(eb)
+                self._client._avatar.callRemote('namespaceDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass

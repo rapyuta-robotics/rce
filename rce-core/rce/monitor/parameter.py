@@ -104,6 +104,6 @@ class Parameter(Referenceable, ArgumentMixin):
                     log.err(failure)
 
             try:
-                self._owner._client._avatar.callRemote('parameterDied').addErrback(eb)
+                self._owner._client._avatar.callRemote('parameterDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 pass

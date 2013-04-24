@@ -168,7 +168,7 @@ class _Protocol(Referenceable):
                     log.err(failure)
 
             try:
-                return self._endpoint._avatar.callRemote('protocolDied').addErrback(eb)
+                return self._endpoint._avatar.callRemote('protocolDied', self).addErrback(eb)
             except (DeadReferenceError, PBConnectionLost):
                 return succeed(None)
 

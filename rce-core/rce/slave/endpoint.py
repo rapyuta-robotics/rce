@@ -128,7 +128,7 @@ class Endpoint(Referenceable):
         # Retrieve the key which should be sent and replace it with None to
         # indicate that the key has already been sent
         info = self._pendingConnections[connID]
-        key, auth, _ = info
+        key, auth = info
         info[0] = None
 
         client = ClientCreator(self._reactor, RCEInternalProtocol, self)
