@@ -295,7 +295,7 @@ if __name__ == '__main__':
         baserel = _get_baserel_version()
 
         # Build up the settings file
-        provision_config(container_path, dev_mode, PATH, pw_file, rosrel)
+        provision_config(container_path, dev_mode, PATH, pw_file, rosrel, baserel)
         if dev_mode:
             if os.path.exists(pw_file):
                 os.remove(pw_file)
