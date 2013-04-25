@@ -350,7 +350,7 @@ if __name__ == '__main__':
         pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
         host_release = _get_host_release()
         baserel = _get_base_release()
-        base_rosrel, host_rosrel = _get_compat_rosrel(basrel, _get_ros_release())
+        base_rosrel, host_rosrel = _get_compat_rosrel(baserel, _get_ros_release())
         candidates = os.listdir('/opt/ros')
         if candidates is not None:
             if host_rosrel not in candidates:
@@ -393,7 +393,8 @@ if __name__ == '__main__':
     if args.mode in ('all', 'container'):
         # Install the packages in the host filesystem
         hostrel = _get_host_release()
-        for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC.format(hostrel),
+        print _BASE_PREP, hostrel
+        for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC.format(base=hostrel),
                     _ROS_KEY, _INSTALL.format(_HOST_PKGS.format(ros=host_rosrel))):
             check_call(cmd, shell=True)
 
