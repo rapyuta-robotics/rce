@@ -138,7 +138,8 @@ class _Settings(object):
         self._gzip_lvl = None
         self._dev_mode = None
         self._pw_file = None
-        self._ros_release = None
+        self._base_ros_release = None
+        self._hots_ros_release = None
         self._base_release = None
 
         # Network
@@ -184,10 +185,18 @@ class _Settings(object):
         return self._pw_file
 
     @property
-    def ros_release(self):
+    def base_ros_release(self):
         """ ROS release used inside the container.
         """
-        return self._ros_release
+        return self._base_ros_release
+
+
+    @property
+    def host_ros_release(self):
+        """ ROS release used inside the container.
+        """
+        return self._host_ros_release
+
 
     @property
     def base_release(self):
@@ -323,7 +332,8 @@ class _Settings(object):
         settings._gzip_lvl = parser.getint('global', 'gzip_lvl')
         settings._dev_mode = parser.getboolean('global', 'dev_mode')
         settings._pw_file = parser.get('global', 'password_file')
-        settings._ros_release = parser.get('global', 'ros_release')
+        settings._base_ros_release = parser.get('global', 'base_ros_release')
+        settings._host_ros_release = parser.get('global', 'host_ros_release')
         settings._base_release = parser.get('global', 'base_release')
 
         # Network
