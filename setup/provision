@@ -120,8 +120,8 @@ def _get_compat_rosrel(baserel, base_rosrel):
                          'raring' : ['hydro']}
     if base_rosrel not in _SUPPORT_VERSIONS[baserel]:
         base_rosrel = _SUPPORT_VERSIONS[baserel][0]
-        print ('The ROS Release {0} you selected is incompatible with Ubuntu {0}'
-               '\nSelecting optimal ROS Release {1}'.format(baserel, base_rosrel))
+        print ('The ROS release you selected is incompatible with ubuntu {0}'
+               '\nSelecting optimal ROS release : {1}'.format(baserel, base_rosrel))
     host_release = base_rosrel if baserel >= hostrel else _SUPPORT_VERSIONS[hostrel][0]
     return base_rosrel, host_release
 
@@ -348,8 +348,8 @@ if __name__ == '__main__':
         container_path = _get_container_path()
         pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
         host_release = _get_host_release()
-        basrel = _get_base_release()
-        base_rosrel, host_rosrel = _get_compat_rosrel(base_release, _get_ros_release())
+        baserel = _get_base_release()
+        base_rosrel, host_rosrel = _get_compat_rosrel(basrel, _get_ros_release())
         candidates = os.listdir('/opt/ros')
         if candidates is not None:
             if host_rosrel not in candidates:
