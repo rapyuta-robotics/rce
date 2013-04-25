@@ -263,15 +263,16 @@ def provision_creds(dev_mode, pw_file):
 
 
 def _get_argparse():
-    from argparse import ArgumentParser
+    from argparse import ArgumentParser, RawTextHelpFormatter
 
-    _HELP_STRING = ('Available Modes\n'
-                    'all : Complete provision for a new install\n'
-                    'config : Recreate a configuration file\n'
-                    'cred : Create credentials database (needs valid config)\n'
-                    'container : Create a new container filesystem (needs valid config)\n'
-                    'clean : Celete the cache and container filesystem\n')
+    _HELP_STRING = (
+        'all\t\t: Complete provision for a new install\n'
+        'config\t\t: Recreate a configuration file\n'
+        'cred\t\t: Create credentials database (needs valid config)\n'
+        'container\t: Create a new container filesystem (needs valid config)\n'
+        'clean\t\t: Celete the cache and container filesystem\n')
     parser = ArgumentParser(prog='provision',
+                            formatter_class=RawTextHelpFormatter,
                             description='Provision the base settings for the '
                                         'RoboEarth Cloud Engine.')
 
