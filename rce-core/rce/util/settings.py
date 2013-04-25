@@ -193,7 +193,7 @@ class _Settings(object):
 
     @property
     def host_ros_release(self):
-        """ ROS release used inside the container.
+        """ ROS release used in the host filesystem.
         """
         return self._host_ros_release
 
