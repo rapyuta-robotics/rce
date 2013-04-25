@@ -40,7 +40,7 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python import log
 from twisted.cred.portal import IRealm, Portal
-from twisted.spread.pb import IPerspective, PBServerFactory, Avatar
+from twisted.spread.pb import IPerspective, PBServerFactory
 from twisted.web.server import Site
 
 # rce specific imports

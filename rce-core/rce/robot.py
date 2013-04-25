@@ -130,6 +130,8 @@ class Connection(object):
 
     def registerAvatar(self, avatar):
         """ Register User Avatar.
+
+            # TODO: Add description
         """
         assert self._avatar is None
         self._avatar = avatar
@@ -434,10 +436,9 @@ class Robot(Namespace):
             @param client:      Robot Client which is responsible for
                                 monitoring the robots in this process.
             @type  client:      rce.robot.RobotClient
-            
+
             @param connection:  The connection manager for robot namespaces.
-            
-            @type client:       rce.robot.Connection
+            @type  connection:  rce.robot.Connection
         """
         self._client = client
         self._connection = connection

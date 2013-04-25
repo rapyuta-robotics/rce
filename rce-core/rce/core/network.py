@@ -357,6 +357,42 @@ class Endpoint(Proxy):
             connectionP.add(connection)
             return connection
 
+    def destroyNamespace(self, remoteNamespace):
+        """ Method should be called to destroy the namespace proxy referenced by
+            the remote namespace.
+
+            @param remoteNamespace: Reference to Namespace in
+                                    Remote process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        for namespace in self._namespaces:
+            if namespace.destroyExternal(remoteNamespace):
+                break
+
+    def destroyProtocol(self, remoteProtocol):
+        """ Method should be called to destroy the protocol proxy referenced by
+            the remote namespace.
+
+            @param remoteProtocol:  Reference to Protocol in
+                                    Remote process.
+            @type  remoteProtocol:  twisted.spread.pb.RemoteReference
+        """
+        for protocol in self._protocols:
+            if protocol.destroyExternal(remoteProtocol):
+                break
+
+    def destroyInterface(self, remoteInterface):
+        """ Method should be called to destroy the interface proxy referenced by
+            the remote namespace.
+
+            @param remoteInterface: Reference to Interface in
+                                    Remote process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        for interface in self._interfaces:
+            if interface.destroyExternal(remoteInterface):
+                break
+
     def destroy(self):
         """ Method should be called to destroy the endpoint and will take care
             of destroying all objects owned by this Endpoint as well as
@@ -377,42 +413,6 @@ class Endpoint(Proxy):
 
         super(Endpoint, self).destroy()
 
-    def destroyNamespace(self, remoteNamespace):
-        """ Method should be called to destroy the namespace proxy referenced by
-            the remote namespace.
-            
-            @param remoteNamespace: Reference to Namespace in 
-                                    Remote process.
-            @type  remoteNamespace: twisted.spread.pb.RemoteReference
-        """
-        for namespace in self._namespaces:
-            if namespace.destroyExternal(remoteNamespace):
-                break
-    
-    def destroyProtocol(self, remoteProtocol):
-        """ Method should be called to destroy the protocol proxy referenced by
-            the remote namespace.
-            
-            @param remoteProtocol: Reference to Protocol in 
-                                    Remote process.
-            @type  remoteProtocol: twisted.spread.pb.RemoteReference
-        """
-        for protocol in self._protocols:
-            if protocol.destroyExternal(remoteProtocol):
-                break
-    
-    def destroyInterface(self, remoteInterface):
-        """ Method should be called to destroy the interface proxy referenced by
-            the remote namespace.
-            
-            @param remoteInterface: Reference to Interface in 
-                                    Remote process.
-            @type  remoteInterface: twisted.spread.pb.RemoteReference
-        """
-        for interface in self._interfaces:
-            if interface.destroyExternal(remoteInterface):
-                break
-
 
 class EndpointAvatar(Avatar):
     """ Avatar for internal PB connection from an Endpoint.
@@ -427,7 +427,7 @@ class EndpointAvatar(Avatar):
             @param endpoint:    Representation of the Endpoint.
             @type  endpoint:    rce.core.network.Endpoint
         """
-        self._realm = realm
+        self._realm = realm # Required in subclass
         self._endpoint = endpoint
 
     def perspective_interfaceDied(self, remoteInterface):
@@ -442,12 +442,12 @@ class EndpointAvatar(Avatar):
     def perspective_protocolDied(self, remoteProtocol):
         """ Notify that a remote protocol died.
 
-            @param remoteProtocol: Reference to the Protocol in the Robot
+            @param remoteProtocol:  Reference to the Protocol in the Robot
                                     process.
-            @type  remoteProtocol: twisted.spread.pb.RemoteReference
+            @type  remoteProtocol:  twisted.spread.pb.RemoteReference
         """
         self._endpoint.destroyProtocol(remoteProtocol)
-        
+
     def perspective_namespaceDied(self, remoteNamespace):
         """ Notify that a remote namespace died.
 
@@ -670,8 +670,10 @@ class Protocol(Proxy):
             of destroying all objects owned by this Protocol as well as
             deleting all circular references.
         """
+        # TODO: WHY ???
         if not self._endpoint:
             return
+
         self._endpoint.unregisterProtocol(self)
         self._endpoint = None
 

@@ -39,7 +39,8 @@ import rospy
 
 # twisted specific imports
 from twisted.python import log
-from twisted.spread.pb import PBClientFactory
+from twisted.spread.pb import PBClientFactory, \
+    DeadReferenceError, PBConnectionLost
 
 # rce specific imports
 from rce.util.error import InternalError
@@ -219,6 +220,15 @@ class EnvironmentClient(Endpoint):
     def unregisterEnvironment(self, environment):
         assert self._environment == environment
         self._environment = None
+
+        def eb(failure):
+            if not failure.check(PBConnectionLost):
+                log.err(failure)
+
+        try:
+            self._avatar.callRemote('namespaceDied', environment).addErrback(eb)
+        except (DeadReferenceError, PBConnectionLost):
+            pass
 
     def remote_createNamespace(self):
         """ Create the Environment namespace.

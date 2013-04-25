@@ -92,7 +92,6 @@ class RobotEndpoint(Endpoint):
 
         self._root = root
         self._port = port
-        self._robots = set()
 
     @property
     def active(self):
@@ -141,7 +140,6 @@ class RobotEndpoint(Endpoint):
                                 (subclass of rce.core.base.Proxy)
         """
         robot = Robot(self)
-        self._robots.add(robot)
         robot.callback(remoteRobot)
         return robot
 

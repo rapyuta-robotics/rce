@@ -34,7 +34,7 @@
 from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, succeed, fail
-from twisted.spread.pb import RemoteReference, Referenceable, \
+from twisted.spread.pb import RemoteReference, \
     DeadReferenceError, PBConnectionLost
 
 # rce specific imports
@@ -186,15 +186,16 @@ class Proxy(object):
             object.
         """
         self.__destroy()
-	
+
     def destroyExternal(self, remoteObject):
-	""" Method to compare given remote reference with Proxy's remote 
-	    reference and destroy if they are the same.
-	"""
-	if remoteObject == self.__obj:
-	    self.destroy()
-	    return True
-	return False
+        """ Method to compare given remote reference with Proxy's remote
+            reference and destroy if they are the same.
+    	"""
+        if remoteObject == self.__obj:
+            self.destroy()
+            return True
+
+        return False
 
     def __filter(self, failure, name):
         """ Internally used method which is used as an errback to check the

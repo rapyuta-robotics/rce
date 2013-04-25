@@ -195,6 +195,11 @@ class RCEContainer(Referenceable):
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
+        # Construct password
+        passwd = encodeAES(cipher(self._client.masterPassword),
+                           salter(uid, self._client.infraPassword))
+
+        # Create the container
         self._container = Container(client.reactor, client.rootfs,
                                     self._confDir, self._name, ip)
 
@@ -221,7 +226,6 @@ class RCEContainer(Referenceable):
 #                                    'etc/init/rceLauncher.conf', True)
         self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
                                     'etc/init/rceRosapi.conf', True)
-
         self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
                                     'etc/network/interfaces', True)
 
@@ -229,17 +233,13 @@ class RCEContainer(Referenceable):
             self._container.extendFstab(srcPath, destPath, True)
 
         # Create upstart scripts
-        passwd = encodeAES(cipher(self._client._masterPasswd),
-                           salter(uid, self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
                                          uid=uid, passwd=passwd))
-
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
-
         # TODO: For the moment there is no upstart launcher.
 #        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
 #            f.write(_UPSTART_LAUNCHER)
@@ -342,16 +342,6 @@ class RCEContainer(Referenceable):
                 self._terminating.addBoth(self._destroy)
             else:
                 self._terminating = succeed(None)
-
-        if self._client._avatar:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._client._avatar.callRemote('containerDied', self).addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
 
         return self._terminating
 
@@ -514,6 +504,16 @@ class ContainerClient(Referenceable):
         return self._masterIP
 
     @property
+    def masterPassword(self):
+        """ SHA 256 Digested Master Password. """
+        return self._masterPasswd
+
+    @property
+    def infraPassword(self):
+        """ SHA 256 Digested Infra Password. """
+        return self._infraPasswd
+
+    @property
     def prerouting(self):
         """ Reference to iptables' chain PREROUTING of the table NAT. """
         return self._prerouting
@@ -569,6 +569,15 @@ class ContainerClient(Referenceable):
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
+
+        def eb(failure):
+            if not failure.check(PBConnectionLost):
+                log.err(failure)
+
+        try:
+            self._avatar.callRemote('containerDied', container).addErrback(eb)
+        except (DeadReferenceError, PBConnectionLost):
+            pass
 
     def returnNr(self, nr):
         """ Callback for Container to return a container number when it is

@@ -271,6 +271,13 @@ class Machine(object):
     def listContainers(self):
         return self._containers
 
+    def destroyContainer(self, remoteContainer):
+        """ Destroy Container proxy.
+        """
+        for container in self._containers:
+            if container.destroyExternal(remoteContainer):
+                break
+
     def destroy(self):
         """ Method should be called to destroy the machine and will take care
             of deleting all circular references.
@@ -279,13 +286,6 @@ class Machine(object):
             container.destroy()
 
         assert len(self._containers) == 0
-        
-    def destroyContainer(self, remoteContainer):
-        """ Destroy Container proxy
-        """
-        for container in self._containers:
-            if container.destroyExternal(remoteContainer):
-                break
 
     def __eq__(self, other):
         return self._ip == other._ip
@@ -303,11 +303,11 @@ class MachineAvatar(Avatar):
     def __init__(self, machine, balancer):
         """ Initialize the Machine avatar.
 
-            @param machine:    Representation of the Machine.
-            @type  machine:    rce.core.machine.Machine
-            
-            @param balancer:   The load balancer.
-            @type balancer:    rce.core.machine.LoadBalancer 
+            @param machine:     Representation of the Machine.
+            @type  machine:     rce.core.machine.Machine
+
+            @param balancer:    The load balancer.
+            @type  balancer:    rce.core.machine.LoadBalancer
         """
         self._machine = machine
         self._balancer = balancer

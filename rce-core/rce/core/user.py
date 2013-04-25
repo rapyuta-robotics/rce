@@ -88,8 +88,7 @@ class User(Avatar):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
 
-        robot = location.createRobotProxy(robotID, robotNamespace)
-        robot = Robot(robot)
+        robot = Robot(location.createRobotProxy(robotID, robotNamespace))
         self.robots[robotID] = robot
         robot.notifyOnDeath(self.robotDied)
 
