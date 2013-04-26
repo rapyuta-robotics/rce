@@ -35,7 +35,6 @@ import os
 import sys
 import readline
 import glob
-from re import match
 from subprocess import check_call
 from ConfigParser import SafeConfigParser
 
@@ -127,11 +126,8 @@ def _get_compat_rosrel(baserel, base_rosrel):
 
 
 def _get_host_release():
-    with open('/etc/apt/sources.list') as sources:
-        for line in sources:
-            rel = match('^deb \S+ (\w+)', line)
-            if  rel is not None:
-                return rel.groups()[0]
+    with open('/etc/lsb-release') as release:
+        return release.readlines()[2][:-1].split('=')[1]
 
 
 def _get_container_path():
