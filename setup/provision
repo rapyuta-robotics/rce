@@ -433,7 +433,7 @@ if __name__ == '__main__':
 
         candidates = os.listdir('/opt/ros')
         if candidates and config.host_ros_release not in candidates:
-            host_rosrel = max(candidates)
+            config.host_ros_release = max(candidates)
 
         # Build up the settings file
         provision_config(config, PATH, _get_deployment_type())
