@@ -31,7 +31,7 @@
 #
 
 # Python specific imports
-from ConfigParser import SafeConfigParser
+from ConfigParser import SafeConfigParser, Error
 import os
 import socket
 import fcntl
@@ -50,15 +50,49 @@ _settings = None
 PATH = os.path.join(os.getenv('HOME'), '.rce', 'config.ini')
 
 
-def getSettings():
+class NoValidSettings(Exception):
+    """ Exception is raised in case there is no valid configuration found
+        for the cloud engine.
+    """
+
+
+def getSettings(throw=False):
     """ Get the cloud engine settings.
         The configuration file is parsed only once and cached for later.
+
+        @raise:                 rce.util.settings.NoValidSettings
     """
     global _settings
+
     if not _settings:
-        parser = _RCESettingsParser()
-        _settings = _Settings.load(parser)
+        try:
+            _settings = _getSettings()
+        except NoValidSettings as e:
+            _settings = e
+
+    if isinstance(_settings, NoValidSettings):
+        if throw:
+            raise _settings
+        else:
+            print(str(e))
+            print('Please run the provision script.')
+            exit(1)
+
     return _settings
+
+
+def _getSettings():
+    """ Get the settings for the cloud engine. Does the heavy lifting.
+    """
+    parser = _RCESettingsParser()
+
+    if PATH not in parser.read(PATH):
+        raise NoValidSettings('Config file is missing.')
+
+    try:
+        return _Settings.load(parser)
+    except (Error, ValueError) as e:
+        raise NoValidSettings(str(e))
 
 
 def _path_exists(path, description):
@@ -138,9 +172,9 @@ class _Settings(object):
         self._gzip_lvl = None
         self._dev_mode = None
         self._pw_file = None
-        self._base_ros_release = None
-        self._hots_ros_release = None
-        self._base_release = None
+        self._host_ros = None
+        self._container_ros = None
+        self._container_ubuntu = None
 
         # Network
         self._external_ip = None
@@ -185,24 +219,22 @@ class _Settings(object):
         return self._pw_file
 
     @property
-    def base_ros_release(self):
-        """ ROS release used inside the container.
-        """
-        return self._base_ros_release
-
-
-    @property
     def host_ros_release(self):
         """ ROS release used in the host filesystem.
         """
-        return self._host_ros_release
-
+        return self._host_ros
 
     @property
-    def base_release(self):
+    def container_ros_release(self):
+        """ ROS release used inside the container.
+        """
+        return self._container_ros
+
+    @property
+    def container_ubuntu_release(self):
         """ Ubuntu release used inside the container..
         """
-        return self._base_release
+        return self._container_ubuntu
 
     @property
     def external_IP(self):
@@ -332,9 +364,10 @@ class _Settings(object):
         settings._gzip_lvl = parser.getint('global', 'gzip_lvl')
         settings._dev_mode = parser.getboolean('global', 'dev_mode')
         settings._pw_file = parser.get('global', 'password_file')
-        settings._base_ros_release = parser.get('global', 'base_ros_release')
-        settings._host_ros_release = parser.get('global', 'host_ros_release')
-        settings._base_release = parser.get('global', 'base_release')
+        settings._host_ros = parser.get('global', 'host_ros_release')
+        settings._container_ros = parser.get('global', 'container_ros_release')
+        settings._container_ubuntu = parser.get('global',
+                                                'container_ubuntu_release')
 
         # Network
         settings._external_ip = parser.getIP('network', 'external_if')
@@ -403,19 +436,6 @@ class _RCESettingsParser(SafeConfigParser, object):
 
     # Internal AWS url metadata retrieval address for type 'public-ipv4'
     _AWS_IP_V4_ADDR = 'http://169.254.169.254/latest/meta-data/public-ipv4'
-
-    def __init__(self, *args, **kargs):
-        """ Initialize the RCE settings manager. Additional arguments are passed
-            to the __init__ of SafeConfigParser.
-        """
-        super(_RCESettingsParser, self).__init__(*args, **kargs)
-
-        # check if the config file exists
-        if not os.path.exists(PATH):
-            print('Config file missing. Please run the provision script first.')
-            exit()
-
-        self.read(PATH)
 
     def getIP(self, section, option):
         """ Get IP address.
