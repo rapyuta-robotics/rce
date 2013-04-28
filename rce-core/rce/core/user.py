@@ -72,7 +72,7 @@ class User(Avatar):
         """ User ID of this User. """
         return self._userID
 
-    def createRobotWrapper(self, robotNamespace, location, robotID):
+    def registerRobot(self, robot, robotID):
         """ Create a new Robot Wrapper.
 
             # TODO: Add description of arguments
@@ -88,7 +88,7 @@ class User(Avatar):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
 
-        robot = Robot(location.createRobotProxy(robotID, robotNamespace))
+        robot = Robot(robot)
         self.robots[robotID] = robot
         robot.notifyOnDeath(self.robotDied)
 

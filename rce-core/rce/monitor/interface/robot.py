@@ -87,16 +87,9 @@ class _AbstractConverter(Interface):
                                 interface in the external communication.
             @type  tag:         str
         """
-        self._owner = owner
+        Interface.__init__(self, owner, uid, tag)
+
         self._clsName = clsName
-        self._tag = tag
-
-        Interface.__init__(self, owner, uid)
-
-    @property
-    def tag(self):
-        """ Interface tag of the converter. """
-        return self._tag
 
     def _receive(self, msg, msgID):
         """ This method is used as a hook to send the message received from the
@@ -246,7 +239,7 @@ class ServiceClientConverter(_ConverterBase):
                 break
 
         self._pendingRequests[uid] = (msgID, protocol, remoteID)
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class ServiceProviderConverter(_ConverterBase):
@@ -276,7 +269,7 @@ class ServiceProviderConverter(_ConverterBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class PublisherConverter(_ConverterBase):
@@ -295,7 +288,7 @@ class PublisherConverter(_ConverterBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class SubscriberConverter(_ConverterBase):
@@ -314,7 +307,7 @@ class SubscriberConverter(_ConverterBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class _ForwarderBase(_AbstractConverter):
@@ -393,7 +386,7 @@ class ServiceClientForwarder(_ForwarderBase):
                 break
 
         self._pendingRequests[uid] = (msgID, protocol, remoteID)
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class ServiceProviderForwarder(_ForwarderBase):
@@ -412,7 +405,7 @@ class ServiceProviderForwarder(_ForwarderBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class PublisherForwarder(_ForwarderBase):
@@ -422,7 +415,7 @@ class PublisherForwarder(_ForwarderBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class SubscriberForwarder(_ForwarderBase):
@@ -432,4 +425,4 @@ class SubscriberForwarder(_ForwarderBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)

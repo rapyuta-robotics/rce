@@ -190,7 +190,7 @@ class Proxy(object):
     def destroyExternal(self, remoteObject):
         """ Method to compare given remote reference with Proxy's remote
             reference and destroy if they are the same.
-    	"""
+        """
         if remoteObject == self.__obj:
             self.destroy()
             return True
@@ -266,4 +266,3 @@ class Proxy(object):
     def __disconnected(self, _):
         self.__notify(Failure(DeadReferenceError('Broker is disconnected.')))
         self.__obj = None
-

@@ -31,10 +31,12 @@
 #
 
 # twisted specific imports
+from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.internet.defer import fail
 from twisted.internet.protocol import ServerFactory, ClientCreator
-from twisted.spread.pb import Referenceable, Error
+from twisted.spread.pb import Referenceable, Error, \
+    DeadReferenceError, PBConnectionLost
 
 # rce specific imports
 from rce.slave.protocol import Loopback, RCEInternalProtocol
@@ -48,12 +50,16 @@ class ConnectionError(Error):
 class Endpoint(Referenceable):
     """ Abstract base class for an Endpoint in a slave process.
     """
-    def __init__(self, reactor, commPort):
+    def __init__(self, reactor, loader, commPort):
         """ Initialize the Endpoint.
 
             @param reactor:     Reference to the twisted reactor used in this
                                 robot process.
             @type  reactor:     twisted::reactor
+
+            @param loader:      Reference to object which is used to load
+                                resources from ROS packages.
+            @type  loader:      rce.util.loader.Loader
 
             @param commPort:    Port where the server for the cloud engine
                                 internal communication will listen for incoming
@@ -62,23 +68,43 @@ class Endpoint(Referenceable):
         """
         self._avatar = None
         self._reactor = reactor
+        self._loader = loader
+
         reactor.listenTCP(commPort, _RCEInternalServerFactory(self))
 
-        self._loopback = None
+        self._namespaces = set()
 
+        self._loopback = None
         self._pendingConnections = {}
         self._protocols = set()
 
-    def remote_createNamespace(self, *args, **kw):
-        """ Remote callable method to create a namespace in this endpoint.
+    @property
+    def reactor(self):
+        """ Reference to twisted::reactor. """
+        return self._reactor
 
-            Method has to be implemented!
+    @property
+    def loader(self):
+        """ Reference to ROS components loader. """
+        return self._loader
 
-            @return:            New Namespace instance.
-            @rtype:             rce.slave.namespace.Namespace
+    def registerAvatar(self, avatar):
+        """ Register the PB Avatar received from the master process.
+
+            @param avatar:      Avatar which should be registered.
+            @type  avatar:      twisted.spread.pb.RemoteReference
         """
-        raise NotImplementedError("Method 'remote_createNamespace' has"
-                                  'to be implemented.')
+        assert self._avatar is None
+        self._avatar = avatar
+
+    def registerNamespace(self, namespace):
+        assert namespace not in self._namespaces
+        self._namespaces.add(namespace)
+
+    def unregisterNamespace(self, namespace):
+        assert namespace in self._namespaces
+        self._namespaces.remove(namespace)
+        self.referenceDied('namespaceDied', namespace)
 
     def remote_getLoopback(self):
         """ Get the loopback protocol.
@@ -180,7 +206,7 @@ class Endpoint(Referenceable):
             return auth.callRemote('verifyKey', remoteKey, protocol)
 
         # Should never be reached...
-        raise RuntimeError()
+        raise RuntimeError
 
     def registerProtocol(self, protocol):
         assert protocol not in self._protocols
@@ -189,6 +215,20 @@ class Endpoint(Referenceable):
     def unregisterProtocol(self, protocol):
         assert protocol in self._protocols
         self._protocols.remove(protocol)
+        self.referenceDied('protocolDied', protocol)
+
+    def referenceDied(self, method, reference):
+        """ Internally used method to inform the Master process that a remote
+            referenced object has died.
+        """
+        def eb(failure):
+            if not failure.check(PBConnectionLost):
+                log.err(failure)
+
+        try:
+            self._avatar.callRemote(method, reference).addErrback(eb)
+        except (DeadReferenceError, PBConnectionLost):
+            pass
 
     def terminate(self):
         """ Method should be called to terminate the endpoint before the
@@ -210,6 +250,11 @@ class Endpoint(Referenceable):
         if self._loopback:
             self._loopback.remote_destroy()
             self._loopback = None
+
+        for namespace in self._namespaces.copy():
+            namespace.remote_destroy()
+
+        assert len(self._namespaces) == 0
 
         self._factory = None
 

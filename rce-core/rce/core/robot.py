@@ -35,6 +35,7 @@ from twisted.internet.address import IPv4Address
 
 # rce specific imports
 from rce.util.network import isLocalhost
+from rce.core.error import InvalidRequest
 from rce.core.network import Endpoint, Namespace, EndpointAvatar
 
 
@@ -126,11 +127,8 @@ class RobotEndpoint(Endpoint):
         """
         return self.callRemote('getWebsocketAddress')
 
-    def createRobotProxy(self, robotID, remoteRobot):
-        """ Create a Namespace object in the endpoint.
-
-            @param robotID:     ID of the robot which has to be created.
-            @type  robotID:     str
+    def registerRemoteRobot(self, remoteRobot):
+        """ Register a Namespace object of the endpoint.
 
             @param remoteRobot: Reference to Robot namespace in Robot process.
             @type  remoteRobot: twisted.spread.pb.RemoteReference
@@ -160,7 +158,7 @@ class RobotEndpoint(Endpoint):
 class RobotEndpointAvatar(EndpointAvatar):
     """ Avatar for internal PB connection form a Robot Endpoint.
     """
-    def perspective_setupProxy(self, remoteRobot, userID, robotID):
+    def perspective_setupNamespace(self, remoteRobot, userID, robotID):
         """ Register a Robot namespace with the Master process.
 
             @param remoteRobot: Reference to the Robot namespace in the Robot
@@ -174,5 +172,10 @@ class RobotEndpointAvatar(EndpointAvatar):
             @type  robotID:     str
         """
         user = self._realm.getUser(userID)
-        user.createRobotWrapper(remoteRobot, self._endpoint, robotID)
+        robot = self._endpoint.registerRemoteRobot(remoteRobot)
 
+        try:
+            user.registerRobot(robot, robotID)
+        except InvalidRequest:
+            robot.destroy()
+            raise

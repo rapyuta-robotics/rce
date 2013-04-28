@@ -35,8 +35,7 @@ import rospy
 
 # twisted specific imports
 from twisted.python import log
-from twisted.spread.pb import Referenceable, \
-    DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import Referenceable
 
 # rce specific imports
 from rce.util.error import InternalError
@@ -93,16 +92,6 @@ class Parameter(Referenceable, ArgumentMixin):
                 pass
 
             self._registered = False
-
-        if self._owner._client._avatar:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._owner._client._avatar.callRemote('parameterDied', self).addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
 
         if self._owner:
             self._owner.unregisterParameter(self)

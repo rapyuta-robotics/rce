@@ -144,7 +144,6 @@ class Robot(_Wrapper):
                                 i.e. 'std_msgs/Int32'.
             @type  clsName:     str
         """
-
         try:
             validateName(iTag)
         except IllegalName as e:
@@ -154,14 +153,12 @@ class Robot(_Wrapper):
             raise InvalidRequest("Can not use the same interface tag '{0}' "
                                  'in the same robot twice.'.format(iTag))
 
-        modifier = 4 if iType.endswith('Forwarder') else 0
-
         try:
             iType = Types.encode(iType)
         except TypeError:
-            raise InvalidRequest('Interface type is invalid (Unknown prefix).')
+            raise InvalidRequest('Interface type is invalid.')
 
-        interface = self._obj.createInterface(iType + modifier, clsName, iTag)
+        interface = self._obj.createInterface(iType, clsName, iTag)
         interface = Interface(interface, iType, clsName)
         self._interfaces[iTag] = interface
         interface.notifyOnDeath(self._interfaceDied)

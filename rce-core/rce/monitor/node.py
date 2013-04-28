@@ -39,8 +39,7 @@ from uuid import uuid4
 from twisted.python import log
 from twisted.internet.error import ProcessExitedAlready
 from twisted.internet.protocol import ProcessProtocol
-from twisted.spread.pb import Referenceable, \
-    DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import Referenceable
 
 # rce specific imports
 from rce.monitor.common import ArgumentMixin
@@ -173,16 +172,6 @@ class Node(Referenceable, ArgumentMixin):
         if exitCode:
             log.msg('Node ({0}) terminated with exit code: '
                     '{1}'.format(self._name, exitCode))
-
-        if self._owner._client._avatar:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._owner._client._avatar.callRemote('nodeDied', self).addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
 
         if self._owner:
             self._owner.unregisterNode(self)

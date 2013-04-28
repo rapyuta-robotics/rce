@@ -72,9 +72,8 @@ class _ROSInterfaceBase(Interface):
 
             @raise:             rce.util.loader.ResourceNotFound
         """
-        Interface.__init__(self, owner, uid)
+        Interface.__init__(self, owner, uid, addr)
 
-        self._name = addr
         self._reactor = owner.reactor
 
 
@@ -106,9 +105,8 @@ class ServiceClientInterface(_ROSInterfaceBase):
         rosMsg = rospy.AnyMsg()
         rosMsg._buff = msg
 
-        rospy.wait_for_service(self._name, timeout=5)
-        serviceFunc = rospy.ServiceProxy(self._name,
-                                         self._srvCls)
+        rospy.wait_for_service(self._addr, timeout=5)
+        serviceFunc = rospy.ServiceProxy(self._addr, self._srvCls)
         return serviceFunc(rosMsg)
 
     def _respond(self, resp, msgID, protocol, remoteID):
@@ -155,7 +153,7 @@ class ServiceProviderInterface(_ROSInterfaceBase):
     remote_connect.__doc__ = _ROSInterfaceBase.remote_connect.__doc__
 
     def _start(self):
-        self._service = rospy.Service(self._name, self._srvCls, self._callback)
+        self._service = rospy.Service(self._addr, self._srvCls, self._callback)
 
     def _stop(self):
         self._service.shutdown()
@@ -228,7 +226,7 @@ class PublisherInterface(_ROSInterfaceBase):
     def _start(self):
         # TODO: Is 'latch=True' really necessary?
         #       Should this be configurable?
-        self._publisher = rospy.Publisher(self._name, self._msgCls, latch=True)
+        self._publisher = rospy.Publisher(self._addr, self._msgCls, latch=True)
 
     def _stop(self):
         self._publisher.unregister()
@@ -250,7 +248,7 @@ class SubscriberInterface(_ROSInterfaceBase):
     """ Class which is used as a Subscriber Interface.
     """
     def _start(self):
-        self._subscriber = rospy.Subscriber(self._name, rospy.AnyMsg,
+        self._subscriber = rospy.Subscriber(self._addr, rospy.AnyMsg,
                                             self._callback)
 
     def _stop(self):

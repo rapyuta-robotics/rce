@@ -32,7 +32,6 @@
 
 # Python specific imports
 import sys
-from uuid import UUID
 
 # ROS specific imports
 from rospkg.environment import get_ros_paths
@@ -63,6 +62,7 @@ from rce.monitor.interface.robot import PublisherConverter, \
     ServiceClientForwarder, ServiceProviderForwarder
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
+from rce.slave.interface import Types
 
 
 class ForwardingError(Exception):
@@ -424,27 +424,31 @@ class Robot(Namespace):
     """ Representation of a namespace in the robot process, which is part of
         the cloud engine internal communication.
     """
-
-    _MAP = [ServiceClientConverter, PublisherConverter,
-            SubscriberConverter, ServiceProviderConverter,
-            ServiceClientForwarder, PublisherForwarder,
-            SubscriberForwarder, ServiceProviderForwarder]
-
-    def __init__(self, client, connection):
+    def __init__(self, endpoint, connection):
         """ Initialize the Robot.
 
-            @param client:      Robot Client which is responsible for
+            @param endpoint:    Robot Client which is responsible for
                                 monitoring the robots in this process.
-            @type  client:      rce.robot.RobotClient
+            @type  endpoint:    rce.robot.RobotClient
 
             @param connection:  The connection manager for robot namespaces.
             @type  connection:  rce.robot.Connection
         """
-        self._client = client
-        self._connection = connection
+        Namespace.__init__(self, endpoint)
 
-        # The following replaces the call to Namespace.__init__()
-        self._interfaces = {}
+        interface_map = {
+            Types.encode('PublisherConverter') : PublisherConverter,
+            Types.encode('SubscriberConverter') : SubscriberConverter,
+            Types.encode('ServiceClientConverter') : ServiceClientConverter,
+            Types.encode('ServiceProviderConverter') : ServiceProviderConverter,
+            Types.encode('PublisherForwarder') : PublisherForwarder,
+            Types.encode('SubscriberForwarder') : SubscriberForwarder,
+            Types.encode('ServiceClientForwarder') : ServiceClientForwarder,
+            Types.encode('ServiceProviderForwarder') : ServiceProviderForwarder
+        }
+        self._map.update(interface_map)
+
+        self._connection = connection
 
     @property
     def converter(self):
@@ -452,11 +456,6 @@ class Robot(Namespace):
             interfaces.
         """
         return self._client.converter
-
-    @property
-    def loader(self):
-        """ Reference to ROS components loader. """
-        return self._client.loader
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
@@ -517,67 +516,11 @@ class Robot(Namespace):
         """
         self._connection.sendMessage(iTag, msgType, msgID, msg)
 
-    def remote_createInterface(self, uid, iType, msgType, tag):
-        """ Create an Interface object in the robot namespace and therefore in
-            the endpoint.
-
-            @param uid:         Unique ID which is used to identify the
-                                interface in the internal communication.
-            @type  uid:         str
-
-            @param iType:       Type of the interface encoded as an integer.
-                                Refer to rce.slave.interface.Types for more
-                                information.
-            @type  IType:       int
-
-            @param clsName:     Message type/Service type consisting of the
-                                package and the name of the message/service,
-                                i.e. 'std_msgs/Int32'.
-            @type  clsName:     str
-
-            @param tag:         Unique ID which is used to identify the
-                                interface in the external communication.
-            @type  tag:         str
-
-            @return:            New Interface instance.
-            @rtype:             rce.master.network.Interface
-                                (subclass of rce.master.base.Proxy)
-        """
-        return self._MAP[iType](self, UUID(bytes=uid), msgType, tag)
-
-    def registerInterface(self, interface):
-        # "Special" method to account for 'dict' instead of standard 'set'
-        tag = interface.tag
-
-        assert tag not in self._interfaces
-        self._interfaces[tag] = interface
-
-    def unregisterInterface(self, interface):
-        # "Special" method to account for 'dict' instead of standard 'set'
-        tag = interface.tag
-
-        assert tag in self._interfaces
-        del self._interfaces[tag]
-
     def destroy(self):
         """ # TODO: Add doc
         """
         self._connection = None
-
-        # The following replaces the call to Namespace.remote_destroy()
-        for interface in self._interfaces.values():
-            interface.remote_destroy()
-        assert len(self._interfaces) == 0
-
-        if self._client._avatar:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._client._avatar.callRemote('namespaceDied', self).addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
+        Namespace.remote_destroy(self)
 
     def remote_destroy(self):
         """ Method should be called to destroy the robot and will take care
@@ -638,12 +581,11 @@ class RobotClient(Endpoint):
                                 versa.
             @type  converter:   rce.util.converter.Converter
         """
-        Endpoint.__init__(self, reactor, commPort)
+        Endpoint.__init__(self, reactor, loader, commPort)
 
         self._masterIP = masterIP
         self._masterPort = masterPort
         self._extAddress = '{0}:{1}'.format(extIP, extPort)
-        self._converter = converter
         self._loader = loader
 
         self._connections = set()
@@ -655,11 +597,6 @@ class RobotClient(Endpoint):
             interfaces.
         """
         return self._converter
-
-    @property
-    def loader(self):
-        """ Reference to ROS components loader. """
-        return self._loader
 
     def registerConnection(self, connection):
         assert connection not in self._connections
@@ -734,9 +671,8 @@ class RobotClient(Endpoint):
         namespace = Robot(self, connection)
         connection.registerView(view)
         connection.registerNamespace(namespace)
-        self._avatar.callRemote('setupProxy', namespace,
-                                connection.userID, connection.robotID)
-        return connection
+        return self._avatar.callRemote('setupNamespace', namespace,
+                                       connection.userID, connection.robotID)
 
     def login(self, userID, robotID, password):
         """ Callback for Robot connection to login and authenticate.
@@ -765,6 +701,7 @@ class RobotClient(Endpoint):
         d = factory.login(UsernamePassword(userID, password))
         d.addCallback(self._cbAuthenticated, conn)
         d.addCallback(self._cbConnected, conn)
+        d.addCallback(lambda _: conn)
         return d
 
     def registerWebsocketProtocol(self, connection, protocol):

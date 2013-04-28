@@ -30,55 +30,94 @@
 #
 #
 
+# Python specific imports
+from uuid import UUID
+
 # twisted specific imports
-from twisted.python import log
-from twisted.spread.pb import Referenceable, \
-    DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import Referenceable
+
+# rce specific imports
+from rce.util.error import InternalError
 
 
 class Namespace(Referenceable):
     """ Abstract base class for a Namespace in a slave process.
     """
-    def __init__(self):
+    def __init__(self, endpoint):
         """ Initialize the Namespace.
         """
-        self._interfaces = set()
+        self._endpoint = endpoint
+        endpoint.registerNamespace(self)
+
+        self._interfaces = {}
+        self._map = {}
+
+    @property
+    def reactor(self):
+        """ Reference to twisted::reactor. """
+        return self._endpoint.reactor
+
+    @property
+    def loader(self):
+        """ Reference to ROS components loader. """
+        return self._endpoint.loader
 
     def registerInterface(self, interface):
-        assert interface not in self._interfaces
-        self._interfaces.add(interface)
+        addr = interface.addr
+
+        assert addr not in self._interfaces
+        self._interfaces[addr] = interface
 
     def unregisterInterface(self, interface):
-        assert interface in self._interfaces
-        self._interfaces.remove(interface)
+        addr = interface.addr
 
-    def remote_createInterface(self, *args, **kw):
-        """ Remote callable method to create an interface in this namespace.
+        assert addr in self._interfaces
+        del self._interfaces[addr]
+        self._endpoint.referenceDied('interfaceDied', interface)
 
-            Method has to be implemented!
+    def remote_createInterface(self, uid, iType, msgType, addr):
+        """ Create an Interface object in the namespace and therefore in
+            the endpoint.
+
+            @param uid:         Unique ID which is used to identify the
+                                interface in the internal communication.
+            @type  uid:         str
+
+            @param iType:       Type of the interface encoded as an integer.
+                                Refer to rce.slave.interface.Types for more
+                                information.
+            @type  IType:       int
+
+            @param clsName:     Message type/Service type consisting of the
+                                package and the name of the message/service,
+                                i.e. 'std_msgs/Int32'.
+            @type  clsName:     str
+
+            @param addr:        Unique address which is used to identify the
+                                interface in the external communication.
+            @type  addr:        str
 
             @return:            New Interface instance.
             @rtype:             rce.slave.interface.Interface
         """
-        raise NotImplementedError("Method 'remote_createInterface' has"
-                                  'to be implemented.')
+        try:
+            cls = self._map[iType]
+        except KeyError:
+            raise InternalError('Interface type is not supported by this '
+                                'namespace.')
+
+        return cls(self, UUID(bytes=uid), msgType, addr)
 
     def remote_destroy(self):
         """ Method should be called to destroy the namespace and will take care
             of destroying all interfaces owned by this namespace as well as
             deleting all circular references.
         """
-        for interface in self._interfaces.copy():
+        for interface in self._interfaces.values():
             interface.remote_destroy()
 
         assert len(self._interfaces) == 0
 
-        if self._client._avatar:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._client._avatar.callRemote('namespaceDied', self).addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
+        if self._endpoint:
+            self._endpoint.unregisterNamespace(self)
+            self._endpoint = None

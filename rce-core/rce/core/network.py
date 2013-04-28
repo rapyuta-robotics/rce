@@ -318,6 +318,10 @@ class Endpoint(Proxy):
         for connections in self._interfaces.itervalues():
             connections -= endedConnections
 
+        # Handle special case where the protocol is the Loopback protocol
+        if self._loopback == protocol:
+            self._loopback = None
+
     def getInterfaceConnection(self, interface, protocol):
         """ Get the connection between an interface and a protocol.
 
@@ -361,8 +365,7 @@ class Endpoint(Proxy):
         """ Method should be called to destroy the namespace proxy referenced by
             the remote namespace.
 
-            @param remoteNamespace: Reference to Namespace in
-                                    Remote process.
+            @param remoteNamespace: Reference to Namespace in Remote process.
             @type  remoteNamespace: twisted.spread.pb.RemoteReference
         """
         for namespace in self._namespaces:
@@ -373,8 +376,7 @@ class Endpoint(Proxy):
         """ Method should be called to destroy the protocol proxy referenced by
             the remote namespace.
 
-            @param remoteProtocol:  Reference to Protocol in
-                                    Remote process.
+            @param remoteProtocol:  Reference to Protocol in Remote process.
             @type  remoteProtocol:  twisted.spread.pb.RemoteReference
         """
         for protocol in self._protocols:
@@ -385,8 +387,7 @@ class Endpoint(Proxy):
         """ Method should be called to destroy the interface proxy referenced by
             the remote namespace.
 
-            @param remoteInterface: Reference to Interface in
-                                    Remote process.
+            @param remoteInterface: Reference to Interface in Remote process.
             @type  remoteInterface: twisted.spread.pb.RemoteReference
         """
         for interface in self._interfaces:
@@ -430,10 +431,19 @@ class EndpointAvatar(Avatar):
         self._realm = realm # Required in subclass
         self._endpoint = endpoint
 
+    def perspective_setupNamespace(self, remoteNamespace):
+        """ Register a namespace with the Master process.
+
+            @param remoteNamespace: Reference to the Namesapce in the slave
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        raise NotImplementedError
+
     def perspective_interfaceDied(self, remoteInterface):
         """ Notify that a remote interface died.
 
-            @param remoteInterface: Reference to the Interface in the Robot
+            @param remoteInterface: Reference to the Interface in the slave
                                     process.
             @type  remoteInterface: twisted.spread.pb.RemoteReference
         """
@@ -442,7 +452,7 @@ class EndpointAvatar(Avatar):
     def perspective_protocolDied(self, remoteProtocol):
         """ Notify that a remote protocol died.
 
-            @param remoteProtocol:  Reference to the Protocol in the Robot
+            @param remoteProtocol:  Reference to the Protocol in the slave
                                     process.
             @type  remoteProtocol:  twisted.spread.pb.RemoteReference
         """
@@ -451,7 +461,7 @@ class EndpointAvatar(Avatar):
     def perspective_namespaceDied(self, remoteNamespace):
         """ Notify that a remote namespace died.
 
-            @param remoteNamespace: Reference to the Namespace in the Robot
+            @param remoteNamespace: Reference to the Namespace in the slave
                                     process.
             @type  remoteNamespace: twisted.spread.pb.RemoteReference
         """
