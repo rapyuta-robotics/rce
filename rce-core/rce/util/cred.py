@@ -192,9 +192,15 @@ class RCECredChecker(object):
         # TODO: Add error handling in case the file has an invalid format
         with open(self.filename) as f:
             for line in f:
-                parts = self.scanner.match(line).groups()
-                yield parts[0], Userinfo(parts[1], int(parts[2]),
+                try:
+                    parts = self.scanner.match(line).groups()
+                except AttributeError:
+                    raise CredentialError('Credential database corrupted')
+                try:
+                    yield parts[0], Userinfo(parts[1], int(parts[2]),
                                          set(parts[3].split(':')))
+                except KeyError:
+                    raise CredentialError('Credential database corrupted')
 
     def getUser(self, username):
         """ Fetch username from db or cache. (Internal method)
@@ -449,7 +455,9 @@ class RCEInternalChecker(object):
         self.credentialInterfaces = (IUsernameHashedPassword,)
 
     def add_checker(self, method):
-        """ TODO: Add doc
+        """ Add a method to check the validity of a UUID
+        This method belongs to the RCE Realm Object and has access to the
+        valid uuid and checks them and raises a CredentialError if absent
         """
         self.checkUidValidity = method
 
