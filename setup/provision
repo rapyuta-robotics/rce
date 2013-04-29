@@ -37,7 +37,7 @@ import readline
 import glob
 import string
 from subprocess import check_call
-from ConfigParser import SafeConfigParser
+from ConfigParser import SafeConfigParser, NoSectionError
 
 # rce specific imports
 from rce.util.settings import PATH, getSettings, NoValidSettings
@@ -180,6 +180,7 @@ def _get_host_ubuntu_release():
             k, v = line.split('=')
             if k == 'DISTRIB_CODENAME':
                 return v.strip(string.whitespace + '\'"')
+    raise NoSectionError('Corrupt release information')
 
 
 def _get_container_rootfs():
