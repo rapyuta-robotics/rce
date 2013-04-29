@@ -189,7 +189,6 @@ class RCECredChecker(object):
     def _loadCredentials(self):
         """ Internal method to read the credentials database.
         """
-        # TODO: Add error handling in case the file has an invalid format
         with open(self.filename) as f:
             for line in f:
                 try:

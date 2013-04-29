@@ -412,7 +412,6 @@ class _Settings(object):
 
             usedNames.add(name)
 
-            # TODO: Contains container specific configuration: opt/rce/packages
             settings._packages.append((path,
                                        os.path.join('opt/rce/packages', name)))
 
