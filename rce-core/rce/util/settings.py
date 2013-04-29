@@ -157,8 +157,9 @@ def _getIP(ifname):
             struct.pack('256s', ifname[:15])
         )[20:24])
     except IOError:
-        raise ValueError('Can not get a valid IP address for interface '
-                         "'{0}'".format(ifname))
+        raise ValueError("Either the interface '{0}' isn't connected or there "
+                         "seems to be an error in your RoboEarth network "
+                         "configuration settings".format(ifname))
 
 
 class _Settings(object):
