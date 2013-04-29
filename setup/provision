@@ -175,14 +175,11 @@ def _get_host_ubuntu_release():
     """ Parse configuration file to get the codename of the ubuntu release of
         the host filesystem.
     """
-    lsb_release = {}
-
     with open('/etc/lsb-release') as config:
-        for line in config.readlines():
+        for line in config:
             k, v = line.split('=')
-            lsb_release[k.strip()] = v.strip(string.whitespace + '\'"')
-
-    return lsb_release['DISTRIB_CODENAME']
+            if k == 'DISTRIB_CODENAME':
+                return v.strip(string.whitespace + '\'"')
 
 
 def _get_container_rootfs():
