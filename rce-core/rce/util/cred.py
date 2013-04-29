@@ -50,7 +50,7 @@ from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
 
-### AES Encryption Stuff
+# ## AES Encryption Stuff
 # AES Encryptors strength depends on input password length, ensure it with
 # appropriate hash
 # the block size for the cipher object; must be 32 for AES 256
@@ -75,22 +75,22 @@ salter = lambda u, p: sha256(u + p).hexdigest()
 formatUser = lambda name, pw, mode, groups: '\t'.join((name, pw, mode,
                                                        ':'.join(groups)))
 
-### Cloud engine Specific Types and Declarations
+# ## Cloud engine Specific Types and Declarations
 Userinfo = namedtuple('Userinfo', 'password mode groups')
 
 # User mode mask length, modify these for future adaptations
 _MODE_LENGTH = 1
-_DEFAULT_USER_MODE = '1'    # should be as many digits as the above e.g.:
+_DEFAULT_USER_MODE = '1'  # should be as many digits as the above e.g.:
                             #   1 or 01 or 001
 
 # default groups a user belongs to
 _DEFAULT_GROUPS = ('user',)
 
-### Used Regex patterns
+# ## Used Regex patterns
 _RE = r'(\w+)\s(.+)\s(\d{' + str(_MODE_LENGTH) + '})\s(.+)'
 _PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 
-### Used doc strings
+# ## Used doc strings
 _PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
                   'contain at least one uppercase, lowercase, digit, and '
                   'special character.')
@@ -148,7 +148,7 @@ class RCECredChecker(object):
 
         if not provision:
             if not os.path.exists(self.filename):
-                print('Creds file missing please run the provision script '
+                print('Credential file missing please run the provision script '
                       'first.')
                 exit()
 
@@ -176,16 +176,6 @@ class RCECredChecker(object):
                     print('Password does not contain appropriate characters.')
             else:
                 print('Passwords do not match.')
-
-    def __getstate__(self):
-        # TODO: Why do we have this method?
-        d = dict(vars(self))
-        for k in ('_credCache', '_cacheTimestamp'):
-            try:
-                del d[k]
-            except KeyError:
-                pass
-        return d
 
     def _cbPasswordMatch(self, matched, username):
         """ Internal method which is called in case the password could be
@@ -277,7 +267,7 @@ class RCECredChecker(object):
             @return:            Result of Operation
             @rtype:             bool
         """
-        #mode sanity check and ensure only a single digit
+        # mode sanity check and ensure only a single digit
         mode = str(mode)
         if len(mode) != _MODE_LENGTH:
             raise CredentialError('Invalid Mode Length')
@@ -306,7 +296,7 @@ class RCECredChecker(object):
             @return:            Result of Operation
             @rtype:             bool
         """
-        #mode sanity check and ensure only a single digit
+        # mode sanity check and ensure only a single digit
         try:
             props = self.getUser(username)
         except KeyError:
@@ -327,13 +317,13 @@ class RCECredChecker(object):
             @param username:    username for who the mode is to be set.
             @type  username:    str
 
-            @param groups:      groups memebership to remove from the user
+            @param groups:      groups membership to remove from the user
             @type  groups:      csv strings eg : group1,group2
 
             @return:            Result of Operation
             @rtype:             bool
         """
-        #mode sanity check and ensure only a single digit
+        # mode sanity check and ensure only a single digit
         try:
             props = self.getUser(username)
         except KeyError:
@@ -408,7 +398,7 @@ class RCECredChecker(object):
             the user.
 
             Note : In admin mode, the admin is free to set any password he
-                   likes as the strict password strength validator is turned
+                   likes as the strict password strength validation is turned
                    off in this case.
 
             @param username:        username
@@ -476,7 +466,7 @@ class RCEInternalChecker(object):
             if c.username in ('container', 'robot'):
                 p = self._root_checker.getUser('adminInfra').password
                 user = c.username
-            else: # it is the environment uuid
+            else:  # it is the environment uuid
                 try:
                     # this method is set by the real object instance
                     self.checkUidValidity(c.username)
