@@ -33,6 +33,8 @@
 
 from subprocess import check_call
 from ConfigParser import SafeConfigParser
+from rce.util.cred import _MODE_LENGTH, _RE
+import re
 
 
 def _get_argparse():
@@ -42,7 +44,8 @@ def _get_argparse():
                             description='Maintenance utility for the '
                                         'RoboEarth Cloud Engine.')
 
-    parser.add_argument('mode', choices=['all', 'rce', 'rootfs', 'packages'])
+    parser.add_argument('mode', choices=['all', 'rce', 'rootfs', 'packages'
+                                         'fixcreds'])
 
     return parser
 
@@ -78,6 +81,24 @@ if __name__ == '__main__':
         print('Updating {0} on the container system'.format(' and '.join(msg)))
         check_call('echo "{0}" | sudo rce-make'.format(';'.join(cmd)),
                    shell=True)
+
+    if args.mode == 'fixcreds':
+        pwfile = getSettings()._pw_file
+        newfile = '.'.join((pwfile, 'recovered'))
+        newfile = open(newfile)
+        print ('Attempting to recover data to : {0} \n'
+               'You will be informed of any users that have corrupted data fields'
+               ' in the process you should consider recreating them'.format(newfile))
+        with open(pwfile) as f:
+            for line in f:
+                try:
+                    parts = re.match(_RE, line).groups()
+                    if len(parts) != 4:
+                        raise AssertionError
+                    newfile.write(line + '\n')
+                except (AssertionError, AttributeError):
+                    print "Data for user '{0}' corrupted ! dropping ...".format(line.split()[0])
+        newfile.close()
 
     if args.mode == 'packages':
         pass
