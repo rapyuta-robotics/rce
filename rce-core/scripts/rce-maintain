@@ -32,7 +32,7 @@
 
 
 from subprocess import check_call
-from ConfigParser import SafeConfigParser
+from ConfigParser import SafeConfigParser, NoOptionError
 from rce.util.cred import _MODE_LENGTH, _RE
 import re
 
@@ -83,22 +83,29 @@ if __name__ == '__main__':
                    shell=True)
 
     if args.mode == 'fixcreds':
-        pwfile = getSettings()._pw_file
-        newfile = '.'.join((pwfile, 'recovered'))
-        newfile = open(newfile)
-        print ('Attempting to recover data to : {0} \n'
-               'You will be informed of any users that have corrupted data fields'
-               ' in the process you should consider recreating them'.format(newfile))
-        with open(pwfile) as f:
-            for line in f:
-                try:
-                    parts = re.match(_RE, line).groups()
-                    if len(parts) != 4:
-                        raise AssertionError
-                    newfile.write(line + '\n')
-                except (AssertionError, AttributeError):
-                    print "Data for user '{0}' corrupted ! dropping ...".format(line.split()[0])
-        newfile.close()
+        try:
+            pwfile = getSettings()._pw_file
+        except NoOptionError:
+            print 'Something seems to be wrong with you configuration file , please check it'
+        try:
+            with open(pwfile) as f:
+                newfile = '.'.join((pwfile, 'recovered'))
+                newfile = open(newfile)
+                print ('Attempting to recover data to : {0} \n'
+                   'You will be informed of any users that have corrupted data fields'
+                   ' in the process you should consider recreating them'.format(newfile))
+                for line in f:
+                    try:
+                        parts = re.match(_RE, line).groups()
+                        if len(parts) != 4:
+                            raise AssertionError
+                        newfile.write(line + '\n')
+                    except (AssertionError, AttributeError):
+                        print "Data for user '{0}' corrupted ! dropping ...".format(line.split()[0])
+            newfile.close()
+        except IOError:
+            print 'Password file is missing/moved please re-provision/restore it first'
+
 
     if args.mode == 'packages':
         pass
