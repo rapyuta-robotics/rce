@@ -41,6 +41,7 @@ import urllib2
 
 # rce specific imports
 from rce.util.name import validateName, IllegalName
+from urllib2 import URLError
 
 
 # Global storage of config parser
@@ -158,8 +159,7 @@ def _getIP(ifname):
         )[20:24])
     except IOError:
         raise ValueError("Either the interface '{0}' isn't connected or there "
-                         "seems to be an error in your RoboEarth network "
-                         "configuration settings".format(ifname))
+                         "seems to be a network error".format(ifname))
 
 
 class _Settings(object):
@@ -437,6 +437,16 @@ class _RCESettingsParser(SafeConfigParser, object):
     # Internal AWS url metadata retrieval address for type 'public-ipv4'
     _AWS_IP_V4_ADDR = 'http://169.254.169.254/latest/meta-data/public-ipv4'
 
+    def __init__(self, *args, **kwargs):
+        super(_RCESettingsParser, self).__init__(*args, **kwargs)
+        self._get_iface_list()
+
+    def _get_iface_list(self):
+        self._ifaces = set()
+        with open('/proc/net/dev') as net_devices:
+            for line in net_devices.readlines()[2:]:
+                self._ifaces.add(line.split(':')[0].strip())
+
     def getIP(self, section, option):
         """ Get IP address.
 
@@ -456,7 +466,15 @@ class _RCESettingsParser(SafeConfigParser, object):
             return ifname
 
         # AWS Specific IP resolution method for the global ipv4 address
-        if ifname == 'aws_dns':
-            return urllib2.urlopen(_RCESettingsParser._AWS_IP_V4_ADDR).read()
+        try:
+            if ifname == 'aws_dns':
+                return urllib2.urlopen(_RCESettingsParser._AWS_IP_V4_ADDR, timeout=3).read()
+        except URLError:
+            raise NoValidSettings("There seems to be somethign wrong with AWS or configuration settings")
+
+
+        if ifname not in self._ifaces:
+            raise NoValidSettings("The network device '{0}' does not exist on your "
+                                  'system check your configuration'.format(ifname))
 
         return _getIP(ifname)
