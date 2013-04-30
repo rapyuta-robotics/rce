@@ -143,16 +143,12 @@ iface eth0 inet static
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
     """
-    def __init__(self, client, status, nr, uid):
+    def __init__(self, client, nr, uid):
         """ Initialize the deployment container.
 
             @param client:      Container client which is responsible for
                                 monitoring the containers in this machine.
             @type  client:      rce.container.ContainerClient
-
-            @param status:      Status observer which is used to inform the
-                                Master of the container's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param nr:          Unique number which will be used for the IP
                                 address and the hostname of the container.
@@ -166,7 +162,6 @@ class RCEContainer(Referenceable):
         self._client = client
         client.registerContainer(self)
 
-        self._status = status
         self._nr = nr
         self._name = 'C{0}'.format(nr)
         self._terminating = None
@@ -200,6 +195,11 @@ class RCEContainer(Referenceable):
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
+        # Construct password
+        passwd = encodeAES(cipher(self._client.masterPassword),
+                           salter(uid, self._client.infraPassword))
+
+        # Create the container
         self._container = Container(client.reactor, client.rootfs,
                                     self._confDir, self._name, ip)
 
@@ -226,7 +226,6 @@ class RCEContainer(Referenceable):
 #                                    'etc/init/rceLauncher.conf', True)
         self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
                                     'etc/init/rceRosapi.conf', True)
-
         self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
                                     'etc/network/interfaces', True)
 
@@ -234,17 +233,13 @@ class RCEContainer(Referenceable):
             self._container.extendFstab(srcPath, destPath, True)
 
         # Create upstart scripts
-        passwd = encodeAES(cipher(self._client._masterPasswd),
-                           salter(uid, self._client._infraPasswd))
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
                                          uid=uid, passwd=passwd))
-
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
-
         # TODO: For the moment there is no upstart launcher.
 #        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
 #            f.write(_UPSTART_LAUNCHER)
@@ -347,18 +342,6 @@ class RCEContainer(Referenceable):
                 self._terminating.addBoth(self._destroy)
             else:
                 self._terminating = succeed(None)
-
-        if self._status:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._status.callRemote('died').addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
-
-            self._status = None
 
         return self._terminating
 
@@ -521,6 +504,16 @@ class ContainerClient(Referenceable):
         return self._masterIP
 
     @property
+    def masterPassword(self):
+        """ SHA 256 Digested Master Password. """
+        return self._masterPasswd
+
+    @property
+    def infraPassword(self):
+        """ SHA 256 Digested Infra Password. """
+        return self._infraPasswd
+
+    @property
     def prerouting(self):
         """ Reference to iptables' chain PREROUTING of the table NAT. """
         return self._prerouting
@@ -550,12 +543,8 @@ class ContainerClient(Referenceable):
         """
         return self._networkConf
 
-    def remote_createContainer(self, status, uid):
+    def remote_createContainer(self, uid):
         """ Create a new Container.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the container's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param uid:         Unique ID which the environment process inside
                                 the container needs to login to the Master
@@ -570,7 +559,7 @@ class ContainerClient(Referenceable):
         except KeyError:
             raise MaxNumberExceeded('Can not manage any additional container.')
 
-        container = RCEContainer(self, status, nr, uid)
+        container = RCEContainer(self, nr, uid)
         return container.start().addCallback(lambda _: container)
 
     def registerContainer(self, container):
@@ -580,6 +569,15 @@ class ContainerClient(Referenceable):
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
+
+        def eb(failure):
+            if not failure.check(PBConnectionLost):
+                log.err(failure)
+
+        try:
+            self._avatar.callRemote('containerDied', container).addErrback(eb)
+        except (DeadReferenceError, PBConnectionLost):
+            pass
 
     def returnNr(self, nr):
         """ Callback for Container to return a container number when it is

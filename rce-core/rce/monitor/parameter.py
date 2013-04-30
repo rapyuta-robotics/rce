@@ -35,8 +35,7 @@ import rospy
 
 # twisted specific imports
 from twisted.python import log
-from twisted.spread.pb import Referenceable, \
-    DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import Referenceable
 
 # rce specific imports
 from rce.util.error import InternalError
@@ -46,15 +45,11 @@ from rce.monitor.common import ArgumentMixin
 class Parameter(Referenceable, ArgumentMixin):
     """ Representation of a Parameter inside an environment.
     """
-    def __init__(self, owner, status, name, value):
+    def __init__(self, owner, name, value):
         """ Add the Parameter to the parameter server.
 
             @param owner:       Environment in which the node will be created.
             @type  owner:       rce.environment.Environment
-
-            @param status:      Status observer which is used to inform the
-                                Master of the parameter's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param name:        Name of the parameter which should be added.
             @type  name:        str
@@ -70,8 +65,6 @@ class Parameter(Referenceable, ArgumentMixin):
 
         owner.registerParameter(self)
         self._owner = owner
-
-        self._status = status
 
         if isinstance(value, basestring):
             value = self.processArgument(value)
@@ -103,15 +96,3 @@ class Parameter(Referenceable, ArgumentMixin):
         if self._owner:
             self._owner.unregisterParameter(self)
             self._owner = None
-
-        if self._status:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._status.callRemote('died').addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
-
-            self._status = None

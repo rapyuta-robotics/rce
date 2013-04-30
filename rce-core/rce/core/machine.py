@@ -33,11 +33,13 @@
 # Python specific imports
 from collections import Counter
 
+#twisted specific imports
+from twisted.spread.pb import Avatar
+
 # rce specific imports
 from rce.util.error import InternalError
 from rce.util.network import isLocalhost
 from rce.core.error import MaxNumberExceeded
-from rce.core.base import Status
 from rce.core.container import Container
 
 
@@ -253,9 +255,7 @@ class Machine(object):
                                     'capacity.')
 
         container = Container(self, userID)
-        status = Status(container)
-        self._ref.callRemote('createContainer', status,
-                             uid).chainDeferred(container)
+        self._ref.callRemote('createContainer', uid).chainDeferred(container)
         return container
 
     def registerContainer(self, container):
@@ -270,6 +270,13 @@ class Machine(object):
 
     def listContainers(self):
         return self._containers
+
+    def destroyContainer(self, remoteContainer):
+        """ Destroy Container proxy.
+        """
+        for container in self._containers:
+            if container.destroyExternal(remoteContainer):
+                break
 
     def destroy(self):
         """ Method should be called to destroy the machine and will take care
@@ -288,3 +295,32 @@ class Machine(object):
 
     def __hash__(self):
         return hash(self._ip)
+
+
+class MachineAvatar(Avatar):
+    """ Avatar for internal PB connection from a Machine.
+    """
+    def __init__(self, machine, balancer):
+        """ Initialize the Machine avatar.
+
+            @param machine:     Representation of the Machine.
+            @type  machine:     rce.core.machine.Machine
+
+            @param balancer:    The load balancer.
+            @type  balancer:    rce.core.machine.LoadBalancer
+        """
+        self._machine = machine
+        self._balancer = balancer
+
+    def perspective_containerDied(self, remoteContainer):
+        """ Notify that a remote container died.
+
+            @param remoteContainer: Reference to the remote Container.
+            @type  remoteContainer: twisted.spread.pb.RemoteReference
+        """
+        self._machine.destroyContainer(remoteContainer)
+
+    def logout(self):
+        """ Callback which should be called upon disconnection of the Machine
+        """
+        self._balancer.destroyMachine(self._machine)

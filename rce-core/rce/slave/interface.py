@@ -49,7 +49,13 @@ class Types(object):
     SERVICE_PROVIDER = 3
     PUBLISHER = 1
     SUBSCRIBER = 2
-    _NAMES = ['ServiceClient', 'Publisher', 'Subscriber', 'ServiceProvider']
+    _PREFIX_NAMES = ['ServiceClient', 'Publisher',
+                     'Subscriber', 'ServiceProvider']
+
+    CONVERTER = 0
+    FORWARDER = 1
+    INTERFACE = 2
+    _SUFFIX_NAMES = ['Converter', 'Forwarder', 'Interface']
 
     @staticmethod
     def encode(typename):
@@ -61,16 +67,27 @@ class Types(object):
             @return:            Encoded Interface type.
             @rtype:             int
         """
-        if typename.startswith(Types._NAMES[1]):
-            return Types.PUBLISHER
-        elif typename.startswith(Types._NAMES[2]):
-            return Types.SUBSCRIBER
-        elif typename.startswith(Types._NAMES[3]):
-            return Types.SERVICE_PROVIDER
-        elif typename.startswith(Types._NAMES[0]):
-            return Types.SERVICE_CLIENT
+        if typename.startswith(Types._PREFIX_NAMES[1]):
+            typeint = Types.PUBLISHER
+        elif typename.startswith(Types._PREFIX_NAMES[2]):
+            typeint = Types.SUBSCRIBER
+        elif typename.startswith(Types._PREFIX_NAMES[3]):
+            typeint = Types.SERVICE_PROVIDER
+        elif typename.startswith(Types._PREFIX_NAMES[0]):
+            typeint = Types.SERVICE_CLIENT
         else:
             raise TypeError('Invalid interface type provided.')
+
+        if typename.endswith(Types._SUFFIX_NAMES[2]):
+            typeint += 4 * Types.INTERFACE
+        elif typename.endswith(Types._SUFFIX_NAMES[0]):
+            typeint += 4 * Types.CONVERTER
+        elif typename.endswith(Types._SUFFIX_NAMES[1]):
+            typeint += 4 * Types.FORWARDER
+        else:
+            raise TypeError('Invalid interface type provided.')
+
+        return typeint
 
     @staticmethod
     def decode(typenr):
@@ -82,8 +99,9 @@ class Types(object):
             @return:            Interface type.
             @rtype:             str
         """
-        assert 0 <= typenr < 4
-        return Types._NAMES[typenr]
+        assert 0 <= typenr < 12
+        return ''.join((Types._PREFIX_NAMES[typenr % 4],
+                        Types._SUFFIX_NAMES[int(typenr / 4)]))
 
     @staticmethod
     def connectable(iTypeA, iTypeB):
@@ -95,7 +113,7 @@ class Types(object):
             @return:            True, if they are connectable; False otherwise.
             @rtype:             bool
         """
-        return iTypeA + iTypeB == 3
+        return (iTypeA % 4) + (iTypeB % 4) == 3
 
 
 class InvalidResoureName(Error):
@@ -106,33 +124,40 @@ class InvalidResoureName(Error):
 class Interface(Referenceable):
     """ Abstract base class for an Interface in a slave process.
     """
-    def __init__(self, owner, status, uid):
+    def __init__(self, owner, uid, addr):
         """ Initialize the Interface.
 
             @param owner:       Namespace for which the Interface is created.
             @param owner:       rce.slave.namespace.Namespace
 
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
             @type  uid:         uuid.UUID
+
+            @param addr:        Unique address which is used to identify the
+                                interface in the external communication.
+            @type  addr:        str
         """
         self._owner = owner
+        self._uid = uid
+        self._addr = addr
+
+        # Has to be called after assignment of 'self._addr', because
+        # 'registerInterface' uses the property 'addr'
         owner.registerInterface(self)
 
-        self._status = status
-        self._uid = uid
         self._protocols = {}
-
         self._ready = False
 
     @property
     def UID(self):
-        """ Unique ID of the interface. """
+        """ Unique ID of the interface (internal communication). """
         return self._uid
+
+    @property
+    def addr(self):
+        """ Unique ID of the interface (external communication). """
+        return self._addr
 
     def unregisterProtocol(self, protocol):
         """ Callback for the protocol to inform the interface that the
@@ -199,23 +224,15 @@ class Interface(Referenceable):
         """ Method should be called to destroy the interface and will take care
             of deleting all circular references.
         """
+        # TODO: WHY ???
+        if not self._owner:
+            return
+
         self.stop()
 
         if self._owner:
             self._owner.unregisterInterface(self)
             self._owner = None
-
-        if self._status:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                self._status.callRemote('died').addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                pass
-
-            self._status = None
 
     def start(self):
         """ This method is used to setup the interface.
@@ -271,7 +288,7 @@ class Interface(Referenceable):
 
         try:
             if remoteID not in self._protocols[protocol]:
-                raise KeyError()
+                raise KeyError
         except KeyError:
             log.msg('Received message dropped, because interface does not '
                     'expected the message.')

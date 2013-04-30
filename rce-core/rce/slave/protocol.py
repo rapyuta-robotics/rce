@@ -36,10 +36,8 @@ from uuid import UUID
 
 # twisted specific imports
 from twisted.python import log
-from twisted.internet.defer import succeed
 from twisted.protocols.basic import Int32StringReceiver
-from twisted.spread.pb import Referenceable, \
-    DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import Referenceable
 
 # rce specific imports
 from rce.util.error import InternalError
@@ -49,21 +47,12 @@ class _Protocol(Referenceable):
     """ Abstract base class for a internal Protocol which interacts with the
         Endpoint, Namespace, and Interfaces in a slave process.
     """
-    def __init__(self):
+    def __init__(self, endpoint):
         """ Initialize the Protocol.
         """
-        self._status = None
         self._receivers = {}
-
-    def registerStatus(self, status):
-        """ Register status observer for the Master process.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-        """
-        assert self._status is None
-        self._status = status
+        self._endpoint = endpoint
+        endpoint.registerProtocol(self)
 
     def sendMessage(self, interface, msg, msgID, remoteID=None):
         """ Send a message received from an Interface to the other side.
@@ -172,17 +161,9 @@ class _Protocol(Referenceable):
 
             self._receivers = None
 
-        if self._status:
-            def eb(failure):
-                if not failure.check(PBConnectionLost):
-                    log.err(failure)
-
-            try:
-                return self._status.callRemote('died').addErrback(eb)
-            except (DeadReferenceError, PBConnectionLost):
-                return succeed(None)
-
-            self._status = None
+        if self._endpoint:
+            self._endpoint.unregisterProtocol(self)
+            self._endpoint = None
 
 
 class Loopback(_Protocol):
@@ -212,10 +193,7 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
             @param endpoint:    Endpoint for which this Protocol is created.
             @type  endpoint:    rce.slave.endpoint.Endpoint
         """
-        _Protocol.__init__(self)
-
-        self._endpoint = endpoint
-        endpoint.registerProtocol(self)
+        _Protocol.__init__(self, endpoint)
 
         self._initialized = False
         self.stringReceived = self._initReceived
@@ -321,10 +299,6 @@ class RCEInternalProtocol(Int32StringReceiver, _Protocol):
             lost.
         """
         _Protocol.remote_destroy(self)
-
-        if self._endpoint:
-            self._endpoint.unregisterProtocol(self)
-            self._endpoint = None
 
     def remote_destroy(self):
         """ Method should be called to destroy the connection and the protocol.

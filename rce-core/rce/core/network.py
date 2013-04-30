@@ -36,11 +36,11 @@ from uuid import uuid4
 # twisted specific imports
 from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred, DeferredList
-from twisted.spread.pb import Referenceable, Error, PBConnectionLost
+from twisted.spread.pb import Referenceable, Error, PBConnectionLost, Avatar
 
 # rce specific imports
 from rce.util.error import InternalError
-from rce.core.base import Proxy, Status, AlreadyDead
+from rce.core.base import Proxy, AlreadyDead
 
 
 class ConnectionError(Error):
@@ -229,7 +229,7 @@ class Endpoint(Proxy):
 
         return self._loopback
 
-    def prepareConnection(self, connID, key, auth, status):
+    def prepareConnection(self, connID, key, auth):
         """ Prepare the endpoint for the connection attempt by adding the
             necessary connection information to the remote process. When the
             returned Deferred fires the endpoint is ready for the connection.
@@ -247,16 +247,11 @@ class Endpoint(Proxy):
                                 key from the other side.
             @type  auth:        rce.core.network._ConnectionValidator
 
-            @param status:      Status object which the endpoint can use to
-                                inform the Master of the status of the protocol
-                                which will be created for the connection.
-            @type  status:      rce.core.base.Status
-
             @return:            None. Deferred fires as soon as the endpoint is
                                 ready for the connection attempt.
             @rtype:             twisted.internet.defer.Deferred
         """
-        return self.callRemote('prepareConnection', connID, key, auth, status)
+        return self.callRemote('prepareConnection', connID, key, auth)
 
     def connect(self, connID, addr):
         """ Tell the endpoint to connect to the given address using the
@@ -323,6 +318,10 @@ class Endpoint(Proxy):
         for connections in self._interfaces.itervalues():
             connections -= endedConnections
 
+        # Handle special case where the protocol is the Loopback protocol
+        if self._loopback == protocol:
+            self._loopback = None
+
     def getInterfaceConnection(self, interface, protocol):
         """ Get the connection between an interface and a protocol.
 
@@ -362,6 +361,39 @@ class Endpoint(Proxy):
             connectionP.add(connection)
             return connection
 
+    def destroyNamespace(self, remoteNamespace):
+        """ Method should be called to destroy the namespace proxy referenced by
+            the remote namespace.
+
+            @param remoteNamespace: Reference to Namespace in Remote process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        for namespace in self._namespaces:
+            if namespace.destroyExternal(remoteNamespace):
+                break
+
+    def destroyProtocol(self, remoteProtocol):
+        """ Method should be called to destroy the protocol proxy referenced by
+            the remote namespace.
+
+            @param remoteProtocol:  Reference to Protocol in Remote process.
+            @type  remoteProtocol:  twisted.spread.pb.RemoteReference
+        """
+        for protocol in self._protocols:
+            if protocol.destroyExternal(remoteProtocol):
+                break
+
+    def destroyInterface(self, remoteInterface):
+        """ Method should be called to destroy the interface proxy referenced by
+            the remote namespace.
+
+            @param remoteInterface: Reference to Interface in Remote process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        for interface in self._interfaces:
+            if interface.destroyExternal(remoteInterface):
+                break
+
     def destroy(self):
         """ Method should be called to destroy the endpoint and will take care
             of destroying all objects owned by this Endpoint as well as
@@ -381,6 +413,64 @@ class Endpoint(Proxy):
         assert len(self._namespaces) == 0
 
         super(Endpoint, self).destroy()
+
+
+class EndpointAvatar(Avatar):
+    """ Avatar for internal PB connection from an Endpoint.
+    """
+    def __init__(self, realm, endpoint):
+        """ Initialize the Endpoint avatar.
+
+            @param realm:       User realm from which a user object can be
+                                retrieved.
+            @type  realm:       # TODO: Check this
+
+            @param endpoint:    Representation of the Endpoint.
+            @type  endpoint:    rce.core.network.Endpoint
+        """
+        self._realm = realm # Required in subclass
+        self._endpoint = endpoint
+
+    def perspective_setupNamespace(self, remoteNamespace):
+        """ Register a namespace with the Master process.
+
+            @param remoteNamespace: Reference to the Namesapce in the slave
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        raise NotImplementedError
+
+    def perspective_interfaceDied(self, remoteInterface):
+        """ Notify that a remote interface died.
+
+            @param remoteInterface: Reference to the Interface in the slave
+                                    process.
+            @type  remoteInterface: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyInterface(remoteInterface)
+
+    def perspective_protocolDied(self, remoteProtocol):
+        """ Notify that a remote protocol died.
+
+            @param remoteProtocol:  Reference to the Protocol in the slave
+                                    process.
+            @type  remoteProtocol:  twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyProtocol(remoteProtocol)
+
+    def perspective_namespaceDied(self, remoteNamespace):
+        """ Notify that a remote namespace died.
+
+            @param remoteNamespace: Reference to the Namespace in the slave
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyNamespace(remoteNamespace)
+
+    def logout(self):
+        """ Callback which should be called upon disconnection of the Endpoint.
+        """
+        self._endpoint.destroy()
 
 
 class Namespace(Proxy):
@@ -419,8 +509,7 @@ class Namespace(Proxy):
         """
         uid = self._endpoint.getUID()
         interface = Interface(self._endpoint, self, uid)
-        status = Status(interface)
-        self.callRemote('createInterface', status, uid.bytes, iType, clsName,
+        self.callRemote('createInterface', uid.bytes, iType, clsName,
                         addr).chainDeferred(interface)
         return interface
 
@@ -591,6 +680,10 @@ class Protocol(Proxy):
             of destroying all objects owned by this Protocol as well as
             deleting all circular references.
         """
+        # TODO: WHY ???
+        if not self._endpoint:
+            return
+
         self._endpoint.unregisterProtocol(self)
         self._endpoint = None
 
@@ -677,9 +770,6 @@ class EndpointConnection(object):
         self._serverProtocol = Protocol(endpointA)
         self._clientProtocol = Protocol(endpointB)
 
-        serverStatus = Status(self._serverProtocol)
-        clientStatus = Status(self._clientProtocol)
-
         # Create the keys used to validate the connection
         connectionID = uuid4().bytes
         serverKey = uuid4().bytes
@@ -696,9 +786,9 @@ class EndpointConnection(object):
         authenticator.addErrback(self._logError)
 
         readyServer = endpointA.prepareConnection(connectionID, serverKey,
-                                                  authClient, serverStatus)
+                                                  authClient)
         readyClient = endpointB.prepareConnection(connectionID, clientKey,
-                                                  authServer, clientStatus)
+                                                  authServer)
         ready = DeferredList([readyServer, readyClient])
         ready.addCallback(self._getAddress)
         ready.addCallback(self._connect, connectionID)

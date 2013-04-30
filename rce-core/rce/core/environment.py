@@ -31,8 +31,9 @@
 #
 
 # rce specific imports
-from rce.core.base import Proxy, Status
-from rce.core.network import Endpoint, Namespace
+from rce.util.error import InternalError
+from rce.core.base import Proxy
+from rce.core.network import Endpoint, Namespace, EndpointAvatar
 
 
 class Node(Proxy):
@@ -122,8 +123,7 @@ class Environment(Namespace):
             @type  nspace:      str
         """
         node = Node(self)
-        status = Status(node)
-        self.callRemote('createNode', status, pkg, exe, args, name,
+        self.callRemote('createNode', pkg, exe, args, name,
                         nspace).chainDeferred(node)
         return node
 
@@ -140,9 +140,7 @@ class Environment(Namespace):
             @type  value:       str, int, float, bool, list
         """
         parameter = Parameter(self)
-        status = Status(parameter)
-        self.callRemote('createParameter', status, name,
-                        value).chainDeferred(parameter)
+        self.callRemote('createParameter', name, value).chainDeferred(parameter)
         return parameter
 
     def getAddress(self):
@@ -170,6 +168,30 @@ class Environment(Namespace):
         """ Register a console user with the environment.
         """
         self._endpoint.registerConsole(userID, key)
+
+    def destroyNode(self, remoteNode):
+        """ Method should be called to destroy the node proxy referenced by the
+            remote node namespace.
+
+            @param remoteNode:  Reference to Node Namespace in Environment
+                                process.
+            @type  remoteNode:  twisted.spread.pb.RemoteReference
+        """
+        for node in self._nodes:
+            if node.destroyExternal(remoteNode):
+                break
+
+    def destroyParameter(self, remoteParam):
+        """ Method should be called to destroy the parameter proxy referenced by
+            the remote parameter namespace.
+
+            @param remoteParam: Reference to Parameter Namespace in Environment
+                                process.
+            @type  remoteParam: twisted.spread.pb.RemoteReference
+        """
+        for parameter in self._parameters:
+            if parameter.destroyExternal(remoteParam):
+                break
 
     def destroy(self):
         """ Method should be called to destroy the environment and will take
@@ -216,6 +238,12 @@ class EnvironmentEndpoint(Endpoint):
         """
         return self._container.getAddress()
 
+    def registerConsole(self, userID, key):
+        self.callRemote('addUsertoROSProxy', userID, key)
+
+    def unregisterConsole(self, userID, key):
+        self.callRemote('removeUserfromROSProxy', userID)
+
     def createNamespace(self):
         """ Create a Environment object in the environment endpoint.
 
@@ -223,16 +251,52 @@ class EnvironmentEndpoint(Endpoint):
             @rtype:             rce.master.environment.Environment
                                 (subclass of rce.core.base.Proxy)
         """
-        environment = Environment(self)
-        status = Status(environment)
-        self.callRemote('createNamespace', status).chainDeferred(environment)
-        return environment
+        if self._namespaces:
+            raise InternalError('Can not have more than one namespace '
+                                'in an Environment endpoint at a time.')
 
-    def registerConsole(self, userID, key):
-        self.callRemote('addUsertoROSProxy', userID, key)
+        return Environment(self)
 
-    def unregisterConsole(self, userID, key):
-        self.callRemote('removeUserfromROSProxy', userID)
+    def registerRemoteEnvironment(self, remoteNamespace):
+        """ Register a Namespace object of the endpoint.
+
+            @param remoteNamespace: Reference to Environment namespace in
+                                    Environment process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        # TODO: Workaround for now...
+        try:
+            iter(self._namespaces).next().callback(remoteNamespace)
+        except StopIteration:
+            pass
+
+    def destroyNode(self, remoteNode):
+        """ Method should be called to destroy the node proxy referenced by the
+            remote node namespace.
+
+            @param remoteNode:  Reference to Node Namespace in Environment
+                                process.
+            @type  remoteNode:  twisted.spread.pb.RemoteReference
+        """
+        # TODO: Workaround for now...
+        try:
+            iter(self._namespaces).next().destroyNode(remoteNode)
+        except StopIteration:
+            pass
+
+    def destroyParameter(self, remoteParam):
+        """ Method should be called to destroy the parameter proxy referenced by
+            the remote parameter namespace.
+
+            @param remoteParam: Reference to Parameter Namespace in Environment
+                                process.
+            @type  remoteParam: twisted.spread.pb.RemoteReference
+        """
+        # TODO: Workaround for now...
+        try:
+            iter(self._namespaces).next().destroyParameter(remoteParam)
+        except StopIteration:
+            pass
 
     def destroy(self):
         """ Method should be called to destroy the endpoint and will take care
@@ -242,3 +306,34 @@ class EnvironmentEndpoint(Endpoint):
         print('Destroying Connection to Environment Process.')
         self._container = None
         super(EnvironmentEndpoint, self).destroy()
+
+
+class EnvironmentEndpointAvatar(EndpointAvatar):
+    """ Avatar for internal PB connection from an Environment Endpoint.
+    """
+    def perspective_setupNamespace(self, remoteNamespace):
+        """ Register a namespace with the Master process.
+
+            @param remoteNamespace: Reference to the Namesapce in the slave
+                                    process.
+            @type  remoteNamespace: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.registerRemoteEnvironment(remoteNamespace)
+
+    def perspective_nodeDied(self, remoteNode):
+        """ Notify that a remote node died.
+
+            @param remoteNode:  Reference to the Node in the Environment
+                                process.
+            @type  remoteNode:  twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyNode(remoteNode)
+
+    def perspective_parameterDied(self, remoteParameter):
+        """ Notify that a remote parameter died.
+
+            @param remoteParam: Reference to the Parameter in the Environment
+                                process.
+            @type  remoteParam: twisted.spread.pb.RemoteReference
+        """
+        self._endpoint.destroyParameter(remoteParameter)

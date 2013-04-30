@@ -31,7 +31,6 @@
 #
 
 # Python specific imports
-from uuid import UUID
 import fcntl
 
 # ROS specific imports
@@ -50,46 +49,32 @@ from rce.monitor.interface.environment import PublisherInterface, \
     SubscriberInterface, ServiceClientInterface, ServiceProviderInterface
 from rce.slave.endpoint import Endpoint
 from rce.slave.namespace import Namespace
+from rce.slave.interface import Types
 
 
 class Environment(Namespace):
     """ Representation of the namespace in the environment process, which is
         part of the cloud engine internal communication.
     """
-    _MAP = [ServiceClientInterface, PublisherInterface,
-            SubscriberInterface, ServiceProviderInterface]
-
-    def __init__(self, client, reactor):
+    def __init__(self, endpoint):
         """ Initialize the Environment.
 
-            @param client:      Environment Client which is responsible for
+            @param endpoint:    Environment Client which is responsible for
                                 monitoring the environment in this process.
-            @type  client:      rce.robot.EnvironmentClient
-
-            @param reactor:     Reference to the twisted reactor used in this
-                                robot process.
-            @type  reactor:     twisted::reactor
+            @type  endpoint:    rce.robot.EnvironmentClient
         """
-        Namespace.__init__(self)
+        Namespace.__init__(self, endpoint)
 
-        self._client = client
-        client.registerEnvironment(self)
-
-        self._reactor = reactor
-        self._loader = Loader()
+        interface_map = {
+            Types.encode('PublisherInterface') : PublisherInterface,
+            Types.encode('SubscriberInterface') : SubscriberInterface,
+            Types.encode('ServiceClientInterface') : ServiceClientInterface,
+            Types.encode('ServiceProviderInterface') : ServiceProviderInterface
+        }
+        self._map.update(interface_map)
 
         self._nodes = set()
         self._parameters = set()
-
-    @property
-    def reactor(self):
-        """ Reference to the twisted::reactor. """
-        return self._reactor
-
-    @property
-    def loader(self):
-        """ Reference to the ROS loader. """
-        return self._loader
 
     def registerNode(self, node):
         assert node not in self._nodes
@@ -98,6 +83,7 @@ class Environment(Namespace):
     def unregisterNode(self, node):
         assert node in self._nodes
         self._nodes.remove(node)
+        self._endpoint.referenceDied('nodeDied', node)
 
     def registerParameter(self, parameter):
         assert parameter not in self._parameters
@@ -106,14 +92,11 @@ class Environment(Namespace):
     def unregisterParameter(self, parameter):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
+        self._endpoint.referenceDied('parameterDied', parameter)
 
-    def remote_createNode(self, status, pkg, exe, args, name, namespace):
+    def remote_createNode(self, pkg, exe, args, name, namespace):
         """ Create a Node object in the environment namespace and
             therefore in the endpoint.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the node's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param pkg:         Name of ROS package where the node can be
                                 found.
@@ -135,15 +118,11 @@ class Environment(Namespace):
                                 in the environment.
             @type  namespace:   str
         """
-        return Node(self, status, pkg, exe, args, name, namespace)
+        return Node(self, pkg, exe, args, name, namespace)
 
-    def remote_createParameter(self, status, name, value):
+    def remote_createParameter(self, name, value):
         """ Create a Parameter object in the environment namespace and
             therefore in the endpoint.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the parameter's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param name:        Name of the parameter which should be added.
             @type  name:        str
@@ -151,35 +130,7 @@ class Environment(Namespace):
             @param value:       Value of the parameter which should be added.
             @type  value:       str, int, float, bool, list
         """
-        return Parameter(self, status, name, value)
-
-    def remote_createInterface(self, status, uid, iType, clsName, addr):
-        """ Create an Interface object in the environment namespace and
-            therefore in the endpoint.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-
-            @param uid:         Unique ID which is used to identify the
-                                interface in the internal communication.
-            @type  uid:         str
-
-            @param iType:       Type of the interface encoded as an integer.
-                                Refer to rce.slave.interface.Types for more
-                                information.
-            @type  IType:       int
-
-            @param clsName:     Message type/Service type consisting of the
-                                package and the name of the message/service,
-                                i.e. 'std_msgs/Int32'.
-            @type  clsName:     str
-
-            @param addr:        ROS name/address which the interface should
-                                use.
-            @type  addr:        str
-        """
-        return self._MAP[iType](self, status, UUID(bytes=uid), clsName, addr)
+        return Parameter(self, name, value)
 
     def remote_destroy(self):
         """ Method should be called to destroy the environment and will take
@@ -200,8 +151,6 @@ class Environment(Namespace):
 
         Namespace.remote_destroy(self)
 
-        self._client.unregisterEnvironment(self)
-
 
 class EnvironmentClient(Endpoint):
     """ Environment client is responsible for the cloud engine components
@@ -219,47 +168,30 @@ class EnvironmentClient(Endpoint):
                                 connections.
             @type  commPort:    int
         """
-        Endpoint.__init__(self, reactor, commPort)
+        Endpoint.__init__(self, reactor, Loader(), commPort)
 
-        self._environment = None
         self._dbFile = '/opt/rce/data/rosenvbridge.db' # TODO: Hardcoded?
 
-    def registerEnvironment(self, environment):
-        assert self._environment is None
-        self._environment = environment
-
-    def unregisterEnvironment(self, environment):
-        assert self._environment == environment
-        self._environment = None
-
-    def remote_createNamespace(self, status):
+    def createEnvironment(self, _):
         """ Create the Environment namespace.
-
-            @param status:      Status observer which is used to inform the
-                                Master of the environment's status.
-            @type  status:      twisted.spread.pb.RemoteReference
-
-            @return:            The new Environment namespace instance.
-            @rtype:             rce.environment.Environment
         """
-        if self._environment:
+        if self._namespaces:
             raise InternalError('The environment can have only one namespace '
                                 'at a time.')
 
-        env = Environment(self, self._reactor)
-        env.registerStatus(status)
-        return env
+        environment = Environment(self)
+        return self._avatar.callRemote('setupNamespace', environment)
 
     def remote_addUsertoROSProxy(self, userID, key):
         """ Method to add username and key to rosproxy-environment bridge
             file that maintains list of users that can call functions of
             rosproxy.
 
-            @param userID:    username
-            @type  userID:    str
+            @param userID:      Username
+            @type  userID:      str
 
-            @param key:       Secret key
-            @type  key:        str
+            @param key:         Secret key
+            @type  key:         str
         """
         # TODO: Should this be deferred to a separate thread due to flock,
         #       which is a blocking call?
@@ -267,21 +199,9 @@ class EnvironmentClient(Endpoint):
             fcntl.flock(bridgefile.fileno(), fcntl.LOCK_EX)
             bridgefile.write('{0}:{1}\n'.format(userID, key))
 
-    def terminate(self):
-        """ Method should be called to destroy the client and will take
-            care of destroying the Environment as well as deleting all
-            circular references.
-        """
-        if self._environment:
-            self._environment.remote_destroy()
-
-        assert self._environment is None
-
-        Endpoint.terminate(self)
-
 
 def main(reactor, cred, masterIP, masterPort, commPort, uid):
-    f = open('/opt/rce/data/env.log', 'w') # TODO: Hardcoded? Use os.getenv('HOME')?
+    f = open('/opt/rce/data/env.log', 'w') # TODO: Use os.getenv('HOME') ?
     log.startLogging(f)
 
     rospy.init_node('RCE_Master')
@@ -303,7 +223,8 @@ def main(reactor, cred, masterIP, masterPort, commPort, uid):
         terminate()
 
     d = factory.login(cred, (client, uid))
-    d.addCallback(lambda ref: setattr(client, '_avatar', ref))
+    d.addCallback(client.registerAvatar)
+    d.addCallback(client.createEnvironment)
     d.addErrback(_err)
 
     reactor.run(installSignalHandlers=False)

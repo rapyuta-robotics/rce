@@ -68,15 +68,11 @@ class _AbstractConverter(Interface):
     """ Abstract base class which provides the basics for the robot-side
         interfaces.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
+    def __init__(self, owner, uid, clsName, tag):
         """ Initialize the robot-side Interface.
 
             @param owner:       Namespace to which this interface belongs.
             @type  owner:       rce.robot.Robot
-
-            @param status:      Status observer which is used to inform the
-                                Master of the interface's status.
-            @type  status:      twisted.spread.pb.RemoteReference
 
             @param uid:         Unique ID which is used to identify the
                                 interface in the internal communication.
@@ -91,16 +87,9 @@ class _AbstractConverter(Interface):
                                 interface in the external communication.
             @type  tag:         str
         """
-        self._owner = owner
+        Interface.__init__(self, owner, uid, tag)
+
         self._clsName = clsName
-        self._tag = tag
-
-        Interface.__init__(self, owner, status, uid)
-
-    @property
-    def tag(self):
-        """ Interface tag of the converter. """
-        return self._tag
 
     def _receive(self, msg, msgID):
         """ This method is used as a hook to send the message received from the
@@ -120,8 +109,8 @@ class _AbstractConverter(Interface):
 class _ConverterBase(_AbstractConverter):
     """ Class which implements the basic functionality of a Converter.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
-        _AbstractConverter.__init__(self, owner, status, uid, clsName, tag)
+    def __init__(self, owner, uid, clsName, tag):
+        _AbstractConverter.__init__(self, owner, uid, clsName, tag)
 
         self._converter = owner.converter
 
@@ -215,8 +204,8 @@ class _ConverterBase(_AbstractConverter):
 class ServiceClientConverter(_ConverterBase):
     """ Class which is used as a Service-Client Converter.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
-        _ConverterBase.__init__(self, owner, status, uid, clsName, tag)
+    def __init__(self, owner, uid, clsName, tag):
+        _ConverterBase.__init__(self, owner, uid, clsName, tag)
 
         self._pendingRequests = {}
 
@@ -250,7 +239,7 @@ class ServiceClientConverter(_ConverterBase):
                 break
 
         self._pendingRequests[uid] = (msgID, protocol, remoteID)
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class ServiceProviderConverter(_ConverterBase):
@@ -280,7 +269,7 @@ class ServiceProviderConverter(_ConverterBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class PublisherConverter(_ConverterBase):
@@ -299,7 +288,7 @@ class PublisherConverter(_ConverterBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class SubscriberConverter(_ConverterBase):
@@ -318,7 +307,7 @@ class SubscriberConverter(_ConverterBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class _ForwarderBase(_AbstractConverter):
@@ -373,8 +362,8 @@ class _ForwarderBase(_AbstractConverter):
 class ServiceClientForwarder(_ForwarderBase):
     """ Class which is used as a Service-Client Forwarder.
     """
-    def __init__(self, owner, status, uid, clsName, tag):
-        _ForwarderBase.__init__(self, owner, status, uid, clsName, tag)
+    def __init__(self, owner, uid, clsName, tag):
+        _ForwarderBase.__init__(self, owner, uid, clsName, tag)
 
         self._pendingRequests = {}
 
@@ -397,7 +386,7 @@ class ServiceClientForwarder(_ForwarderBase):
                 break
 
         self._pendingRequests[uid] = (msgID, protocol, remoteID)
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class ServiceProviderForwarder(_ForwarderBase):
@@ -416,7 +405,7 @@ class ServiceProviderForwarder(_ForwarderBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class PublisherForwarder(_ForwarderBase):
@@ -426,7 +415,7 @@ class PublisherForwarder(_ForwarderBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
 class SubscriberForwarder(_ForwarderBase):
@@ -436,4 +425,4 @@ class SubscriberForwarder(_ForwarderBase):
         self.received(msg, msgID)
 
     def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._tag, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)

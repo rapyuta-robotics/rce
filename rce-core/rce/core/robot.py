@@ -32,57 +32,11 @@
 
 # twisted specific imports
 from twisted.internet.address import IPv4Address
-from twisted.spread.pb import Avatar
 
 # rce specific imports
 from rce.util.network import isLocalhost
-from rce.core.network import Endpoint, Namespace
-from rce.core.base import Status
-
-
-class RobotEndpointAvatar(Avatar):
-    """ Avatar for internal PB connection form a Robot Endpoint.
-    """
-    def __init__(self, realm, endpoint):
-        """ Initialize the Robot Endpoint avatar.
-
-            @param realm:       User realm from which a user object can be
-                                retrieved.
-            @type  realm:       # TODO: Check this
-
-            @param endpoint:    Representation of the Robot Endpoint.
-            @type  endpoint:    rce.core.robot.RobotEndpoint
-        """
-        self._realm = realm
-        self._endpoint = endpoint
-
-    def perspective_setupProxy(self, robotProxy, userID, robotID):
-        """ Register a Robot namespace with the Master process.
-
-            @param robotProxy:  Reference to the Robot namespace in the Robot
-                                process.
-            @type  robotProxy:  twisted.spread.pb.RemoteReference
-
-            @param userID:      User ID of the robot owner.
-            @type  userID:      str
-
-            @param robotID:     Unique ID which is used to identify the robot.
-            @type  robotID:     str
-
-            @return:            Status object which can be used in the Robot
-                                process to inform the Master of status changes
-                                to the Robot namespace.
-            @rtype:             rce.core.base.Status
-        """
-        user = self._realm.getUser(userID)
-        status = user.createRobotWrapper(robotProxy, self._endpoint, robotID)
-        return status
-
-    def logout(self):
-        """ Callback which should be called upon disconnection of the Robot
-            Endpoint.
-        """
-        self._endpoint.destroy()
+from rce.core.error import InvalidRequest
+from rce.core.network import Endpoint, Namespace, EndpointAvatar
 
 
 class Robot(Namespace):
@@ -173,11 +127,8 @@ class RobotEndpoint(Endpoint):
         """
         return self.callRemote('getWebsocketAddress')
 
-    def createRobotProxy(self, robotID, remoteRobot):
-        """ Create a Namespace object in the endpoint.
-
-            @param robotID:     ID of the robot which has to be created.
-            @type  robotID:     str
+    def registerRemoteRobot(self, remoteRobot):
+        """ Register a Namespace object of the endpoint.
 
             @param remoteRobot: Reference to Robot namespace in Robot process.
             @type  remoteRobot: twisted.spread.pb.RemoteReference
@@ -187,9 +138,8 @@ class RobotEndpoint(Endpoint):
                                 (subclass of rce.core.base.Proxy)
         """
         robot = Robot(self)
-        status = Status(robot)
         robot.callback(remoteRobot)
-        return robot, status
+        return robot
 
     def destroy(self):
         """ Method should be called to destroy the robot endpoint and will take
@@ -203,3 +153,29 @@ class RobotEndpoint(Endpoint):
             super(RobotEndpoint, self).destroy()
         else:
             print('robot.RobotEndpoint destroy() called multiple times...')
+
+
+class RobotEndpointAvatar(EndpointAvatar):
+    """ Avatar for internal PB connection form a Robot Endpoint.
+    """
+    def perspective_setupNamespace(self, remoteRobot, userID, robotID):
+        """ Register a Robot namespace with the Master process.
+
+            @param remoteRobot: Reference to the Robot namespace in the Robot
+                                process.
+            @type  remoteRobot: twisted.spread.pb.RemoteReference
+
+            @param userID:      User ID of the robot owner.
+            @type  userID:      str
+
+            @param robotID:     Unique ID which is used to identify the robot.
+            @type  robotID:     str
+        """
+        user = self._realm.getUser(userID)
+        robot = self._endpoint.registerRemoteRobot(remoteRobot)
+
+        try:
+            user.registerRobot(robot, robotID)
+        except InvalidRequest:
+            robot.destroy()
+            raise
