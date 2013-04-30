@@ -35,17 +35,55 @@ import os
 import sys
 import readline
 import glob
+import string
 from subprocess import check_call
-from ConfigParser import SafeConfigParser
+from ConfigParser import SafeConfigParser, NoSectionError
+
+# rce specific imports
+from rce.util.settings import PATH, getSettings, NoValidSettings
 
 
-# Setup the python interpreter path autocomplete.
+# Setup the Python interpreter path auto-complete.
 def complete(text, state):
-    return (glob.glob(text+'*')+[None])[state]
+    return (glob.glob(text + '*') + [None])[state]
 
 readline.set_completer_delims(' \t\n;')
 readline.parse_and_bind("tab: complete")
 readline.set_completer(complete)
+
+
+# Basic shell commands
+_ROS_SRC = ("""sudo sh -c """
+             """'echo "deb http://packages.ros.org/ros/ubuntu {base} main" """
+             """> /etc/apt/sources.list.d/ros-latest.list'""")
+_ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
+_INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
+_CONTAINER = ('sudo bash container.bash --baserel={base} --path={path} '
+              '--rosrel={ros}')
+_CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={base} --clean'
+_CLEAN = 'sudo rm -r {0}'
+
+
+#########################
+###   Configuration   ###
+#########################
+# Packages necessary to run the provision script
+_BASE_PREP = ('curl python-setuptools python-dev')
+
+# Packages which are installed in the host filesystem
+_HOST_PKGS = ('lxc debootstrap python-openssl python-imaging '
+              'ros-{ros}-ros-comm ros-{ros}-common-msgs')
+
+# Packages which are installed in the container filesystem
+_CONTAINER_PKGS = ('git-core ros-{ros}-ros-comm ros-{ros}-common-msgs')
+
+# Mapping of supported ROS releases and supported Ubuntu releases
+_SUPPORT_VERSIONS = {'precise' : ['fuerte', 'groovy', 'hydro'],
+                     'quantal' : ['groovy', 'hydro'],
+                     'raring' : ['hydro']}
+
+# Default location of container installation
+_CONTAINER_DEFAULT = '/opt/rce/container'
 
 
 # Interactive input functions
@@ -53,38 +91,117 @@ def _get_dev_mode():
     """ Ask whether the developer mode should be used.
     """
     while 1:
-        dev_mode = raw_input('Do you want to auto-provision/recreate credentials '
-                             'for developer mode (Insecure)[y/N]: ')
+        dev_mode = raw_input('Do you want to auto-provision/recreate '
+                             'credentials database for developer mode '
+                             '(Insecure) [y/N]: ')
         dev_mode = dev_mode.strip().lower()
 
         if dev_mode in ('n', ''):
             return False
-        elif dev_mode  == 'y':
+        elif dev_mode == 'y':
             return True
 
 
-def _get_container_path():
+def _select_option(question, options, default=None):
+    """ Ask for a selection from an option of a list of options.
+    """
+    print(question)
+
+    for i, opt in enumerate(options):
+        print('{0} -> {1}'.format(i, opt))
+
+    if default is None:
+        opt = raw_input('Selection: ')
+    else:
+        opt = raw_input('Selection [{0}]: '.format(default))
+
+    try:
+        opt = options[int(opt)]
+    except (ValueError, IndexError):
+        if default is None:
+            opt = None
+        else:
+            opt = options[default]
+
+    return opt
+
+
+def _get_deployment_type():
+    """ Some amount of automation for deployment convenience.
+    """
+    return _select_option('Enter the deployment platform for easier auto '
+                          'configuration.',
+                          ('aws', 'rackspace', 'other'), 2)
+
+
+def _get_compat_ros_release(container_ubuntu, container_ros):
+    """ Get the compatible ROS releases for the host and container filesystem,
+        based on a requested ROS release for the container.
+    """
+    host_ubuntu = _get_host_ubuntu_release()
+
+    if container_ros not in _SUPPORT_VERSIONS[container_ubuntu]:
+        container_ros = _SUPPORT_VERSIONS[container_ubuntu][0]
+        print ('The ROS release you selected is incompatible with ubuntu '
+               "'{0}'.".format(container_ubuntu))
+        print('Selecting optimal ROS release: {1}'.format(container_ros))
+
+    if container_ubuntu >= host_ubuntu:
+        host_ros = container_ros
+    else:
+        host_ros = _SUPPORT_VERSIONS[host_ubuntu][0]
+
+    return container_ros, host_ros
+
+
+def _get_container_ros_release():
+    """ Ask for ROS release to deploy in the container.
+    """
+    opt = _select_option('Enter the ROS release to deploy in the container.',
+                         ('fuerte', 'groovy', 'hydro (experimental)'), 0)
+    return opt.split()[0]
+
+
+def _get_container_ubuntu_release():
+    """ Ask for ubuntu release to deploy in the container.
+    """
+    opt = _select_option('Enter the Ubuntu release to deploy in the container.',
+                         ('precise (12.04 LTS)', 'quantal (12.10)',
+                          'raring (13.04)'), 0)
+    return opt.split()[0]
+
+
+def _get_host_ubuntu_release():
+    """ Parse configuration file to get the codename of the ubuntu release of
+        the host filesystem.
+    """
+    with open('/etc/lsb-release') as config:
+        for line in config:
+            k, v = line.split('=')
+            if k == 'DISTRIB_CODENAME':
+                return v.strip(string.whitespace + '\'"')
+    raise NoSectionError('Corrupt release information')
+
+
+def _get_container_rootfs():
     """ Ask for path to the container root directory.
     """
-    _DEFAULT = '/opt/rce/container'
-
     path = raw_input('Enter the root directory to store the RoboEarth '
-                     'Container Filesystem [{0}]: '.format(_DEFAULT))
+                     'Container Filesystem [{0}]: '.format(_CONTAINER_DEFAULT))
     path = path.strip()
 
     if path == '':
-        return _DEFAULT
+        return _CONTAINER_DEFAULT
 
-    return path
+    return os.path.join(path, 'rootfs')
 
 
 def _get_interface(channel, default):
     """ Ask for the name of the interface or IP address for the used
-        communcication channels.
+        communication channels.
     """
     ifname = raw_input('Enter the interface name or IP address for the '
-                       '{0} communication [{1}]: '.format(channel,
-                                                          default))
+                       '{0} communication [{1}]: '.format(channel, default))
     ifname = ifname.strip()
 
     if ifname == '':
@@ -93,30 +210,39 @@ def _get_interface(channel, default):
     return ifname
 
 
-# Helper function for config provisioning
-def provision_config(root_path, dev_mode, config_file, pw_file):
+def provision_config(config, config_file, deploy_type):
     """ Provision settings.ini as required for first runs.
     """
+    root_path = os.path.dirname(config.rootfs)
     parser = SafeConfigParser()
 
-    network = {}
-
-    for name, descr, default in (('external_if', 'external', 'eth0'),
-                                 ('internal_if', 'internal', 'eth0'),
-                                 ('container_if', 'container', 'lxcbr0')):
-        network[name] = _get_interface(descr, default)
+    if deploy_type == 'aws':
+        network = {'external_if':'aws_dns',
+                   'internal_if':'eth0',
+                   'container_if':'lxcbr0'}
+    elif deploy_type == 'rackspace':
+        network = {'external_if':'eth0',
+                   'internal_if':'eth1',
+                   'container_if':'lxcbr0'}
+    else:
+        network = {'external_if':_get_interface('external', 'eth0'),
+                   'internal_if':_get_interface('internal', 'eth0'),
+                   'container_if':_get_interface('container', 'lxcbr0')}
 
     config = {
-        'global': {
+        'global':{
             'gzip_lvl':9,
-            'dev_mode':dev_mode,
-            'password_file':pw_file
+            'dev_mode':config.dev_mode,
+            'password_file':config.pw_file,
+            'host_ros_release':config.host_ros_release,
+            'container_ros_release':config.container_ros_release,
+            'container_ubuntu_release':config.container_ubuntu_release
         },
-        'network' : network,
-        'converters': {
+        'network':network,
+        'converters':{
             'image':'rce.util.converters.image.ImageConverter'
         },
-        'comm': {
+        'comm':{
             'http_port':9000,
             'ws_port':9010,
             'internal_port':8080,
@@ -124,14 +250,13 @@ def provision_config(root_path, dev_mode, config_file, pw_file):
             'comm_port':10030,
             'ros_proxy_port':9020
         },
-        'machine': {
+        'machine':{
             'max_container':10,
             'rootfs':os.path.join(root_path, 'rootfs'),
             'conf_dir':os.path.join(root_path, 'config'),
             'data_dir':os.path.join(root_path, 'data')
         },
-        'machine/packages': {
-        }
+        'machine/packages':{}
     }
 
     for section, opts in config.iteritems():
@@ -148,9 +273,8 @@ def provision_config(root_path, dev_mode, config_file, pw_file):
         parser.write(f)
 
 
-# Helper function to provision the cred db
 def provision_creds(dev_mode, pw_file):
-    """ Provision cred database as required for first runs.
+    """ Provision credentials database as required for first runs.
     """
     from rce.util.cred import RCECredChecker, _FIRST_RUN_MSG
 
@@ -183,117 +307,156 @@ def provision_creds(dev_mode, pw_file):
         cred_checker.addUserGroups('admin', 'owner')
 
 
+def provision_container(config):
+    """ Provision host and container filesystem.
+    """
+    host_pkgs = _HOST_PKGS.format(ros=config.host_ros_release)
+    container_pkgs = _CONTAINER_PKGS.format(ros=config.container_ros_release)
+
+    # Install the packages in the host filesystem
+    cmds = (_INSTALL.format(_BASE_PREP),
+            _ROS_SRC.format(base=_get_host_ubuntu_release()),
+            _ROS_KEY,
+            _INSTALL.format(host_pkgs))
+
+    for cmd in cmds:
+        check_call(cmd, shell=True)
+
+    # Create the container
+    check_call(_CONTAINER.format(ros=config.container_ros_release,
+                                 base=config.container_ubuntu_release,
+                                 path=os.path.dirname(config.rootfs)),
+               shell=True, cwd=os.path.dirname(sys.argv[0]))
+
+    # Provision the container filesystem
+    cmds = [
+        'adduser --disabled-password --disabled-login ros',
+        'adduser --disabled-password --disabled-login '
+            '--home /opt/rce/data rce',
+        _ROS_SRC.format(base=config.container_ubuntu_release),
+        _ROS_KEY,
+        _INSTALL.format(container_pkgs),
+        'git clone https://github.com/IDSCETHZurich/rce.git',
+        'cd rce && sh install.sh'
+    ]
+
+    if config.dev_mode:
+        cmds.append('echo "root:admin" | chpasswd')
+    else:
+        cmds.append('passwd -l root')
+
+    check_call('echo "{0}" | sudo rce-make'.format(';'.join(cmds)),
+               shell=True)
+
+
+def clean():
+    """ Clean the cache and delete the container filesystem.
+    """
+    try:
+        settings = getSettings(True)
+    except NoValidSettings:
+        settings = None
+        release = None
+        candidates = os.listdir('/var/cache/lxc')
+
+        if candidates:
+            while release is None:
+                release = _select_option('Select the cache which you wish to '
+                                         'clean.', candidates)
+    else:
+        release = settings.container_ubuntu_release
+
+    if release:
+        check_call(_CONTAINER_CLEAN.format(base=release), shell=True,
+                   cwd=os.path.dirname(sys.argv[0]))
+
+    if not os.path.exists(PATH):
+        return
+
+    os.remove(PATH)
+
+    if settings:
+        check_call(_CLEAN.format(settings.rootfs), shell=True)
+        check_call(_CLEAN.format(settings.conf_dir), shell=True)
+        check_call(_CLEAN.format(settings.data_dir), shell=True)
+        os.remove(settings.pw_file)
+
+
 def _get_argparse():
-    from argparse import ArgumentParser
+    from argparse import ArgumentParser, RawTextHelpFormatter
+
+    mode_help_msg = (
+        'all:        Complete provision for a new install\n'
+        'config:     Recreate a configuration file\n'
+        'cred:       Create credentials database\n'
+        '            (needs valid config)\n'
+        'container:  Create a new container filesystem\n'
+        '            (needs valid config)\n'
+        'clean:      Delete the cache and container filesystem\n'
+    )
 
     parser = ArgumentParser(prog='provision',
-                            description='Provision the base settings for the'
-                            ' RoboEarth Cloud Engine ')
+                            formatter_class=RawTextHelpFormatter,
+                            description='Provision the base settings for the '
+                                        'RoboEarth Cloud Engine.')
 
     parser.add_argument('mode', choices=['all', 'cred', 'config', 'container',
                                          'clean'],
-                        help='Flag to select set up instead of tear down.', )
+                        help=mode_help_msg)
 
     return parser
 
 
-# List of packages which should be installed in the host and
-# in the container filesystem
-_BASE_PREP = ('curl python-setuptools python-dev')
-_HOST_PKGS = ('lxc debootstrap python-twisted-core python-openssl '
-              'ros-fuerte-ros-comm ros-fuerte-common-msgs python-imaging')
-_CONTAINER_PKGS = ('python-twisted-core python-twisted-web git-core python-dev '
-                   'ros-fuerte-ros-comm ros-fuerte-common-msgs')
-
-# Basic shell commands
-_ROS_SRC = ("""sudo sh -c """
-             """'echo "deb http://packages.ros.org/ros/ubuntu precise main" """
-             """> /etc/apt/sources.list.d/ros-latest.list'""")
-_ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
-_INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
-_CONTAINER = 'sudo bash container.bash --path={0}'
-_CONTAINER_CLEAN = 'sudo bash setup/container.bash --clean'
-_CLEAN = 'sudo rm -r {0}'
-
-
 if __name__ == '__main__':
-    from rce.util.settings import PATH, getSettings
     args = _get_argparse().parse_args()
 
     if args.mode == 'clean':
-        check_call(_CONTAINER_CLEAN, shell=True,
-                   cwd=os.path.dirname(sys.argv[0]))
-
-        if not os.path.exists(PATH):
-            exit(0)
-
-        try:
-            settings = getSettings()
-        except ValueError:
-            settings = None
-
-        os.remove(PATH)
-
-        if settings:
-            check_call(_CLEAN.format(settings.rootfs), shell=True)
-            check_call(_CLEAN.format(settings.conf_dir), shell=True)
-            check_call(_CLEAN.format(settings.data_dir), shell=True)
-            os.remove(settings.pw_file)
-
+        clean()
         exit(0)
 
     if args.mode in ('all', 'config'):
-        # Ask all the necessary questions
-        dev_mode = _get_dev_mode()
-        container_path = _get_container_path()
-        pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
+        class Config(object):
+            pass
+
+        config = Config()
+
+        # Collect necessary information to build the settings file
+        config.dev_mode = _get_dev_mode()
+        config.rootfs = _get_container_rootfs()
+        config.pw_file = os.path.join(os.getenv('HOME'), '.rce', 'creds')
+        config.container_ubuntu_release = _get_container_ubuntu_release()
+        config.container_ros_release, config.host_ros_release = \
+            _get_compat_ros_release(config.container_ubuntu_release,
+                                    _get_container_ros_release())
+
+        candidates = os.listdir('/opt/ros')
+        if candidates and config.host_ros_release not in candidates:
+            config.host_ros_release = max(candidates)
 
         # Build up the settings file
-        provision_config(container_path, dev_mode, PATH, pw_file)
-        if dev_mode:
-            if os.path.exists(pw_file):
-                os.remove(pw_file)
-            provision_creds(dev_mode, pw_file)
+        provision_config(config, PATH, _get_deployment_type())
+
+        if config.dev_mode:
+            if os.path.exists(config.pw_file):
+                os.remove(config.pw_file)
+
+            provision_creds(config.dev_mode, config.pw_file)
     else:
-        settings = getSettings()
-        dev_mode = settings.dev_mode
-        container_path = os.path.dirname(settings.rootfs)
-        pw_file = settings.pw_file
+        try:
+            config = getSettings(True)
+        except NoValidSettings:
+            print("To run '{0}' mode you must have a valid configuration. "
+                  'Please recreate it first.'.format(args.mode))
+            exit(1)
 
     if args.mode in ('all', 'cred'):
         # Provision the cred db
-        if dev_mode:
-            print ('It appears Developer  Mode is set in the config file. '
-                   'Auto-provisioning default password file. '
-                   'Change this option in the config to change this behavior')
-        provision_creds(dev_mode, pw_file)
+        if config.dev_mode:
+            print('It appears Developer Mode is set in the config file. '
+                  'Auto-provisioning default password file. '
+                  'Change this option in the config to change this behavior.')
+
+        provision_creds(config.dev_mode, config.pw_file)
 
     if args.mode in ('all', 'container'):
-        # Install the packages in the host filesystem
-        for cmd in (_INSTALL.format(_BASE_PREP), _ROS_SRC, _ROS_KEY,
-                    _INSTALL.format(_HOST_PKGS)):
-            check_call(cmd, shell=True)
-
-        # Create the container
-        check_call(_CONTAINER.format(container_path), shell=True,
-                   cwd=os.path.dirname(sys.argv[0]))
-
-        cmds = [
-            'adduser --disabled-password --disabled-login ros',
-            'adduser --disabled-password --disabled-login '
-            '--home /opt/rce/data rce',
-            _ROS_SRC,
-            _ROS_KEY,
-            _INSTALL.format(_CONTAINER_PKGS),
-            'git clone https://github.com/IDSCETHZurich/rce.git',
-            'cd rce && sh install.sh'
-        ]
-        if dev_mode:
-            cmds.append('echo "root:admin" | chpasswd')
-        else:
-            cmds.append('passwd -l root')
-
-        cmds = ';'.join(cmds)
-
-        # Provision the container filesystem
-        check_call('echo "{0}" | sudo rce-make'.format(cmds), shell=True)
+        provision_container(config)

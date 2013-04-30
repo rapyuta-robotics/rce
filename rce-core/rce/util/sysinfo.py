@@ -620,8 +620,6 @@ def disk_io_counters():
             wbytes = int(wbytes) * SECTOR_SIZE
             reads = int(reads)
             writes = int(writes)
-            # TODO: times are expressed in milliseconds while OSX/BSD has
-            # these expressed in nanoseconds; figure this out.
             rtime = int(rtime)
             wtime = int(wtime)
             retdict[name] = nt_disk_iostat(reads, writes, rbytes, wbytes, rtime, wtime)
@@ -1315,8 +1313,8 @@ class Process(object):
                 ip = socket.inet_ntop(family, base64.b16decode(ip))
         else:  # IPv6
             # old version - let's keep it, just in case...
-            #ip = ip.decode('hex')
-            #return socket.inet_ntop(socket.AF_INET6,
+            # ip = ip.decode('hex')
+            # return socket.inet_ntop(socket.AF_INET6,
             #          ''.join(ip[i:i+4][::-1] for i in xrange(0, 16, 4)))
             ip = base64.b16decode(ip)
             # see: http://code.google.com/p/psutil/issues/detail?id=201
