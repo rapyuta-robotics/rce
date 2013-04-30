@@ -62,6 +62,7 @@ class CustomOptions(usage.Options):
             @type  terminal:    ConsoleClient.terminal
         """
         super(CustomOptions, self).__init__()
+        self.longdesc = ""
         self.terminal = terminal
 
     def parseOptions(self, options=None):
@@ -139,9 +140,7 @@ class CustomOptions(usage.Options):
         return synopsis
 
     def opt_help(self):
-        """
-        Function overridden to prevent program exiting after showing help.
-        """
+        """help option"""
         self.terminal.write(self.__str__())
 
     def opt_version(self):
