@@ -191,7 +191,7 @@ def _get_container_rootfs():
     path = path.strip()
 
     if path == '':
-        return _CONTAINER_DEFAULT
+        path = _CONTAINER_DEFAULT
 
     return os.path.join(path, 'rootfs')
 
