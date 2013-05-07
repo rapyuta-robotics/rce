@@ -47,6 +47,7 @@ from twisted.python.failure import Failure
 from twisted.cred.error import UnauthorizedLogin
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
+from twisted.internet.interfaces import IPullProducer
 
 # Autobahn specific imports
 from autobahn import httpstatus
@@ -67,6 +68,20 @@ class _VersionError(Exception):
     """ Error is raised during Master-Robot authentication in case the used
         client version is insufficient.
     """
+
+
+class BufferManager(object):
+    implements(IPullProducer)
+
+    def __init__(self, consumer):
+        self.consumer = consumer
+        self.flag = 'Empty'
+
+    def resumeProducing(self):
+        self.flag = 'Empty'
+
+    def stopProducing(self):
+        self.flag = 'Full'
 
 
 class RobotResource(Resource):
@@ -192,6 +207,11 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         self._realm = realm
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
+        
+    def connectionMade(self):
+        WebSocketServerProtocol.connectionMade(self)
+        self._buffermanager = BufferManager(self.transport)
+        self.transport.registerProducer(self._buffermanager, False)
 
     def onConnect(self, req):
         """ Method is called by the Autobahn engine when a request to establish
@@ -439,8 +459,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
 
         for binData in uriBinary:
-            WebSocketServerProtocol.sendMessage(self,
-                binData[0] + binData[1].getvalue(), binary=True)
+            if self._buffermanager.flag == 'Empty':
+                WebSocketServerProtocol.sendMessage(self,
+                    binData[0] + binData[1].getvalue(), binary=True)
 
     def sendDataMessage(self, iTag, clsName, msgID, msg):
         """ Callback for Connection object to send a data message to the robot
