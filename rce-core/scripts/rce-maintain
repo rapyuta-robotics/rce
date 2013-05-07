@@ -51,6 +51,7 @@ def _get_argparse():
 
 
 _INSTALL = 'sudo apt-get update && sudo apt-get -y upgrade'
+_UPDATE_PYPI_PACKAGES = 'sudo easy_install --upgrade autobahn_rce'
 _GIT_UPDATE = ('mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
                'git clone https://github.com/IDSCETHZurich/rce.git && '
                'cd rce && sudo sh install.sh')
@@ -66,10 +67,12 @@ if __name__ == '__main__':
     if args.mode == 'all':
         print('Updating packages on the host system')
         check_call(_INSTALL, shell=True)
+        check_call(_UPDATE_PYPI_PACKAGES, shell=True)
 
     if args.mode in ('all', 'rootfs'):
         msg.append('packages')
         cmd.append(_INSTALL)
+        cmd.append(_UPDATE_PYPI_PACKAGES)
 
     if args.mode in ('all', 'rce'):
         print('Updating the RoboEarth Cloud Engine on the host system')
