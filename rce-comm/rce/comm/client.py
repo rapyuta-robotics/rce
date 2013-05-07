@@ -43,6 +43,7 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python.threadable import isInIOThread
 from twisted.internet.threads import deferToThreadPool
+from twisted.internet.interfaces import IPullProducer
 
 # Autobahn specific imports
 from autobahn.websocket import connectWS, WebSocketClientFactory, \
@@ -54,6 +55,20 @@ from rce.comm._version import CURRENT_VERSION
 from rce.comm.interfaces import IRobot, IMessageReceiver
 from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
 from rce.util.interface import verifyObject
+
+
+class BufferManager(object):
+    implements(IPullProducer)
+
+    def __init__(self, consumer):
+        self.consumer = consumer
+        self.flag = 'Empty'
+
+    def resumeProducing(self):
+        self.flag = 'Empty'
+
+    def stopProducing(self):
+        self.flag = 'Full'
 
 
 class RCERobotProtocol(WebSocketClientProtocol):
@@ -71,6 +86,11 @@ class RCERobotProtocol(WebSocketClientProtocol):
         self._assembler = MessageAssembler(self, 60)
         self._registered = False
 
+    def connectionMade(self):
+        WebSocketClientProtocol.connectionMade(self)
+        self._buffermanager = BufferManager(self.transport)
+        self.transport.registerProducer(self._buffermanager, False)
+        
     def onOpen(self):
         """ This method is called by twisted as soon as the WebSocket
             connection has been successfully established.
@@ -100,10 +120,11 @@ class RCERobotProtocol(WebSocketClientProtocol):
             binaries, jsonMsg = recursiveBinarySearch(msg)
 
             WebSocketClientProtocol.sendMessage(self, json.dumps(jsonMsg))
-
+            
             for data in binaries:
-                msg = data[0] + data[1].getvalue()
-                WebSocketClientProtocol.sendMessage(self, msg, binary=True)
+                if self._buffermanager.flag == 'Empty':
+                    msg = data[0] + data[1].getvalue()
+                    WebSocketClientProtocol.sendMessage(self, msg, binary=True)
 
         if isInIOThread():
             send(msg)

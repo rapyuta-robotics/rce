@@ -455,7 +455,7 @@ class Robot(Namespace):
         """ Reference to the message converter used by the Converter
             interfaces.
         """
-        return self._client.converter
+        return self._endpoint._converter
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
@@ -587,6 +587,7 @@ class RobotClient(Endpoint):
         self._masterPort = masterPort
         self._extAddress = '{0}:{1}'.format(extIP, extPort)
         self._loader = loader
+        self._converter = converter
 
         self._connections = set()
         self._deathCandidates = {}
