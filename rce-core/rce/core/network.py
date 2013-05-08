@@ -96,7 +96,7 @@ class Network(object):
             raise InternalError('Endpoint is not part of this network.')
 
         if epA == epB:
-            return epA.getLoopback()
+            return LoopbackConnection(epA)
         else:
             connectionsA = self._endpoints[epA]
             connectionsB = self._endpoints[epB]
@@ -750,6 +750,40 @@ class _ConnectionValidator(Referenceable):
             self._authenticated.callback(protocol)
 
 
+class LoopbackConnection(object):
+    def __init__(self, endpointA):
+        """ Initialize the connection between the two endpoints.
+            The connection will be scheduled to be created here.
+
+            @param endpointX:   Endpoint which is part of the new connection.
+            @type  endpointX:   rce.core.network.Endpoint
+        """
+        self._Protocol = endpointA.getLoopback()
+
+    def getProtocol(self, endpoint):
+        """ Get the protocol which is part of this connection and belongs to
+            the given endpoint.
+
+            @param endpoint:    Endpoint to which the protocol has to belong.
+            @type  endpoint:    rce.core.network.Endpoint
+
+            @return:            Protocol which belongs to the endpoint and is
+                                part of this connection.
+            @rtype:             rce.core.network.Protocol
+                                (subclass of rce.core.base.Proxy)
+        """
+        return self._Protocol
+
+    def destroy(self):
+        """ Method should be called to destroy the endpoint connection and will
+            take care of destroying the participating protocols as well as
+            deleting all circular references.
+        """
+        self._Protocol.destroy()
+
+        self._Protocol = None
+
+
 class EndpointConnection(object):
     """ Representation of a connection between two endpoints, where the two
         endpoints are not the same.
@@ -1038,3 +1072,4 @@ class Connection(object):
             self._connectionB = None
         else:
             print('network.Connection destroy() called multiple times...')
+
