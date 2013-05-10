@@ -57,7 +57,7 @@ class NoValidSettings(Exception):
     """
 
 
-def getSettings(throw=False):
+def getSettings(throw=False, checks=True):
     """ Get the cloud engine settings.
         The configuration file is parsed only once and cached for later.
 
@@ -67,7 +67,7 @@ def getSettings(throw=False):
 
     if not _settings:
         try:
-            _settings = _getSettings()
+            _settings = _getSettings(checks)
         except NoValidSettings as e:
             _settings = e
 
@@ -82,7 +82,7 @@ def getSettings(throw=False):
     return _settings
 
 
-def _getSettings():
+def _getSettings(checks):
     """ Get the settings for the cloud engine. Does the heavy lifting.
     """
     parser = _RCESettingsParser()
@@ -91,7 +91,7 @@ def _getSettings():
         raise NoValidSettings('Config file is missing.')
 
     try:
-        return _Settings.load(parser)
+        return _Settings.load(parser, checks)
     except (Error, ValueError) as e:
         raise NoValidSettings(str(e))
 
@@ -347,13 +347,16 @@ class _Settings(object):
         return self._packages
 
     @classmethod
-    def load(cls, parser):
+    def load(cls, parser, checks):
         """ Factory method which creates a new Settings object using the
             provided cloud engine settings parser.
 
             @param parser:      Cloud engine settings parser which is used to
                                 parse the configuration file.
             @type  parser:      rce.util.settings._RCESettingsParser
+            
+            @param parser:      Enable/Disable path checks 
+            @type  parser:      boolean
 
             @return:            New _Settings instance containing the parsed
                                 settings.
@@ -397,30 +400,32 @@ class _Settings(object):
         settings._packages = []
         usedNames = set()
 
-        for name, path in parser.items('machine/packages'):
-            _valid_dir(path, "ROS package '{0}'".format(name))
+        if checks:
 
-            try:
-                validateName(name)
-            except IllegalName:
-                raise ValueError("Package name '{0}' is not a legal "
-                                 'name.'.format(name))
+            for name, path in parser.items('machine/packages'):
+                _valid_dir(path, "ROS package '{0}'".format(name))
 
-            if name in usedNames:
-                raise ValueError("Package name '{0}' is not "
-                                 'unique.'.format(name))
+                try:
+                    validateName(name)
+                except IllegalName:
+                    raise ValueError("Package name '{0}' is not a legal "
+                                     'name.'.format(name))
 
-            usedNames.add(name)
+                if name in usedNames:
+                    raise ValueError("Package name '{0}' is not "
+                                     'unique.'.format(name))
 
-            settings._packages.append((path,
-                                       os.path.join('opt/rce/packages', name)))
+                usedNames.add(name)
 
-        settings._packages = tuple(settings._packages)
+                settings._packages.append((path,
+                                           os.path.join('opt/rce/packages', name)))
 
-        # Validate paths
-        _valid_dir(settings._rootfs, 'Container file system')
-        _valid_dir(settings._conf_dir, 'Configuration directory')
-        _valid_dir(settings._data_dir, 'Data directory')
+            settings._packages = tuple(settings._packages)
+
+            # Validate paths
+            _valid_dir(settings._rootfs, 'Container file system')
+            _valid_dir(settings._conf_dir, 'Configuration directory')
+            _valid_dir(settings._data_dir, 'Data directory')
 
         return settings
 

@@ -429,9 +429,12 @@ if __name__ == '__main__':
             _get_compat_ros_release(config.container_ubuntu_release,
                                     _get_container_ros_release())
 
-        candidates = os.listdir('/opt/ros')
-        if candidates and config.host_ros_release not in candidates:
-            config.host_ros_release = max(candidates)
+        try:
+            candidates = os.listdir('/opt/ros')
+            if candidates and config.host_ros_release not in candidates:
+                config.host_ros_release = max(candidates)
+        except OSError:
+            pass
 
         # Build up the settings file
         provision_config(config, PATH, _get_deployment_type())
@@ -443,7 +446,7 @@ if __name__ == '__main__':
             provision_creds(config.dev_mode, config.pw_file)
     else:
         try:
-            config = getSettings(True)
+            config = getSettings(True, checks=False)
         except NoValidSettings:
             print("To run '{0}' mode you must have a valid configuration. "
                   'Please recreate it first.'.format(args.mode))
