@@ -220,11 +220,10 @@ class Endpoint(Proxy):
             used to connect two interfaces which are in the same endpoint.
 
             @return:            Loopback protocol.
-            @rtype:             rce.core.network.Protocol
-                                (subclass of rce.core.base.Proxy)
+            @rtype:             rce.core.network.LoopbackConnection
         """
         if not self._loopback:
-            self._loopback = Protocol(self)
+            self._loopback = LoopbackConnection(Protocol(self))
             self.callRemote('getLoopback').chainDeferred(self._loopback)
 
         return self._loopback
@@ -402,12 +401,16 @@ class Endpoint(Proxy):
         # Protocols should be implicitly destroyed by the Network
         # Interfaces should be implicitly destroyed by the Namespaces
 
+        if self._loopback:
+            self._loopback.destroy()
+            self._loopback = None
+
         for namespace in self._namespaces.copy():
             namespace.destroy()
 
         self._network.unregisterEndpoint(self)
         self._network = None
-
+        
         assert len(self._protocols) == 0
         assert len(self._interfaces) == 0
         assert len(self._namespaces) == 0
@@ -748,6 +751,36 @@ class _ConnectionValidator(Referenceable):
                 return e
 
             self._authenticated.callback(protocol)
+
+
+class LoopbackConnection(object):
+    def __init__(self, protocol):
+        """ Initialize the loopback connection for an endpoint.
+
+            @param protocol:    Protocol instance providing loopback 
+                                functionality in the endpoint. 
+            @type  protocol:    rce.core.network.Protocol
+        """
+        self._protocol = protocol
+
+    def getProtocol(self, _):
+        """ Get the protocol which is part of this connection.
+
+            @return:            Protocol which belongs to the endpoint and is
+                                part of this connection.
+            @rtype:             rce.core.network.Protocol
+                                (subclass of rce.core.base.Proxy)
+        """
+        return self._protocol
+
+    def destroy(self):
+        """ Method should be called to destroy the endpoint connection and will
+            take care of destroying the participating protocols as well as
+            deleting all circular references.
+        """
+        self._protocol.destroy()
+
+        self._protocol = None
 
 
 class EndpointConnection(object):
