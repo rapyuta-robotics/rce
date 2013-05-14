@@ -36,6 +36,7 @@ import itertools
 from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 from hashlib import sha256
+from collections import deque
 
 # zope specific imports
 from zope.interface import implements
@@ -60,15 +61,17 @@ from rce.util.interface import verifyObject
 class BufferManager(object):
     implements(IPullProducer)
 
-    def __init__(self, consumer):
+    def __init__(self, consumer, protocol):
         self.consumer = consumer
-        self.flag = 'Empty'
+        self.protocol = protocol
 
     def resumeProducing(self):
-        self.flag = 'Empty'
+        data = self.protocol._binary_buff.popleft()
+        msg = data[0] + data[1].getvalue()
+        WebSocketClientProtocol.sendMessage(self.protocol, msg, binary=True)
 
     def stopProducing(self):
-        self.flag = 'Full'
+        pass
 
 
 class RCERobotProtocol(WebSocketClientProtocol):
@@ -85,12 +88,13 @@ class RCERobotProtocol(WebSocketClientProtocol):
         self._connection = conn
         self._assembler = MessageAssembler(self, 60)
         self._registered = False
+        self._binary_buff = deque(maxlen=10)
 
     def connectionMade(self):
         WebSocketClientProtocol.connectionMade(self)
-        self._buffermanager = BufferManager(self.transport)
+        self._buffermanager = BufferManager(self.transport, self)
         self.transport.registerProducer(self._buffermanager, False)
-        
+
     def onOpen(self):
         """ This method is called by twisted as soon as the WebSocket
             connection has been successfully established.
@@ -120,11 +124,10 @@ class RCERobotProtocol(WebSocketClientProtocol):
             binaries, jsonMsg = recursiveBinarySearch(msg)
 
             WebSocketClientProtocol.sendMessage(self, json.dumps(jsonMsg))
-            
+
             for data in binaries:
-                if self._buffermanager.flag == 'Empty':
-                    msg = data[0] + data[1].getvalue()
-                    WebSocketClientProtocol.sendMessage(self, msg, binary=True)
+                self._binary_buff.append(data)
+
 
         if isInIOThread():
             send(msg)

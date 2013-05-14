@@ -32,17 +32,19 @@
 
 # Python specific imports
 import json
+from collections import deque
+
 
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO #@UnusedImport
+    from StringIO import StringIO  # @UnusedImport
 
 # zope specific imports
 from zope.interface import implements
 
 # twisted specific imports
-#from twisted.python import log
+# from twisted.python import log
 from twisted.python.failure import Failure
 from twisted.cred.error import UnauthorizedLogin
 from twisted.web.resource import Resource
@@ -73,15 +75,17 @@ class _VersionError(Exception):
 class BufferManager(object):
     implements(IPullProducer)
 
-    def __init__(self, consumer):
+    def __init__(self, consumer, protocol):
         self.consumer = consumer
-        self.flag = 'Empty'
+        self.protocol = protocol
 
     def resumeProducing(self):
-        self.flag = 'Empty'
+        data = self.protocol._binary_buff.popleft()
+        msg = data[0] + data[1].getvalue()
+        WebSocketClientProtocol.sendMessage(self.protocol, msg, binary=True)
 
     def stopProducing(self):
-        self.flag = 'Full'
+        pass
 
 
 class RobotResource(Resource):
@@ -207,10 +211,11 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         self._realm = realm
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
-        
+        self._binary_buff = deque(maxlen=10)
+
     def connectionMade(self):
         WebSocketServerProtocol.connectionMade(self)
-        self._buffermanager = BufferManager(self.transport)
+        self._buffermanager = BufferManager(self.transport, self)
         self.transport.registerProducer(self._buffermanager, False)
 
     def onConnect(self, req):
@@ -459,9 +464,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
 
         for binData in uriBinary:
-            if self._buffermanager.flag == 'Empty':
-                WebSocketServerProtocol.sendMessage(self,
-                    binData[0] + binData[1].getvalue(), binary=True)
+            self._binary_buff.append(binData)
 
     def sendDataMessage(self, iTag, clsName, msgID, msg):
         """ Callback for Connection object to send a data message to the robot
