@@ -336,8 +336,10 @@ def provision_container(config):
         _ROS_SRC.format(base=config.container_ubuntu_release),
         _ROS_KEY,
         _INSTALL.format(container_pkgs),
-        'git clone https://github.com/IDSCETHZurich/rce.git',
-        'cd rce && sh install.sh'
+        'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
+        'git clone https://github.com/IDSCETHZurich/rce.git && '
+        'cd rce && sudo sh install.sh',
+        'cd;echo "source /opt/rce/setup.sh" > .bashrc'
     ]
 
     if config.dev_mode:
