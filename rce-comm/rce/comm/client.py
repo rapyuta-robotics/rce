@@ -66,9 +66,12 @@ class BufferManager(object):
         self.protocol = protocol
 
     def resumeProducing(self):
-        data = self.protocol._binary_buff.popleft()
-        msg = data[0] + data[1].getvalue()
-        WebSocketClientProtocol.sendMessage(self.protocol, msg, binary=True)
+        try:
+            data = self.protocol._binary_buff.popleft()
+            msg = data[0] + data[1].getvalue()
+            WebSocketClientProtocol.sendMessage(self.protocol, msg, binary=True)
+        except IndexError:
+            pass
 
     def stopProducing(self):
         pass
