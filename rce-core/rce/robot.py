@@ -124,9 +124,9 @@ class Connection(object):
         self._avatar = None
         self._protocol = None
 
-    ###
-    ### Callbacks for RobotClient
-    ###
+    # ##
+    # ## Callbacks for RobotClient
+    # ##
 
     def registerAvatar(self, avatar):
         """ Register User Avatar.
@@ -166,9 +166,9 @@ class Connection(object):
         """
         self._protocol = None
 
-    ###
-    ### Callbacks for View & Namespace
-    ###
+    # ##
+    # ## Callbacks for View & Namespace
+    # ##
 
     def reportError(self, msg):
         self._protocol.sendErrorMessage(msg)
@@ -187,9 +187,9 @@ class Connection(object):
 
     sendMessage.__doc__ = IServersideProtocol.get('sendDataMessage').getDoc()
 
-    ###
-    ### Forwarding to View
-    ###
+    # ##
+    # ## Forwarding to View
+    # ##
 
     def createContainer(self, tag):
         if not self._view:
@@ -271,9 +271,9 @@ class Connection(object):
 
     removeConnection.__doc__ = IRobot.get('removeConnection').getDoc()
 
-    ###
-    ### Forwarding to Namespace
-    ###
+    # ##
+    # ## Forwarding to Namespace
+    # ##
 
     def processReceivedMessage(self, iTag, clsName, msgID, msg):
         if not self._namespace:
@@ -455,7 +455,7 @@ class Robot(Namespace):
         """ Reference to the message converter used by the Converter
             interfaces.
         """
-        return self._client.converter
+        return self._endpoint._converter
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot
@@ -587,6 +587,7 @@ class RobotClient(Endpoint):
         self._masterPort = masterPort
         self._extAddress = '{0}:{1}'.format(extIP, extPort)
         self._loader = loader
+        self._converter = converter
 
         self._connections = set()
         self._deathCandidates = {}
@@ -664,7 +665,7 @@ class RobotClient(Endpoint):
                                 which is used in the Robot process.
             @type  connection:  rce.robot.Connection
         """
-        if not self._avatar: #This is RobotEndpointAvatar and not User Avatar.
+        if not self._avatar:  # This is RobotEndpointAvatar and not User Avatar.
             raise ForwardingError('Avatar reference is missing.')
 
         view = RobotView(view, connection)
@@ -798,7 +799,7 @@ def main(reactor, cred, masterIP, masterPort, consolePort,
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
 
-    #portal = Portal(client, (client,))
+    # portal = Portal(client, (client,))
     robot = CloudEngineWebSocketFactory(client,
                                         'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
