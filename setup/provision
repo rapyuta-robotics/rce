@@ -339,7 +339,7 @@ def provision_container(config):
         'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
         'git clone https://github.com/IDSCETHZurich/rce.git && '
         'cd rce && sudo sh install.sh',
-        'mkdir -p $HOME && cd && echo "source /opt/rce/setup.sh" > .bashrc'
+        'mkdir -p $HOME && cd && echo "source /opt/rce/setup.sh" >> .bashrc'
     ]
 
     if config.dev_mode:
