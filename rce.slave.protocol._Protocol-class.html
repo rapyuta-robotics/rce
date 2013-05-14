@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.slave.protocol._Protocol</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.slave-module.html">Package&nbsp;slave</a> ::
+        <a href="rce.slave.protocol-module.html">Module&nbsp;protocol</a> ::
+        Class&nbsp;_Protocol
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.slave.protocol._Protocol-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class _Protocol</h1><p class="nomargin-top"><span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_slav_11" name="uml_class_diagram_for_rce_slav_11">
+<area shape="rect" id="node583" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="119,39,288,57"/>
+<area shape="rect" id="node583" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="119,57,288,76"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="107,6,299,82"/>
+<area shape="rect" id="node582" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="103,135,304,153"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="91,102,315,159"/>
+<area shape="rect" id="node581" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="29,204,377,223"/>
+<area shape="rect" id="node581" href="javascript:void(0);" title="hash(x)" alt="" coords="29,223,377,241"/>
+<area shape="rect" id="node581" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="29,244,377,263"/>
+<area shape="rect" id="node581" href="javascript:void(0);" title="(internal)" alt="" coords="29,263,377,281"/>
+<area shape="rect" id="node581" href="javascript:void(0);" title="A remote message has been received." alt="" coords="29,281,377,300"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="17,179,388,306"/>
+<area shape="rect" id="node3" href="rce.slave.protocol.RCEInternalProtocol-class.html" title="Protocol which is used to connect Endpoints such that Interfaces in different Endpoint are able to communicate." alt="" coords="48,497,205,535"/>
+<area shape="rect" id="node580" href="rce.slave.protocol._Protocol-class.html#__init__" title="Initialize the Protocol." alt="" coords="17,359,389,377"/>
+<area shape="rect" id="node580" href="rce.slave.protocol._Protocol-class.html#sendMessage" title="Send a message received from an Interface to the other side." alt="" coords="17,377,389,396"/>
+<area shape="rect" id="node580" href="rce.slave.protocol._Protocol-class.html#messageReceived" title="Protocol internal method used to send a received message to the stored &#160;receivers." alt="" coords="17,396,389,415"/>
+<area shape="rect" id="node580" href="rce.slave.protocol._Protocol-class.html#registerConnection" title="Register the connection between the local Interface and the remote &#160;Interface such that the two interfaces can communicate with each other." alt="" coords="17,415,389,433"/>
+<area shape="rect" id="node580" href="rce.slave.protocol._Protocol-class.html#unregisterConnection" title="Unregister the connection between the local Interface and the remote &#160;Interface such that the two interfaces can no longer communicate with each &#160;other." alt="" coords="17,433,389,452"/>
+<area shape="rect" id="node580" href="rce.slave.protocol._Protocol-class.html#remote_destroy" title="Method should be called to destroy the protocol and will take care of &#160;destroying all connections of this Protocol as well as deleting all &#160;circular references." alt="" coords="17,452,389,471"/>
+<area shape="rect" id="node5" href="rce.slave.protocol._Protocol-class.html" title="Abstract base class for a internal Protocol which interacts with the Endpoint, Namespace, and Interfaces in a slave process." alt="" coords="5,326,400,477"/>
+<area shape="rect" id="node6" href="rce.slave.protocol.Loopback-class.html" title="Special Protocol &#39;Loopback&#39; which can be used to connect Interfaces which are in the same Endpoint." alt="" coords="235,497,328,535"/>
+</map>
+  <img src="uml_class_diagram_for_rce_slav_11.gif" alt='' usemap="#uml_class_diagram_for_rce_slav_11" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Abstract base class for a internal Protocol which interacts with the 
+  Endpoint, Namespace, and Interfaces in a slave process.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">endpoint</span>)</span><br />
+      Initialize the Protocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol._Protocol-class.html#sendMessage" class="summary-sig-name">sendMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">remoteID</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Send a message received from an Interface to the other side.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.sendMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol._Protocol-class.html#messageReceived" class="summary-sig-name">messageReceived</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteID</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">destID</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Protocol internal method used to send a received message to the 
+      stored receivers.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.messageReceived">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol._Protocol-class.html#registerConnection" class="summary-sig-name">registerConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>,
+        <span class="summary-sig-arg">remoteID</span>)</span><br />
+      Register the connection between the local Interface and the remote 
+      Interface such that the two interfaces can communicate with each 
+      other.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.registerConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol._Protocol-class.html#unregisterConnection" class="summary-sig-name">unregisterConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>,
+        <span class="summary-sig-arg">remoteID</span>)</span><br />
+      Unregister the connection between the local Interface and the remote 
+      Interface such that the two interfaces can no longer communicate with
+      each other.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.unregisterConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remote_destroy"></a><span class="summary-sig-name">remote_destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the protocol and will take care of
+      destroying all connections of this Protocol as well as deleting all 
+      circular references.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.remote_destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__provides__</code>,
+      <code>jellyFor</code>,
+      <code>remoteMessageReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__implemented__</code>,
+      <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="sendMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">remoteID</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.sendMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Send a message received from an Interface to the other side.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>interface</code></strong> (rce.slave.interface.Interface) - Interface which wants to send the message.</li>
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which should be sent.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (uuid.UUID) - Unique ID which can be used to find a correspondence between 
+          request / response message.</li>
+        <li><strong class="pname"><code>remoteID</code></strong> (uuid.UUID) - If the remote ID is supplied than only this Interface will 
+          receive the message, regardless of additional interfaces which 
+          might be registered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="messageReceived"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">messageReceived</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteID</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">destID</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.messageReceived">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Protocol internal method used to send a received message to the stored
+  receivers.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteID</code></strong> (uuid.UUID) - Unique ID of the Interface on the other side which sent the 
+          message.</li>
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which was received.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (uuid.UUID) - Unique ID which can be used to find a correspondence between 
+          request / response message.</li>
+        <li><strong class="pname"><code>destID</code></strong> (uuid.UUID) - If the dest ID is supplied than only this Interface will receive 
+          the message, regardless of additional interfaces which might be 
+          registered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registerConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>,
+        <span class="sig-arg">remoteID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.registerConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register the connection between the local Interface and the remote 
+  Interface such that the two interfaces can communicate with each 
+  other.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>interface</code></strong> (rce.slave.interface.Interface) - Reference to the local Interface.</li>
+        <li><strong class="pname"><code>remoteID</code></strong> (uuid.UUID) - Unique ID of the remote Interface.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="unregisterConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unregisterConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>,
+        <span class="sig-arg">remoteID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#_Protocol.unregisterConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Unregister the connection between the local Interface and the remote 
+  Interface such that the two interfaces can no longer communicate with 
+  each other.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>interface</code></strong> (rce.slave.interface.Interface) - Reference to the local Interface.</li>
+        <li><strong class="pname"><code>remoteID</code></strong> (uuid.UUID) - Unique ID of the remote Interface.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:07 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

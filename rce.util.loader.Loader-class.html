@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.loader.Loader</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        <a href="rce.util.loader-module.html">Module&nbsp;loader</a> ::
+        Class&nbsp;Loader
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.loader.Loader-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Loader</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_util_14" name="uml_class_diagram_for_rce_util_14">
+<area shape="rect" id="node610" href="rce.util.loader.Loader-class.html#__init__" title="Initialize the Loader." alt="" coords="17,39,191,57"/>
+<area shape="rect" id="node610" href="rce.util.loader.Loader-class.html#loadMsg" title="Get the message class matching the string pair." alt="" coords="17,57,191,76"/>
+<area shape="rect" id="node610" href="rce.util.loader.Loader-class.html#loadSrv" title="Get the service class matching the string pair." alt="" coords="17,76,191,95"/>
+<area shape="rect" id="node610" href="rce.util.loader.Loader-class.html#findPkgPath" title="Find the path to the given package." alt="" coords="17,95,191,113"/>
+<area shape="rect" id="node610" href="rce.util.loader.Loader-class.html#findNode" title="Find the node/executable in the given package." alt="" coords="17,113,191,132"/>
+<area shape="rect" id="node1" href="rce.util.loader.Loader-class.html" title="The Loader should be used to dynamically find and load message and service classes." alt="" coords="5,6,203,138"/>
+</map>
+  <img src="uml_class_diagram_for_rce_util_14.gif" alt='' usemap="#uml_class_diagram_for_rce_util_14" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>The Loader should be used to dynamically find and load message and 
+  service classes. Additionally, the Loader can be used to locate 
+  nodes/executables in packages. To increase the speed the Loader has a 
+  cache for the classes and the paths to the nodes.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">rosPath</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Initialize the Loader.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">[str]</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#_getDepends" class="summary-sig-name" onclick="show_private();">_getDepends</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>)</span><br />
+      roslib.launcher</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._getDepends">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#_appendPackagePaths" class="summary-sig-name" onclick="show_private();">_appendPackagePaths</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">manifest</span>,
+        <span class="summary-sig-arg">paths</span>,
+        <span class="summary-sig-arg">pkgDir</span>)</span><br />
+      roslib.launcher</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._appendPackagePaths">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#_generatePythonPath" class="summary-sig-name" onclick="show_private();">_generatePythonPath</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>)</span><br />
+      roslib.launcher</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._generatePythonPath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#_loadManifest" class="summary-sig-name" onclick="show_private();">_loadManifest</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>)</span><br />
+      roslib.launcher</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._loadManifest">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#_checkPermission" class="summary-sig-name" onclick="show_private();">_checkPermission</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">module</span>)</span><br />
+      Internally used method to check if there might me a candidate for the
+      module for which we have insufficient permissions.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._checkPermission">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_loadModule"></a><span class="summary-sig-name">_loadModule</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">clsType</span>,
+        <span class="summary-sig-arg">cls</span>)</span><br />
+      Internally used method to load a module.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._loadModule">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">subclass of genpy.message.Message</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#loadMsg" class="summary-sig-name">loadMsg</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">cls</span>)</span><br />
+      Get the message class matching the string pair.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.loadMsg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">ROS service class</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#loadSrv" class="summary-sig-name">loadSrv</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">cls</span>)</span><br />
+      Get the service class matching the string pair.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.loadSrv">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#findPkgPath" class="summary-sig-name">findPkgPath</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>)</span><br />
+      Find the path to the given package.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.findPkgPath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_findNodes"></a><span class="summary-sig-name">_findNodes</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>)</span><br />
+      Internally used method to search for all nodes in the package.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._findNodes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.loader.Loader-class.html#findNode" class="summary-sig-name">findNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">exe</span>)</span><br />
+      Find the node/executable in the given package.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.findNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">rosPath</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Loader.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>rosPath</code></strong> ([str] / None) - Ordered list of paths to search for resources. If None (default),
+          use environment ROS path.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_getDepends"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_getDepends</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._getDepends">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>roslib.launcher</p>
+  <p>Get all package dependencies which are not catkin-ized.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of the package for which the dependencies should be 
+          returned.</li>
+    </ul></dd>
+    <dt>Returns: [str]</dt>
+        <dd>List of all non catkin-ized dependencies.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_appendPackagePaths"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_appendPackagePaths</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">manifest</span>,
+        <span class="sig-arg">paths</span>,
+        <span class="sig-arg">pkgDir</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._appendPackagePaths">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>roslib.launcher</p>
+  <p>Add paths for package to paths.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>manifest</code></strong> (Manifest) - Package manifest</li>
+        <li><strong class="pname"><code>paths</code></strong> ([str]) - List of paths to append to</li>
+        <li><strong class="pname"><code>pkgDir</code></strong> (str) - Package's filesystem directory path</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_generatePythonPath"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_generatePythonPath</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._generatePythonPath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>roslib.launcher</p>
+  <p>Recursive subroutine for building dependency list and Python path.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of package for which Python paths should be generated.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_loadManifest"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_loadManifest</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._loadManifest">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>roslib.launcher</p>
+  <p>Update the Python sys.path with package's dependencies.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of the package for which the manifest should be loaded.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_checkPermission"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_checkPermission</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">module</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader._checkPermission">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Internally used method to check if there might me a candidate for the 
+  module for which we have insufficient permissions.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if there is a directory which we can not access and which 
+          has the correct module name. False if there is no candidate with 
+          insufficient permissions.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="loadMsg"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">loadMsg</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">cls</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.loadMsg">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the message class matching the string pair. This method uses a 
+  internal cache; therefore, changes on the filesystem will be ignored once
+  the class is loaded into the cache.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Package name from where the class should be loaded.</li>
+        <li><strong class="pname"><code>cls</code></strong> (str) - Class name of the message class which should be loaded.</li>
+    </ul></dd>
+    <dt>Returns: subclass of genpy.message.Message</dt>
+        <dd>Class matching the string pair.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="loadSrv"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">loadSrv</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">cls</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.loadSrv">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the service class matching the string pair. This method uses a 
+  internal cache; therefore, changes on the filesystem will be ignored once
+  the class is loaded into the cache.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Package name from where the class should be loaded.</li>
+        <li><strong class="pname"><code>cls</code></strong> (str) - Class name of the message class which should be loaded.</li>
+    </ul></dd>
+    <dt>Returns: ROS service class</dt>
+        <dd>Class matching the string pair.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="findPkgPath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">findPkgPath</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.findPkgPath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Find the path to the given package.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Package name in for which the path should be returned.</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>Path to the package.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="findNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">findNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">exe</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.loader-pysrc.html#Loader.findNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Find the node/executable in the given package.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Package name in which the node should be localized.</li>
+        <li><strong class="pname"><code>exe</code></strong> (str) - Name of the node/executable which should be localized.</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>Path to the executable in package.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:08 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

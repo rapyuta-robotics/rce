@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.wrapper.Container</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.wrapper-module.html">Module&nbsp;wrapper</a> ::
+        Class&nbsp;Container
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.wrapper.Container-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Container</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core_36" name="uml_class_diagram_for_rce_core_36">
+<area shape="rect" id="node357" href="rce.core.wrapper._Wrapper-class.html#notifyOnDeath" title="Method is used to forward &#39;notifyOnDeath&#39; calls to the wrapped object." alt="" coords="99,39,269,57"/>
+<area shape="rect" id="node357" href="rce.core.wrapper._Wrapper-class.html#dontNotifyOnDeath" title="Method is used to forward &#39;dontNotifyOnDeath&#39; calls to the wrapped object." alt="" coords="99,57,269,76"/>
+<area shape="rect" id="node1" href="rce.core.wrapper._Wrapper-class.html" title="Base class for Wrapper classes, which are used to store additional information (of interest to the User) with the cloud engine representation of the objects." alt="" coords="87,6,281,82"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#__init__" title="Initialize the Container wrapper." alt="" coords="17,135,349,153"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#addNode" title="Add a node to the ROS environment inside the container." alt="" coords="17,153,349,172"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#removeNode" title="Remove a node from the ROS environment inside the container." alt="" coords="17,172,349,191"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#addParameter" title="Add a parameter to the ROS environment inside the container." alt="" coords="17,191,349,209"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#removeParameter" title="Remove a parameter from the ROS environment inside the container." alt="" coords="17,209,349,228"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#addInterface" title="Add an interface to the ROS environment inside the container." alt="" coords="17,228,349,247"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#removeInterface" title="Remove an interface from the ROS environment inside the container." alt="" coords="17,247,349,265"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#getInterface" title="Return the wrapped interface instance matching the given tag." alt="" coords="17,265,349,284"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#getConnectInfo" title="Get connection information for the given container for rosproxy calls." alt="" coords="17,284,349,303"/>
+<area shape="rect" id="node356" href="rce.core.wrapper.Container-class.html#destroy" title="Method should be called to destroy the container and will take care of &#160;destroying all objects owned by this Container as well as deleting all &#160;circular references." alt="" coords="17,303,349,321"/>
+<area shape="rect" id="node2" href="rce.core.wrapper.Container-class.html" title="Wrapper for a Container object." alt="" coords="5,102,360,327"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core_36.gif" alt='' usemap="#uml_class_diagram_for_rce_core_36" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Wrapper for a Container object. The underlying object is a Environment
+  namespace.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">namespace</span>,
+        <span class="summary-sig-arg">container</span>)</span><br />
+      Initialize the Container wrapper.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#addNode" class="summary-sig-name">addNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">nTag</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">exe</span>,
+        <span class="summary-sig-arg">args</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">namespace</span>)</span><br />
+      Add a node to the ROS environment inside the container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.addNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#removeNode" class="summary-sig-name">removeNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">nTag</span>)</span><br />
+      Remove a node from the ROS environment inside the container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.removeNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#addParameter" class="summary-sig-name">addParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Add a parameter to the ROS environment inside the container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.addParameter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#removeParameter" class="summary-sig-name">removeParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Remove a parameter from the ROS environment inside the container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.removeParameter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#addInterface" class="summary-sig-name">addInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">iType</span>,
+        <span class="summary-sig-arg">clsName</span>,
+        <span class="summary-sig-arg">addr</span>)</span><br />
+      Add an interface to the ROS environment inside the container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.addInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#removeInterface" class="summary-sig-name">removeInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>)</span><br />
+      Remove an interface from the ROS environment inside the container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.removeInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.user.Interface</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#getInterface" class="summary-sig-name">getInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>)</span><br />
+      Return the wrapped interface instance matching the given tag.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.getInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getConnectInfo"></a><span class="summary-sig-name">getConnectInfo</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get connection information for the given container for rosproxy 
+      calls.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.getConnectInfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_containerDied"></a><span class="summary-sig-name">_containerDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">container</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container._containerDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_nodeDied"></a><span class="summary-sig-name">_nodeDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">node</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container._nodeDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_parameterDied"></a><span class="summary-sig-name">_parameterDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parameter</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container._parameterDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_interfaceDied"></a><span class="summary-sig-name">_interfaceDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container._interfaceDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.wrapper.Container-class.html#destroy" class="summary-sig-name">destroy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the container and will take care 
+      of destroying all objects owned by this Container as well as deleting
+      all circular references.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.core.wrapper._Wrapper-class.html" onclick="show_private();">_Wrapper</a></code></b>:
+      <code><a href="rce.core.wrapper._Wrapper-class.html#dontNotifyOnDeath">dontNotifyOnDeath</a></code>,
+      <code><a href="rce.core.wrapper._Wrapper-class.html#notifyOnDeath">notifyOnDeath</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.core.wrapper._Wrapper-class.html" onclick="show_private();">_Wrapper</a></code></b> (private):
+      <code><a href="rce.core.wrapper._Wrapper-class.html#_selfDied" onclick="show_private();">_selfDied</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">namespace</span>,
+        <span class="sig-arg">container</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Container wrapper.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>namespace</code></strong> (rce.core.environment.Environment) - Namespace of the Container object which should be wrapped.</li>
+        <li><strong class="pname"><code>container</code></strong> (rce.core.container.Container) - Reference to Container.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">nTag</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">exe</span>,
+        <span class="sig-arg">args</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">namespace</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.addNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a node to the ROS environment inside the container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>nTag</code></strong> (str) - Tag which is used to identify the node in subsequent requests.</li>
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of ROS package where the node can be found.</li>
+        <li><strong class="pname"><code>exe</code></strong> (str) - Name of executable (node) which should be launched.</li>
+        <li><strong class="pname"><code>args</code></strong> (str) - Additional arguments which should be used for the launch.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the node under which the node should be launched.</li>
+        <li><strong class="pname"><code>namespace</code></strong> (str) - Namespace in which the node should be started in the environment.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">nTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.removeNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a node from the ROS environment inside the container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>nTag</code></strong> (str) - Tag which is used to identify the ROS node which should removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.addParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a parameter to the ROS environment inside the container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the parameter which should be added. It is also used to 
+          identify the parameter in subsequent requests.</li>
+        <li><strong class="pname"><code>value</code></strong> (str, int, float, bool, list) - Value of the parameter which should be added.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.removeParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a parameter from the ROS environment inside the container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the parameter which should be removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">iType</span>,
+        <span class="sig-arg">clsName</span>,
+        <span class="sig-arg">addr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.addInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Add an interface to the ROS environment inside the container.
+
+@param iTag:        Tag which is used to identify the interface in
+                    subsequent requests.
+@type  iTag:        str
+
+@param iType:       Type of the interface. The type has to be of
+                    the form:
+                        {prefix}Interface
+                    whit valid prefixes:
+                        ServiceClient, ServiceProvider,
+                        Publisher, Subscriber
+@type  iType:       str
+
+@param clsName:     Message type/Service type consisting of the
+                    package and the name of the message/service,
+                    i.e. 'std_msgs/Int32'.
+@type  clsName:     str
+
+@param addr:        ROS name/address which the interface should
+                    use.
+@type  addr:        str
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.removeInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove an interface from the ROS environment inside the container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface which should be 
+          removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.getInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the wrapped interface instance matching the given tag.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface which should be 
+          returned.</li>
+    </ul></dd>
+    <dt>Returns: rce.core.user.Interface</dt>
+        <dd>Wrapped interface instance which was requested.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.wrapper-pysrc.html#Container.destroy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the container and will take care of
+  destroying all objects owned by this Container as well as deleting all 
+  circular references.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.core.wrapper._Wrapper-class.html#destroy">_Wrapper.destroy</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:04 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

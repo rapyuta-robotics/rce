@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.sysinfo.nt_virtmem_info</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        <a href="rce.util.sysinfo-module.html">Module&nbsp;sysinfo</a> ::
+        Class&nbsp;nt_virtmem_info
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.sysinfo.nt_virtmem_info-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class nt_virtmem_info</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_util_38" name="uml_class_diagram_for_rce_util_38">
+<area shape="rect" id="node663" href="javascript:void(0);" title="x+y" alt="" coords="205,39,325,57"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="y in x" alt="" coords="205,57,325,76"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x==y" alt="" coords="205,76,325,95"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x&gt;=y" alt="" coords="205,95,325,113"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x.__getattribute__(&#39;name&#39;) &lt;==&gt; x.name" alt="" coords="205,113,325,132"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x[y]" alt="" coords="205,132,325,151"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x[i:j]" alt="" coords="205,151,325,169"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x&gt;y" alt="" coords="205,169,325,188"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="hash(x)" alt="" coords="205,188,325,207"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="iter(x)" alt="" coords="205,207,325,225"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x&lt;=y" alt="" coords="205,225,325,244"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="len(x)" alt="" coords="205,244,325,263"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="x&lt;y" alt="" coords="205,263,325,281"/>
+<area shape="rect" id="node663" href="javascript:void(0);" title="T.index(value, [start, [stop]]) &#45;&gt; integer &#45;&#45; return first index of value." alt="" coords="205,300,325,319"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="tuple() &#45;&gt; empty tuple tuple(iterable) &#45;&gt; tuple initialized from iterable&#39;s items" alt="" coords="193,6,337,325"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#active" title="Alias for field number 5" alt="" coords="17,369,512,388"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#available" title="Alias for field number 1" alt="" coords="17,388,512,407"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#buffers" title="Alias for field number 7" alt="" coords="17,407,512,425"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#cached" title="Alias for field number 8" alt="" coords="17,425,512,444"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#free" title="Alias for field number 4" alt="" coords="17,444,512,463"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#inactive" title="Alias for field number 6" alt="" coords="17,463,512,481"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#percent" title="Alias for field number 2" alt="" coords="17,481,512,500"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#total" title="Alias for field number 0" alt="" coords="17,500,512,519"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#used" title="Alias for field number 3" alt="" coords="17,519,512,537"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#__getnewargs__" title="Return self as a plain tuple." alt="" coords="17,540,512,559"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#__new__" title="Create new instance of vmem(total, available, percent, used, free, active, &#160;inactive, buffers, cached)" alt="" coords="17,559,512,577"/>
+<area shape="rect" id="node662" href="rce.util.sysinfo.nt_virtmem_info-class.html#__repr__" title="Return a nicely formatted representation string" alt="" coords="17,577,512,596"/>
+<area shape="rect" id="node2" href="rce.util.sysinfo.nt_virtmem_info-class.html" title="vmem(total, available, percent, used, free, active, inactive, buffers, cached)" alt="" coords="5,345,523,602"/>
+</map>
+  <img src="uml_class_diagram_for_rce_util_38.gif" alt='' usemap="#uml_class_diagram_for_rce_util_38" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>vmem(total, available, percent, used, free, active, inactive, buffers,
+  cached)</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.sysinfo.nt_virtmem_info-class.html#__getnewargs__" class="summary-sig-name">__getnewargs__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return self as a plain tuple.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info.__getnewargs__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.sysinfo.nt_virtmem_info-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a nicely formatted representation string</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info.__repr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_asdict"></a><span class="summary-sig-name">_asdict</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a new OrderedDict which maps field names to their values</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info._asdict">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_replace"></a><span class="summary-sig-name">_replace</span>(<span class="summary-sig-arg">_self</span>,
+        <span class="summary-sig-arg">**kwds</span>)</span><br />
+      Return a new vmem object replacing specified fields with new values</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info._replace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>tuple</code></b>:
+      <code>__add__</code>,
+      <code>__contains__</code>,
+      <code>__eq__</code>,
+      <code>__ge__</code>,
+      <code>__getattribute__</code>,
+      <code>__getitem__</code>,
+      <code>__getslice__</code>,
+      <code>__gt__</code>,
+      <code>__hash__</code>,
+      <code>__iter__</code>,
+      <code>__le__</code>,
+      <code>__len__</code>,
+      <code>__lt__</code>,
+      <code>__mul__</code>,
+      <code>__ne__</code>,
+      <code>__rmul__</code>,
+      <code>__sizeof__</code>,
+      <code>count</code>,
+      <code>index</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__init__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS METHODS ==================== -->
+<a name="section-ClassMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_make"></a><span class="summary-sig-name">_make</span>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">iterable</span>,
+        <span class="summary-sig-arg">new</span>=<span class="summary-sig-default">&lt;built-in method __new__ of type object at 0x82943a0&gt;</span>,
+        <span class="summary-sig-arg">len</span>=<span class="summary-sig-default">&lt;built-in function len&gt;</span>)</span><br />
+      Make a new vmem object from a sequence or iterable</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info._make">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Static Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-StaticMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">a new object with type S, a subtype of T</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.sysinfo.nt_virtmem_info-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">_cls</span>,
+        <span class="summary-sig-arg">total</span>,
+        <span class="summary-sig-arg">available</span>,
+        <span class="summary-sig-arg">percent</span>,
+        <span class="summary-sig-arg">used</span>,
+        <span class="summary-sig-arg">free</span>,
+        <span class="summary-sig-arg">active</span>,
+        <span class="summary-sig-arg">inactive</span>,
+        <span class="summary-sig-arg">buffers</span>,
+        <span class="summary-sig-arg">cached</span>)</span><br />
+      Create new instance of vmem(total, available, percent, used, free, 
+      active, inactive, buffers, cached)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info.__new__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#_fields" class="summary-name" onclick="show_private();">_fields</a> = <code title="('total',
+ 'available',
+ 'percent',
+ 'used',
+ 'free',
+ 'active',
+ 'inactive',
+ 'buffers',
+..."><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">total</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">available</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">percent</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">used</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">free</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">a</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#active" class="summary-name">active</a><br />
+      Alias for field number 5
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#available" class="summary-name">available</a><br />
+      Alias for field number 1
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#buffers" class="summary-name">buffers</a><br />
+      Alias for field number 7
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#cached" class="summary-name">cached</a><br />
+      Alias for field number 8
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#free" class="summary-name">free</a><br />
+      Alias for field number 4
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#inactive" class="summary-name">inactive</a><br />
+      Alias for field number 6
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#percent" class="summary-name">percent</a><br />
+      Alias for field number 2
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#total" class="summary-name">total</a><br />
+      Alias for field number 0
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.nt_virtmem_info-class.html#used" class="summary-name">used</a><br />
+      Alias for field number 3
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__getnewargs__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getnewargs__</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info.__getnewargs__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return self as a plain tuple.  Used by copy and pickle.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        tuple.__getnewargs__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__new__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">_cls</span>,
+        <span class="sig-arg">total</span>,
+        <span class="sig-arg">available</span>,
+        <span class="sig-arg">percent</span>,
+        <span class="sig-arg">used</span>,
+        <span class="sig-arg">free</span>,
+        <span class="sig-arg">active</span>,
+        <span class="sig-arg">inactive</span>,
+        <span class="sig-arg">buffers</span>,
+        <span class="sig-arg">cached</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info.__new__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create new instance of vmem(total, available, percent, used, free, 
+  active, inactive, buffers, cached)</p>
+  <dl class="fields">
+    <dt>Returns: a new object with type S, a subtype of T</dt>
+    <dt>Overrides:
+        object.__new__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#nt_virtmem_info.__repr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a nicely formatted representation string</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_fields"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_fields</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">total</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">available</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">percent</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">used</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">free</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">active</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">inactive</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">buffers</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="active"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">active</h3>
+  <p>Alias for field number 5</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa62190c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="available"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">available</h3>
+  <p>Alias for field number 1</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa62188c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="buffers"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">buffers</h3>
+  <p>Alias for field number 7</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa62194c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cached"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">cached</h3>
+  <p>Alias for field number 8</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa62196c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="free"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">free</h3>
+  <p>Alias for field number 4</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa6218ec&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inactive"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">inactive</h3>
+  <p>Alias for field number 6</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa62192c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="percent"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">percent</h3>
+  <p>Alias for field number 2</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa6218ac&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="total"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">total</h3>
+  <p>Alias for field number 0</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa62186c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="used"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">used</h3>
+  <p>Alias for field number 3</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa6218cc&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:09 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

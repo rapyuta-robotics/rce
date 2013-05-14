@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.network._ConnectionValidator</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.network-module.html">Module&nbsp;network</a> ::
+        Class&nbsp;_ConnectionValidator
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.network._ConnectionValidator-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class _ConnectionValidator</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.network-pysrc.html#_ConnectionValidator">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core_28" name="uml_class_diagram_for_rce_core_28">
+<area shape="rect" id="node332" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
+<area shape="rect" id="node332" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
+<area shape="rect" id="node331" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
+<area shape="rect" id="node330" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
+<area shape="rect" id="node330" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
+<area shape="rect" id="node330" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
+<area shape="rect" id="node330" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
+<area shape="rect" id="node330" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
+<area shape="rect" id="node329" href="rce.core.network._ConnectionValidator-class.html#result" title="Get the result of the validation as soon as its available." alt="" coords="80,351,304,369"/>
+<area shape="rect" id="node329" href="rce.core.network._ConnectionValidator-class.html#__init__" title="Initialize the Connection Validator." alt="" coords="80,372,304,391"/>
+<area shape="rect" id="node329" href="rce.core.network._ConnectionValidator-class.html#remote_verifyKey" title="Verify that the provided key matches the correct value." alt="" coords="80,391,304,409"/>
+<area shape="rect" id="node3" href="rce.core.network._ConnectionValidator-class.html" title="Small helper to provide a callback to the endpoint to validate the connection and to register the protocol who is responsible for the it." alt="" coords="68,326,316,415"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core_28.gif" alt='' usemap="#uml_class_diagram_for_rce_core_28" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Small helper to provide a callback to the endpoint to validate the 
+  connection and to register the protocol who is responsible for the 
+  it.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network._ConnectionValidator-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Initialize the Connection Validator.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#_ConnectionValidator.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network._ConnectionValidator-class.html#remote_verifyKey" class="summary-sig-name">remote_verifyKey</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">protocol</span>)</span><br />
+      Verify that the provided key matches the correct value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#_ConnectionValidator.remote_verifyKey">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__provides__</code>,
+      <code>jellyFor</code>,
+      <code>remoteMessageReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__implemented__</code>,
+      <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+        <a href="rce.core.network._ConnectionValidator-class.html#result" class="summary-name">result</a><br />
+      Get the result of the validation as soon as its available.
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">key</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#_ConnectionValidator.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Connection Validator.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (str) - Key which is the correct.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_verifyKey"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_verifyKey</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">protocol</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#_ConnectionValidator.remote_verifyKey">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Verify that the provided key matches the correct value. This method 
+  can be called only once, after which an error is raised.</p>
+  <p>In case the key could be validated the protocol is registered with the
+  connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (str) - Key which should be validated.</li>
+        <li><strong class="pname"><code>protocol</code></strong> (twisted.spread.pb.RemoteReference) - Protocol who is responsible for the validation request and one 
+          partner of the new connection.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="result"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">result</h3>
+  <p>Get the result of the validation as soon as its available.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.result(<span class="summary-sig-arg">self</span>)</span>
+        - Get the result of the validation as soon as its available.
+    </dd>
+    <dt>Type:</dt>
+      <dd>twisted.internet.defer.Deferred</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:04 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

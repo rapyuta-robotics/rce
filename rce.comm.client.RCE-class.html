@@ -1,0 +1,1326 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.comm.client.RCE</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.comm-module.html">Package&nbsp;comm</a> ::
+        <a href="rce.comm.client-module.html">Module&nbsp;client</a> ::
+        Class&nbsp;RCE
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.comm.client.RCE-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RCE</h1><p class="nomargin-top"><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_comm_5" name="uml_class_diagram_for_rce_comm_5">
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="17,31,428,49"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#__implemented__" title="rce.comm.client.RCE.__implemented__" alt="" coords="17,49,428,68"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#t" title="rce.comm.client.RCE.t" alt="" coords="17,68,428,87"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#__init__" title="Initialize the Connection." alt="" coords="17,89,428,108"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#registerConnection" title="Callback for RCERobotProtocol." alt="" coords="17,108,428,127"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#unregisterConnection" title="Callback for RCERobotProtocol." alt="" coords="17,127,428,145"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#connect" title="Connect to RCE." alt="" coords="17,145,428,164"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#close" title="Disconnect from RCE." alt="" coords="17,164,428,183"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#sendMessage" title="Send a data message to the cloud engine." alt="" coords="17,183,428,201"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#createContainer" title="Create a container." alt="" coords="17,201,428,220"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#destroyContainer" title="Destroy a container." alt="" coords="17,220,428,239"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#addNode" title="Add a node." alt="" coords="17,239,428,257"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#removeNode" title="Remove a node." alt="" coords="17,257,428,276"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#addParameter" title="Add a parameter." alt="" coords="17,276,428,295"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#removeParameter" title="Remove a parameter." alt="" coords="17,295,428,313"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#addInterface" title="Add an interface." alt="" coords="17,313,428,332"/>
+<area shape="rect" id="node110" href="rce.comm.client.RCE-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="17,351,428,369"/>
+<area shape="rect" id="node1" href="rce.comm.client.RCE-class.html" title="Class represents a connection to the RoboEarth Cloud Engine." alt="" coords="5,6,440,375"/>
+</map>
+  <img src="uml_class_diagram_for_rce_comm_5.gif" alt='' usemap="#uml_class_diagram_for_rce_comm_5" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Class represents a connection to the RoboEarth Cloud Engine.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">receiver</span>,
+        <span class="summary-sig-arg">userID</span>,
+        <span class="summary-sig-arg">robotID</span>,
+        <span class="summary-sig-arg">password</span>,
+        <span class="summary-sig-arg">reactor</span>)</span><br />
+      Initialize the Connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#registerConnection" class="summary-sig-name">registerConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">conn</span>)</span><br />
+      Callback for RCERobotProtocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.registerConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#unregisterConnection" class="summary-sig-name">unregisterConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">conn</span>)</span><br />
+      Callback for RCERobotProtocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.unregisterConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_getRobotURL"></a><span class="summary-sig-name">_getRobotURL</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">masterUrl</span>)</span><br />
+      Internally used method to connect to the Master process to get a URL 
+      of a Robot process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE._getRobotURL">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_robotConnect"></a><span class="summary-sig-name">_robotConnect</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">resp</span>)</span><br />
+      Internally used method to connect to the Robot process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE._robotConnect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#connect" class="summary-sig-name">connect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">masterUrl</span>,
+        <span class="summary-sig-arg">deferred</span>)</span><br />
+      Connect to RCE.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.connect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="close"></a><span class="summary-sig-name">close</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Disconnect from RCE.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.close">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#_sendMessage" class="summary-sig-name" onclick="show_private();">_sendMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msgType</span>,
+        <span class="summary-sig-arg">msgData</span>)</span><br />
+      Internally used method to send messages via RCERobotProtocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE._sendMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#sendMessage" class="summary-sig-name">sendMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dest</span>,
+        <span class="summary-sig-arg">msgType</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">msgID</span>)</span><br />
+      Send a data message to the cloud engine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.sendMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#createContainer" class="summary-sig-name">createContainer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cTag</span>)</span><br />
+      Create a container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#destroyContainer" class="summary-sig-name">destroyContainer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cTag</span>)</span><br />
+      Destroy a container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.destroyContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#addNode" class="summary-sig-name">addNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">nTag</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">exe</span>,
+        <span class="summary-sig-arg">args</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">name</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">namespace</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+      Add a node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#removeNode" class="summary-sig-name">removeNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">nTag</span>)</span><br />
+      Remove a node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#addParameter" class="summary-sig-name">addParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Add a parameter.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addParameter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#removeParameter" class="summary-sig-name">removeParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Remove a parameter.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeParameter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#addInterface" class="summary-sig-name">addInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">eTag</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">iType</span>,
+        <span class="summary-sig-arg">iCls</span>,
+        <span class="summary-sig-arg">addr</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+      Add an interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#removeInterface" class="summary-sig-name">removeInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">eTag</span>,
+        <span class="summary-sig-arg">iTag</span>)</span><br />
+      Remove an interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#addConnection" class="summary-sig-name">addConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tagA</span>,
+        <span class="summary-sig-arg">tagB</span>)</span><br />
+      Create a connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#removeConnection" class="summary-sig-name">removeConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tagA</span>,
+        <span class="summary-sig-arg">tagB</span>)</span><br />
+      Destroy a connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#receivedMessage" class="summary-sig-name">receivedMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Callback from RCERobotProtocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.receivedMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__providedBy__"></a><span class="summary-sig-name">__providedBy__</span>(<span class="summary-sig-arg">...</span>)</span><br />
+      Object Specification Descriptor</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.client.connection-pysrc.html">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.client.RCE-class.html#__provides__" class="summary-sig-name">__provides__</a>(<span class="summary-sig-arg">...</span>)</span><br />
+      Special descriptor for class __provides__</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.comm.client.RCE-class.html#_PREFIXES" class="summary-name" onclick="show_private();">_PREFIXES</a> = <code title="['ServiceClient', 'ServiceProvider', 'Publisher', 'Subscriber']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">ServiceClient</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ServiceProvider</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Publisher</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_SUFFIXES"></a><span class="summary-name">_SUFFIXES</span> = <code title="['Interface', 'Converter', 'Forwarder']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">Interface</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Converter</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Forwarder</code><code class="variable-quote">'</code><code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.comm.client.RCE-class.html#_INTERFACES" class="summary-name" onclick="show_private();">_INTERFACES</a> = <code title="['ServiceClientInterface',
+ 'ServiceClientConverter',
+ 'ServiceClientForwarder',
+ 'ServiceProviderInterface',
+ 'ServiceProviderConverter',
+ 'ServiceProviderForwarder',
+ 'PublisherInterface',
+ 'PublisherConverter',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">ServiceClientInterface</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ServiceClientConvert</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__implemented__"></a><span class="summary-name">__implemented__</span> = <code title="&lt;implementedBy rce.comm.client.RCE&gt;">&lt;implementedBy rce.comm.client.RCE&gt;</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="t"></a><span class="summary-name">t</span> = <code title="('Subscriber', 'Forwarder')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">Subscriber</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Forwarder</code><code class="variable-quote">'</code><code class="variable-group">)</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.comm.client.RCE-class.html#reactor" class="summary-name">reactor</a><br />
+      Reference to twisted::reactor.
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">receiver</span>,
+        <span class="sig-arg">userID</span>,
+        <span class="sig-arg">robotID</span>,
+        <span class="sig-arg">password</span>,
+        <span class="sig-arg">reactor</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>receiver</code></strong> (rce.comm.interfaces.IMessageReceiver) - Object which is responsible for the processing of received data 
+          messages.</li>
+        <li><strong class="pname"><code>userID</code></strong> (str) - User ID which will be used to authenticate the connection.</li>
+        <li><strong class="pname"><code>robotID</code></strong> (str) - Robot ID which will be used to authenticate the connection.</li>
+        <li><strong class="pname"><code>password</code></strong> (str) - Password which will be used to authenticate the connection.</li>
+        <li><strong class="pname"><code>reactor</code></strong> (twisted::reactor) - Reference to reactor which is used for this connection.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registerConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">conn</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.registerConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for RCERobotProtocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>conn</code></strong> (rce.comm.client.RCERobotProtocol) - Connection which should be registered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="unregisterConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unregisterConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">conn</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.unregisterConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for RCERobotProtocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>conn</code></strong> (rce.comm.client.RCERobotProtocol) - Connection which should be unregistered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="connect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">connect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">masterUrl</span>,
+        <span class="sig-arg">deferred</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.connect">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Connect to RCE.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>masterUrl</code></strong> (str) - URL of Master process.</li>
+        <li><strong class="pname"><code>deferred</code></strong> (twisted.internet.defer.Deferred) - Deferred which is called as soon as the connection was 
+          successfully established.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_sendMessage"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_sendMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msgType</span>,
+        <span class="sig-arg">msgData</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE._sendMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Internally used method to send messages via RCERobotProtocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msgType</code></strong> (str) - String describing the type of the message.</li>
+        <li><strong class="pname"><code>msgData</code></strong> - Message which should be sent.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">dest</span>,
+        <span class="sig-arg">msgType</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">msgID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.sendMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Send a data message to the cloud engine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dest</code></strong> (str) - Interface tag of message destination.</li>
+        <li><strong class="pname"><code>msgType</code></strong> (str) - ROS Message type in format &quot;pkg/msg&quot;, e.g. 
+          'std_msgs/String'</li>
+        <li><strong class="pname"><code>msg</code></strong> ({ str :&#160;{} / base_types / StringIO }) - Message which should be sent in form of a dictionary matching the
+          structure of the ROS message and using StringIO instances for 
+          binary message parts.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (str) - Message ID which is used to match request and response message.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="createContainer"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createContainer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.createContainer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Unique tag which will be used to identify the container to 
+          create.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyContainer"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyContainer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.destroyContainer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Destroy a container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag of the container to remove.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">nTag</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">exe</span>,
+        <span class="sig-arg">args</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">name</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">namespace</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a node.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag of container in which the node should be added.</li>
+        <li><strong class="pname"><code>nTag</code></strong> (str) - Unique tag within a container which will be used to identify the 
+          node to add.</li>
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of ROS package where the executable can be found.</li>
+        <li><strong class="pname"><code>exe</code></strong> (str) - Name of the executable which should be executed.</li>
+        <li><strong class="pname"><code>args</code></strong> (str) - Optional arguments which should be passed to the executable as a 
+          single string. Can contain the directives $(find PKG) or $(env 
+          VAR). Other special characters as '$' or ';' are not allowed.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Optional argument which defines the name used in the ROS 
+          environment.</li>
+        <li><strong class="pname"><code>namespace</code></strong> (str) - Optional argument which defines the namespace used in the ROS 
+          environment.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">nTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a node.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag of container in which the node should be removed.</li>
+        <li><strong class="pname"><code>nTag</code></strong> (str) - Tag the node to remove.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a parameter.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag of container in which the parameter should be added.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the parameter which is used to identify the parameter and
+          which is used inside the ROS environment.</li>
+        <li><strong class="pname"><code>value</code></strong> (int/float/bool/str/[]) - Value which should be added. String values can contain the 
+          directives $(find PKG) or $(env VAR).</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a parameter.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag of container in which the parameter should be removed.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the parameter to remove.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">eTag</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">iType</span>,
+        <span class="sig-arg">iCls</span>,
+        <span class="sig-arg">addr</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Add an interface.
+
+@param eTag:        Tag of endpoint to which the interface should
+                    be added. (Either a container tag or robot ID)
+@type  eTag:        str
+
+@param iTag:        Unique tag which will be used to identify the
+                    interface to add.
+@type  iTag:        str
+
+@param iType:       Type of the interface, which needs one of the
+                    following prefix:
+                        Service, ServiceProvider,
+                        Publisher, Subscriber
+                    and on of the following suffix:
+                        Interface, Converter
+@type  iType:       str
+
+@param iCls:        ROS Message/Service type in format &quot;pkg/msg&quot;,
+                    e.g. 'std_msgs/String'
+@type  iCls:        str
+
+@param addr:        Optional argument which is used for ROS
+                    Interfaces where the argument will provide
+                    the name under which the interface will be
+                    available in the local ROS environment.
+@type  addr:        str
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">eTag</span>,
+        <span class="sig-arg">iTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove an interface.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>eTag</code></strong> (str) - Tag of endpoint from which the interface should be removed. 
+          (Either a container tag or robot ID)</li>
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag of interface to remove.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tagA</span>,
+        <span class="sig-arg">tagB</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.addConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Create a connection.
+
+@param tagX:        One of the interfaces which should be
+                    connected. The tag has to be of the form
+                        [endpoint tag]/[interface tag]
+@type  tagX:        str
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tagA</span>,
+        <span class="sig-arg">tagB</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.removeConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Destroy a connection.
+
+@param tagX:        One of the interfaces which should be
+                    disconnected. The tag has to be of the form
+                        [endpoint tag]/[interface tag]
+@type  tagX:        str
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="receivedMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">receivedMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.client-pysrc.html#RCE.receivedMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback from RCERobotProtocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msg</code></strong> ({ str : {} / base_types / StringIO }) - Message which has been received.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__provides__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__provides__</span>(<span class="sig-arg">...</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Special descriptor for class __provides__</p>
+<p>The descriptor caches the implementedBy info, so that
+we can get declarations for objects without instance-specific
+interfaces a bit quicker.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_PREFIXES"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_PREFIXES</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">ServiceClient</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ServiceProvider</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Publisher</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Subscriber</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_INTERFACES"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_INTERFACES</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">ServiceClientInterface</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ServiceClientConverter</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ServiceClientForwarder</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ServiceProviderInterface</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ServiceProviderConverter</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ServiceProviderForwarder</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">PublisherInterface</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">PublisherConverter</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="reactor"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">reactor</h3>
+  <p>Reference to twisted::reactor.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.reactor(<span class="summary-sig-arg">self</span>)</span>
+        - Reference to twisted::reactor.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:00 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

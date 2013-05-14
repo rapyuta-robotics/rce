@@ -1,0 +1,1071 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.console.console.ConsoleClient</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.console-module.html">Package&nbsp;console</a> ::
+        <a href="rce.console.console-module.html">Module&nbsp;console</a> ::
+        Class&nbsp;ConsoleClient
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.console.console.ConsoleClient-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class ConsoleClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_cons_3" name="uml_class_diagram_for_rce_cons_3">
+<area shape="rect" id="node161" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.currentHistoryBuffer" alt="" coords="56,612,292,631"/>
+<area shape="rect" id="node161" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.handle_UP" alt="" coords="56,631,292,649"/>
+<area shape="rect" id="node161" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.handle_DOWN" alt="" coords="56,649,292,668"/>
+<area shape="rect" id="node161" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.handle_RETURN" alt="" coords="56,668,292,687"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="TerminalProtocol which adds both basic line&#45;editing features and input history." alt="" coords="44,579,303,693"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#__init__" title="Initialize the ConsoleClient." alt="" coords="43,745,307,764"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#showPrompt" title="Show the prompt &gt;&gt;&gt;" alt="" coords="43,764,307,783"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#connectionMade" title="Create a PBClientFactory and connect to master when ConsoleClient connected to StandardIO." alt="" coords="43,783,307,801"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#lineReceived" title="Manage state/mode after connection." alt="" coords="43,801,307,820"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#parseInputLine" title="A function to route various commands entered via Console." alt="" coords="43,820,307,839"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#callToRosProxy" title="Function to handle call to ROSAPI Proxy Server." alt="" coords="43,839,307,857"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#callToUser" title="A wrapper function for call to remote user." alt="" coords="43,857,307,876"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#callToUserAndDisplay" title="A wrapper function around call to user and displaying the result" alt="" coords="43,876,307,895"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#cmd_EXIT" title="Handler for exit command." alt="" coords="43,895,307,913"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#cmd_USER" title="Handler for user command." alt="" coords="43,913,307,932"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#cmd_CONTAINER" title="Handler for container command." alt="" coords="43,932,307,951"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#cmd_NODE" title="Handler for node command." alt="" coords="43,951,307,969"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#cmd_PARAMETER" title="Handler for parameter command." alt="" coords="43,969,307,988"/>
+<area shape="rect" id="node160" href="rce.console.console.ConsoleClient-class.html#cmd_HELP" title="Handler for help command." alt="" coords="43,1007,307,1025"/>
+<area shape="rect" id="node3" href="rce.console.console.ConsoleClient-class.html" title="The class creates the terminal and manages connections with Master and ROSAPI servers on specific containers" alt="" coords="31,713,319,1031"/>
+<area shape="rect" id="node163" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol.__implemented__" alt="" coords="40,31,309,49"/>
+<area shape="rect" id="node163" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol.makeConnection" alt="" coords="40,52,309,71"/>
+<area shape="rect" id="node163" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol.connectionLost" alt="" coords="40,71,309,89"/>
+<area shape="rect" id="node163" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="40,89,309,108"/>
+<area shape="rect" id="node163" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="40,108,309,127"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol" alt="" coords="28,6,321,133"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.width" alt="" coords="17,177,331,196"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.height" alt="" coords="17,196,331,215"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.TABSTOP" alt="" coords="17,215,331,233"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.ps" alt="" coords="17,233,331,252"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.pn" alt="" coords="17,252,331,271"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.initializeScreen" alt="" coords="17,273,331,292"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.currentLineBuffer" alt="" coords="17,292,331,311"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.setInsertMode" alt="" coords="17,311,331,329"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.setTypeoverMode" alt="" coords="17,329,331,348"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="Write a line containing the current input prompt and the current line &#160;buffer at the current cursor position." alt="" coords="17,348,331,367"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.terminalSize" alt="" coords="17,367,331,385"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.unhandledControlSequence" alt="" coords="17,385,331,404"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.keystrokeReceived" alt="" coords="17,404,331,423"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.characterReceived" alt="" coords="17,423,331,441"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_TAB" alt="" coords="17,441,331,460"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_LEFT" alt="" coords="17,460,331,479"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_RIGHT" alt="" coords="17,479,331,497"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_HOME" alt="" coords="17,497,331,516"/>
+<area shape="rect" id="node162" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_INSERT" alt="" coords="17,535,331,553"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="TerminalProtocol which adds line editing features." alt="" coords="5,153,341,559"/>
+</map>
+  <img src="uml_class_diagram_for_rce_cons_3.gif" alt='' usemap="#uml_class_diagram_for_rce_cons_3" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>The class creates the terminal and manages connections with Master and
+  ROSAPI servers on specific containers</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">masterIP</span>,
+        <span class="summary-sig-arg">consolePort</span>)</span><br />
+      Initialize the ConsoleClient.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="showPrompt"></a><span class="summary-sig-name">showPrompt</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Show the prompt &gt;&gt;&gt;</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.showPrompt">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#connectionMade" class="summary-sig-name">connectionMade</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Create a PBClientFactory and connect to master when ConsoleClient 
+      connected to StandardIO.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.connectionMade">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#lineReceived" class="summary-sig-name">lineReceived</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Manage state/mode after connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.lineReceived">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#parseInputLine" class="summary-sig-name">parseInputLine</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      A function to route various commands entered via Console.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.parseInputLine">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#callToRosProxy" class="summary-sig-name">callToRosProxy</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Function to handle call to ROSAPI Proxy Server.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToRosProxy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#callToUser" class="summary-sig-name">callToUser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      A wrapper function for call to remote user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#callToUserAndDisplay" class="summary-sig-name">callToUserAndDisplay</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      A wrapper function around call to user and displaying the result</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUserAndDisplay">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_EXIT" class="summary-sig-name">cmd_EXIT</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for exit command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_EXIT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_USER" class="summary-sig-name">cmd_USER</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for user command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_USER">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_CONTAINER" class="summary-sig-name">cmd_CONTAINER</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for container command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_CONTAINER">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_NODE" class="summary-sig-name">cmd_NODE</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for node command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_NODE">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_PARAMETER" class="summary-sig-name">cmd_PARAMETER</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for parameter command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_PARAMETER">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_INTERFACE" class="summary-sig-name">cmd_INTERFACE</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for interface command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_INTERFACE">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_CONNECTION" class="summary-sig-name">cmd_CONNECTION</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for connection command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_CONNECTION">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_ROBOT" class="summary-sig-name">cmd_ROBOT</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for robot command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_ROBOT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_MACHINE" class="summary-sig-name">cmd_MACHINE</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for machine command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_MACHINE">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#cmd_HELP" class="summary-sig-name">cmd_HELP</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span><br />
+      Handler for help command.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_HELP">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.HistoricRecvLine</code></b>:
+      <code>currentHistoryBuffer</code>,
+      <code>handle_DOWN</code>,
+      <code>handle_RETURN</code>,
+      <code>handle_UP</code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.HistoricRecvLine</code></b> (private):
+      <code>_deliverBuffer</code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.RecvLine</code></b>:
+      <code>characterReceived</code>,
+      <code>currentLineBuffer</code>,
+      <code>drawInputLine</code>,
+      <code>handle_BACKSPACE</code>,
+      <code>handle_DELETE</code>,
+      <code>handle_END</code>,
+      <code>handle_HOME</code>,
+      <code>handle_INSERT</code>,
+      <code>handle_LEFT</code>,
+      <code>handle_RIGHT</code>,
+      <code>handle_TAB</code>,
+      <code>initializeScreen</code>,
+      <code>keystrokeReceived</code>,
+      <code>setInsertMode</code>,
+      <code>setTypeoverMode</code>,
+      <code>terminalSize</code>,
+      <code>unhandledControlSequence</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.insults.insults.TerminalProtocol</code></b>:
+      <code>__providedBy__</code>,
+      <code>__provides__</code>,
+      <code>connectionLost</code>,
+      <code>makeConnection</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.RecvLine</code></b>:
+      <code>TABSTOP</code>,
+      <code>height</code>,
+      <code>pn</code>,
+      <code>ps</code>,
+      <code>width</code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.RecvLine</code></b> (private):
+      <code>_printableChars</code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.insults.insults.TerminalProtocol</code></b>:
+      <code>__implemented__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">masterIP</span>,
+        <span class="sig-arg">consolePort</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the ConsoleClient.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>masterIP</code></strong> (string) - The IP of the master server</li>
+        <li><strong class="pname"><code>consolePort</code></strong> (int) - Port of the master server</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="connectionMade"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">connectionMade</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.connectionMade">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a PBClientFactory and connect to master when ConsoleClient 
+  connected to StandardIO. Prompt user for Username</p>
+  <dl class="fields">
+    <dt>Overrides:
+        twisted.conch.insults.insults.TerminalProtocol.connectionMade
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="lineReceived"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">lineReceived</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.lineReceived">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Manage state/mode after connection. Code uses states to take 
+  credential input and then starts terminal input.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line typed on terminal</li>
+    </ul></dd>
+    <dt>Overrides:
+        twisted.conch.recvline.RecvLine.lineReceived
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="parseInputLine"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">parseInputLine</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.parseInputLine">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A function to route various commands entered via Console.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - The text entered on the Console</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="callToRosProxy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">callToRosProxy</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToRosProxy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Function to handle call to ROSAPI Proxy Server.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>command</code></strong> (string) - The command to execute in ROS environment.</li>
+        <li><strong class="pname"><code>parameter</code></strong> (string) - A parameter for the command.</li>
+    </ul></dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@_errorHandle</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="callToUser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">callToUser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A wrapper function for call to remote user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>command</code></strong> (string) - The command to be executed</li>
+    </ul></dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@_errorHandle</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="callToUserAndDisplay"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">callToUserAndDisplay</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUserAndDisplay">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A wrapper function around call to user and displaying the result</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>command</code></strong> (string) - The command to be executed</li>
+    </ul></dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@_errorHandle</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_EXIT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_EXIT</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_EXIT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for exit command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_USER"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_USER</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_USER">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for user command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_CONTAINER"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_CONTAINER</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_CONTAINER">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for container command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_NODE"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_NODE</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_NODE">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for node command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_PARAMETER"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_PARAMETER</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_PARAMETER">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for parameter command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_INTERFACE"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_INTERFACE</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_INTERFACE">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for interface command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_CONNECTION"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_CONNECTION</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_CONNECTION">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for connection command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_ROBOT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_ROBOT</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_ROBOT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for robot command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_MACHINE"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_MACHINE</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_MACHINE">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for machine command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cmd_HELP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cmd_HELP</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.cmd_HELP">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handler for help command.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>line</code></strong> (string) - line input from terminal.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:01 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

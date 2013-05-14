@@ -1,0 +1,934 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.view</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        Module&nbsp;view
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.view-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.core.view-module.html">Module rce.core.view</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#     view.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker, Mayank Singh</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># Python specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">uuid</tt> <tt class="py-keyword">import</tt> <tt class="py-name">uuid4</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">hashlib</tt> <tt class="py-keyword">import</tt> <tt class="py-name">md5</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-comment"># twisted specific imports</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">internet</tt><tt class="py-op">.</tt><tt class="py-name">defer</tt> <tt class="py-keyword">import</tt> <tt class="py-name">DeferredList</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">spread</tt><tt class="py-op">.</tt><tt class="py-name">pb</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Viewable</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-0', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-1', 'util', 'link-1');">util</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module rce.util.name=rce.util.name-module.html"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-2', 'name', 'link-2');">name</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Function rce.util.name.validateName()=rce.util.name-module.html#validateName"><a title="rce.util.name.validateName" class="py-name" href="#" onclick="return doclink('link-3', 'validateName', 'link-3');">validateName</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Class rce.util.name.IllegalName=rce.util.name.IllegalName-class.html"><a title="rce.util.name.IllegalName" class="py-name" href="#" onclick="return doclink('link-4', 'IllegalName', 'link-4');">IllegalName</a></tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-5" class="py-name"><a title="rce" class="py-name" href="#" onclick="return doclink('link-5', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Package rce.core=rce.core-module.html"><a title="rce.core" class="py-name" href="#" onclick="return doclink('link-6', 'core', 'link-6');">core</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module rce.comm.error=rce.comm.error-module.html,Module rce.core.error=rce.core.error-module.html,Module rce.util.error=rce.util.error-module.html"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-7', 'error', 'link-7');">error</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Class rce.comm.error.InvalidRequest=rce.comm.error.InvalidRequest-class.html,Class rce.core.error.InvalidRequest=rce.core.error.InvalidRequest-class.html,Class rce.rosproxy.InvalidRequest=rce.rosproxy.InvalidRequest-class.html"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-8', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-9" class="py-name"><a title="rce" class="py-name" href="#" onclick="return doclink('link-9', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="rce.core" class="py-name" href="#" onclick="return doclink('link-10', 'core', 'link-6');">core</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Module rce.core.wrapper=rce.core.wrapper-module.html"><a title="rce.core.wrapper" class="py-name" href="#" onclick="return doclink('link-11', 'wrapper', 'link-11');">wrapper</a></tt> <tt class="py-keyword">import</tt> <tt id="link-12" class="py-name" targets="Class rce.core.container.Container=rce.core.container.Container-class.html,Class rce.core.wrapper.Container=rce.core.wrapper.Container-class.html,Class rce.util.container.Container=rce.util.container.Container-class.html"><a title="rce.core.container.Container
+rce.core.wrapper.Container
+rce.util.container.Container" class="py-name" href="#" onclick="return doclink('link-12', 'Container', 'link-12');">Container</a></tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-13" class="py-name"><a title="rce" class="py-name" href="#" onclick="return doclink('link-13', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Package rce.slave=rce.slave-module.html"><a title="rce.slave" class="py-name" href="#" onclick="return doclink('link-14', 'slave', 'link-14');">slave</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-15', 'interface', 'link-15');">interface</a></tt> <tt class="py-keyword">import</tt> <tt id="link-16" class="py-name" targets="Class rce.slave.interface.Types=rce.slave.interface.Types-class.html"><a title="rce.slave.interface.Types" class="py-name" href="#" onclick="return doclink('link-16', 'Types', 'link-16');">Types</a></tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"> </tt>
+<a name="ControlView"></a><div id="ControlView-def"><a name="L48"></a><tt class="py-lineno"> 48</tt> <a class="py-toggle" href="#" id="ControlView-toggle" onclick="return toggle('ControlView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html">ControlView</a><tt class="py-op">(</tt><tt class="py-base-class">Viewable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ControlView-expanded"><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt class="py-docstring">""" View implementing all control actions which a user can perform to</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">        interact with the cloud engine.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="ControlView.view_createContainer"></a><div id="ControlView.view_createContainer-def"><a name="L52"></a><tt class="py-lineno"> 52</tt> <a class="py-toggle" href="#" id="ControlView.view_createContainer-toggle" onclick="return toggle('ControlView.view_createContainer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_createContainer">view_createContainer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_createContainer-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_createContainer-expanded"><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-docstring">""" Create a new Container object.</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the container will be created.</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">            @param tag:         Tag which is used to identify the container</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">                                in subsequent requests.</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-docstring">            @type  tag:         str</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt id="link-17" class="py-name"><a title="rce.util.name.validateName" class="py-name" href="#" onclick="return doclink('link-17', 'validateName', 'link-3');">validateName</a></tt><tt class="py-op">(</tt><tt id="link-18" class="py-name" targets="Method rce.monitor.interface.robot._AbstractConverter.tag()=rce.monitor.interface.robot._AbstractConverter-class.html#tag"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-18', 'tag', 'link-18');">tag</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-19" class="py-name"><a title="rce.util.name.IllegalName" class="py-name" href="#" onclick="return doclink('link-19', 'IllegalName', 'link-4');">IllegalName</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-20" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-20', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Container tag is invalid: {0}'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-21" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-21', 'tag', 'link-18');">tag</a></tt> <tt class="py-keyword">in</tt> <tt id="link-22" class="py-name" targets="Module rce.core.user=rce.core.user-module.html,Variable rce.util.sysinfo.nt_cputimes.user=rce.util.sysinfo.nt_cputimes-class.html#user,Variable rce.util.sysinfo.nt_sys_cputimes.user=rce.util.sysinfo.nt_sys_cputimes-class.html#user"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-22', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt> <tt class="py-keyword">or</tt> <tt id="link-23" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-23', 'tag', 'link-18');">tag</a></tt> <tt class="py-keyword">in</tt> <tt id="link-24" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-24', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">robots</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-25" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-25', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Tag is already used for a container '</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">                                 <tt class="py-string">'or robot.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt id="link-26" class="py-name" targets="Module rce.slave.namespace=rce.slave.namespace-module.html"><a title="rce.slave.namespace" class="py-name" href="#" onclick="return doclink('link-26', 'namespace', 'link-26');">namespace</a></tt><tt class="py-op">,</tt> <tt class="py-name">remote_container</tt> <tt class="py-op">=</tt> <tt id="link-27" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-27', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Variable rce.core.user.User.realm=rce.core.user.User-class.html#realm"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-28', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method rce.client.connection._Connection.createContainer()=rce.client.connection._Connection-class.html#createContainer,Method rce.comm.client.RCE.createContainer()=rce.comm.client.RCE-class.html#createContainer,Method rce.comm.interfaces.IRobot.createContainer()=rce.comm.interfaces.IRobot-class.html#createContainer,Method rce.core.machine.LoadBalancer.createContainer()=rce.core.machine.LoadBalancer-class.html#createContainer,Method rce.core.machine.Machine.createContainer()=rce.core.machine.Machine-class.html#createContainer,Method rce.master.RoboEarthCloudEngine.createContainer()=rce.master.RoboEarthCloudEngine-class.html#createContainer,Method rce.robot.Connection.createContainer()=rce.robot.Connection-class.html#createContainer,Method rce.robot.RobotView.createContainer()=rce.robot.RobotView-class.html#createContainer"><a title="rce.client.connection._Connection.createContainer
+rce.comm.client.RCE.createContainer
+rce.comm.interfaces.IRobot.createContainer
+rce.core.machine.LoadBalancer.createContainer
+rce.core.machine.Machine.createContainer
+rce.master.RoboEarthCloudEngine.createContainer
+rce.robot.Connection.createContainer
+rce.robot.RobotView.createContainer" class="py-name" href="#" onclick="return doclink('link-29', 'createContainer', 'link-29');">createContainer</a></tt><tt class="py-op">(</tt><tt id="link-30" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-30', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Variable rce.core.user.User.userID=rce.core.user.User-class.html#userID,Method rce.robot.Connection.userID()=rce.robot.Connection-class.html#userID"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-31', 'userID', 'link-31');">userID</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt id="link-32" class="py-name" targets="Module rce.container=rce.container-module.html,Module rce.core.container=rce.core.container-module.html,Module rce.util.container=rce.util.container-module.html"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-32', 'container', 'link-32');">container</a></tt> <tt class="py-op">=</tt> <tt id="link-33" class="py-name"><a title="rce.core.container.Container
+rce.core.wrapper.Container
+rce.util.container.Container" class="py-name" href="#" onclick="return doclink('link-33', 'Container', 'link-12');">Container</a></tt><tt class="py-op">(</tt><tt id="link-34" class="py-name"><a title="rce.slave.namespace" class="py-name" href="#" onclick="return doclink('link-34', 'namespace', 'link-26');">namespace</a></tt><tt class="py-op">,</tt> <tt class="py-name">remote_container</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt id="link-35" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-35', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt id="link-36" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-36', 'tag', 'link-18');">tag</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-37" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-37', 'container', 'link-32');">container</a></tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt id="link-38" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-38', 'container', 'link-32');">container</a></tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method rce.core.base.Proxy.notifyOnDeath()=rce.core.base.Proxy-class.html#notifyOnDeath,Method rce.core.network.Connection.notifyOnDeath()=rce.core.network.Connection-class.html#notifyOnDeath,Method rce.core.wrapper._Wrapper.notifyOnDeath()=rce.core.wrapper._Wrapper-class.html#notifyOnDeath"><a title="rce.core.base.Proxy.notifyOnDeath
+rce.core.network.Connection.notifyOnDeath
+rce.core.wrapper._Wrapper.notifyOnDeath" class="py-name" href="#" onclick="return doclink('link-39', 'notifyOnDeath', 'link-39');">notifyOnDeath</a></tt><tt class="py-op">(</tt><tt id="link-40" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-40', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Method rce.core.user.User.containerDied()=rce.core.user.User-class.html#containerDied"><a title="rce.core.user.User.containerDied" class="py-name" href="#" onclick="return doclink('link-41', 'containerDied', 'link-41');">containerDied</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">m</tt> <tt class="py-op">=</tt> <tt class="py-string">'Container {0} successfully created.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-42" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-42', 'tag', 'link-18');">tag</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">DeferredList</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt id="link-43" class="py-name"><a title="rce.slave.namespace" class="py-name" href="#" onclick="return doclink('link-43', 'namespace', 'link-26');">namespace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">remote_container</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                         <tt class="py-name">fireOnOneErrback</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-name">consumeErrors</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">addCallback</tt><tt class="py-op">(</tt><tt class="py-keyword">lambda</tt> <tt class="py-name">_</tt><tt class="py-op">:</tt> <tt class="py-name">m</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_destroyContainer"></a><div id="ControlView.view_destroyContainer-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="ControlView.view_destroyContainer-toggle" onclick="return toggle('ControlView.view_destroyContainer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_destroyContainer">view_destroyContainer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_destroyContainer-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_destroyContainer-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-docstring">""" Destroy a Container object.</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the container will be destroyed.</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">            @param tag:         Tag which is used to identify the container</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">                                which should be destroyed.</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">            @type  tag:         str</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">            <tt id="link-44" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-44', 'container', 'link-32');">container</a></tt> <tt class="py-op">=</tt> <tt id="link-45" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-45', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt id="link-46" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-46', 'tag', 'link-18');">tag</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-47" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-47', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not destroy non existent container.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt id="link-48" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-48', 'container', 'link-32');">container</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method rce.core.base.Proxy.dontNotifyOnDeath()=rce.core.base.Proxy-class.html#dontNotifyOnDeath,Method rce.core.network.Connection.dontNotifyOnDeath()=rce.core.network.Connection-class.html#dontNotifyOnDeath,Method rce.core.wrapper._Wrapper.dontNotifyOnDeath()=rce.core.wrapper._Wrapper-class.html#dontNotifyOnDeath"><a title="rce.core.base.Proxy.dontNotifyOnDeath
+rce.core.network.Connection.dontNotifyOnDeath
+rce.core.wrapper._Wrapper.dontNotifyOnDeath" class="py-name" href="#" onclick="return doclink('link-49', 'dontNotifyOnDeath', 'link-49');">dontNotifyOnDeath</a></tt><tt class="py-op">(</tt><tt id="link-50" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-50', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-51" class="py-name"><a title="rce.core.user.User.containerDied" class="py-name" href="#" onclick="return doclink('link-51', 'containerDied', 'link-41');">containerDied</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt id="link-52" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-52', 'container', 'link-32');">container</a></tt><tt class="py-op">.</tt><tt id="link-53" class="py-name" targets="Method rce.core.base.Proxy.destroy()=rce.core.base.Proxy-class.html#destroy,Method rce.core.container.Container.destroy()=rce.core.container.Container-class.html#destroy,Method rce.core.environment.Environment.destroy()=rce.core.environment.Environment-class.html#destroy,Method rce.core.environment.EnvironmentEndpoint.destroy()=rce.core.environment.EnvironmentEndpoint-class.html#destroy,Method rce.core.environment.Node.destroy()=rce.core.environment.Node-class.html#destroy,Method rce.core.environment.Parameter.destroy()=rce.core.environment.Parameter-class.html#destroy,Method rce.core.machine.Machine.destroy()=rce.core.machine.Machine-class.html#destroy,Method rce.core.network.Connection.destroy()=rce.core.network.Connection-class.html#destroy,Method rce.core.network.Endpoint.destroy()=rce.core.network.Endpoint-class.html#destroy,Method rce.core.network.EndpointConnection.destroy()=rce.core.network.EndpointConnection-class.html#destroy,Method rce.core.network.Interface.destroy()=rce.core.network.Interface-class.html#destroy,Method rce.core.network.InterfaceConnection.destroy()=rce.core.network.InterfaceConnection-class.html#destroy,Method rce.core.network.Namespace.destroy()=rce.core.network.Namespace-class.html#destroy,Method rce.core.network.Protocol.destroy()=rce.core.network.Protocol-class.html#destroy,Method rce.core.robot.RobotEndpoint.destroy()=rce.core.robot.RobotEndpoint-class.html#destroy,Method rce.core.user.User.destroy()=rce.core.user.User-class.html#destroy,Method rce.core.wrapper.Container.destroy()=rce.core.wrapper.Container-class.html#destroy,Method rce.core.wrapper.Robot.destroy()=rce.core.wrapper.Robot-class.html#destroy,Method rce.core.wrapper._Wrapper.destroy()=rce.core.wrapper._Wrapper-class.html#destroy,Method rce.robot.Connection.destroy()=rce.robot.Connection-class.html#destroy,Method rce.robot.Robot.destroy()=rce.robot.Robot-class.html#destroy,Method rce.robot.RobotView.destroy()=rce.robot.RobotView-class.html#destroy"><a title="rce.core.base.Proxy.destroy
+rce.core.container.Container.destroy
+rce.core.environment.Environment.destroy
+rce.core.environment.EnvironmentEndpoint.destroy
+rce.core.environment.Node.destroy
+rce.core.environment.Parameter.destroy
+rce.core.machine.Machine.destroy
+rce.core.network.Connection.destroy
+rce.core.network.Endpoint.destroy
+rce.core.network.EndpointConnection.destroy
+rce.core.network.Interface.destroy
+rce.core.network.InterfaceConnection.destroy
+rce.core.network.Namespace.destroy
+rce.core.network.Protocol.destroy
+rce.core.robot.RobotEndpoint.destroy
+rce.core.user.User.destroy
+rce.core.wrapper.Container.destroy
+rce.core.wrapper.Robot.destroy
+rce.core.wrapper._Wrapper.destroy
+rce.robot.Connection.destroy
+rce.robot.Robot.destroy
+rce.robot.RobotView.destroy" class="py-name" href="#" onclick="return doclink('link-53', 'destroy', 'link-53');">destroy</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_addNode"></a><div id="ControlView.view_addNode-def"><a name="L101"></a><tt class="py-lineno">101</tt> <a class="py-toggle" href="#" id="ControlView.view_addNode-toggle" onclick="return toggle('ControlView.view_addNode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_addNode">view_addNode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">cTag</tt><tt class="py-op">,</tt> <tt class="py-param">nTag</tt><tt class="py-op">,</tt> <tt class="py-param">pkg</tt><tt class="py-op">,</tt> <tt class="py-param">exe</tt><tt class="py-op">,</tt> <tt class="py-param">args</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                     <tt class="py-param">namespace</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_addNode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_addNode-expanded"><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-docstring">""" Add a node to a ROS environment.</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the node will be added.</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">            @param cTag:        Tag which is used to identify the ROS</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">                                environment to which the node should be added.</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring">            @type  cTag:        str</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-docstring">            @param nTag:        Tag which is used to identify the node in</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">                                subsequent requests.</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring">            @type  nTag:        str</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-docstring">            @param pkg:         Name of ROS package where the node can be</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">                                found.</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">            @type  pkg:         str</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring">            @param exe:         Name of executable (node) which should be</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-docstring">                                launched.</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-docstring">            @type  exe:         str</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"><tt class="py-docstring">            @param args:        Additional arguments which should be used for</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-docstring">                                the launch. Can contain the directives</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"><tt class="py-docstring">                                $(find PKG) or $(env VAR). Other special</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-docstring">                                characters as '$' or ';' are not allowed.</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"><tt class="py-docstring">            @type  args:        str</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"><tt class="py-docstring">            @param name:        Name of the node under which the node should be</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"><tt class="py-docstring">                                launched.</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-docstring">            @type  name:        str</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"><tt class="py-docstring">            @param namespace:   Namespace in which the node should be started</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"><tt class="py-docstring">                                in the environment.</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring">            @type  namespace:   str</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">            <tt id="link-54" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-54', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt class="py-name">cTag</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method rce.client.connection._Connection.addNode()=rce.client.connection._Connection-class.html#addNode,Method rce.comm.client.RCE.addNode()=rce.comm.client.RCE-class.html#addNode,Method rce.comm.interfaces.IRobot.addNode()=rce.comm.interfaces.IRobot-class.html#addNode,Method rce.core.wrapper.Container.addNode()=rce.core.wrapper.Container-class.html#addNode,Method rce.robot.Connection.addNode()=rce.robot.Connection-class.html#addNode,Method rce.robot.RobotView.addNode()=rce.robot.RobotView-class.html#addNode"><a title="rce.client.connection._Connection.addNode
+rce.comm.client.RCE.addNode
+rce.comm.interfaces.IRobot.addNode
+rce.core.wrapper.Container.addNode
+rce.robot.Connection.addNode
+rce.robot.RobotView.addNode" class="py-name" href="#" onclick="return doclink('link-55', 'addNode', 'link-55');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-name">nTag</tt><tt class="py-op">,</tt> <tt class="py-name">pkg</tt><tt class="py-op">,</tt> <tt class="py-name">exe</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt><tt class="py-op">,</tt> <tt id="link-56" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-56', 'name', 'link-2');">name</a></tt><tt class="py-op">,</tt> <tt id="link-57" class="py-name"><a title="rce.slave.namespace" class="py-name" href="#" onclick="return doclink('link-57', 'namespace', 'link-26');">namespace</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-58" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-58', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not add Node, because Container {0} '</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">                                 <tt class="py-string">'does not exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">cTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_removeNode"></a><div id="ControlView.view_removeNode-def"><a name="L146"></a><tt class="py-lineno">146</tt> <a class="py-toggle" href="#" id="ControlView.view_removeNode-toggle" onclick="return toggle('ControlView.view_removeNode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_removeNode">view_removeNode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">cTag</tt><tt class="py-op">,</tt> <tt class="py-param">nTag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_removeNode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_removeNode-expanded"><a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remove a node from a ROS environment.</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the node will be destroyed.</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"><tt class="py-docstring">            @param cTag:        Tag which is used to identify the ROS</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-docstring">                                environment from which the node should be</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">                                removed.</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">            @type  cTag:        str</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">            @param nTag:        Tag which is used to identify the ROS node</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring">                                which should removed.</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">            @type  nTag:        str</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">            <tt id="link-59" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-59', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt class="py-name">cTag</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method rce.client.connection._Connection.removeNode()=rce.client.connection._Connection-class.html#removeNode,Method rce.comm.client.RCE.removeNode()=rce.comm.client.RCE-class.html#removeNode,Method rce.comm.interfaces.IRobot.removeNode()=rce.comm.interfaces.IRobot-class.html#removeNode,Method rce.core.wrapper.Container.removeNode()=rce.core.wrapper.Container-class.html#removeNode,Method rce.robot.Connection.removeNode()=rce.robot.Connection-class.html#removeNode,Method rce.robot.RobotView.removeNode()=rce.robot.RobotView-class.html#removeNode"><a title="rce.client.connection._Connection.removeNode
+rce.comm.client.RCE.removeNode
+rce.comm.interfaces.IRobot.removeNode
+rce.core.wrapper.Container.removeNode
+rce.robot.Connection.removeNode
+rce.robot.RobotView.removeNode" class="py-name" href="#" onclick="return doclink('link-60', 'removeNode', 'link-60');">removeNode</a></tt><tt class="py-op">(</tt><tt class="py-name">nTag</tt><tt class="py-op">)</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-61" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-61', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not remove Node, because Container {0} '</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">                                 <tt class="py-string">'does not exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">cTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_addParameter"></a><div id="ControlView.view_addParameter-def"><a name="L169"></a><tt class="py-lineno">169</tt> <a class="py-toggle" href="#" id="ControlView.view_addParameter-toggle" onclick="return toggle('ControlView.view_addParameter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_addParameter">view_addParameter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">cTag</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_addParameter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_addParameter-expanded"><a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-docstring">""" Add a parameter to a ROS environment.</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the parameter will be added.</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"><tt class="py-docstring">            @param cTag:        Tag which is used to identify the ROS</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"><tt class="py-docstring">                                environment to which the parameter should be</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"><tt class="py-docstring">                                added.</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"><tt class="py-docstring">            @type  cTag:        str</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"><tt class="py-docstring">            @param name:        Name of the parameter which should be added.</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"><tt class="py-docstring">                                It is also used to identify the parameter in</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"><tt class="py-docstring">                                subsequent requests.</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line"><tt class="py-docstring">            @type  name:        str</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"><tt class="py-docstring">            @param value:       Value of the parameter which should be added.</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"><tt class="py-docstring">                                String values can contain the directives</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"><tt class="py-docstring">                                $(find PKG) or $(env VAR).</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring">            @type  value:       str, int, float, bool, list</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">            <tt id="link-62" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-62', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt class="py-name">cTag</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name" targets="Method rce.client.connection._Connection.addParameter()=rce.client.connection._Connection-class.html#addParameter,Method rce.comm.client.RCE.addParameter()=rce.comm.client.RCE-class.html#addParameter,Method rce.comm.interfaces.IRobot.addParameter()=rce.comm.interfaces.IRobot-class.html#addParameter,Method rce.core.wrapper.Container.addParameter()=rce.core.wrapper.Container-class.html#addParameter,Method rce.robot.Connection.addParameter()=rce.robot.Connection-class.html#addParameter,Method rce.robot.RobotView.addParameter()=rce.robot.RobotView-class.html#addParameter"><a title="rce.client.connection._Connection.addParameter
+rce.comm.client.RCE.addParameter
+rce.comm.interfaces.IRobot.addParameter
+rce.core.wrapper.Container.addParameter
+rce.robot.Connection.addParameter
+rce.robot.RobotView.addParameter" class="py-name" href="#" onclick="return doclink('link-63', 'addParameter', 'link-63');">addParameter</a></tt><tt class="py-op">(</tt><tt id="link-64" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-64', 'name', 'link-2');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-65" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-65', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not add Parameter, because Container '</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">                                 <tt class="py-string">'{0} does not exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">cTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_removeParameter"></a><div id="ControlView.view_removeParameter-def"><a name="L198"></a><tt class="py-lineno">198</tt> <a class="py-toggle" href="#" id="ControlView.view_removeParameter-toggle" onclick="return toggle('ControlView.view_removeParameter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_removeParameter">view_removeParameter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">cTag</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_removeParameter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_removeParameter-expanded"><a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remove a parameter from a ROS environment.</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the parameter will be destroyed.</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"><tt class="py-docstring">            @param cTag:        Tag which is used to identify the ROS</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"><tt class="py-docstring">                                environment from which the parameter should be</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"><tt class="py-docstring">                                removed.</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"><tt class="py-docstring">            @type  cTag:        str</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"><tt class="py-docstring">            @param name:        Name of the parameter which should be removed.</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"><tt class="py-docstring">            @type  name:        str</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">            <tt id="link-66" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-66', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt class="py-name">cTag</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name" targets="Method rce.client.connection._Connection.removeParameter()=rce.client.connection._Connection-class.html#removeParameter,Method rce.comm.client.RCE.removeParameter()=rce.comm.client.RCE-class.html#removeParameter,Method rce.comm.interfaces.IRobot.removeParameter()=rce.comm.interfaces.IRobot-class.html#removeParameter,Method rce.core.wrapper.Container.removeParameter()=rce.core.wrapper.Container-class.html#removeParameter,Method rce.robot.Connection.removeParameter()=rce.robot.Connection-class.html#removeParameter,Method rce.robot.RobotView.removeParameter()=rce.robot.RobotView-class.html#removeParameter"><a title="rce.client.connection._Connection.removeParameter
+rce.comm.client.RCE.removeParameter
+rce.comm.interfaces.IRobot.removeParameter
+rce.core.wrapper.Container.removeParameter
+rce.robot.Connection.removeParameter
+rce.robot.RobotView.removeParameter" class="py-name" href="#" onclick="return doclink('link-67', 'removeParameter', 'link-67');">removeParameter</a></tt><tt class="py-op">(</tt><tt id="link-68" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-68', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-69" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-69', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not remove Parameter, because Container '</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">                                 <tt class="py-string">'{0} does not exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">cTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_addInterface"></a><div id="ControlView.view_addInterface-def"><a name="L220"></a><tt class="py-lineno">220</tt> <a class="py-toggle" href="#" id="ControlView.view_addInterface-toggle" onclick="return toggle('ControlView.view_addInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_addInterface">view_addInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">eTag</tt><tt class="py-op">,</tt> <tt class="py-param">iTag</tt><tt class="py-op">,</tt> <tt class="py-param">iType</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">addr</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_addInterface-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_addInterface-expanded"><a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-docstring">""" Add an interface to an endpoint, i.e. a ROS environment or a</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"><tt class="py-docstring">            Robot object.</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the interface will be added.</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"><tt class="py-docstring">            @param eTag:        Tag which is used to identify the endpoint to</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line"><tt class="py-docstring">                                which the interface should be added; either</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line"><tt class="py-docstring">                                a container tag or robot ID.</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line"><tt class="py-docstring">            @type  eTag:        str</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line"><tt class="py-docstring">            @param iTag:        Tag which is used to identify the interface in</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line"><tt class="py-docstring">                                subsequent requests.</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line"><tt class="py-docstring">            @type  iTag:        str</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line"><tt class="py-docstring">            @param iType:       Type of the interface. The type consists of a</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line"><tt class="py-docstring">                                prefix and a suffix.</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line"><tt class="py-docstring">                                 - Valid prefixes are:</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"><tt class="py-docstring">                                     ServiceClient, ServiceProvider,</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line"><tt class="py-docstring">                                     Publisher, Subscriber</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"><tt class="py-docstring">                                 - Valid suffixes are:</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"><tt class="py-docstring">                                     Interface, Converter, Forwarder</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line"><tt class="py-docstring">            @type  iType:       str</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring">            @param clsName:     Message type/Service type consisting of the</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"><tt class="py-docstring">                                package and the name of the message/service,</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">                                i.e. 'std_msgs/Int32'.</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line"><tt class="py-docstring">            @type  clsName:     str</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"><tt class="py-docstring">            @param addr:        ROS name/address which the interface should</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"><tt class="py-docstring">                                use. Only necessary if the suffix of @param</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"><tt class="py-docstring">                                iType is 'Interface'.</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"><tt class="py-docstring">            @type  addr:        str</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">iType</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'Converter'</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">iType</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'Forwarder'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">                <tt id="link-70" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-70', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">robots</tt><tt class="py-op">[</tt><tt class="py-name">eTag</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name" targets="Method rce.client.connection._Connection.addInterface()=rce.client.connection._Connection-class.html#addInterface,Method rce.comm.client.RCE.addInterface()=rce.comm.client.RCE-class.html#addInterface,Method rce.comm.interfaces.IRobot.addInterface()=rce.comm.interfaces.IRobot-class.html#addInterface,Method rce.core.wrapper.Container.addInterface()=rce.core.wrapper.Container-class.html#addInterface,Method rce.core.wrapper.Robot.addInterface()=rce.core.wrapper.Robot-class.html#addInterface,Method rce.robot.Connection.addInterface()=rce.robot.Connection-class.html#addInterface,Method rce.robot.RobotView.addInterface()=rce.robot.RobotView-class.html#addInterface"><a title="rce.client.connection._Connection.addInterface
+rce.comm.client.RCE.addInterface
+rce.comm.interfaces.IRobot.addInterface
+rce.core.wrapper.Container.addInterface
+rce.core.wrapper.Robot.addInterface
+rce.robot.Connection.addInterface
+rce.robot.RobotView.addInterface" class="py-name" href="#" onclick="return doclink('link-71', 'addInterface', 'link-71');">addInterface</a></tt><tt class="py-op">(</tt><tt class="py-name">iTag</tt><tt class="py-op">,</tt> <tt class="py-name">iType</tt><tt class="py-op">,</tt> <tt class="py-name">clsName</tt><tt class="py-op">)</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt id="link-72" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-72', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not add Interface, because Robot '</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">                                     <tt class="py-string">'{0} does not exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">eTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">iType</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">'Interface'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">                <tt id="link-73" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-73', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt class="py-name">eTag</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="rce.client.connection._Connection.addInterface
+rce.comm.client.RCE.addInterface
+rce.comm.interfaces.IRobot.addInterface
+rce.core.wrapper.Container.addInterface
+rce.core.wrapper.Robot.addInterface
+rce.robot.Connection.addInterface
+rce.robot.RobotView.addInterface" class="py-name" href="#" onclick="return doclink('link-74', 'addInterface', 'link-71');">addInterface</a></tt><tt class="py-op">(</tt><tt class="py-name">iTag</tt><tt class="py-op">,</tt> <tt class="py-name">iType</tt><tt class="py-op">,</tt> <tt class="py-name">clsName</tt><tt class="py-op">,</tt> <tt id="link-75" class="py-name" targets="Variable rce.util.sysinfo.Process.nt_mmap_ext.addr=rce.util.sysinfo.Process.nt_mmap_ext-class.html#addr"><a title="rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-75', 'addr', 'link-75');">addr</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt id="link-76" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-76', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not add Interface, because '</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">                                     <tt class="py-string">'Container {0} does not '</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">                                     <tt class="py-string">'exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">eTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-77" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-77', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Interface type is invalid (Unknown suffix).'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_removeInterface"></a><div id="ControlView.view_removeInterface-def"><a name="L273"></a><tt class="py-lineno">273</tt> <a class="py-toggle" href="#" id="ControlView.view_removeInterface-toggle" onclick="return toggle('ControlView.view_removeInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_removeInterface">view_removeInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">eTag</tt><tt class="py-op">,</tt> <tt class="py-param">iTag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_removeInterface-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_removeInterface-expanded"><a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remove an interface from an endpoint, i.e. a ROS environment or a</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line"><tt class="py-docstring">            Robot object.</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the interface will be destroyed.</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line"><tt class="py-docstring">            @param eTag:        Tag which is used to identify the endpoint from</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line"><tt class="py-docstring">                                which the interface should be removed; either</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line"><tt class="py-docstring">                                a container tag or robot ID.</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line"><tt class="py-docstring">            @type  eTag:        str</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"><tt class="py-docstring">            @param iTag:        Tag which is used to identify the interface</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line"><tt class="py-docstring">                                which should be removed.</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"><tt class="py-docstring">            @type  iTag:        str</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">        <tt id="link-78" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-78', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-79" class="py-name" targets="Method rce.core.user.User.getEndpoint()=rce.core.user.User-class.html#getEndpoint"><a title="rce.core.user.User.getEndpoint" class="py-name" href="#" onclick="return doclink('link-79', 'getEndpoint', 'link-79');">getEndpoint</a></tt><tt class="py-op">(</tt><tt class="py-name">eTag</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name" targets="Method rce.client.connection._Connection.removeInterface()=rce.client.connection._Connection-class.html#removeInterface,Method rce.comm.client.RCE.removeInterface()=rce.comm.client.RCE-class.html#removeInterface,Method rce.comm.interfaces.IRobot.removeInterface()=rce.comm.interfaces.IRobot-class.html#removeInterface,Method rce.core.wrapper.Container.removeInterface()=rce.core.wrapper.Container-class.html#removeInterface,Method rce.core.wrapper.Robot.removeInterface()=rce.core.wrapper.Robot-class.html#removeInterface,Method rce.robot.Connection.removeInterface()=rce.robot.Connection-class.html#removeInterface,Method rce.robot.RobotView.removeInterface()=rce.robot.RobotView-class.html#removeInterface"><a title="rce.client.connection._Connection.removeInterface
+rce.comm.client.RCE.removeInterface
+rce.comm.interfaces.IRobot.removeInterface
+rce.core.wrapper.Container.removeInterface
+rce.core.wrapper.Robot.removeInterface
+rce.robot.Connection.removeInterface
+rce.robot.RobotView.removeInterface" class="py-name" href="#" onclick="return doclink('link-80', 'removeInterface', 'link-80');">removeInterface</a></tt><tt class="py-op">(</tt><tt class="py-name">iTag</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_addConnection"></a><div id="ControlView.view_addConnection-def"><a name="L293"></a><tt class="py-lineno">293</tt> <a class="py-toggle" href="#" id="ControlView.view_addConnection-toggle" onclick="return toggle('ControlView.view_addConnection');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_addConnection">view_addConnection</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">tagA</tt><tt class="py-op">,</tt> <tt class="py-param">tagB</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_addConnection-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_addConnection-expanded"><a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">        <tt class="py-docstring">""" Create a connection between two interfaces.</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the connection will be created.</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"><tt class="py-docstring">            @param tagX:        Tag which is used to identify the interface</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"><tt class="py-docstring">                                which should be connected. It has to be of the</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"><tt class="py-docstring">                                form:</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line"><tt class="py-docstring">                                    [endpoint tag]/[interface tag]</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"><tt class="py-docstring">                                For example:</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"><tt class="py-docstring">                                    testRobot/logPublisher</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line"><tt class="py-docstring">            @type  tagX:        str</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">        <tt class="py-name">eTagA</tt><tt class="py-op">,</tt> <tt class="py-name">iTagA</tt> <tt class="py-op">=</tt> <tt class="py-name">tagA</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-name">eTagB</tt><tt class="py-op">,</tt> <tt class="py-name">iTagB</tt> <tt class="py-op">=</tt> <tt class="py-name">tagB</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line"> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">        <tt class="py-name">ifA</tt> <tt class="py-op">=</tt> <tt id="link-81" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-81', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-82" class="py-name"><a title="rce.core.user.User.getEndpoint" class="py-name" href="#" onclick="return doclink('link-82', 'getEndpoint', 'link-79');">getEndpoint</a></tt><tt class="py-op">(</tt><tt class="py-name">eTagA</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name" targets="Method rce.core.wrapper.Container.getInterface()=rce.core.wrapper.Container-class.html#getInterface,Method rce.core.wrapper.Robot.getInterface()=rce.core.wrapper.Robot-class.html#getInterface"><a title="rce.core.wrapper.Container.getInterface
+rce.core.wrapper.Robot.getInterface" class="py-name" href="#" onclick="return doclink('link-83', 'getInterface', 'link-83');">getInterface</a></tt><tt class="py-op">(</tt><tt class="py-name">iTagA</tt><tt class="py-op">)</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">        <tt class="py-name">ifB</tt> <tt class="py-op">=</tt> <tt id="link-84" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-84', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="rce.core.user.User.getEndpoint" class="py-name" href="#" onclick="return doclink('link-85', 'getEndpoint', 'link-79');">getEndpoint</a></tt><tt class="py-op">(</tt><tt class="py-name">eTagB</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="rce.core.wrapper.Container.getInterface
+rce.core.wrapper.Robot.getInterface" class="py-name" href="#" onclick="return doclink('link-86', 'getInterface', 'link-83');">getInterface</a></tt><tt class="py-op">(</tt><tt class="py-name">iTagB</tt><tt class="py-op">)</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ifA</tt><tt class="py-op">.</tt><tt class="py-name">clsName</tt> <tt class="py-op">!=</tt> <tt class="py-name">ifB</tt><tt class="py-op">.</tt><tt class="py-name">clsName</tt><tt class="py-op">:</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-87" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-87', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not connect two interfaces with '</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">                                 <tt class="py-string">'different message/service type.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-88" class="py-name"><a title="rce.slave.interface.Types" class="py-name" href="#" onclick="return doclink('link-88', 'Types', 'link-16');">Types</a></tt><tt class="py-op">.</tt><tt id="link-89" class="py-name" targets="Static Method rce.slave.interface.Types.connectable()=rce.slave.interface.Types-class.html#connectable"><a title="rce.slave.interface.Types.connectable" class="py-name" href="#" onclick="return doclink('link-89', 'connectable', 'link-89');">connectable</a></tt><tt class="py-op">(</tt><tt class="py-name">ifA</tt><tt class="py-op">.</tt><tt class="py-name">iType</tt><tt class="py-op">,</tt> <tt class="py-name">ifB</tt><tt class="py-op">.</tt><tt class="py-name">iType</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-90" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-90', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not connect an interface of type {0} '</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">                                 <tt class="py-string">'and an interface of type '</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">                                 <tt class="py-string">'{1}.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-91" class="py-name"><a title="rce.slave.interface.Types" class="py-name" href="#" onclick="return doclink('link-91', 'Types', 'link-16');">Types</a></tt><tt class="py-op">.</tt><tt id="link-92" class="py-name" targets="Static Method rce.slave.interface.Types.decode()=rce.slave.interface.Types-class.html#decode,Method rce.util.converter.Converter.decode()=rce.util.converter.Converter-class.html#decode,Method rce.util.converter._DurationConverter.decode()=rce.util.converter._DurationConverter-class.html#decode,Method rce.util.converter._TimeConverter.decode()=rce.util.converter._TimeConverter-class.html#decode,Method rce.util.converters.image.ImageConverter.decode()=rce.util.converters.image.ImageConverter-class.html#decode,Method rce.util.converters.interfaces.ICustomROSConverter.decode()=rce.util.converters.interfaces.ICustomROSConverter-class.html#decode"><a title="rce.slave.interface.Types.decode
+rce.util.converter.Converter.decode
+rce.util.converter._DurationConverter.decode
+rce.util.converter._TimeConverter.decode
+rce.util.converters.image.ImageConverter.decode
+rce.util.converters.interfaces.ICustomROSConverter.decode" class="py-name" href="#" onclick="return doclink('link-92', 'decode', 'link-92');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">ifA</tt><tt class="py-op">.</tt><tt class="py-name">iType</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">                                               <tt id="link-93" class="py-name"><a title="rce.slave.interface.Types" class="py-name" href="#" onclick="return doclink('link-93', 'Types', 'link-16');">Types</a></tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="rce.slave.interface.Types.decode
+rce.util.converter.Converter.decode
+rce.util.converter._DurationConverter.decode
+rce.util.converter._TimeConverter.decode
+rce.util.converters.image.ImageConverter.decode
+rce.util.converters.interfaces.ICustomROSConverter.decode" class="py-name" href="#" onclick="return doclink('link-94', 'decode', 'link-92');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">ifB</tt><tt class="py-op">.</tt><tt class="py-name">iType</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line"> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">        <tt class="py-name">key</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">md5</tt><tt class="py-op">(</tt><tt class="py-name">tagA</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">^</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">md5</tt><tt class="py-op">(</tt><tt class="py-name">tagB</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">key</tt> <tt class="py-keyword">in</tt> <tt id="link-95" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-95', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">connections</tt><tt class="py-op">:</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-96" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-96', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not add the same connection twice.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line">        <tt id="link-97" class="py-name" targets="Module rce.client.connection=rce.client.connection-module.html"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-97', 'connection', 'link-97');">connection</a></tt> <tt class="py-op">=</tt> <tt id="link-98" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-98', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-99', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt id="link-100" class="py-name" targets="Method rce.core.network.Network.createConnection()=rce.core.network.Network-class.html#createConnection,Method rce.master.RoboEarthCloudEngine.createConnection()=rce.master.RoboEarthCloudEngine-class.html#createConnection"><a title="rce.core.network.Network.createConnection
+rce.master.RoboEarthCloudEngine.createConnection" class="py-name" href="#" onclick="return doclink('link-100', 'createConnection', 'link-100');">createConnection</a></tt><tt class="py-op">(</tt><tt class="py-name">ifA</tt><tt class="py-op">.</tt><tt id="link-101" class="py-name" targets="Variable rce.core.wrapper.Interface.obj=rce.core.wrapper.Interface-class.html#obj"><a title="rce.core.wrapper.Interface.obj" class="py-name" href="#" onclick="return doclink('link-101', 'obj', 'link-101');">obj</a></tt><tt class="py-op">,</tt> <tt class="py-name">ifB</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="rce.core.wrapper.Interface.obj" class="py-name" href="#" onclick="return doclink('link-102', 'obj', 'link-101');">obj</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">        <tt id="link-103" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-103', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">connections</tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-104" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-104', 'connection', 'link-97');">connection</a></tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">        <tt id="link-105" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-105', 'connection', 'link-97');">connection</a></tt><tt class="py-op">.</tt><tt id="link-106" class="py-name"><a title="rce.core.base.Proxy.notifyOnDeath
+rce.core.network.Connection.notifyOnDeath
+rce.core.wrapper._Wrapper.notifyOnDeath" class="py-name" href="#" onclick="return doclink('link-106', 'notifyOnDeath', 'link-39');">notifyOnDeath</a></tt><tt class="py-op">(</tt><tt id="link-107" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-107', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-108" class="py-name" targets="Method rce.core.user.User.connectionDied()=rce.core.user.User-class.html#connectionDied"><a title="rce.core.user.User.connectionDied" class="py-name" href="#" onclick="return doclink('link-108', 'connectionDied', 'link-108');">connectionDied</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"> </tt>
+<a name="ControlView.view_removeConnection"></a><div id="ControlView.view_removeConnection-def"><a name="L334"></a><tt class="py-lineno">334</tt> <a class="py-toggle" href="#" id="ControlView.view_removeConnection-toggle" onclick="return toggle('ControlView.view_removeConnection');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.ControlView-class.html#view_removeConnection">view_removeConnection</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">tagA</tt><tt class="py-op">,</tt> <tt class="py-param">tagB</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ControlView.view_removeConnection-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ControlView.view_removeConnection-expanded"><a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">        <tt class="py-docstring">""" Destroy a connection between two interfaces.</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the connection will be destroyed.</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line"><tt class="py-docstring">            @param tagX:        Tag which is used to identify the interface</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line"><tt class="py-docstring">                                which should be disconnected. It has to be of</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line"><tt class="py-docstring">                                the form:</tt> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line"><tt class="py-docstring">                                    [endpoint tag]/[interface tag]</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line"><tt class="py-docstring">                                For example:</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line"><tt class="py-docstring">                                    testRobot/logPublisher</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line"><tt class="py-docstring">            @type  tagX:        str</tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line">        <tt class="py-name">key</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">md5</tt><tt class="py-op">(</tt><tt class="py-name">tagA</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">^</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">md5</tt><tt class="py-op">(</tt><tt class="py-name">tagB</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line"> </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line">            <tt id="link-109" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-109', 'connection', 'link-97');">connection</a></tt> <tt class="py-op">=</tt> <tt id="link-110" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-110', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">connections</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt id="link-111" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-111', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not disconnect two unconnected '</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line">                                     <tt class="py-string">'interfaces.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line"> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">        <tt id="link-112" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-112', 'connection', 'link-97');">connection</a></tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="rce.core.base.Proxy.dontNotifyOnDeath
+rce.core.network.Connection.dontNotifyOnDeath
+rce.core.wrapper._Wrapper.dontNotifyOnDeath" class="py-name" href="#" onclick="return doclink('link-113', 'dontNotifyOnDeath', 'link-49');">dontNotifyOnDeath</a></tt><tt class="py-op">(</tt><tt id="link-114" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-114', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="rce.core.user.User.connectionDied" class="py-name" href="#" onclick="return doclink('link-115', 'connectionDied', 'link-108');">connectionDied</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line">        <tt id="link-116" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-116', 'connection', 'link-97');">connection</a></tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="rce.core.base.Proxy.destroy
+rce.core.container.Container.destroy
+rce.core.environment.Environment.destroy
+rce.core.environment.EnvironmentEndpoint.destroy
+rce.core.environment.Node.destroy
+rce.core.environment.Parameter.destroy
+rce.core.machine.Machine.destroy
+rce.core.network.Connection.destroy
+rce.core.network.Endpoint.destroy
+rce.core.network.EndpointConnection.destroy
+rce.core.network.Interface.destroy
+rce.core.network.InterfaceConnection.destroy
+rce.core.network.Namespace.destroy
+rce.core.network.Protocol.destroy
+rce.core.robot.RobotEndpoint.destroy
+rce.core.user.User.destroy
+rce.core.wrapper.Container.destroy
+rce.core.wrapper.Robot.destroy
+rce.core.wrapper._Wrapper.destroy
+rce.robot.Connection.destroy
+rce.robot.Robot.destroy
+rce.robot.RobotView.destroy" class="py-name" href="#" onclick="return doclink('link-117', 'destroy', 'link-53');">destroy</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line"> </tt>
+<a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Return some info about success/failure of request</tt> </tt>
+<a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line"> </tt>
+<a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line"> </tt>
+<a name="MonitorView"></a><div id="MonitorView-def"><a name="L362"></a><tt class="py-lineno">362</tt> <a class="py-toggle" href="#" id="MonitorView-toggle" onclick="return toggle('MonitorView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.core.view.MonitorView-class.html">MonitorView</a><tt class="py-op">(</tt><tt class="py-base-class">Viewable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MonitorView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="MonitorView-expanded"><a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line">    <tt class="py-docstring">""" View implementing all monitor actions which a normal user can perform to</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line"><tt class="py-docstring">        interact with the cloud engine.</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="MonitorView.view_update_user"></a><div id="MonitorView.view_update_user-def"><a name="L366"></a><tt class="py-lineno">366</tt> <a class="py-toggle" href="#" id="MonitorView.view_update_user-toggle" onclick="return toggle('MonitorView.view_update_user');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.MonitorView-class.html#view_update_user">view_update_user</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">new_pw</tt><tt class="py-op">,</tt> <tt class="py-param">old_pw</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MonitorView.view_update_user-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MonitorView.view_update_user-expanded"><a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to edit user information.</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the login information will be</tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line"><tt class="py-docstring">                                updated.</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line"><tt class="py-docstring">            @param new_pw:      The new password</tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line"><tt class="py-docstring">            @type  new_pw:      str</tt> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line"><tt class="py-docstring">            @param old_pw:      Old password</tt> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line"><tt class="py-docstring">            @type  old_pw:      str</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L379"></a><tt class="py-lineno">379</tt>  <tt class="py-line">        <tt id="link-118" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-118', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-119', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_checker</tt><tt class="py-op">.</tt><tt id="link-120" class="py-name" targets="Method rce.util.cred.RCECredChecker.passwd()=rce.util.cred.RCECredChecker-class.html#passwd"><a title="rce.util.cred.RCECredChecker.passwd" class="py-name" href="#" onclick="return doclink('link-120', 'passwd', 'link-120');">passwd</a></tt><tt class="py-op">(</tt><tt id="link-121" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-121', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-122" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-122', 'userID', 'link-31');">userID</a></tt><tt class="py-op">,</tt> <tt class="py-name">new_pw</tt><tt class="py-op">,</tt> <tt class="py-name">old_pw</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line"> </tt>
+<a name="MonitorView.view_list_containers"></a><div id="MonitorView.view_list_containers-def"><a name="L381"></a><tt class="py-lineno">381</tt> <a class="py-toggle" href="#" id="MonitorView.view_list_containers-toggle" onclick="return toggle('MonitorView.view_list_containers');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.MonitorView-class.html#view_list_containers">view_list_containers</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MonitorView.view_list_containers-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MonitorView.view_list_containers-expanded"><a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to list containers under the logged-in user.</tt> </tt>
+<a name="L383"></a><tt class="py-lineno">383</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the running container should be</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line"><tt class="py-docstring">                                listed.</tt> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L388"></a><tt class="py-lineno">388</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            List of the container tags of running</tt> </tt>
+<a name="L389"></a><tt class="py-lineno">389</tt>  <tt class="py-line"><tt class="py-docstring">                                containers.</tt> </tt>
+<a name="L390"></a><tt class="py-lineno">390</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             [ str ]</tt> </tt>
+<a name="L391"></a><tt class="py-lineno">391</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L392"></a><tt class="py-lineno">392</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-123" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-123', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L393"></a><tt class="py-lineno">393</tt>  <tt class="py-line"> </tt>
+<a name="MonitorView.view_list_robots"></a><div id="MonitorView.view_list_robots-def"><a name="L394"></a><tt class="py-lineno">394</tt> <a class="py-toggle" href="#" id="MonitorView.view_list_robots-toggle" onclick="return toggle('MonitorView.view_list_robots');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.MonitorView-class.html#view_list_robots">view_list_robots</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MonitorView.view_list_robots-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MonitorView.view_list_robots-expanded"><a name="L395"></a><tt class="py-lineno">395</tt>  <tt class="py-line">        <tt class="py-docstring">""" List Robots under the logged in user.</tt> </tt>
+<a name="L396"></a><tt class="py-lineno">396</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L397"></a><tt class="py-lineno">397</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User for which the connected robots should be</tt> </tt>
+<a name="L398"></a><tt class="py-lineno">398</tt>  <tt class="py-line"><tt class="py-docstring">                                listed.</tt> </tt>
+<a name="L399"></a><tt class="py-lineno">399</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L400"></a><tt class="py-lineno">400</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L401"></a><tt class="py-lineno">401</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            List of the robot IDs of connected robots.</tt> </tt>
+<a name="L402"></a><tt class="py-lineno">402</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             [ str ]</tt> </tt>
+<a name="L403"></a><tt class="py-lineno">403</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L404"></a><tt class="py-lineno">404</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-124" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-124', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">robots</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L405"></a><tt class="py-lineno">405</tt>  <tt class="py-line"> </tt>
+<a name="MonitorView.view_get_rosapi_connect_info"></a><div id="MonitorView.view_get_rosapi_connect_info-def"><a name="L406"></a><tt class="py-lineno">406</tt> <a class="py-toggle" href="#" id="MonitorView.view_get_rosapi_connect_info-toggle" onclick="return toggle('MonitorView.view_get_rosapi_connect_info');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.MonitorView-class.html#view_get_rosapi_connect_info">view_get_rosapi_connect_info</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MonitorView.view_get_rosapi_connect_info-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MonitorView.view_get_rosapi_connect_info-expanded"><a name="L407"></a><tt class="py-lineno">407</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to get ROSAPI request URL and key for a particular</tt> </tt>
+<a name="L408"></a><tt class="py-lineno">408</tt>  <tt class="py-line"><tt class="py-docstring">            container.</tt> </tt>
+<a name="L409"></a><tt class="py-lineno">409</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L410"></a><tt class="py-lineno">410</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who owns the container for which the URL</tt> </tt>
+<a name="L411"></a><tt class="py-lineno">411</tt>  <tt class="py-line"><tt class="py-docstring">                                is requested.</tt> </tt>
+<a name="L412"></a><tt class="py-lineno">412</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L413"></a><tt class="py-lineno">413</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L414"></a><tt class="py-lineno">414</tt>  <tt class="py-line"><tt class="py-docstring">            @param tag:         Tag used to identify the container.</tt> </tt>
+<a name="L415"></a><tt class="py-lineno">415</tt>  <tt class="py-line"><tt class="py-docstring">            @type  tag:         str</tt> </tt>
+<a name="L416"></a><tt class="py-lineno">416</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L417"></a><tt class="py-lineno">417</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            URL&#160;which can be used to connect to the rosproxy</tt> </tt>
+<a name="L418"></a><tt class="py-lineno">418</tt>  <tt class="py-line"><tt class="py-docstring">                                running inside the container as well as the key</tt> </tt>
+<a name="L419"></a><tt class="py-lineno">419</tt>  <tt class="py-line"><tt class="py-docstring">                                necessary to use the rosproxy.</tt> </tt>
+<a name="L420"></a><tt class="py-lineno">420</tt>  <tt class="py-line"><tt class="py-docstring">                                (type: (str, str))</tt> </tt>
+<a name="L421"></a><tt class="py-lineno">421</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             twisted.internet.defer.Deferred</tt> </tt>
+<a name="L422"></a><tt class="py-lineno">422</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L423"></a><tt class="py-lineno">423</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L424"></a><tt class="py-lineno">424</tt>  <tt class="py-line">            <tt id="link-125" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-125', 'container', 'link-32');">container</a></tt> <tt class="py-op">=</tt> <tt id="link-126" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-126', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">[</tt><tt id="link-127" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-127', 'tag', 'link-18');">tag</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L425"></a><tt class="py-lineno">425</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L426"></a><tt class="py-lineno">426</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-128" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-128', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Container {0} does not exist.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-129" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-129', 'tag', 'link-18');">tag</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L427"></a><tt class="py-lineno">427</tt>  <tt class="py-line"> </tt>
+<a name="L428"></a><tt class="py-lineno">428</tt>  <tt class="py-line">        <tt class="py-name">uid</tt> <tt class="py-op">=</tt> <tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hex</tt> </tt>
+<a name="L429"></a><tt class="py-lineno">429</tt>  <tt class="py-line">        <tt id="link-130" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-130', 'container', 'link-32');">container</a></tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name" targets="Method rce.core.environment.Environment.registerConsole()=rce.core.environment.Environment-class.html#registerConsole,Method rce.core.environment.EnvironmentEndpoint.registerConsole()=rce.core.environment.EnvironmentEndpoint-class.html#registerConsole"><a title="rce.core.environment.Environment.registerConsole
+rce.core.environment.EnvironmentEndpoint.registerConsole" class="py-name" href="#" onclick="return doclink('link-131', 'registerConsole', 'link-131');">registerConsole</a></tt><tt class="py-op">(</tt><tt id="link-132" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-132', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-133" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-133', 'userID', 'link-31');">userID</a></tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">)</tt> </tt>
+<a name="L430"></a><tt class="py-lineno">430</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt id="link-134" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-134', 'container', 'link-32');">container</a></tt><tt class="py-op">.</tt><tt id="link-135" class="py-name" targets="Method rce.core.wrapper.Container.getConnectInfo()=rce.core.wrapper.Container-class.html#getConnectInfo,Method rce.core.wrapper.Robot.getConnectInfo()=rce.core.wrapper.Robot-class.html#getConnectInfo"><a title="rce.core.wrapper.Container.getConnectInfo
+rce.core.wrapper.Robot.getConnectInfo" class="py-name" href="#" onclick="return doclink('link-135', 'getConnectInfo', 'link-135');">getConnectInfo</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L431"></a><tt class="py-lineno">431</tt>  <tt class="py-line">        <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">addCallback</tt><tt class="py-op">(</tt><tt class="py-keyword">lambda</tt> <tt id="link-136" class="py-name"><a title="rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-136', 'addr', 'link-75');">addr</a></tt><tt class="py-op">:</tt> <tt class="py-op">(</tt><tt id="link-137" class="py-name"><a title="rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-137', 'addr', 'link-75');">addr</a></tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L432"></a><tt class="py-lineno">432</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">d</tt> </tt>
+</div></div><a name="L433"></a><tt class="py-lineno">433</tt>  <tt class="py-line"> </tt>
+<a name="L434"></a><tt class="py-lineno">434</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView"></a><div id="AdminMonitorView-def"><a name="L435"></a><tt class="py-lineno">435</tt> <a class="py-toggle" href="#" id="AdminMonitorView-toggle" onclick="return toggle('AdminMonitorView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html">AdminMonitorView</a><tt class="py-op">(</tt><tt class="py-base-class">Viewable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="AdminMonitorView-expanded"><a name="L436"></a><tt class="py-lineno">436</tt>  <tt class="py-line">    <tt class="py-docstring">""" View implementing all monitor actions which an admin user can perform to</tt> </tt>
+<a name="L437"></a><tt class="py-lineno">437</tt>  <tt class="py-line"><tt class="py-docstring">        interact with the cloud engine.</tt> </tt>
+<a name="L438"></a><tt class="py-lineno">438</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="AdminMonitorView.view_list_machines"></a><div id="AdminMonitorView.view_list_machines-def"><a name="L439"></a><tt class="py-lineno">439</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_list_machines-toggle" onclick="return toggle('AdminMonitorView.view_list_machines');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_list_machines">view_list_machines</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_list_machines-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_list_machines-expanded"><a name="L440"></a><tt class="py-lineno">440</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to list machine IPs.</tt> </tt>
+<a name="L441"></a><tt class="py-lineno">441</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L442"></a><tt class="py-lineno">442</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt id="link-138" class="py-name" targets="Module rce.core.machine=rce.core.machine-module.html"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-138', 'machine', 'link-138');">machine</a></tt><tt class="py-op">.</tt><tt id="link-139" class="py-name" targets="Method rce.core.machine.Machine.IP()=rce.core.machine.Machine-class.html#IP"><a title="rce.core.machine.Machine.IP" class="py-name" href="#" onclick="return doclink('link-139', 'IP', 'link-139');">IP</a></tt> <tt class="py-keyword">for</tt> <tt id="link-140" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-140', 'machine', 'link-138');">machine</a></tt> <tt class="py-keyword">in</tt> <tt id="link-141" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-141', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-142" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-142', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_balancer</tt><tt class="py-op">.</tt><tt class="py-name">_machines</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L443"></a><tt class="py-lineno">443</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_machine_containers"></a><div id="AdminMonitorView.view_machine_containers-def"><a name="L444"></a><tt class="py-lineno">444</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_machine_containers-toggle" onclick="return toggle('AdminMonitorView.view_machine_containers');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_machine_containers">view_machine_containers</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">machineIP</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_machine_containers-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_machine_containers-expanded"><a name="L445"></a><tt class="py-lineno">445</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to list containers in a machine with given IP.</tt> </tt>
+<a name="L446"></a><tt class="py-lineno">446</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L447"></a><tt class="py-lineno">447</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the container list.</tt> </tt>
+<a name="L448"></a><tt class="py-lineno">448</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L449"></a><tt class="py-lineno">449</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L450"></a><tt class="py-lineno">450</tt>  <tt class="py-line"><tt class="py-docstring">            @param machineIP:   IP of machine for which the running containers</tt> </tt>
+<a name="L451"></a><tt class="py-lineno">451</tt>  <tt class="py-line"><tt class="py-docstring">                                should be listed.</tt> </tt>
+<a name="L452"></a><tt class="py-lineno">452</tt>  <tt class="py-line"><tt class="py-docstring">            @type  machineIP:   str</tt> </tt>
+<a name="L453"></a><tt class="py-lineno">453</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L454"></a><tt class="py-lineno">454</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            List of running containers.</tt> </tt>
+<a name="L455"></a><tt class="py-lineno">455</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             # TODO: Depends on modification below.</tt> </tt>
+<a name="L456"></a><tt class="py-lineno">456</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L457"></a><tt class="py-lineno">457</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Can not return rce.master.container.Container instances need</tt> </tt>
+<a name="L458"></a><tt class="py-lineno">458</tt>  <tt class="py-line">        <tt class="py-comment">#       some conversion into string, tuple, or some other base type</tt> </tt>
+<a name="L459"></a><tt class="py-lineno">459</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L460"></a><tt class="py-lineno">460</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt id="link-143" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-143', 'machine', 'link-138');">machine</a></tt> <tt class="py-keyword">for</tt> <tt id="link-144" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-144', 'machine', 'link-138');">machine</a></tt> <tt class="py-keyword">in</tt> <tt id="link-145" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-145', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-146" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-146', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_balancer</tt><tt class="py-op">.</tt><tt class="py-name">_machines</tt> </tt>
+<a name="L461"></a><tt class="py-lineno">461</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-name">machineIP</tt> <tt class="py-op">==</tt> <tt id="link-147" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-147', 'machine', 'link-138');">machine</a></tt><tt class="py-op">.</tt><tt id="link-148" class="py-name"><a title="rce.core.machine.Machine.IP" class="py-name" href="#" onclick="return doclink('link-148', 'IP', 'link-139');">IP</a></tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">next</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">_containers</tt> </tt>
+<a name="L462"></a><tt class="py-lineno">462</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">StopIteration</tt><tt class="py-op">:</tt> </tt>
+<a name="L463"></a><tt class="py-lineno">463</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-149" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-149', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'No such machine.'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L464"></a><tt class="py-lineno">464</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_stats_machine"></a><div id="AdminMonitorView.view_stats_machine-def"><a name="L465"></a><tt class="py-lineno">465</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_stats_machine-toggle" onclick="return toggle('AdminMonitorView.view_stats_machine');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_stats_machine">view_stats_machine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">machineIP</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_stats_machine-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_stats_machine-expanded"><a name="L466"></a><tt class="py-lineno">466</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to list stats of machine with given IP.</tt> </tt>
+<a name="L467"></a><tt class="py-lineno">467</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L468"></a><tt class="py-lineno">468</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the stats.</tt> </tt>
+<a name="L469"></a><tt class="py-lineno">469</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L470"></a><tt class="py-lineno">470</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L471"></a><tt class="py-lineno">471</tt>  <tt class="py-line"><tt class="py-docstring">            @param machineIP:   IP of machine for which the stats should be</tt> </tt>
+<a name="L472"></a><tt class="py-lineno">472</tt>  <tt class="py-line"><tt class="py-docstring">                                listed.</tt> </tt>
+<a name="L473"></a><tt class="py-lineno">473</tt>  <tt class="py-line"><tt class="py-docstring">            @type  machineIP:   str</tt> </tt>
+<a name="L474"></a><tt class="py-lineno">474</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L475"></a><tt class="py-lineno">475</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            Stats of the machine.</tt> </tt>
+<a name="L476"></a><tt class="py-lineno">476</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             { str : int }</tt> </tt>
+<a name="L477"></a><tt class="py-lineno">477</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L478"></a><tt class="py-lineno">478</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L479"></a><tt class="py-lineno">479</tt>  <tt class="py-line">            <tt id="link-150" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-150', 'machine', 'link-138');">machine</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt id="link-151" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-151', 'machine', 'link-138');">machine</a></tt> <tt class="py-keyword">for</tt> <tt id="link-152" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-152', 'machine', 'link-138');">machine</a></tt> <tt class="py-keyword">in</tt> <tt id="link-153" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-153', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-154" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-154', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_balancer</tt><tt class="py-op">.</tt><tt class="py-name">_machines</tt> </tt>
+<a name="L480"></a><tt class="py-lineno">480</tt>  <tt class="py-line">                       <tt class="py-keyword">if</tt> <tt class="py-name">machineIP</tt> <tt class="py-op">==</tt> <tt id="link-155" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-155', 'machine', 'link-138');">machine</a></tt><tt class="py-op">.</tt><tt id="link-156" class="py-name"><a title="rce.core.machine.Machine.IP" class="py-name" href="#" onclick="return doclink('link-156', 'IP', 'link-139');">IP</a></tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">next</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L481"></a><tt class="py-lineno">481</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-op">{</tt><tt class="py-string">'active'</tt><tt class="py-op">:</tt><tt id="link-157" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-157', 'machine', 'link-138');">machine</a></tt><tt class="py-op">.</tt><tt id="link-158" class="py-name" targets="Method rce.core.machine.Machine.active()=rce.core.machine.Machine-class.html#active,Method rce.core.robot.RobotEndpoint.active()=rce.core.robot.RobotEndpoint-class.html#active,Variable rce.util.sysinfo.nt_virtmem_info.active=rce.util.sysinfo.nt_virtmem_info-class.html#active"><a title="rce.core.machine.Machine.active
+rce.core.robot.RobotEndpoint.active
+rce.util.sysinfo.nt_virtmem_info.active" class="py-name" href="#" onclick="return doclink('link-158', 'active', 'link-158');">active</a></tt><tt class="py-op">,</tt> <tt class="py-string">'capacity'</tt><tt class="py-op">:</tt><tt id="link-159" class="py-name"><a title="rce.core.machine" class="py-name" href="#" onclick="return doclink('link-159', 'machine', 'link-138');">machine</a></tt><tt class="py-op">.</tt><tt id="link-160" class="py-name" targets="Method rce.core.machine.Machine.capacity()=rce.core.machine.Machine-class.html#capacity"><a title="rce.core.machine.Machine.capacity" class="py-name" href="#" onclick="return doclink('link-160', 'capacity', 'link-160');">capacity</a></tt><tt class="py-op">}</tt> </tt>
+<a name="L482"></a><tt class="py-lineno">482</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">StopIteration</tt><tt class="py-op">:</tt> </tt>
+<a name="L483"></a><tt class="py-lineno">483</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-161" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-161', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'No such machine.'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L484"></a><tt class="py-lineno">484</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_list_users"></a><div id="AdminMonitorView.view_list_users-def"><a name="L485"></a><tt class="py-lineno">485</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_list_users-toggle" onclick="return toggle('AdminMonitorView.view_list_users');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_list_users">view_list_users</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_list_users-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_list_users-expanded"><a name="L486"></a><tt class="py-lineno">486</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to list all users currently logged into</tt> </tt>
+<a name="L487"></a><tt class="py-lineno">487</tt>  <tt class="py-line"><tt class="py-docstring">            the RoboEarth Cloud Engine.</tt> </tt>
+<a name="L488"></a><tt class="py-lineno">488</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L489"></a><tt class="py-lineno">489</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the listing of logged-in</tt> </tt>
+<a name="L490"></a><tt class="py-lineno">490</tt>  <tt class="py-line"><tt class="py-docstring">                                users.</tt> </tt>
+<a name="L491"></a><tt class="py-lineno">491</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L492"></a><tt class="py-lineno">492</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L493"></a><tt class="py-lineno">493</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            List of the user IDs of logged-in users.</tt> </tt>
+<a name="L494"></a><tt class="py-lineno">494</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             [ str ]</tt> </tt>
+<a name="L495"></a><tt class="py-lineno">495</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L496"></a><tt class="py-lineno">496</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-162" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-162', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-163" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-163', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_users</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L497"></a><tt class="py-lineno">497</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_add_user"></a><div id="AdminMonitorView.view_add_user-def"><a name="L498"></a><tt class="py-lineno">498</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_add_user-toggle" onclick="return toggle('AdminMonitorView.view_add_user');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_add_user">view_add_user</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">username</tt><tt class="py-op">,</tt> <tt class="py-param">password</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_add_user-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_add_user-expanded"><a name="L499"></a><tt class="py-lineno">499</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to add user.</tt> </tt>
+<a name="L500"></a><tt class="py-lineno">500</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L501"></a><tt class="py-lineno">501</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the addtion of a new user.</tt> </tt>
+<a name="L502"></a><tt class="py-lineno">502</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L503"></a><tt class="py-lineno">503</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L504"></a><tt class="py-lineno">504</tt>  <tt class="py-line"><tt class="py-docstring">            @param username:    The username of the new user.</tt> </tt>
+<a name="L505"></a><tt class="py-lineno">505</tt>  <tt class="py-line"><tt class="py-docstring">            @type  username:    str</tt> </tt>
+<a name="L506"></a><tt class="py-lineno">506</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L507"></a><tt class="py-lineno">507</tt>  <tt class="py-line"><tt class="py-docstring">            @param password:    The password of the new user.</tt> </tt>
+<a name="L508"></a><tt class="py-lineno">508</tt>  <tt class="py-line"><tt class="py-docstring">            @type  password:    str</tt> </tt>
+<a name="L509"></a><tt class="py-lineno">509</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L510"></a><tt class="py-lineno">510</tt>  <tt class="py-line">        <tt id="link-164" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-164', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-165" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-165', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_checker</tt><tt class="py-op">.</tt><tt id="link-166" class="py-name" targets="Method rce.util.cred.RCECredChecker.addUser()=rce.util.cred.RCECredChecker-class.html#addUser"><a title="rce.util.cred.RCECredChecker.addUser" class="py-name" href="#" onclick="return doclink('link-166', 'addUser', 'link-166');">addUser</a></tt><tt class="py-op">(</tt><tt class="py-name">username</tt><tt class="py-op">,</tt> <tt id="link-167" class="py-name" targets="Variable rce.util.cred.Userinfo.password=rce.util.cred.Userinfo-class.html#password"><a title="rce.util.cred.Userinfo.password" class="py-name" href="#" onclick="return doclink('link-167', 'password', 'link-167');">password</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L511"></a><tt class="py-lineno">511</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_remove_user"></a><div id="AdminMonitorView.view_remove_user-def"><a name="L512"></a><tt class="py-lineno">512</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_remove_user-toggle" onclick="return toggle('AdminMonitorView.view_remove_user');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_remove_user">view_remove_user</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">username</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_remove_user-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_remove_user-expanded"><a name="L513"></a><tt class="py-lineno">513</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to remove user.</tt> </tt>
+<a name="L514"></a><tt class="py-lineno">514</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L515"></a><tt class="py-lineno">515</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the removal of the user.</tt> </tt>
+<a name="L516"></a><tt class="py-lineno">516</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L517"></a><tt class="py-lineno">517</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L518"></a><tt class="py-lineno">518</tt>  <tt class="py-line"><tt class="py-docstring">            @param username:    The username of the user which should be</tt> </tt>
+<a name="L519"></a><tt class="py-lineno">519</tt>  <tt class="py-line"><tt class="py-docstring">                                removed.</tt> </tt>
+<a name="L520"></a><tt class="py-lineno">520</tt>  <tt class="py-line"><tt class="py-docstring">            @type  username:    str</tt> </tt>
+<a name="L521"></a><tt class="py-lineno">521</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L522"></a><tt class="py-lineno">522</tt>  <tt class="py-line">        <tt id="link-168" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-168', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-169" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-169', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_checker</tt><tt class="py-op">.</tt><tt id="link-170" class="py-name" targets="Method rce.util.cred.RCECredChecker.removeUser()=rce.util.cred.RCECredChecker-class.html#removeUser"><a title="rce.util.cred.RCECredChecker.removeUser" class="py-name" href="#" onclick="return doclink('link-170', 'removeUser', 'link-170');">removeUser</a></tt><tt class="py-op">(</tt><tt class="py-name">username</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L523"></a><tt class="py-lineno">523</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_update_user"></a><div id="AdminMonitorView.view_update_user-def"><a name="L524"></a><tt class="py-lineno">524</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_update_user-toggle" onclick="return toggle('AdminMonitorView.view_update_user');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_update_user">view_update_user</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">username</tt><tt class="py-op">,</tt> <tt class="py-param">password</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_update_user-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_update_user-expanded"><a name="L525"></a><tt class="py-lineno">525</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to edit user information.</tt> </tt>
+<a name="L526"></a><tt class="py-lineno">526</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L527"></a><tt class="py-lineno">527</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the addtion of a new user.</tt> </tt>
+<a name="L528"></a><tt class="py-lineno">528</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L529"></a><tt class="py-lineno">529</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L530"></a><tt class="py-lineno">530</tt>  <tt class="py-line"><tt class="py-docstring">            @param username:    The username of the user which should be</tt> </tt>
+<a name="L531"></a><tt class="py-lineno">531</tt>  <tt class="py-line"><tt class="py-docstring">                                updated.</tt> </tt>
+<a name="L532"></a><tt class="py-lineno">532</tt>  <tt class="py-line"><tt class="py-docstring">            @type  username:    str</tt> </tt>
+<a name="L533"></a><tt class="py-lineno">533</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L534"></a><tt class="py-lineno">534</tt>  <tt class="py-line"><tt class="py-docstring">            @param password:    The new password for the user which should be</tt> </tt>
+<a name="L535"></a><tt class="py-lineno">535</tt>  <tt class="py-line"><tt class="py-docstring">                                updated.</tt> </tt>
+<a name="L536"></a><tt class="py-lineno">536</tt>  <tt class="py-line"><tt class="py-docstring">            @type  password:    str</tt> </tt>
+<a name="L537"></a><tt class="py-lineno">537</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L538"></a><tt class="py-lineno">538</tt>  <tt class="py-line">        <tt id="link-171" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-171', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt id="link-172" class="py-name"><a title="rce.core.user.User.realm" class="py-name" href="#" onclick="return doclink('link-172', 'realm', 'link-28');">realm</a></tt><tt class="py-op">.</tt><tt class="py-name">_checker</tt><tt class="py-op">.</tt><tt id="link-173" class="py-name"><a title="rce.util.cred.RCECredChecker.passwd" class="py-name" href="#" onclick="return doclink('link-173', 'passwd', 'link-120');">passwd</a></tt><tt class="py-op">(</tt><tt class="py-name">username</tt><tt class="py-op">,</tt> <tt id="link-174" class="py-name"><a title="rce.util.cred.Userinfo.password" class="py-name" href="#" onclick="return doclink('link-174', 'password', 'link-167');">password</a></tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L539"></a><tt class="py-lineno">539</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_list_containers_by_user"></a><div id="AdminMonitorView.view_list_containers_by_user-def"><a name="L540"></a><tt class="py-lineno">540</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_list_containers_by_user-toggle" onclick="return toggle('AdminMonitorView.view_list_containers_by_user');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_list_containers_by_user">view_list_containers_by_user</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">userID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_list_containers_by_user-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_list_containers_by_user-expanded"><a name="L541"></a><tt class="py-lineno">541</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote call to list containers under a given user.</tt> </tt>
+<a name="L542"></a><tt class="py-lineno">542</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L543"></a><tt class="py-lineno">543</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the listing of the containers</tt> </tt>
+<a name="L544"></a><tt class="py-lineno">544</tt>  <tt class="py-line"><tt class="py-docstring">                                of a particular user.</tt> </tt>
+<a name="L545"></a><tt class="py-lineno">545</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L546"></a><tt class="py-lineno">546</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L547"></a><tt class="py-lineno">547</tt>  <tt class="py-line"><tt class="py-docstring">            @param userID:      The username of the user for which the</tt> </tt>
+<a name="L548"></a><tt class="py-lineno">548</tt>  <tt class="py-line"><tt class="py-docstring">                                containers should be listed.</tt> </tt>
+<a name="L549"></a><tt class="py-lineno">549</tt>  <tt class="py-line"><tt class="py-docstring">            @type  userID:      str</tt> </tt>
+<a name="L550"></a><tt class="py-lineno">550</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L551"></a><tt class="py-lineno">551</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-175" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-175', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">_realm</tt><tt class="py-op">.</tt><tt id="link-176" class="py-name" targets="Method rce.master.RoboEarthCloudEngine.getUser()=rce.master.RoboEarthCloudEngine-class.html#getUser,Method rce.util.cred.RCECredChecker.getUser()=rce.util.cred.RCECredChecker-class.html#getUser"><a title="rce.master.RoboEarthCloudEngine.getUser
+rce.util.cred.RCECredChecker.getUser" class="py-name" href="#" onclick="return doclink('link-176', 'getUser', 'link-176');">getUser</a></tt><tt class="py-op">(</tt><tt id="link-177" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-177', 'userID', 'link-31');">userID</a></tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">containers</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L552"></a><tt class="py-lineno">552</tt>  <tt class="py-line"> </tt>
+<a name="AdminMonitorView.view_list_robots_by_user"></a><div id="AdminMonitorView.view_list_robots_by_user-def"><a name="L553"></a><tt class="py-lineno">553</tt> <a class="py-toggle" href="#" id="AdminMonitorView.view_list_robots_by_user-toggle" onclick="return toggle('AdminMonitorView.view_list_robots_by_user');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.view.AdminMonitorView-class.html#view_list_robots_by_user">view_list_robots_by_user</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">user</tt><tt class="py-op">,</tt> <tt class="py-param">userID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AdminMonitorView.view_list_robots_by_user-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="AdminMonitorView.view_list_robots_by_user-expanded"><a name="L554"></a><tt class="py-lineno">554</tt>  <tt class="py-line">        <tt class="py-docstring">""" List robots under the user specified.</tt> </tt>
+<a name="L555"></a><tt class="py-lineno">555</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L556"></a><tt class="py-lineno">556</tt>  <tt class="py-line"><tt class="py-docstring">            @param user:        User who requested the listing of the robots</tt> </tt>
+<a name="L557"></a><tt class="py-lineno">557</tt>  <tt class="py-line"><tt class="py-docstring">                                of a particular user.</tt> </tt>
+<a name="L558"></a><tt class="py-lineno">558</tt>  <tt class="py-line"><tt class="py-docstring">            @type  user:        rce.core.user.User</tt> </tt>
+<a name="L559"></a><tt class="py-lineno">559</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L560"></a><tt class="py-lineno">560</tt>  <tt class="py-line"><tt class="py-docstring">            @param userID:      The username of the user for which the robots</tt> </tt>
+<a name="L561"></a><tt class="py-lineno">561</tt>  <tt class="py-line"><tt class="py-docstring">                                should be listed.</tt> </tt>
+<a name="L562"></a><tt class="py-lineno">562</tt>  <tt class="py-line"><tt class="py-docstring">            @type  userID:      str</tt> </tt>
+<a name="L563"></a><tt class="py-lineno">563</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L564"></a><tt class="py-lineno">564</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-178" class="py-name"><a title="rce.core.user
+rce.util.sysinfo.nt_cputimes.user
+rce.util.sysinfo.nt_sys_cputimes.user" class="py-name" href="#" onclick="return doclink('link-178', 'user', 'link-22');">user</a></tt><tt class="py-op">.</tt><tt class="py-name">_realm</tt><tt class="py-op">.</tt><tt id="link-179" class="py-name"><a title="rce.master.RoboEarthCloudEngine.getUser
+rce.util.cred.RCECredChecker.getUser" class="py-name" href="#" onclick="return doclink('link-179', 'getUser', 'link-176');">getUser</a></tt><tt class="py-op">(</tt><tt id="link-180" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-180', 'userID', 'link-31');">userID</a></tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">robots</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L565"></a><tt class="py-lineno">565</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:10 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

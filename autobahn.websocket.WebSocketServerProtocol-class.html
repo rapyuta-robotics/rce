@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>autobahn.websocket.WebSocketServerProtocol</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        autobahn ::
+        websocket ::
+        WebSocketServerProtocol ::
+        Class&nbsp;WebSocketServerProtocol
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="autobahn.websocket.WebSocketServerProtocol-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class WebSocketServerProtocol</h1><p class="nomargin-top"></p>
+<center>
+<center>  <map id="uml_class_diagram_for_autobahn_2" name="uml_class_diagram_for_autobahn_2">
+<area shape="rect" id="node6" href="javascript:void(0);" title="WebSockets protocol spec (draft) versions supported by this implementation." alt="" coords="17,236,525,255"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="WebSocket protocol versions supported by this implementation." alt="" coords="17,255,525,273"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Mapping from protocol spec (draft) version to protocol version." alt="" coords="17,273,525,292"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Mapping from protocol version to the latest protocol spec (draft) version &#160;using that protocol version." alt="" coords="17,292,525,311"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Default WebSockets protocol spec version this implementation speaks." alt="" coords="17,311,525,329"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="By default, this implementation will not allow to speak the obsoleted &#160;Hixie&#45;76 protocol version." alt="" coords="17,329,525,348"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Protocol defined magic used during WebSocket handshake (used in Hybi&#45;drafts and final RFC6455." alt="" coords="17,348,525,367"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="For synched/chopped writes, this is the reactor reentry delay in seconds." alt="" coords="17,367,525,385"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="WebSockets text message type (UTF&#45;8 payload)." alt="" coords="17,385,525,404"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="WebSockets binary message type (arbitrary binary payload)." alt="" coords="17,404,525,423"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSED" alt="" coords="17,423,525,441"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CONNECTING" alt="" coords="17,441,525,460"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSING" alt="" coords="17,460,525,479"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Status codes allowed to send in close." alt="" coords="17,497,525,516"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when initial WebSockets handshake was completed." alt="" coords="17,519,525,537"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when receiving a new message has begun." alt="" coords="17,537,525,556"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when receiving a new message frame has begun." alt="" coords="17,556,525,575"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when receiving data witin message frame." alt="" coords="17,575,525,593"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a message frame has been completely received." alt="" coords="17,593,525,612"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback fired when complete message frame has been received." alt="" coords="17,612,525,631"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a message has been completely received." alt="" coords="17,631,525,649"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a complete message was received." alt="" coords="17,649,525,668"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when Ping was received." alt="" coords="17,668,525,687"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when Pong was received." alt="" coords="17,687,525,705"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when the connection has been closed." alt="" coords="17,705,525,724"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a Close frame was received." alt="" coords="17,724,525,743"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="We (a client) expected the peer (a server) to drop the connection, but it &#160;didn&#39;t (in time self.serverConnectionDropTimeout)." alt="" coords="17,743,525,761"/>
+<area shape="rect" id="node6" href="javascript:void(0);" title="Hybi&#45;Variant of sendMessage()." alt="" coords="17,780,525,799"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="A Twisted Protocol class for WebSockets." alt="" coords="5,211,536,805"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#__implemented__" title="autobahn.websocket.WebSocketServerProtocol.__implemented__" alt="" coords="79,849,464,868"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#onConnect" title="Callback fired during WebSocket opening handshake when new WebSocket client connection is about to be established." alt="" coords="79,871,464,889"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" title="Called by Twisted when new TCP connection from client was accepted." alt="" coords="79,889,464,908"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" title="Called by Twisted when established TCP connection from client was lost." alt="" coords="79,908,464,927"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key" title="autobahn.websocket.WebSocketServerProtocol.parseHixie76Key" alt="" coords="79,927,464,945"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" title="Process WebSockets opening handshake request from client." alt="" coords="79,945,464,964"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake" title="During opening handshake the client request was invalid, we send a HTTP &#160;error response and then drop the connection." alt="" coords="79,964,464,983"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse" title="Send out HTTP error response." alt="" coords="79,983,464,1001"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml" title="Send HTML page HTTP response." alt="" coords="79,1001,464,1020"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect" title="Send HTTP Redirect (303) response." alt="" coords="79,1020,464,1039"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus" title="Used to send out server status/version upon receiving a HTTP/GET without &#160;upgrade to WebSocket header (and option serverStatus is True)." alt="" coords="79,1039,464,1057"/>
+<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="79,1057,464,1076"/>
+<area shape="rect" id="node4" href="autobahn.websocket.WebSocketServerProtocol-class.html" title="A Twisted protocol for WebSockets servers." alt="" coords="67,825,475,1082"/>
+<area shape="rect" id="node2" href="rce.comm.server.RobotWebSocketProtocol-class.html" title="Protocol which is used for the connections from the robots to the robot manager." alt="" coords="128,1102,416,1141"/>
+<area shape="rect" id="node7" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="175,167,368,185"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="163,134,379,191"/>
+<area shape="rect" id="node8" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="160,31,383,49"/>
+<area shape="rect" id="node8" href="javascript:void(0);" title="hash(x)" alt="" coords="160,49,383,68"/>
+<area shape="rect" id="node8" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="160,71,383,89"/>
+<area shape="rect" id="node8" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="160,89,383,108"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="148,6,393,114"/>
+</map>
+  <img src="uml_class_diagram_for_autobahn_2.gif" alt='' usemap="#uml_class_diagram_for_autobahn_2" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>A Twisted protocol for WebSockets servers.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#onConnect" class="summary-sig-name">onConnect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">connectionRequest</span>)</span><br />
+      Callback fired during WebSocket opening handshake when new WebSocket 
+      client connection is about to be established.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" class="summary-sig-name">connectionMade</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Called by Twisted when new TCP connection from client was accepted.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" class="summary-sig-name">connectionLost</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">reason</span>)</span><br />
+      Called by Twisted when established TCP connection from client was 
+      lost.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="parseHixie76Key"></a><span class="summary-sig-name">parseHixie76Key</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" class="summary-sig-name">processHandshake</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Process WebSockets opening handshake request from client.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#_processHandshake_buildResponse" class="summary-sig-name" onclick="show_private();">_processHandshake_buildResponse</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">protocol</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Callback for Deferred returned by self.onConnect.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#_processHandshake_failed" class="summary-sig-name" onclick="show_private();">_processHandshake_failed</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">failure</span>)</span><br />
+      Errback for Deferred returned by self.onConnect.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="failHandshake"></a><span class="summary-sig-name">failHandshake</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">reason</span>,
+        <span class="summary-sig-arg">code</span>=<span class="summary-sig-default">400</span>,
+        <span class="summary-sig-arg">responseHeaders</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>)</span><br />
+      During opening handshake the client request was invalid, we send a 
+      HTTP error response and then drop the connection.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sendHttpErrorResponse"></a><span class="summary-sig-name">sendHttpErrorResponse</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">code</span>,
+        <span class="summary-sig-arg">reason</span>,
+        <span class="summary-sig-arg">responseHeaders</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>)</span><br />
+      Send out HTTP error response.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sendHtml"></a><span class="summary-sig-name">sendHtml</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">html</span>)</span><br />
+      Send HTML page HTTP response.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sendRedirect"></a><span class="summary-sig-name">sendRedirect</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">url</span>)</span><br />
+      Send HTTP Redirect (303) response.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sendServerStatus"></a><span class="summary-sig-name">sendServerStatus</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">redirectUrl</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">redirectAfter</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Used to send out server status/version upon receiving a HTTP/GET 
+      without upgrade to WebSocket header (and option serverStatus is 
+      True).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#__provides__" class="summary-sig-name">__provides__</a>(<span class="summary-sig-arg">...</span>)</span><br />
+      Special descriptor for class __provides__</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>WebSocketProtocol</code></b>:
+      <code>beginMessage</code>,
+      <code>beginMessageFrame</code>,
+      <code>consumeData</code>,
+      <code>dataReceived</code>,
+      <code>doTrack</code>,
+      <code>dropConnection</code>,
+      <code>endMessage</code>,
+      <code>failConnection</code>,
+      <code>invalidPayload</code>,
+      <code>logRxFrame</code>,
+      <code>logRxOctets</code>,
+      <code>logTxFrame</code>,
+      <code>logTxOctets</code>,
+      <code>onClose</code>,
+      <code>onCloseFrame</code>,
+      <code>onCloseHandshakeTimeout</code>,
+      <code>onFrameBegin</code>,
+      <code>onFrameData</code>,
+      <code>onFrameEnd</code>,
+      <code>onMessage</code>,
+      <code>onMessageBegin</code>,
+      <code>onMessageEnd</code>,
+      <code>onMessageFrame</code>,
+      <code>onMessageFrameBegin</code>,
+      <code>onMessageFrameData</code>,
+      <code>onMessageFrameEnd</code>,
+      <code>onOpen</code>,
+      <code>onOpenHandshakeTimeout</code>,
+      <code>onPing</code>,
+      <code>onPong</code>,
+      <code>onServerConnectionDropTimeout</code>,
+      <code>processControlFrame</code>,
+      <code>processData</code>,
+      <code>processDataHixie76</code>,
+      <code>processDataHybi</code>,
+      <code>protocolViolation</code>,
+      <code>registerProducer</code>,
+      <code>sendClose</code>,
+      <code>sendCloseFrame</code>,
+      <code>sendData</code>,
+      <code>sendFrame</code>,
+      <code>sendMessage</code>,
+      <code>sendMessageFrame</code>,
+      <code>sendMessageFrameData</code>,
+      <code>sendMessageHixie76</code>,
+      <code>sendMessageHybi</code>,
+      <code>sendPing</code>,
+      <code>sendPong</code>,
+      <code>sendPreparedMessage</code>,
+      <code>setTrackTimings</code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>WebSocketProtocol</code></b> (private):
+      <code>_send</code>,
+      <code>_trigger</code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.Protocol</code></b>:
+      <code>logPrefix</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
+      <code>__providedBy__</code>,
+      <code>makeConnection</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="autobahn.websocket.WebSocketServerProtocol-class.html#__implemented__" class="summary-name">__implemented__</a> = <code title="&lt;implementedBy autobahn.websocket.WebSocketServerProtocol&gt;">&lt;implementedBy autobahn.websocket.WebSocketS<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>WebSocketProtocol</code></b>:
+      <code>CLOSE_STATUS_CODES_ALLOWED</code>,
+      <code>CLOSE_STATUS_CODE_ABNORMAL_CLOSE</code>,
+      <code>CLOSE_STATUS_CODE_GOING_AWAY</code>,
+      <code>CLOSE_STATUS_CODE_INTERNAL_ERROR</code>,
+      <code>CLOSE_STATUS_CODE_INVALID_PAYLOAD</code>,
+      <code>CLOSE_STATUS_CODE_MANDATORY_EXTENSION</code>,
+      <code>CLOSE_STATUS_CODE_MESSAGE_TOO_BIG</code>,
+      <code>CLOSE_STATUS_CODE_NORMAL</code>,
+      <code>CLOSE_STATUS_CODE_NULL</code>,
+      <code>CLOSE_STATUS_CODE_POLICY_VIOLATION</code>,
+      <code>CLOSE_STATUS_CODE_PROTOCOL_ERROR</code>,
+      <code>CLOSE_STATUS_CODE_RESERVED1</code>,
+      <code>CLOSE_STATUS_CODE_TLS_HANDSHAKE_FAILED</code>,
+      <code>CLOSE_STATUS_CODE_UNSUPPORTED_DATA</code>,
+      <code>DEFAULT_ALLOW_HIXIE76</code>,
+      <code>DEFAULT_SPEC_VERSION</code>,
+      <code>MESSAGE_TYPE_BINARY</code>,
+      <code>MESSAGE_TYPE_TEXT</code>,
+      <code>PROTOCOL_TO_SPEC_VERSION</code>,
+      <code>QUEUED_WRITE_DELAY</code>,
+      <code>SEND_STATE_GROUND</code>,
+      <code>SEND_STATE_INSIDE_MESSAGE</code>,
+      <code>SEND_STATE_INSIDE_MESSAGE_FRAME</code>,
+      <code>SEND_STATE_MESSAGE_BEGIN</code>,
+      <code>SPEC_TO_PROTOCOL_VERSION</code>,
+      <code>STATE_CLOSED</code>,
+      <code>STATE_CLOSING</code>,
+      <code>STATE_CONNECTING</code>,
+      <code>STATE_OPEN</code>,
+      <code>SUPPORTED_PROTOCOL_VERSIONS</code>,
+      <code>SUPPORTED_SPEC_VERSIONS</code>,
+      <code>WS_MAGIC</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
+      <code>connected</code>,
+      <code>transport</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="onConnect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">onConnect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">connectionRequest</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback fired during WebSocket opening handshake when new WebSocket 
+  client connection is about to be established.</p>
+  <p>Throw HttpException when you don't want to accept the WebSocket 
+  connection request. For example, throw a 
+  HttpException(httpstatus.HTTP_STATUS_CODE_UNAUTHORIZED[0], &quot;You are 
+  not authorized for this!&quot;).</p>
+  <p>When you want to accept the connection, return the accepted protocol 
+  from list of WebSockets (sub)protocols provided by client or None to 
+  speak no specific one or when the client list was empty.</p>
+  <p>:param connectionRequest: WebSocket connection request information. 
+  :type connectionRequest: instance of 
+  :class:`autobahn.websocket.ConnectionRequest`</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="connectionMade"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">connectionMade</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called by Twisted when new TCP connection from client was accepted. 
+  Default implementation will prepare for initial WebSocket opening 
+  handshake. When overriding in derived class, make sure to call this base 
+  class implementation _before_ your code.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        twisted.internet.protocol.BaseProtocol.connectionMade
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="connectionLost"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">connectionLost</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">reason</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called by Twisted when established TCP connection from client was 
+  lost. Default implementation will tear down all state properly. When 
+  overriding in derived class, make sure to call this base class 
+  implementation _after_ your code.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        twisted.internet.protocol.Protocol.connectionLost
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="processHandshake"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">processHandshake</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process WebSockets opening handshake request from client.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        WebSocketProtocol.processHandshake
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_processHandshake_buildResponse"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_processHandshake_buildResponse</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">protocol</span>,
+        <span class="sig-arg">key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for Deferred returned by self.onConnect. Generates the 
+  response for the handshake.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="_processHandshake_failed"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_processHandshake_failed</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">failure</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Errback for Deferred returned by self.onConnect. Generates a HTTP 
+  error response for the handshake.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__provides__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__provides__</span>(<span class="sig-arg">...</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Special descriptor for class __provides__</p>
+<p>The descriptor caches the implementedBy info, so that
+we can get declarations for objects without instance-specific
+interfaces a bit quicker.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        twisted.internet.protocol.BaseProtocol.__provides__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__implemented__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__implemented__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+&lt;implementedBy autobahn.websocket.WebSocketServerProtocol&gt;
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:53:59 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.container.ContainerClient</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.container-module.html">Module&nbsp;container</a> ::
+        Class&nbsp;ContainerClient
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.container.ContainerClient-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class ContainerClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_cont" name="uml_class_diagram_for_rce_cont">
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#__init__" title="Initialize the Container Client." alt="" coords="17,39,885,57"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="17,57,885,76"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#internalIP" title="IP address of this process in the internal network." alt="" coords="17,76,885,95"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#masterPort" title="Port of the master process used for internal communications." alt="" coords="17,95,885,113"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#envPort" title="Port where the environment process running inside the container is &#160;listening for new connections." alt="" coords="17,113,885,132"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#rosproxyPort" title="Port where the ROS proxy running inside the container is listening for new &#160;connections." alt="" coords="17,132,885,151"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#rootfs" title="Host filesystem path of container filesystem root directory." alt="" coords="17,151,885,169"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#confDir" title="Filesystem path of configuration directory." alt="" coords="17,169,885,188"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#dataDir" title="Filesystem path of temporary data directory." alt="" coords="17,188,885,207"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#pkgDirIter" title="Iterator over all file system paths of package directories." alt="" coords="17,207,885,225"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#masterIP" title="IP address of master process." alt="" coords="17,225,885,244"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#prerouting" title="Reference to iptables&#39; chain PREROUTING of the table NAT." alt="" coords="17,244,885,263"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#output" title="Reference to iptables&#39; chain OUTPUT of the table NAT." alt="" coords="17,263,885,281"/>
+<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#terminate" title="Method should be called to terminate all running containers before the &#160;reactor is stopped." alt="" coords="17,300,885,319"/>
+<area shape="rect" id="node1" href="rce.container.ContainerClient-class.html" title="Container client is responsible for the creation and destruction of containers in a machine." alt="" coords="5,6,896,325"/>
+</map>
+  <img src="uml_class_diagram_for_rce_cont.gif" alt='' usemap="#uml_class_diagram_for_rce_cont" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Container client is responsible for the creation and destruction of 
+  containers in a machine.</p>
+  <p>There can be only one Container Client per machine.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">reactor</span>,
+        <span class="summary-sig-arg">masterIP</span>,
+        <span class="summary-sig-arg">masterPort</span>,
+        <span class="summary-sig-arg">masterPasswd</span>,
+        <span class="summary-sig-arg">infraPasswd</span>,
+        <span class="summary-sig-arg">intIP</span>,
+        <span class="summary-sig-arg">bridgeIP</span>,
+        <span class="summary-sig-arg">envPort</span>,
+        <span class="summary-sig-arg">rosproxyPort</span>,
+        <span class="summary-sig-arg">rootfsDir</span>,
+        <span class="summary-sig-arg">confDir</span>,
+        <span class="summary-sig-arg">dataDir</span>,
+        <span class="summary-sig-arg">pkgDir</span>)</span><br />
+      Initialize the Container Client.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#reactor" class="summary-sig-name">reactor</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Reference to twisted::reactor.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.reactor">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#internalIP" class="summary-sig-name">internalIP</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      IP address of this process in the internal network.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.internalIP">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#masterPort" class="summary-sig-name">masterPort</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Port of the master process used for internal communications.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterPort">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#envPort" class="summary-sig-name">envPort</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Port where the environment process running inside the container is 
+      listening for new connections.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.envPort">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#rosproxyPort" class="summary-sig-name">rosproxyPort</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Port where the ROS proxy running inside the container is listening 
+      for new connections.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rosproxyPort">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#rootfs" class="summary-sig-name">rootfs</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Host filesystem path of container filesystem root directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rootfs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#confDir" class="summary-sig-name">confDir</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Filesystem path of configuration directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.confDir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#dataDir" class="summary-sig-name">dataDir</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Filesystem path of temporary data directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.dataDir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#pkgDirIter" class="summary-sig-name">pkgDirIter</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Iterator over all file system paths of package directories.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.pkgDirIter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#masterIP" class="summary-sig-name">masterIP</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      IP address of master process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterIP">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#prerouting" class="summary-sig-name">prerouting</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Reference to iptables' chain PREROUTING of the table NAT.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.prerouting">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#output" class="summary-sig-name">output</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Reference to iptables' chain OUTPUT of the table NAT.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.output">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#getNetworkAddress" class="summary-sig-name">getNetworkAddress</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the network's IP address without the last byte as a string.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkAddress">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#getNetworkConfigTemplate" class="summary-sig-name">getNetworkConfigTemplate</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the template which is used to generate the network configuration 
+      file '/etc/network/interfaces'.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkConfigTemplate">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.container.RCEContainer</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_createContainer" class="summary-sig-name">remote_createContainer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uid</span>)</span><br />
+      Create a new Container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="registerContainer"></a><span class="summary-sig-name">registerContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">container</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.registerContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unregisterContainer"></a><span class="summary-sig-name">unregisterContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">container</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.unregisterContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="returnNr"></a><span class="summary-sig-name">returnNr</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">nr</span>)</span><br />
+      Callback for Container to return a container number when it is no 
+      longer in use such that it can be reused.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.returnNr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_cleanPackageDir"></a><span class="summary-sig-name">_cleanPackageDir</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*_</span>)</span><br />
+      Internally used method to clean-up the container filesystem.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient._cleanPackageDir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="terminate"></a><span class="summary-sig-name">terminate</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to terminate all running containers before 
+      the reactor is stopped.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.terminate">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">reactor</span>,
+        <span class="sig-arg">masterIP</span>,
+        <span class="sig-arg">masterPort</span>,
+        <span class="sig-arg">masterPasswd</span>,
+        <span class="sig-arg">infraPasswd</span>,
+        <span class="sig-arg">intIP</span>,
+        <span class="sig-arg">bridgeIP</span>,
+        <span class="sig-arg">envPort</span>,
+        <span class="sig-arg">rosproxyPort</span>,
+        <span class="sig-arg">rootfsDir</span>,
+        <span class="sig-arg">confDir</span>,
+        <span class="sig-arg">dataDir</span>,
+        <span class="sig-arg">pkgDir</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Container Client.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>reactor</code></strong> (twisted::reactor) - Reference to the twisted reactor.</li>
+        <li><strong class="pname"><code>masterIP</code></strong> (str) - IP address of the Master process.</li>
+        <li><strong class="pname"><code>masterPort</code></strong> (int) - Port of the Master process used for internal communications.</li>
+        <li><strong class="pname"><code>masterPasswd</code></strong> (str) - SHA 256 Digested Master Password.</li>
+        <li><strong class="pname"><code>infraPasswd</code></strong> (str) - SHA 256 Digested Infra Password.</li>
+        <li><strong class="pname"><code>intIP</code></strong> (str) - IP address of the network interface used for the internal 
+          communication.</li>
+        <li><strong class="pname"><code>bridgeIP</code></strong> (str) - IP address of the network interface used for the container 
+          communication.</li>
+        <li><strong class="pname"><code>envPort</code></strong> (int) - Port where the environment process running inside the container 
+          is listening for connections to other endpoints. (Used for port 
+          forwarding.)</li>
+        <li><strong class="pname"><code>rosproxyPort</code></strong> (int) - Port where the rosproxy process running inside the container is 
+          listening for connections to console clients. (Used for port 
+          forwarding.)</li>
+        <li><strong class="pname"><code>rootfsDir</code></strong> (str) - Filesystem path to the root directory of the container 
+          filesystem.</li>
+        <li><strong class="pname"><code>confDir</code></strong> (str) - Filesystem path to the directory where container configuration 
+          files should be stored.</li>
+        <li><strong class="pname"><code>dataDir</code></strong> (str) - Filesystem path to the directory where temporary data of a 
+          container should be stored.</li>
+        <li><strong class="pname"><code>pkgDir</code></strong> ([(str, str)]) - Filesystem paths to the package directories as a list of tuples 
+          where each tuple contains the path to the directory in the host 
+          machine and the path to the directory to which the host directory
+          will be bound in the container filesystem (without the @param 
+          rootfsDir).</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="reactor"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">reactor</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.reactor">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reference to twisted::reactor.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="internalIP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">internalIP</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.internalIP">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>IP address of this process in the internal network.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="masterPort"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">masterPort</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterPort">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Port of the master process used for internal communications.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="envPort"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">envPort</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.envPort">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Port where the environment process running inside the container is 
+  listening for new connections.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rosproxyPort"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rosproxyPort</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rosproxyPort">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Port where the ROS proxy running inside the container is listening for
+  new connections.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rootfs"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rootfs</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rootfs">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Host filesystem path of container filesystem root directory.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="confDir"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">confDir</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.confDir">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Filesystem path of configuration directory.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="dataDir"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">dataDir</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.dataDir">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Filesystem path of temporary data directory.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pkgDirIter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pkgDirIter</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.pkgDirIter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Iterator over all file system paths of package directories.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="masterIP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">masterIP</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterIP">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>IP address of master process.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="prerouting"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">prerouting</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.prerouting">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reference to iptables' chain PREROUTING of the table NAT.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="output"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">output</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.output">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reference to iptables' chain OUTPUT of the table NAT.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNetworkAddress"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNetworkAddress</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkAddress">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the network's IP address without the last byte as a string.</p>
+  <dl class="fields">
+    <dt>Returns: str</dt>
+        <dd>The network's IP address, e.g. '10.0.3'.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNetworkConfigTemplate"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNetworkConfigTemplate</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkConfigTemplate">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the template which is used to generate the network configuration 
+  file '/etc/network/interfaces'. The template contains the format field 
+  {ip} which has to be used to assign the correct IP address to the 
+  container.</p>
+  <dl class="fields">
+    <dt>Returns: str</dt>
+        <dd>Network configration template containing the format field {ip}.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_createContainer"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_createContainer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createContainer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new Container.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uid</code></strong> (str) - Unique ID which the environment process inside the container 
+          needs to login to the Master process.</li>
+    </ul></dd>
+    <dt>Returns: rce.container.RCEContainer</dt>
+        <dd>New Container instance.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:02 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

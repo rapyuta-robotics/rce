@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.sysinfo.Process._nt_ext_mem</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        <a href="rce.util.sysinfo-module.html">Module&nbsp;sysinfo</a> ::
+        <a href="rce.util.sysinfo.Process-class.html">Class&nbsp;Process</a> ::
+        Class&nbsp;_nt_ext_mem
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.sysinfo.Process._nt_ext_mem-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class _nt_ext_mem</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_util_22" name="uml_class_diagram_for_rce_util_22">
+<area shape="rect" id="node631" href="javascript:void(0);" title="x+y" alt="" coords="115,39,235,57"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="y in x" alt="" coords="115,57,235,76"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x==y" alt="" coords="115,76,235,95"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x&gt;=y" alt="" coords="115,95,235,113"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x.__getattribute__(&#39;name&#39;) &lt;==&gt; x.name" alt="" coords="115,113,235,132"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x[y]" alt="" coords="115,132,235,151"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x[i:j]" alt="" coords="115,151,235,169"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x&gt;y" alt="" coords="115,169,235,188"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="hash(x)" alt="" coords="115,188,235,207"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="iter(x)" alt="" coords="115,207,235,225"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x&lt;=y" alt="" coords="115,225,235,244"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="len(x)" alt="" coords="115,244,235,263"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="x&lt;y" alt="" coords="115,263,235,281"/>
+<area shape="rect" id="node631" href="javascript:void(0);" title="T.index(value, [start, [stop]]) &#45;&gt; integer &#45;&#45; return first index of value." alt="" coords="115,300,235,319"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="tuple() &#45;&gt; empty tuple tuple(iterable) &#45;&gt; tuple initialized from iterable&#39;s items" alt="" coords="103,6,247,325"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#data" title="Alias for field number 5" alt="" coords="17,369,332,388"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#dirty" title="Alias for field number 6" alt="" coords="17,388,332,407"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#lib" title="Alias for field number 4" alt="" coords="17,407,332,425"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#rss" title="Alias for field number 0" alt="" coords="17,425,332,444"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#shared" title="Alias for field number 2" alt="" coords="17,444,332,463"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#text" title="Alias for field number 3" alt="" coords="17,463,332,481"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#vms" title="Alias for field number 1" alt="" coords="17,481,332,500"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#__getnewargs__" title="Return self as a plain tuple." alt="" coords="17,503,332,521"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#__new__" title="Create new instance of meminfo(rss, vms, shared, text, lib, data, dirty)" alt="" coords="17,521,332,540"/>
+<area shape="rect" id="node630" href="rce.util.sysinfo.Process._nt_ext_mem-class.html#__repr__" title="Return a nicely formatted representation string" alt="" coords="17,540,332,559"/>
+<area shape="rect" id="node2" href="rce.util.sysinfo.Process._nt_ext_mem-class.html" title="meminfo(rss, vms, shared, text, lib, data, dirty)" alt="" coords="5,345,344,565"/>
+</map>
+  <img src="uml_class_diagram_for_rce_util_22.gif" alt='' usemap="#uml_class_diagram_for_rce_util_22" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>meminfo(rss, vms, shared, text, lib, data, dirty)</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#__getnewargs__" class="summary-sig-name">__getnewargs__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return self as a plain tuple.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem.__getnewargs__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#__repr__" class="summary-sig-name">__repr__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a nicely formatted representation string</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem.__repr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_asdict"></a><span class="summary-sig-name">_asdict</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a new OrderedDict which maps field names to their values</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem._asdict">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_replace"></a><span class="summary-sig-name">_replace</span>(<span class="summary-sig-arg">_self</span>,
+        <span class="summary-sig-arg">**kwds</span>)</span><br />
+      Return a new meminfo object replacing specified fields with new 
+      values</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem._replace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>tuple</code></b>:
+      <code>__add__</code>,
+      <code>__contains__</code>,
+      <code>__eq__</code>,
+      <code>__ge__</code>,
+      <code>__getattribute__</code>,
+      <code>__getitem__</code>,
+      <code>__getslice__</code>,
+      <code>__gt__</code>,
+      <code>__hash__</code>,
+      <code>__iter__</code>,
+      <code>__le__</code>,
+      <code>__len__</code>,
+      <code>__lt__</code>,
+      <code>__mul__</code>,
+      <code>__ne__</code>,
+      <code>__rmul__</code>,
+      <code>__sizeof__</code>,
+      <code>count</code>,
+      <code>index</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__init__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS METHODS ==================== -->
+<a name="section-ClassMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_make"></a><span class="summary-sig-name">_make</span>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">iterable</span>,
+        <span class="summary-sig-arg">new</span>=<span class="summary-sig-default">&lt;built-in method __new__ of type object at 0x82943a0&gt;</span>,
+        <span class="summary-sig-arg">len</span>=<span class="summary-sig-default">&lt;built-in function len&gt;</span>)</span><br />
+      Make a new meminfo object from a sequence or iterable</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem._make">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Static Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-StaticMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">a new object with type S, a subtype of T</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">_cls</span>,
+        <span class="summary-sig-arg">rss</span>,
+        <span class="summary-sig-arg">vms</span>,
+        <span class="summary-sig-arg">shared</span>,
+        <span class="summary-sig-arg">text</span>,
+        <span class="summary-sig-arg">lib</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">dirty</span>)</span><br />
+      Create new instance of meminfo(rss, vms, shared, text, lib, data, 
+      dirty)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem.__new__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#_fields" class="summary-name" onclick="show_private();">_fields</a> = <code title="('rss', 'vms', 'shared', 'text', 'lib', 'data', 'dirty')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">rss</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">vms</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">shared</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">text</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">lib</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">data</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dir</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#data" class="summary-name">data</a><br />
+      Alias for field number 5
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#dirty" class="summary-name">dirty</a><br />
+      Alias for field number 6
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#lib" class="summary-name">lib</a><br />
+      Alias for field number 4
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#rss" class="summary-name">rss</a><br />
+      Alias for field number 0
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#shared" class="summary-name">shared</a><br />
+      Alias for field number 2
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#text" class="summary-name">text</a><br />
+      Alias for field number 3
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.sysinfo.Process._nt_ext_mem-class.html#vms" class="summary-name">vms</a><br />
+      Alias for field number 1
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__getnewargs__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getnewargs__</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem.__getnewargs__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return self as a plain tuple.  Used by copy and pickle.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        tuple.__getnewargs__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__new__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">_cls</span>,
+        <span class="sig-arg">rss</span>,
+        <span class="sig-arg">vms</span>,
+        <span class="sig-arg">shared</span>,
+        <span class="sig-arg">text</span>,
+        <span class="sig-arg">lib</span>,
+        <span class="sig-arg">data</span>,
+        <span class="sig-arg">dirty</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem.__new__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create new instance of meminfo(rss, vms, shared, text, lib, data, 
+  dirty)</p>
+  <dl class="fields">
+    <dt>Returns: a new object with type S, a subtype of T</dt>
+    <dt>Overrides:
+        object.__new__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__repr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__repr__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.sysinfo-pysrc.html#Process._nt_ext_mem.__repr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a nicely formatted representation string</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__repr__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_fields"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_fields</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">rss</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">vms</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">shared</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">text</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">lib</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">data</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dirty</code><code class="variable-quote">'</code><code class="variable-group">)</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="data"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">data</h3>
+  <p>Alias for field number 5</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628c0c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="dirty"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">dirty</h3>
+  <p>Alias for field number 6</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628c2c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="lib"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">lib</h3>
+  <p>Alias for field number 4</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628bec&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rss"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">rss</h3>
+  <p>Alias for field number 0</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628b6c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="shared"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">shared</h3>
+  <p>Alias for field number 2</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628bac&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="text"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">text</h3>
+  <p>Alias for field number 3</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628bcc&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="vms"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">vms</h3>
+  <p>Alias for field number 1</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><table><tr><td><pre class="variable">
+&lt;operator.itemgetter object at 0xa628b8c&gt;
+</pre></td></tr></table>
+
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:08 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

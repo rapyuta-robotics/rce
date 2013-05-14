@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.settings._Settings</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        <a href="rce.util.settings-module.html">Module&nbsp;settings</a> ::
+        Class&nbsp;_Settings
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.settings._Settings-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class _Settings</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.settings-pysrc.html#_Settings">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_util_18" name="uml_class_diagram_for_rce_util_18">
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#gzip_lvl" title="Compression level used in ROS message forwarder." alt="" coords="17,31,117,49"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#dev_mode" title="Flag which is True if the cloud engine runs in developer mode." alt="" coords="17,49,117,68"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#pw_file" title="Path to the credentials database." alt="" coords="17,68,117,87"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#external_IP" title="IP address of network interface used for external communication." alt="" coords="17,87,117,105"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#internal_IP" title="IP address of network interface used for internal communication." alt="" coords="17,105,117,124"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#container_IP" title="IP address of network interface used for container communication." alt="" coords="17,124,117,143"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#localhost_IP" title="IP address of loopback network interface." alt="" coords="17,143,117,161"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#http_port" title="Port on which the Master process is listening for HTTP requests from the &#160;cloud engine clients." alt="" coords="17,161,117,180"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#ws_port" title="Port on which the Robot processes are listening for WebSocket connections &#160;from the cloud engine clients." alt="" coords="17,180,117,199"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#external_port" title="Port on which the Master process is listening for external &#160;PerspectiveBroker connections." alt="" coords="17,199,117,217"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#internal_port" title="Port on which the Master process is listening for cloud engine internal &#160;PerspectiveBroker connections." alt="" coords="17,217,117,236"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#comm_port" title="Port on which the Endpoint processes are listening for cloud engine &#160;internal data protocol connections." alt="" coords="17,236,117,255"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#ros_proxy_port" title="Port on which the ROS proxy processes are listening for HTTP requests from &#160;the cloud engine clients." alt="" coords="17,255,117,273"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#packages" title="List of custom ROS packages which are mounted using bind into the container filesystem." alt="" coords="17,292,117,311"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#__init__" title="Initialize the variables with None." alt="" coords="17,313,117,332"/>
+<area shape="rect" id="node622" href="rce.util.settings._Settings-class.html#load" title="Factory method which creates a new Settings object using the provided cloud engine settings parser." alt="" coords="17,332,117,351"/>
+<area shape="rect" id="node1" href="rce.util.settings._Settings-class.html" title="Class contains all settings variables." alt="" coords="5,6,128,357"/>
+</map>
+  <img src="uml_class_diagram_for_rce_util_18.gif" alt='' usemap="#uml_class_diagram_for_rce_util_18" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Class contains all settings variables.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.settings._Settings-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Initialize the variables with None.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.settings-pysrc.html#_Settings.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS METHODS ==================== -->
+<a name="section-ClassMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.util.settings._Settings</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.settings._Settings-class.html#load" class="summary-sig-name">load</a>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">parser</span>)</span><br />
+      Factory method which creates a new Settings object using the provided
+      cloud engine settings parser.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.settings-pysrc.html#_Settings.load">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#gzip_lvl" class="summary-name">gzip_lvl</a><br />
+      Compression level used in ROS message forwarder.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#dev_mode" class="summary-name">dev_mode</a><br />
+      Flag which is True if the cloud engine runs in developer mode.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#pw_file" class="summary-name">pw_file</a><br />
+      Path to the credentials database.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#external_IP" class="summary-name">external_IP</a><br />
+      IP address of network interface used for external communication.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#internal_IP" class="summary-name">internal_IP</a><br />
+      IP address of network interface used for internal communication.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#container_IP" class="summary-name">container_IP</a><br />
+      IP address of network interface used for container communication.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#localhost_IP" class="summary-name">localhost_IP</a><br />
+      IP address of loopback network interface.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#http_port" class="summary-name">http_port</a><br />
+      Port on which the Master process is listening for HTTP requests from 
+      the cloud engine clients.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#ws_port" class="summary-name">ws_port</a><br />
+      Port on which the Robot processes are listening for WebSocket 
+      connections from the cloud engine clients.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#external_port" class="summary-name">external_port</a><br />
+      Port on which the Master process is listening for external 
+      PerspectiveBroker connections.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#internal_port" class="summary-name">internal_port</a><br />
+      Port on which the Master process is listening for cloud engine 
+      internal PerspectiveBroker connections.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#comm_port" class="summary-name">comm_port</a><br />
+      Port on which the Endpoint processes are listening for cloud engine 
+      internal data protocol connections.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#ros_proxy_port" class="summary-name">ros_proxy_port</a><br />
+      Port on which the ROS proxy processes are listening for HTTP requests
+      from the cloud engine clients.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#converters" class="summary-name">converters</a><br />
+      List of custom message converters which are used in the Robot 
+      processes.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#max_container" class="summary-name">max_container</a><br />
+      Maximum number of containers which can run in the machine.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#rootfs" class="summary-name">rootfs</a><br />
+      Path to the root directory of the container filesystem.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#conf_dir" class="summary-name">conf_dir</a><br />
+      Path to the directory in which temporary configuration files for the 
+      containers are stored.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#data_dir" class="summary-name">data_dir</a><br />
+      Path to the directory in which temporary data files for the 
+      containers are stored.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings._Settings-class.html#packages" class="summary-name">packages</a><br />
+      List of custom ROS packages which are mounted using bind into the 
+      container filesystem.
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.settings-pysrc.html#_Settings.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the variables with None. To load the Settings use the 
+  classmethod 'load'.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="load"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">load</span>(<span class="sig-arg">cls</span>,
+        <span class="sig-arg">parser</span>)</span>
+    <br /><em class="fname">Class Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.settings-pysrc.html#_Settings.load">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Factory method which creates a new Settings object using the provided 
+  cloud engine settings parser.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>parser</code></strong> (rce.util.settings._RCESettingsParser) - Cloud engine settings parser which is used to parse the 
+          configuration file.</li>
+    </ul></dd>
+    <dt>Returns: rce.util.settings._Settings</dt>
+        <dd>New _Settings instance containing the parsed settings.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="gzip_lvl"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">gzip_lvl</h3>
+  <p>Compression level used in ROS message forwarder.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.gzip_lvl(<span class="summary-sig-arg">self</span>)</span>
+        - Compression level used in ROS message forwarder.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="dev_mode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">dev_mode</h3>
+  <p>Flag which is True if the cloud engine runs in developer mode.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.dev_mode(<span class="summary-sig-arg">self</span>)</span>
+        - Flag which is True if the cloud engine runs in developer mode.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pw_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">pw_file</h3>
+  <p>Path to the credentials database.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.pw_file(<span class="summary-sig-arg">self</span>)</span>
+        - Path to the credentials database.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="external_IP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">external_IP</h3>
+  <p>IP address of network interface used for external communication.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.external_IP(<span class="summary-sig-arg">self</span>)</span>
+        - IP address of network interface used for external communication.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="internal_IP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">internal_IP</h3>
+  <p>IP address of network interface used for internal communication.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.internal_IP(<span class="summary-sig-arg">self</span>)</span>
+        - IP address of network interface used for internal communication.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="container_IP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">container_IP</h3>
+  <p>IP address of network interface used for container communication.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.container_IP(<span class="summary-sig-arg">self</span>)</span>
+        - IP address of network interface used for container communication.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="localhost_IP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">localhost_IP</h3>
+  <p>IP address of loopback network interface.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.localhost_IP(<span class="summary-sig-arg">self</span>)</span>
+        - IP address of loopback network interface.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="http_port"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">http_port</h3>
+  <p>Port on which the Master process is listening for HTTP requests from 
+  the cloud engine clients.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.http_port(<span class="summary-sig-arg">self</span>)</span>
+        - Port on which the Master process is listening for HTTP requests from the 
+cloud engine clients.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ws_port"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">ws_port</h3>
+  <p>Port on which the Robot processes are listening for WebSocket 
+  connections from the cloud engine clients.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.ws_port(<span class="summary-sig-arg">self</span>)</span>
+        - Port on which the Robot processes are listening for WebSocket connections 
+from the cloud engine clients.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="external_port"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">external_port</h3>
+  <p>Port on which the Master process is listening for external 
+  PerspectiveBroker connections.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.external_port(<span class="summary-sig-arg">self</span>)</span>
+        - Port on which the Master process is listening for external 
+PerspectiveBroker connections.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="internal_port"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">internal_port</h3>
+  <p>Port on which the Master process is listening for cloud engine 
+  internal PerspectiveBroker connections.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.internal_port(<span class="summary-sig-arg">self</span>)</span>
+        - Port on which the Master process is listening for cloud engine internal 
+PerspectiveBroker connections.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="comm_port"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">comm_port</h3>
+  <p>Port on which the Endpoint processes are listening for cloud engine 
+  internal data protocol connections.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.comm_port(<span class="summary-sig-arg">self</span>)</span>
+        - Port on which the Endpoint processes are listening for cloud engine 
+internal data protocol connections.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ros_proxy_port"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">ros_proxy_port</h3>
+  <p>Port on which the ROS proxy processes are listening for HTTP requests 
+  from the cloud engine clients.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.ros_proxy_port(<span class="summary-sig-arg">self</span>)</span>
+        - Port on which the ROS proxy processes are listening for HTTP requests from 
+the cloud engine clients.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="converters"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">converters</h3>
+  <p>List of custom message converters which are used in the Robot 
+  processes.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.converters(<span class="summary-sig-arg">self</span>)</span>
+        - List of custom message converters which are used in the Robot processes.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="max_container"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">max_container</h3>
+  <p>Maximum number of containers which can run in the machine.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.max_container(<span class="summary-sig-arg">self</span>)</span>
+        - Maximum number of containers which can run in the machine.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rootfs"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">rootfs</h3>
+  <p>Path to the root directory of the container filesystem.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.rootfs(<span class="summary-sig-arg">self</span>)</span>
+        - Path to the root directory of the container filesystem.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="conf_dir"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">conf_dir</h3>
+  <p>Path to the directory in which temporary configuration files for the 
+  containers are stored.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.conf_dir(<span class="summary-sig-arg">self</span>)</span>
+        - Path to the directory in which temporary configuration files for the 
+containers are stored.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="data_dir"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">data_dir</h3>
+  <p>Path to the directory in which temporary data files for the containers
+  are stored.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.data_dir(<span class="summary-sig-arg">self</span>)</span>
+        - Path to the directory in which temporary data files for the containers are 
+stored.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="packages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">packages</h3>
+  <p>List of custom ROS packages which are mounted using bind into the 
+  container filesystem. Each element is a tuple containing the path to the 
+  directory of the ROS package in the host filesystem as well as the path 
+  to the directory of the ROS package in the container filesystem.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.packages(<span class="summary-sig-arg">self</span>)</span>
+        - List of custom ROS packages which are mounted using bind into the container
+filesystem.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:08 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

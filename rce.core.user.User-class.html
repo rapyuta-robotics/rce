@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.user.User</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.user-module.html">Module&nbsp;user</a> ::
+        Class&nbsp;User
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.user.User-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class User</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.user-pysrc.html#User">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core_32" name="uml_class_diagram_for_rce_core_32">
+<area shape="rect" id="node343" href="javascript:void(0);" title="twisted.spread.pb.Avatar.__implemented__" alt="" coords="17,31,392,49"/>
+<area shape="rect" id="node343" href="javascript:void(0);" title="This method is called when a network message is received." alt="" coords="17,52,392,71"/>
+<area shape="rect" id="node343" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="17,71,392,89"/>
+<area shape="rect" id="node343" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,89,392,108"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="A default IPerspective implementor." alt="" coords="5,6,403,114"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#realm" title="Realm to which this User belongs." alt="" coords="21,159,389,177"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#userID" title="User ID of this User." alt="" coords="21,177,389,196"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#__init__" title="Initialize the User." alt="" coords="21,199,389,217"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#createRobotWrapper" title="Create a new Robot Wrapper." alt="" coords="21,217,389,236"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#perspective_getUserView" title="rce.core.user.User.perspective_getUserView" alt="" coords="21,236,389,255"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#getEndpoint" title="Get an endpoint of the user matching the given tag." alt="" coords="21,255,389,273"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#containerDied" title="Callback which is used to inform the user of the death of a container." alt="" coords="21,273,389,292"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#robotDied" title="Callback which is used to inform the user of the death of a robot." alt="" coords="21,292,389,311"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#connectionDied" title="Callback which is used to inform the user of the death of a connection." alt="" coords="21,311,389,329"/>
+<area shape="rect" id="node342" href="rce.core.user.User-class.html#destroy" title="Method should be called to destroy the user and will take care of &#160;destroying all objects owned by this User as well as deleting all circular &#160;references." alt="" coords="21,329,389,348"/>
+<area shape="rect" id="node2" href="rce.core.user.User-class.html" title="Represents a User avatar." alt="" coords="9,134,401,354"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core_32.gif" alt='' usemap="#uml_class_diagram_for_rce_core_32" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Represents a User avatar. It has references to all objects the User is
+  currently using. For this to happen, each Robot object in the robot 
+  processes has a remote reference to on of the User instances in the 
+  Master. To modify the data the Robot objects should used Views.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.user.User-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">realm</span>,
+        <span class="summary-sig-arg">userID</span>)</span><br />
+      Initialize the User.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.user.User-class.html#createRobotWrapper" class="summary-sig-name">createRobotWrapper</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">robotNamespace</span>,
+        <span class="summary-sig-arg">location</span>,
+        <span class="summary-sig-arg">robotID</span>)</span><br />
+      Create a new Robot Wrapper.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.createRobotWrapper">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="perspective_getUserView"></a><span class="summary-sig-name">perspective_getUserView</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">console</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.perspective_getUserView">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.network.Endpoint</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.user.User-class.html#getEndpoint" class="summary-sig-name">getEndpoint</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tag</span>)</span><br />
+      Get an endpoint of the user matching the given tag.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.getEndpoint">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="containerDied"></a><span class="summary-sig-name">containerDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">container</span>)</span><br />
+      Callback which is used to inform the user of the death of a 
+      container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.containerDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="robotDied"></a><span class="summary-sig-name">robotDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">robot</span>)</span><br />
+      Callback which is used to inform the user of the death of a robot.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.robotDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="connectionDied"></a><span class="summary-sig-name">connectionDied</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">connection</span>)</span><br />
+      Callback which is used to inform the user of the death of a 
+      connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.connectionDied">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the user and will take care of 
+      destroying all objects owned by this User as well as deleting all 
+      circular references.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.user-pysrc.html#User.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.pb.Avatar</code></b>:
+      <code>__providedBy__</code>,
+      <code>__provides__</code>,
+      <code>perspectiveMessageReceived</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.pb.Avatar</code></b>:
+      <code>__implemented__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.core.user.User-class.html#realm" class="summary-name">realm</a><br />
+      Realm to which this User belongs.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.core.user.User-class.html#userID" class="summary-name">userID</a><br />
+      User ID of this User.
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">realm</span>,
+        <span class="sig-arg">userID</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.user-pysrc.html#User.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the User.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>realm</code></strong> (rce.core.RoboEarthCloudEngine) - The realm of the RoboEarth Cloud Engine master.</li>
+        <li><strong class="pname"><code>userID</code></strong> (str) - The user ID associated with the user.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="createRobotWrapper"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createRobotWrapper</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">robotNamespace</span>,
+        <span class="sig-arg">location</span>,
+        <span class="sig-arg">robotID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.user-pysrc.html#User.createRobotWrapper">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new Robot Wrapper.</p>
+  <p>#&#160;TODO: Add description of arguments</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getEndpoint"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getEndpoint</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.user-pysrc.html#User.getEndpoint">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get an endpoint of the user matching the given tag.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tag</code></strong> (str) - Tag which is used to identify the endpoint which should be 
+          returned.</li>
+    </ul></dd>
+    <dt>Returns: rce.core.network.Endpoint</dt>
+        <dd>Endpoint which was requested.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="realm"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">realm</h3>
+  <p>Realm to which this User belongs.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.realm(<span class="summary-sig-arg">self</span>)</span>
+        - Realm to which this User belongs.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="userID"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">userID</h3>
+  <p>User ID of this User.</p>
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.userID(<span class="summary-sig-arg">self</span>)</span>
+        - User ID of this User.
+    </dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:04 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

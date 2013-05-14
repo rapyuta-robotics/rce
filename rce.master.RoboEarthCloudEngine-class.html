@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.master.RoboEarthCloudEngine</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.master-module.html">Module&nbsp;master</a> ::
+        Class&nbsp;RoboEarthCloudEngine
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.master.RoboEarthCloudEngine-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RoboEarthCloudEngine</h1><p class="nomargin-top"><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_mast" name="uml_class_diagram_for_rce_mast">
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#LOAD_BALANCER_CLS" title="rce.master.RoboEarthCloudEngine.LOAD_BALANCER_CLS" alt="" coords="17,31,296,49"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#DISTRIBUTOR_CLS" title="rce.master.RoboEarthCloudEngine.DISTRIBUTOR_CLS" alt="" coords="17,49,296,68"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#__init__" title="Initialize the RoboEarth Cloud Engine realm." alt="" coords="17,71,296,89"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#requestAvatar" title="Returns Avatar for slave processes of the cloud engine." alt="" coords="17,89,296,108"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#getUser" title="Get the user object matching the given user ID." alt="" coords="17,108,296,127"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#getInternalIP" title="Get the IP address of the network interface used for the internal &#160;communication." alt="" coords="17,127,296,145"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#requestURL" title="Callback for Robot resource to retrieve the location of the Robot process &#160;to which a WebSocket connection should be established." alt="" coords="17,145,296,164"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#createContainer" title="Callback for User instance to create a new Container object in a container process." alt="" coords="17,164,296,183"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#checkUIDValidity" title="Method to check if incoming environment ID is valid." alt="" coords="17,183,296,201"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#createConnection" title="Callback for User instance to create a new connection between two &#160;interfaces." alt="" coords="17,201,296,220"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#preShutdown" title="Method is executed by the twisted reactor when a shutdown event is &#160;triggered, before the reactor is being stopped." alt="" coords="17,220,296,239"/>
+<area shape="rect" id="node376" href="rce.master.RoboEarthCloudEngine-class.html#postShutdown" title="Method is executed by the twisted reactor when a shutdown event is &#160;triggered, after the reactor has been stopped." alt="" coords="17,239,296,257"/>
+<area shape="rect" id="node1" href="rce.master.RoboEarthCloudEngine-class.html" title="Realm for the twisted cred system." alt="" coords="5,6,307,263"/>
+</map>
+  <img src="uml_class_diagram_for_rce_mast.gif" alt='' usemap="#uml_class_diagram_for_rce_mast" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Realm for the twisted cred system. It is responsible for storing all 
+  cloud engine relevant informations by having a reference to a Network, 
+  Load Balancer, and Distributor instance, where each is responsible for 
+  part of the system. Additionally, the realm keeps a list of all User 
+  object.</p>
+  <p>There should be only one instance running in the Master process.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">checker</span>,
+        <span class="summary-sig-arg">intIP</span>,
+        <span class="summary-sig-arg">port</span>)</span><br />
+      Initialize the RoboEarth Cloud Engine realm.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#requestAvatar" class="summary-sig-name">requestAvatar</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">avatarId</span>,
+        <span class="summary-sig-arg">mind</span>,
+        <span class="summary-sig-arg">*interfaces</span>)</span><br />
+      Returns Avatar for slave processes of the cloud engine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.requestAvatar">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.user.User</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#getUser" class="summary-sig-name">getUser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userID</span>)</span><br />
+      Get the user object matching the given user ID.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.getUser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#getInternalIP" class="summary-sig-name">getInternalIP</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the IP address of the network interface used for the internal 
+      communication.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.getInternalIP">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#requestURL" class="summary-sig-name">requestURL</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userID</span>)</span><br />
+      Callback for Robot resource to retrieve the location of the Robot 
+      process to which a WebSocket connection should be established.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.requestURL">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#createContainer" class="summary-sig-name">createContainer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userID</span>)</span><br />
+      Callback for User instance to create a new Container object in a
+container process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#checkUIDValidity" class="summary-sig-name">checkUIDValidity</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uid</span>)</span><br />
+      Method to check if incoming environment ID is valid.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.checkUIDValidity">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.network.Connection</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#createConnection" class="summary-sig-name">createConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interfaceA</span>,
+        <span class="summary-sig-arg">interfaceB</span>)</span><br />
+      Callback for User instance to create a new connection between two 
+      interfaces.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.createConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="preShutdown"></a><span class="summary-sig-name">preShutdown</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method is executed by the twisted reactor when a shutdown event is 
+      triggered, before the reactor is being stopped.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.preShutdown">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="postShutdown"></a><span class="summary-sig-name">postShutdown</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method is executed by the twisted reactor when a shutdown event is 
+      triggered, after the reactor has been stopped.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.postShutdown">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="LOAD_BALANCER_CLS"></a><span class="summary-name">LOAD_BALANCER_CLS</span> = <code title="LoadBalancer">LoadBalancer</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="DISTRIBUTOR_CLS"></a><span class="summary-name">DISTRIBUTOR_CLS</span> = <code title="Distributor">Distributor</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">checker</span>,
+        <span class="sig-arg">intIP</span>,
+        <span class="sig-arg">port</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the RoboEarth Cloud Engine realm.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>checker</code></strong> (twisted.cred.checkers.ICredentialsChecker) - Login checker which authenticates the User when an initial 
+          request is received.</li>
+        <li><strong class="pname"><code>intIP</code></strong> (str) - IP address of the network interface used for the internal 
+          communication.</li>
+        <li><strong class="pname"><code>port</code></strong> (int) - Port where the robot process is listening for connections to 
+          other endpoints.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="requestAvatar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">requestAvatar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">avatarId</span>,
+        <span class="sig-arg">mind</span>,
+        <span class="sig-arg">*interfaces</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.requestAvatar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns Avatar for slave processes of the cloud engine.</p>
+  <p>Implementation for IRealm</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getUser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getUser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">userID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.getUser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the user object matching the given user ID.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>userID</code></strong> (str) - user ID of the user which should be retrieved.</li>
+    </ul></dd>
+    <dt>Returns: rce.core.user.User</dt>
+        <dd>User object matching the user ID.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getInternalIP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getInternalIP</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.getInternalIP">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the IP address of the network interface used for the internal 
+  communication.</p>
+  <dl class="fields">
+    <dt>Returns: str</dt>
+        <dd>IP address of the network interface.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="requestURL"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">requestURL</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">userID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.requestURL">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for Robot resource to retrieve the location of the Robot 
+  process to which a WebSocket connection should be established.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>userID</code></strong> (str) - User ID under which the robot will login. (Can be used to do 
+          optimizations in distributing the load.)</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>The IP address of Robot process to which a WebSocket connection 
+          should be established. (type: str)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="createContainer"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createContainer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">userID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.createContainer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Callback for User instance to create a new Container object in a
+container process.
+
+@param userID:        UserID of the user who created the container.
+@type  userID:        str
+
+@return:            New Namespace and Container instance.
+@rtype:             (rce.core.environment.Environment,
+                     rce.core.container.Container)
+                    (subclasses of rce.core.base.Proxy)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="checkUIDValidity"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">checkUIDValidity</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.checkUIDValidity">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method to check if incoming environment ID is valid.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uid</code></strong> (str) - UID to be tested.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="createConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interfaceA</span>,
+        <span class="sig-arg">interfaceB</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.createConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for User instance to create a new connection between two 
+  interfaces.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>interfaceX</code></strong> (rce.master.network.Interface) - Interface which should be connected.</li>
+    </ul></dd>
+    <dt>Returns: rce.core.network.Connection</dt>
+        <dd>New Connection instance.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:05 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

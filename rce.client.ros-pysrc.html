@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.client.ros</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.client-module.html">Package&nbsp;client</a> ::
+        Module&nbsp;ros
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.client.ros-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.client.ros-module.html">Module rce.client.ros</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-client/ros.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2012 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># ROS specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">rospy</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">    <tt class="py-keyword">print</tt><tt class="py-op">(</tt><tt class="py-string">'Can not find ROS components.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">    <tt class="py-name">exit</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-comment"># twisted specific imports</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">internet</tt><tt class="py-op">.</tt><tt class="py-name">defer</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Deferred</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-0', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package rce.client=rce.client-module.html,Module rce.comm.client=rce.comm.client-module.html"><a title="rce.client
+rce.comm.client" class="py-name" href="#" onclick="return doclink('link-1', 'client', 'link-1');">client</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module rce.client.connection=rce.client.connection-module.html"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-2', 'connection', 'link-2');">connection</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Class rce.client.connection.ConnectionError=rce.client.connection.ConnectionError-class.html,Class rce.comm.client.ConnectionError=rce.comm.client.ConnectionError-class.html,Class rce.core.network.ConnectionError=rce.core.network.ConnectionError-class.html,Class rce.slave.endpoint.ConnectionError=rce.slave.endpoint.ConnectionError-class.html"><a title="rce.client.connection.ConnectionError
+rce.comm.client.ConnectionError
+rce.core.network.ConnectionError
+rce.slave.endpoint.ConnectionError" class="py-name" href="#" onclick="return doclink('link-3', 'ConnectionError', 'link-3');">ConnectionError</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Class rce.client.connection.ROSConnection=rce.client.connection.ROSConnection-class.html"><a title="rce.client.connection.ROSConnection" class="py-name" href="#" onclick="return doclink('link-4', 'ROSConnection', 'link-4');">ROSConnection</a></tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable rce.client.ros._MAP=rce.client.ros-module.html#_MAP,Variable rce.environment.Environment._MAP=rce.environment.Environment-class.html#_MAP,Variable rce.robot.Robot._MAP=rce.robot.Robot-class.html#_MAP"><a title="rce.client.ros._MAP
+rce.environment.Environment._MAP
+rce.robot.Robot._MAP" class="py-name" href="#" onclick="return doclink('link-5', '_MAP', 'link-5');">_MAP</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'ServiceClientConverter'</tt>   <tt class="py-op">:</tt> <tt class="py-string">'serviceProvider'</tt><tt class="py-op">,</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-string">'ServiceProviderConverter'</tt> <tt class="py-op">:</tt> <tt class="py-string">'serviceClient'</tt><tt class="py-op">,</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-string">'PublisherConverter'</tt>       <tt class="py-op">:</tt> <tt class="py-string">'subscriber'</tt><tt class="py-op">,</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-string">'SubscriberConverter'</tt>      <tt class="py-op">:</tt> <tt class="py-string">'publisher'</tt><tt class="py-op">}</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="Environment"></a><div id="Environment-def"><a name="L53"></a><tt class="py-lineno"> 53</tt> <a class="py-toggle" href="#" id="Environment-toggle" onclick="return toggle('Environment');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.client.ros.Environment-class.html">Environment</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Environment-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Environment-expanded"><a name="Environment.__init__"></a><div id="Environment.__init__-def"><a name="L54"></a><tt class="py-lineno"> 54</tt> <a class="py-toggle" href="#" id="Environment.__init__-toggle" onclick="return toggle('Environment.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.client.ros.Environment-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">reactor</tt><tt class="py-op">,</tt> <tt class="py-param">conn</tt><tt class="py-op">,</tt> <tt class="py-param">config</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Environment.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Environment.__init__-expanded"><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name" targets="Variable rce.client.connection._Connection.reactor=rce.client.connection._Connection-class.html#reactor,Variable rce.comm.client.RCE.reactor=rce.comm.client.RCE-class.html#reactor,Method rce.container.ContainerClient.reactor()=rce.container.ContainerClient-class.html#reactor,Variable rce.environment.Environment.reactor=rce.environment.Environment-class.html#reactor"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-6', 'reactor', 'link-6');">reactor</a></tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt> <tt class="py-op">=</tt> <tt class="py-name">conn</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_containers</tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method rce.client.interface._EventRef.get()=rce.client.interface._EventRef-class.html#get"><a title="rce.client.interface._EventRef.get" class="py-name" href="#" onclick="return doclink('link-7', 'get', 'link-7');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'containers'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_nodes</tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="rce.client.interface._EventRef.get" class="py-name" href="#" onclick="return doclink('link-8', 'get', 'link-7');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'nodes'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="rce.client.interface._EventRef.get" class="py-name" href="#" onclick="return doclink('link-9', 'get', 'link-7');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'parameters'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="rce.client.interface._EventRef.get" class="py-name" href="#" onclick="return doclink('link-10', 'get', 'link-7');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'interfaces'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_connections</tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="rce.client.interface._EventRef.get" class="py-name" href="#" onclick="return doclink('link-11', 'get', 'link-7');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'connections'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ifs</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="Environment.run"></a><div id="Environment.run-def"><a name="L66"></a><tt class="py-lineno"> 66</tt> <a class="py-toggle" href="#" id="Environment.run-toggle" onclick="return toggle('Environment.run');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.client.ros.Environment-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">_</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Environment.run-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Environment.run-expanded"><a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-12" class="py-name" targets="Module rce.container=rce.container-module.html,Module rce.core.container=rce.core.container-module.html,Module rce.util.container=rce.util.container-module.html"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-12', 'container', 'link-12');">container</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_containers</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method rce.client.connection._Connection.createContainer()=rce.client.connection._Connection-class.html#createContainer,Method rce.comm.client.RCE.createContainer()=rce.comm.client.RCE-class.html#createContainer,Method rce.comm.interfaces.IRobot.createContainer()=rce.comm.interfaces.IRobot-class.html#createContainer,Method rce.core.machine.LoadBalancer.createContainer()=rce.core.machine.LoadBalancer-class.html#createContainer,Method rce.core.machine.Machine.createContainer()=rce.core.machine.Machine-class.html#createContainer,Method rce.master.RoboEarthCloudEngine.createContainer()=rce.master.RoboEarthCloudEngine-class.html#createContainer,Method rce.robot.Connection.createContainer()=rce.robot.Connection-class.html#createContainer,Method rce.robot.RobotView.createContainer()=rce.robot.RobotView-class.html#createContainer"><a title="rce.client.connection._Connection.createContainer
+rce.comm.client.RCE.createContainer
+rce.comm.interfaces.IRobot.createContainer
+rce.core.machine.LoadBalancer.createContainer
+rce.core.machine.Machine.createContainer
+rce.master.RoboEarthCloudEngine.createContainer
+rce.robot.Connection.createContainer
+rce.robot.RobotView.createContainer" class="py-name" href="#" onclick="return doclink('link-13', 'createContainer', 'link-13');">createContainer</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-14" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-14', 'container', 'link-12');">container</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-15" class="py-name" targets="Module rce.monitor.node=rce.monitor.node-module.html"><a title="rce.monitor.node" class="py-name" href="#" onclick="return doclink('link-15', 'node', 'link-15');">node</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_nodes</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method rce.client.connection._Connection.addNode()=rce.client.connection._Connection-class.html#addNode,Method rce.comm.client.RCE.addNode()=rce.comm.client.RCE-class.html#addNode,Method rce.comm.interfaces.IRobot.addNode()=rce.comm.interfaces.IRobot-class.html#addNode,Method rce.core.wrapper.Container.addNode()=rce.core.wrapper.Container-class.html#addNode,Method rce.robot.Connection.addNode()=rce.robot.Connection-class.html#addNode,Method rce.robot.RobotView.addNode()=rce.robot.RobotView-class.html#addNode"><a title="rce.client.connection._Connection.addNode
+rce.comm.client.RCE.addNode
+rce.comm.interfaces.IRobot.addNode
+rce.core.wrapper.Container.addNode
+rce.robot.Connection.addNode
+rce.robot.RobotView.addNode" class="py-name" href="#" onclick="return doclink('link-16', 'addNode', 'link-16');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-17" class="py-name"><a title="rce.monitor.node" class="py-name" href="#" onclick="return doclink('link-17', 'node', 'link-15');">node</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-18" class="py-name" targets="Module rce.monitor.parameter=rce.monitor.parameter-module.html"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-18', 'parameter', 'link-18');">parameter</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method rce.client.connection._Connection.addParameter()=rce.client.connection._Connection-class.html#addParameter,Method rce.comm.client.RCE.addParameter()=rce.comm.client.RCE-class.html#addParameter,Method rce.comm.interfaces.IRobot.addParameter()=rce.comm.interfaces.IRobot-class.html#addParameter,Method rce.core.wrapper.Container.addParameter()=rce.core.wrapper.Container-class.html#addParameter,Method rce.robot.Connection.addParameter()=rce.robot.Connection-class.html#addParameter,Method rce.robot.RobotView.addParameter()=rce.robot.RobotView-class.html#addParameter"><a title="rce.client.connection._Connection.addParameter
+rce.comm.client.RCE.addParameter
+rce.comm.interfaces.IRobot.addParameter
+rce.core.wrapper.Container.addParameter
+rce.robot.Connection.addParameter
+rce.robot.RobotView.addParameter" class="py-name" href="#" onclick="return doclink('link-19', 'addParameter', 'link-19');">addParameter</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-20" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-20', 'parameter', 'link-18');">parameter</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-21" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-21', 'interface', 'link-21');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method rce.client.connection._Connection.addInterface()=rce.client.connection._Connection-class.html#addInterface,Method rce.comm.client.RCE.addInterface()=rce.comm.client.RCE-class.html#addInterface,Method rce.comm.interfaces.IRobot.addInterface()=rce.comm.interfaces.IRobot-class.html#addInterface,Method rce.core.wrapper.Container.addInterface()=rce.core.wrapper.Container-class.html#addInterface,Method rce.core.wrapper.Robot.addInterface()=rce.core.wrapper.Robot-class.html#addInterface,Method rce.robot.Connection.addInterface()=rce.robot.Connection-class.html#addInterface,Method rce.robot.RobotView.addInterface()=rce.robot.RobotView-class.html#addInterface"><a title="rce.client.connection._Connection.addInterface
+rce.comm.client.RCE.addInterface
+rce.comm.interfaces.IRobot.addInterface
+rce.core.wrapper.Container.addInterface
+rce.core.wrapper.Robot.addInterface
+rce.robot.Connection.addInterface
+rce.robot.RobotView.addInterface" class="py-name" href="#" onclick="return doclink('link-22', 'addInterface', 'link-22');">addInterface</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-23" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-23', 'interface', 'link-21');">interface</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-24" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-24', 'connection', 'link-2');">connection</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_connections</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method rce.client.connection._Connection.addConnection()=rce.client.connection._Connection-class.html#addConnection,Method rce.comm.client.RCE.addConnection()=rce.comm.client.RCE-class.html#addConnection,Method rce.comm.interfaces.IRobot.addConnection()=rce.comm.interfaces.IRobot-class.html#addConnection,Method rce.robot.Connection.addConnection()=rce.robot.Connection-class.html#addConnection,Method rce.robot.RobotView.addConnection()=rce.robot.RobotView-class.html#addConnection"><a title="rce.client.connection._Connection.addConnection
+rce.comm.client.RCE.addConnection
+rce.comm.interfaces.IRobot.addConnection
+rce.robot.Connection.addConnection
+rce.robot.RobotView.addConnection" class="py-name" href="#" onclick="return doclink('link-25', 'addConnection', 'link-25');">addConnection</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-26" class="py-name"><a title="rce.client.connection" class="py-name" href="#" onclick="return doclink('link-26', 'connection', 'link-2');">connection</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-27" class="py-name" targets="Module rce.client.ros=rce.client.ros-module.html"><a title="rce.client.ros" class="py-name" href="#" onclick="return doclink('link-27', 'ros', 'link-27');">ros</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">:</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">                <tt class="py-name">iType</tt> <tt class="py-op">=</tt> <tt id="link-28" class="py-name"><a title="rce.client.ros" class="py-name" href="#" onclick="return doclink('link-28', 'ros', 'link-27');">ros</a></tt><tt class="py-op">[</tt><tt class="py-string">'iType'</tt><tt class="py-op">]</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">iType</tt> <tt class="py-keyword">in</tt> <tt id="link-29" class="py-name"><a title="rce.client.ros._MAP
+rce.environment.Environment._MAP
+rce.robot.Robot._MAP" class="py-name" href="#" onclick="return doclink('link-29', '_MAP', 'link-5');">_MAP</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ifs</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">                        <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">,</tt> <tt id="link-30" class="py-name"><a title="rce.client.ros._MAP
+rce.environment.Environment._MAP
+rce.robot.Robot._MAP" class="py-name" href="#" onclick="return doclink('link-30', '_MAP', 'link-5');">_MAP</a></tt><tt class="py-op">[</tt><tt class="py-name">iType</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="rce.client.ros" class="py-name" href="#" onclick="return doclink('link-31', 'ros', 'link-27');">ros</a></tt><tt class="py-op">[</tt><tt class="py-string">'iTag'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">                                                         <tt id="link-32" class="py-name"><a title="rce.client.ros" class="py-name" href="#" onclick="return doclink('link-32', 'ros', 'link-27');">ros</a></tt><tt class="py-op">[</tt><tt class="py-string">'iCls'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">                                                         <tt id="link-33" class="py-name"><a title="rce.client.ros" class="py-name" href="#" onclick="return doclink('link-33', 'ros', 'link-27');">ros</a></tt><tt class="py-op">[</tt><tt class="py-string">'addr'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">                    <tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">            <tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt><tt class="py-op">(</tt><tt class="py-string">''</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">format_exception_only</tt><tt class="py-op">(</tt><tt id="link-34" class="py-name" targets="Variable rce.util.sysinfo.nt_connection.type=rce.util.sysinfo.nt_connection-class.html#type"><a title="rce.util.sysinfo.nt_connection.type" class="py-name" href="#" onclick="return doclink('link-34', 'type', 'link-34');">type</a></tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">            <tt class="py-name">rospy</tt><tt class="py-op">.</tt><tt class="py-name">signal_shutdown</tt><tt class="py-op">(</tt><tt class="py-string">'Error'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"> </tt>
+<a name="Environment.terminate"></a><div id="Environment.terminate-def"><a name="L97"></a><tt class="py-lineno"> 97</tt> <a class="py-toggle" href="#" id="Environment.terminate-toggle" onclick="return toggle('Environment.terminate');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.client.ros.Environment-class.html#terminate">terminate</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Environment.terminate-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Environment.terminate-expanded"><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-35" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-35', 'parameter', 'link-18');">parameter</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">:</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method rce.client.connection._Connection.removeParameter()=rce.client.connection._Connection-class.html#removeParameter,Method rce.comm.client.RCE.removeParameter()=rce.comm.client.RCE-class.html#removeParameter,Method rce.comm.interfaces.IRobot.removeParameter()=rce.comm.interfaces.IRobot-class.html#removeParameter,Method rce.core.wrapper.Container.removeParameter()=rce.core.wrapper.Container-class.html#removeParameter,Method rce.robot.Connection.removeParameter()=rce.robot.Connection-class.html#removeParameter,Method rce.robot.RobotView.removeParameter()=rce.robot.RobotView-class.html#removeParameter"><a title="rce.client.connection._Connection.removeParameter
+rce.comm.client.RCE.removeParameter
+rce.comm.interfaces.IRobot.removeParameter
+rce.core.wrapper.Container.removeParameter
+rce.robot.Connection.removeParameter
+rce.robot.RobotView.removeParameter" class="py-name" href="#" onclick="return doclink('link-36', 'removeParameter', 'link-36');">removeParameter</a></tt><tt class="py-op">(</tt><tt id="link-37" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-37', 'parameter', 'link-18');">parameter</a></tt><tt class="py-op">[</tt><tt class="py-string">'cTag'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">                                           <tt id="link-38" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-38', 'parameter', 'link-18');">parameter</a></tt><tt class="py-op">[</tt><tt class="py-string">'name'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-39" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-39', 'container', 'link-12');">container</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_containers</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conn</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method rce.client.connection._Connection.destroyContainer()=rce.client.connection._Connection-class.html#destroyContainer,Method rce.comm.client.RCE.destroyContainer()=rce.comm.client.RCE-class.html#destroyContainer,Method rce.comm.interfaces.IRobot.destroyContainer()=rce.comm.interfaces.IRobot-class.html#destroyContainer,Method rce.core.machine.Machine.destroyContainer()=rce.core.machine.Machine-class.html#destroyContainer,Method rce.robot.Connection.destroyContainer()=rce.robot.Connection-class.html#destroyContainer,Method rce.robot.RobotView.destroyContainer()=rce.robot.RobotView-class.html#destroyContainer"><a title="rce.client.connection._Connection.destroyContainer
+rce.comm.client.RCE.destroyContainer
+rce.comm.interfaces.IRobot.destroyContainer
+rce.core.machine.Machine.destroyContainer
+rce.robot.Connection.destroyContainer
+rce.robot.RobotView.destroyContainer" class="py-name" href="#" onclick="return doclink('link-40', 'destroyContainer', 'link-40');">destroyContainer</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-41" class="py-name"><a title="rce.container
+rce.core.container
+rce.util.container" class="py-name" href="#" onclick="return doclink('link-41', 'container', 'link-12');">container</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-42" class="py-name"><a title="rce.client.connection.ConnectionError
+rce.comm.client.ConnectionError
+rce.core.network.ConnectionError
+rce.slave.endpoint.ConnectionError" class="py-name" href="#" onclick="return doclink('link-42', 'ConnectionError', 'link-3');">ConnectionError</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">            <tt class="py-keyword">pass</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ifs</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">.</tt><tt class="py-name">callLater</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">.</tt><tt class="py-name">callFromThread</tt><tt class="py-op">,</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Method rce.comm.assembler.MessageAssembler.stop()=rce.comm.assembler.MessageAssembler-class.html#stop,Method rce.slave.interface.Interface.stop()=rce.slave.interface.Interface-class.html#stop,Method rce.util.container.Container.stop()=rce.util.container.Container-class.html#stop"><a title="rce.comm.assembler.MessageAssembler.stop
+rce.slave.interface.Interface.stop
+rce.util.container.Container.stop" class="py-name" href="#" onclick="return doclink('link-43', 'stop', 'link-43');">stop</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"> </tt>
+<a name="main"></a><div id="main-def"><a name="L114"></a><tt class="py-lineno">114</tt> <a class="py-toggle" href="#" id="main-toggle" onclick="return toggle('main');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.client.ros-module.html#main">main</a><tt class="py-op">(</tt><tt class="py-param">config</tt><tt class="py-op">,</tt> <tt class="py-param">reactor</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="main-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="main-expanded"><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">    <tt class="py-name">rospy</tt><tt class="py-op">.</tt><tt class="py-name">init_node</tt><tt class="py-op">(</tt><tt class="py-string">'RCE_ROS_Client'</tt><tt class="py-op">,</tt> <tt id="link-44" class="py-name" targets="Variable rce.util.sysinfo.Process.nt_mmap_ext.anonymous=rce.util.sysinfo.Process.nt_mmap_ext-class.html#anonymous,Variable rce.util.sysinfo.Process.nt_mmap_grouped.anonymous=rce.util.sysinfo.Process.nt_mmap_grouped-class.html#anonymous"><a title="rce.util.sysinfo.Process.nt_mmap_ext.anonymous
+rce.util.sysinfo.Process.nt_mmap_grouped.anonymous" class="py-name" href="#" onclick="return doclink('link-44', 'anonymous', 'link-44');">anonymous</a></tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt id="link-45" class="py-name" targets="Variable rce.core.user.User.userID=rce.core.user.User-class.html#userID,Method rce.robot.Connection.userID()=rce.robot.Connection-class.html#userID"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-45', 'userID', 'link-45');">userID</a></tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">[</tt><tt class="py-string">'userID'</tt><tt class="py-op">]</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt id="link-46" class="py-name" targets="Method rce.robot.Connection.robotID()=rce.robot.Connection-class.html#robotID"><a title="rce.robot.Connection.robotID" class="py-name" href="#" onclick="return doclink('link-46', 'robotID', 'link-46');">robotID</a></tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">[</tt><tt class="py-string">'robotID'</tt><tt class="py-op">]</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt id="link-47" class="py-name" targets="Variable rce.util.cred.Userinfo.password=rce.util.cred.Userinfo-class.html#password"><a title="rce.util.cred.Userinfo.password" class="py-name" href="#" onclick="return doclink('link-47', 'password', 'link-47');">password</a></tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">[</tt><tt class="py-string">'password'</tt><tt class="py-op">]</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-name">url</tt> <tt class="py-op">=</tt> <tt class="py-name">config</tt><tt class="py-op">[</tt><tt class="py-string">'url'</tt><tt class="py-op">]</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt><tt class="py-op">(</tt><tt class="py-string">'Configuration is missing the key {0}.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-number">1</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">    <tt class="py-name">conn</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name"><a title="rce.client.connection.ROSConnection" class="py-name" href="#" onclick="return doclink('link-48', 'ROSConnection', 'link-4');">ROSConnection</a></tt><tt class="py-op">(</tt><tt id="link-49" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-49', 'userID', 'link-45');">userID</a></tt><tt class="py-op">,</tt> <tt id="link-50" class="py-name"><a title="rce.robot.Connection.robotID" class="py-name" href="#" onclick="return doclink('link-50', 'robotID', 'link-46');">robotID</a></tt><tt class="py-op">,</tt> <tt id="link-51" class="py-name"><a title="rce.util.cred.Userinfo.password" class="py-name" href="#" onclick="return doclink('link-51', 'password', 'link-47');">password</a></tt><tt class="py-op">,</tt> <tt id="link-52" class="py-name"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-52', 'reactor', 'link-6');">reactor</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">    <tt class="py-name">env</tt> <tt class="py-op">=</tt> <tt id="link-53" class="py-name" targets="Class rce.client.ros.Environment=rce.client.ros.Environment-class.html,Class rce.core.environment.Environment=rce.core.environment.Environment-class.html,Class rce.environment.Environment=rce.environment.Environment-class.html"><a title="rce.client.ros.Environment
+rce.core.environment.Environment
+rce.environment.Environment" class="py-name" href="#" onclick="return doclink('link-53', 'Environment', 'link-53');">Environment</a></tt><tt class="py-op">(</tt><tt id="link-54" class="py-name"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-54', 'reactor', 'link-6');">reactor</a></tt><tt class="py-op">,</tt> <tt class="py-name">conn</tt><tt class="py-op">,</tt> <tt class="py-name">config</tt><tt class="py-op">)</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">    <tt class="py-name">deferred</tt> <tt class="py-op">=</tt> <tt class="py-name">Deferred</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">    <tt class="py-name">deferred</tt><tt class="py-op">.</tt><tt class="py-name">addCallback</tt><tt class="py-op">(</tt><tt class="py-name">env</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method rce.client.ros.Environment.run()=rce.client.ros.Environment-class.html#run"><a title="rce.client.ros.Environment.run" class="py-name" href="#" onclick="return doclink('link-55', 'run', 'link-55');">run</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">    <tt class="py-name">conn</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Method rce.client.connection._Connection.connect()=rce.client.connection._Connection-class.html#connect,Method rce.comm.client.RCE.connect()=rce.comm.client.RCE-class.html#connect,Method rce.core.network.Endpoint.connect()=rce.core.network.Endpoint-class.html#connect"><a title="rce.client.connection._Connection.connect
+rce.comm.client.RCE.connect
+rce.core.network.Endpoint.connect" class="py-name" href="#" onclick="return doclink('link-56', 'connect', 'link-56');">connect</a></tt><tt class="py-op">(</tt><tt class="py-name">url</tt><tt class="py-op">,</tt> <tt class="py-name">deferred</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">    <tt class="py-name">rospy</tt><tt class="py-op">.</tt><tt class="py-name">on_shutdown</tt><tt class="py-op">(</tt><tt class="py-name">env</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name" targets="Method rce.client.ros.Environment.terminate()=rce.client.ros.Environment-class.html#terminate,Method rce.container.ContainerClient.terminate()=rce.container.ContainerClient-class.html#terminate,Method rce.environment.EnvironmentClient.terminate()=rce.environment.EnvironmentClient-class.html#terminate,Method rce.robot.RobotClient.terminate()=rce.robot.RobotClient-class.html#terminate,Method rce.slave.endpoint.Endpoint.terminate()=rce.slave.endpoint.Endpoint-class.html#terminate"><a title="rce.client.ros.Environment.terminate
+rce.container.ContainerClient.terminate
+rce.environment.EnvironmentClient.terminate
+rce.robot.RobotClient.terminate
+rce.slave.endpoint.Endpoint.terminate" class="py-name" href="#" onclick="return doclink('link-57', 'terminate', 'link-57');">terminate</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">    <tt id="link-58" class="py-name"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-58', 'reactor', 'link-6');">reactor</a></tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="rce.client.ros.Environment.run" class="py-name" href="#" onclick="return doclink('link-59', 'run', 'link-55');">run</a></tt><tt class="py-op">(</tt><tt class="py-name">installSignalHandlers</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:10 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

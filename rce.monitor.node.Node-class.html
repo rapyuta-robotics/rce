@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.monitor.node.Node</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.monitor-module.html">Package&nbsp;monitor</a> ::
+        <a href="rce.monitor.node-module.html">Module&nbsp;node</a> ::
+        Class&nbsp;Node
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.monitor.node.Node-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Node</h1><p class="nomargin-top"><span class="codelink"><a href="rce.monitor.node-pysrc.html#Node">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_moni_21" name="uml_class_diagram_for_rce_moni_21">
+<area shape="rect" id="node499" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
+<area shape="rect" id="node499" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
+<area shape="rect" id="node498" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
+<area shape="rect" id="node497" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
+<area shape="rect" id="node497" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
+<area shape="rect" id="node497" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
+<area shape="rect" id="node497" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
+<area shape="rect" id="node497" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
+<area shape="rect" id="node496" href="rce.monitor.node.Node-class.html#__init__" title="Initialize and start the Node." alt="" coords="184,359,515,377"/>
+<area shape="rect" id="node496" href="rce.monitor.node.Node-class.html#started" title="Callback for NodeProtocol to signal that the process has started." alt="" coords="184,377,515,396"/>
+<area shape="rect" id="node496" href="rce.monitor.node.Node-class.html#stopped" title="Callback for NodeProtocol to signal that the process has died." alt="" coords="184,396,515,415"/>
+<area shape="rect" id="node496" href="rce.monitor.node.Node-class.html#remote_destroy" title="Method should be called to stop/kill this node." alt="" coords="184,415,515,433"/>
+<area shape="rect" id="node4" href="rce.monitor.node.Node-class.html" title="Representation of a ROS Node (process) inside an environment." alt="" coords="172,326,527,439"/>
+<area shape="rect" id="node500" href="rce.monitor.common.ArgumentMixin-class.html#processArgument" title="Run the replacement methods over the argument if it is a string." alt="" coords="417,247,595,265"/>
+<area shape="rect" id="node3" href="rce.monitor.common.ArgumentMixin-class.html" title="Class which can be used as a mixin to add similar capabilities to dynamically modify arguments as for a ROS launch file." alt="" coords="405,214,605,271"/>
+</map>
+  <img src="uml_class_diagram_for_rce_moni_21.gif" alt='' usemap="#uml_class_diagram_for_rce_moni_21" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Representation of a ROS Node (process) inside an environment.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.monitor.node.Node-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">owner</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">exe</span>,
+        <span class="summary-sig-arg">args</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">namespace</span>)</span><br />
+      Initialize and start the Node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.node-pysrc.html#Node.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="started"></a><span class="summary-sig-name">started</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Callback for NodeProtocol to signal that the process has started.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.node-pysrc.html#Node.started">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="stopped"></a><span class="summary-sig-name">stopped</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">exitCode</span>)</span><br />
+      Callback for NodeProtocol to signal that the process has died.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.node-pysrc.html#Node.stopped">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remote_destroy"></a><span class="summary-sig-name">remote_destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to stop/kill this node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.node-pysrc.html#Node.remote_destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_destroy"></a><span class="summary-sig-name">_destroy</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">lvl</span>=<span class="summary-sig-default">0</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.node-pysrc.html#Node._destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__provides__</code>,
+      <code>jellyFor</code>,
+      <code>remoteMessageReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.monitor.common.ArgumentMixin-class.html">common.ArgumentMixin</a></code></b>:
+      <code><a href="rce.monitor.common.ArgumentMixin-class.html#processArgument">processArgument</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.monitor.common.ArgumentMixin-class.html">common.ArgumentMixin</a></code></b> (private):
+      <code><a href="rce.monitor.common.ArgumentMixin-class.html#_replaceEnv" onclick="show_private();">_replaceEnv</a></code>,
+      <code><a href="rce.monitor.common.ArgumentMixin-class.html#_replaceFind" onclick="show_private();">_replaceFind</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_STOP_ESCALATION"></a><span class="summary-name">_STOP_ESCALATION</span> = <code title="[('INT', 15), ('TERM', 2), ('KILL', None)]"><code class="variable-group">[</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">INT</code><code class="variable-quote">'</code><code class="variable-op">, </code>15<code class="variable-group">)</code><code class="variable-op">, </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">TERM</code><code class="variable-quote">'</code><code class="variable-op">, </code>2<code class="variable-group">)</code><code class="variable-op">, </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">KILL</code><code class="variable-quote">'</code><code class="variable-op">, </code>None<code class="variable-group">)</code><code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_LOG_DIR"></a><span class="summary-name">_LOG_DIR</span> = <code title="'/opt/rce/data'"><code class="variable-quote">'</code><code class="variable-string">/opt/rce/data</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__implemented__</code>,
+      <code>perspective</code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.monitor.common.ArgumentMixin-class.html">common.ArgumentMixin</a></code></b> (private):
+      <code><a href="rce.monitor.common.ArgumentMixin-class.html#_RE_ENV" onclick="show_private();">_RE_ENV</a></code>,
+      <code><a href="rce.monitor.common.ArgumentMixin-class.html#_RE_FIND" onclick="show_private();">_RE_FIND</a></code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">owner</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">exe</span>,
+        <span class="sig-arg">args</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">namespace</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.monitor.node-pysrc.html#Node.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize and start the Node.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>owner</code></strong> (rce.environment.Environment) - Environment in which the node will be created.</li>
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of ROS package where the node can be found.</li>
+        <li><strong class="pname"><code>exe</code></strong> (str) - Name of executable (node) which should be launched.</li>
+        <li><strong class="pname"><code>args</code></strong> (str) - Additional arguments which should be used for the launch. Can 
+          contain the directives $(find PKG) and/or $(env VAR). Other 
+          special characters such as '$' or ';' are not allowed.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the node under which the node should be launched.</li>
+        <li><strong class="pname"><code>namespace</code></strong> (str) - Namespace in which the node should be started in the environment.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:06 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.view.ControlView</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.view-module.html">Module&nbsp;view</a> ::
+        Class&nbsp;ControlView
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.view.ControlView-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class ControlView</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core_34" name="uml_class_diagram_for_rce_core_34">
+<area shape="rect" id="node351" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="171,39,340,57"/>
+<area shape="rect" id="node351" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="171,57,340,76"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="159,6,351,82"/>
+<area shape="rect" id="node350" href="javascript:void(0);" title="twisted.spread.flavors.Serializable.__implemented__" alt="" coords="155,127,356,145"/>
+<area shape="rect" id="node350" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="155,148,356,167"/>
+<area shape="rect" id="node350" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="155,167,356,185"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="143,102,367,191"/>
+<area shape="rect" id="node349" href="javascript:void(0);" title="Serialize a ViewPoint for me and the perspective of the given broker." alt="" coords="163,244,349,263"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="I will be converted to a ViewPoint when passed to or returned from a remote method." alt="" coords="151,211,361,269"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_createContainer" title="Create a new Container object." alt="" coords="17,321,495,340"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_destroyContainer" title="Destroy a Container object." alt="" coords="17,340,495,359"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_addNode" title="Add a node to a ROS environment." alt="" coords="17,359,495,377"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_removeNode" title="Remove a node from a ROS environment." alt="" coords="17,377,495,396"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_addParameter" title="Add a parameter to a ROS environment." alt="" coords="17,396,495,415"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_removeParameter" title="Remove a parameter from a ROS environment." alt="" coords="17,415,495,433"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_addInterface" title="Add an interface to an endpoint, i.e." alt="" coords="17,433,495,452"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_removeInterface" title="Remove an interface from an endpoint, i.e." alt="" coords="17,452,495,471"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_addConnection" title="Create a connection between two interfaces." alt="" coords="17,471,495,489"/>
+<area shape="rect" id="node348" href="rce.core.view.ControlView-class.html#view_removeConnection" title="Destroy a connection between two interfaces." alt="" coords="17,489,495,508"/>
+<area shape="rect" id="node3" href="rce.core.view.ControlView-class.html" title="View implementing all control actions which a user can perform to interact with the cloud engine." alt="" coords="5,289,507,514"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core_34.gif" alt='' usemap="#uml_class_diagram_for_rce_core_34" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>View implementing all control actions which a user can perform to 
+  interact with the cloud engine.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_createContainer" class="summary-sig-name">view_createContainer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">tag</span>)</span><br />
+      Create a new Container object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_destroyContainer" class="summary-sig-name">view_destroyContainer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">tag</span>)</span><br />
+      Destroy a Container object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_destroyContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_addNode" class="summary-sig-name">view_addNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">nTag</span>,
+        <span class="summary-sig-arg">pkg</span>,
+        <span class="summary-sig-arg">exe</span>,
+        <span class="summary-sig-arg">args</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">name</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">namespace</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+      Add a node to a ROS environment.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_removeNode" class="summary-sig-name">view_removeNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">nTag</span>)</span><br />
+      Remove a node from a ROS environment.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_addParameter" class="summary-sig-name">view_addParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Add a parameter to a ROS environment.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addParameter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_removeParameter" class="summary-sig-name">view_removeParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">cTag</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Remove a parameter from a ROS environment.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeParameter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_addInterface" class="summary-sig-name">view_addInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">eTag</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">iType</span>,
+        <span class="summary-sig-arg">clsName</span>,
+        <span class="summary-sig-arg">addr</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+      Add an interface to an endpoint, i.e.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_removeInterface" class="summary-sig-name">view_removeInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">eTag</span>,
+        <span class="summary-sig-arg">iTag</span>)</span><br />
+      Remove an interface from an endpoint, i.e.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_addConnection" class="summary-sig-name">view_addConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">tagA</span>,
+        <span class="summary-sig-arg">tagB</span>)</span><br />
+      Create a connection between two interfaces.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.ControlView-class.html#view_removeConnection" class="summary-sig-name">view_removeConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">tagA</span>,
+        <span class="summary-sig-arg">tagB</span>)</span><br />
+      Destroy a connection between two interfaces.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Viewable</code></b>:
+      <code>jellyFor</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>__provides__</code>,
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>__implemented__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="view_createContainer"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_createContainer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">tag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_createContainer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new Container object.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the container will be created.</li>
+        <li><strong class="pname"><code>tag</code></strong> (str) - Tag which is used to identify the container in subsequent 
+          requests.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_destroyContainer"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_destroyContainer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">tag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_destroyContainer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Destroy a Container object.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the container will be destroyed.</li>
+        <li><strong class="pname"><code>tag</code></strong> (str) - Tag which is used to identify the container which should be 
+          destroyed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_addNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_addNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">nTag</span>,
+        <span class="sig-arg">pkg</span>,
+        <span class="sig-arg">exe</span>,
+        <span class="sig-arg">args</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">name</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">namespace</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a node to a ROS environment.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the node will be added.</li>
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag which is used to identify the ROS environment to which the 
+          node should be added.</li>
+        <li><strong class="pname"><code>nTag</code></strong> (str) - Tag which is used to identify the node in subsequent requests.</li>
+        <li><strong class="pname"><code>pkg</code></strong> (str) - Name of ROS package where the node can be found.</li>
+        <li><strong class="pname"><code>exe</code></strong> (str) - Name of executable (node) which should be launched.</li>
+        <li><strong class="pname"><code>args</code></strong> (str) - Additional arguments which should be used for the launch. Can 
+          contain the directives $(find PKG) or $(env VAR). Other special 
+          characters as '$' or ';' are not allowed.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the node under which the node should be launched.</li>
+        <li><strong class="pname"><code>namespace</code></strong> (str) - Namespace in which the node should be started in the environment.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_removeNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_removeNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">nTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a node from a ROS environment.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the node will be destroyed.</li>
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag which is used to identify the ROS environment from which the 
+          node should be removed.</li>
+        <li><strong class="pname"><code>nTag</code></strong> (str) - Tag which is used to identify the ROS node which should removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_addParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_addParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a parameter to a ROS environment.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the parameter will be added.</li>
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag which is used to identify the ROS environment to which the 
+          parameter should be added.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the parameter which should be added. It is also used to 
+          identify the parameter in subsequent requests.</li>
+        <li><strong class="pname"><code>value</code></strong> (str, int, float, bool, list) - Value of the parameter which should be added. String values can 
+          contain the directives $(find PKG) or $(env VAR).</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_removeParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_removeParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">cTag</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a parameter from a ROS environment.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the parameter will be destroyed.</li>
+        <li><strong class="pname"><code>cTag</code></strong> (str) - Tag which is used to identify the ROS environment from which the 
+          parameter should be removed.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the parameter which should be removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_addInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_addInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">eTag</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">iType</span>,
+        <span class="sig-arg">clsName</span>,
+        <span class="sig-arg">addr</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add an interface to an endpoint, i.e. a ROS environment or a Robot 
+  object.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the interface will be added.</li>
+        <li><strong class="pname"><code>eTag</code></strong> (str) - Tag which is used to identify the endpoint to which the interface
+          should be added; either a container tag or robot ID.</li>
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface in subsequent 
+          requests.</li>
+        <li><strong class="pname"><code>iType</code></strong> (str) - Type of the interface. The type consists of a prefix and a 
+          suffix.
+          <ul>
+            <li>
+              Valid prefixes are: ServiceClient, ServiceProvider, 
+              Publisher, Subscriber
+            </li>
+            <li>
+              Valid suffixes are: Interface, Converter, Forwarder
+            </li>
+          </ul></li>
+        <li><strong class="pname"><code>clsName</code></strong> (str) - Message type/Service type consisting of the package and the name 
+          of the message/service, i.e. 'std_msgs/Int32'.</li>
+        <li><strong class="pname"><code>addr</code></strong> (str) - ROS name/address which the interface should use. Only necessary 
+          if the suffix of @param iType is 'Interface'.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_removeInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_removeInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">eTag</span>,
+        <span class="sig-arg">iTag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove an interface from an endpoint, i.e. a ROS environment or a 
+  Robot object.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User for which the interface will be destroyed.</li>
+        <li><strong class="pname"><code>eTag</code></strong> (str) - Tag which is used to identify the endpoint from which the 
+          interface should be removed; either a container tag or robot ID.</li>
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface which should be 
+          removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_addConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_addConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">tagA</span>,
+        <span class="sig-arg">tagB</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_addConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Create a connection between two interfaces.
+
+@param user:        User for which the connection will be created.
+@type  user:        rce.core.user.User
+
+@param tagX:        Tag which is used to identify the interface
+                    which should be connected. It has to be of the
+                    form:
+                        [endpoint tag]/[interface tag]
+                    For example:
+                        testRobot/logPublisher
+@type  tagX:        str
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_removeConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_removeConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">tagA</span>,
+        <span class="sig-arg">tagB</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#ControlView.view_removeConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Destroy a connection between two interfaces.
+
+@param user:        User for which the connection will be destroyed.
+@type  user:        rce.core.user.User
+
+@param tagX:        Tag which is used to identify the interface
+                    which should be disconnected. It has to be of
+                    the form:
+                        [endpoint tag]/[interface tag]
+                    For example:
+                        testRobot/logPublisher
+@type  tagX:        str
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:04 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

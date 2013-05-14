@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.rosproxy</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        Module&nbsp;rosproxy
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.rosproxy-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.rosproxy-module.html">Module rce.rosproxy</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-core/rce/rosproxy.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Mayank Singh</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># Python specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">httplib</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">json</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">fcntl</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-comment"># ROS specific imports</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">rospy</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">rosservice</tt> <tt class="py-keyword">import</tt> <tt class="py-name">get_service_list</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-comment"># TODO: Unused imports</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-comment">#from rosservice import get_service_type as rosservice_get_service_type</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-comment">#from rosservice import get_service_node as rosservice_get_service_node</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-comment">#from rosservice import get_service_uri</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-comment">#from rostopic import find_by_type</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-comment">#from rosnode import get_node_names</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-comment">#from rosgraph.masterapi import Master</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-name">get_published_topics</tt> <tt class="py-op">=</tt> <tt class="py-name">rospy</tt><tt class="py-op">.</tt><tt class="py-name">get_published_topics</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-comment"># twisted specific imports</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Module rce.util.cred=rce.util.cred-module.html"><a title="rce.util.cred" class="py-name" href="#" onclick="return doclink('link-0', 'cred', 'link-0');">cred</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module rce.comm.error=rce.comm.error-module.html,Module rce.core.error=rce.core.error-module.html,Module rce.util.error=rce.util.error-module.html"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-1', 'error', 'link-1');">error</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">UnauthorizedLogin</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">python</tt> <tt class="py-keyword">import</tt> <tt class="py-name">log</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">web</tt><tt class="py-op">.</tt><tt class="py-name">resource</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Resource</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">web</tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module rce.comm.server=rce.comm.server-module.html"><a title="rce.comm.server" class="py-name" href="#" onclick="return doclink('link-2', 'server', 'link-2');">server</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">NOT_DONE_YET</tt><tt class="py-op">,</tt> <tt class="py-name">Site</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">internet</tt><tt class="py-op">.</tt><tt class="py-name">defer</tt> <tt class="py-keyword">import</tt> <tt class="py-name">fail</tt><tt class="py-op">,</tt> <tt class="py-name">succeed</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-3', 'rce', 'link-3');">rce</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-4', 'util', 'link-4');">util</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-5', 'error', 'link-1');">error</a></tt> <tt class="py-keyword">import</tt> <tt id="link-6" class="py-name" targets="Class rce.util.error.InternalError=rce.util.error.InternalError-class.html"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-6', 'InternalError', 'link-6');">InternalError</a></tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="InvalidRequest"></a><div id="InvalidRequest-def"><a name="L62"></a><tt class="py-lineno"> 62</tt> <a class="py-toggle" href="#" id="InvalidRequest-toggle" onclick="return toggle('InvalidRequest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.rosproxy.InvalidRequest-class.html">InvalidRequest</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="InvalidRequest-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="InvalidRequest-expanded"><a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-docstring">""" Exception is raised in case the HTTP request could not be processed.</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+</div><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="ROSProxy"></a><div id="ROSProxy-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="ROSProxy-toggle" onclick="return toggle('ROSProxy');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.rosproxy.ROSProxy-class.html">ROSProxy</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ROSProxy-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ROSProxy-expanded"><a name="ROSProxy.get_services"></a><div id="ROSProxy.get_services-def"><a name="L68"></a><tt class="py-lineno"> 68</tt> <a class="py-toggle" href="#" id="ROSProxy.get_services-toggle" onclick="return toggle('ROSProxy.get_services');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ROSProxy-class.html#get_services">get_services</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ROSProxy.get_services-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ROSProxy.get_services-expanded"><a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-docstring">""" Returns a list of all the services advertised in the ROS system</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">get_service_list</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"> </tt>
+<a name="ROSProxy.get_topics"></a><div id="ROSProxy.get_topics-def"><a name="L73"></a><tt class="py-lineno"> 73</tt> <a class="py-toggle" href="#" id="ROSProxy.get_topics-toggle" onclick="return toggle('ROSProxy.get_topics');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ROSProxy-class.html#get_topics">get_topics</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ROSProxy.get_topics-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ROSProxy.get_topics-expanded"><a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-docstring">""" Returns a list of all the topics being published in the ROS system</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt class="py-name">x</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">get_published_topics</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+</div></div><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication"></a><div id="ConsoleROSProxyAuthentication-def"><a name="L79"></a><tt class="py-lineno"> 79</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication-toggle" onclick="return toggle('ConsoleROSProxyAuthentication');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html">ConsoleROSProxyAuthentication</a><tt class="py-op">(</tt><tt class="py-base-class">Resource</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ConsoleROSProxyAuthentication-expanded"><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">    <tt class="py-docstring">""" Authenticator and Request handler for the ROS Proxy Web Server.</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">    <tt id="link-7" class="py-name" targets="Variable rce.comm.server.RobotResource.isLeaf=rce.comm.server.RobotResource-class.html#isLeaf,Variable rce.rosproxy.ConsoleROSProxyAuthentication.isLeaf=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#isLeaf,Variable twisted.web.resource.IResource.isLeaf=twisted.web.resource.IResource-class.html#isLeaf"><a title="rce.comm.server.RobotResource.isLeaf
+rce.rosproxy.ConsoleROSProxyAuthentication.isLeaf
+twisted.web.resource.IResource.isLeaf" class="py-name" href="#" onclick="return doclink('link-7', 'isLeaf', 'link-7');">isLeaf</a></tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication.__init__"></a><div id="ConsoleROSProxyAuthentication.__init__-def"><a name="L84"></a><tt class="py-lineno"> 84</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication.__init__-toggle" onclick="return toggle('ConsoleROSProxyAuthentication.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication.__init__-expanded"><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ros</tt> <tt class="py-op">=</tt> <tt id="link-8" class="py-name" targets="Class rce.rosproxy.ROSProxy=rce.rosproxy.ROSProxy-class.html"><a title="rce.rosproxy.ROSProxy" class="py-name" href="#" onclick="return doclink('link-8', 'ROSProxy', 'link-8');">ROSProxy</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_dbFile</tt> <tt class="py-op">=</tt> <tt class="py-string">"/opt/rce/data/rosenvbridge.db"</tt> </tt>
+</div><a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication._checkDB"></a><div id="ConsoleROSProxyAuthentication._checkDB-def"><a name="L88"></a><tt class="py-lineno"> 88</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication._checkDB-toggle" onclick="return toggle('ConsoleROSProxyAuthentication._checkDB');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_checkDB">_checkDB</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">userID</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication._checkDB-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication._checkDB-expanded"><a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method to check the rosproxy database to authenticate a web</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">            request.</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-docstring">            @param userID:    Username</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">            @type userID:     string</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">            @param key:       Secret key</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring">            @type key:        string</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Why not return True directly instead all lines will be read</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-comment"># TODO: Should this be deferred to a separate thread due to flock,</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-comment">#       which is a blocking call?</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">found</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-keyword">with</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_dbFile</tt><tt class="py-op">,</tt> <tt class="py-string">'r'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">bridgefile</tt><tt class="py-op">:</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">            <tt class="py-name">fcntl</tt><tt class="py-op">.</tt><tt class="py-name">flock</tt><tt class="py-op">(</tt><tt class="py-name">bridgefile</tt><tt class="py-op">.</tt><tt class="py-name">fileno</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">fcntl</tt><tt class="py-op">.</tt><tt class="py-name">LOCK_EX</tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-name">lines</tt> <tt class="py-op">=</tt> <tt class="py-name">bridgefile</tt><tt class="py-op">.</tt><tt class="py-name">readlines</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">line</tt> <tt class="py-keyword">in</tt> <tt class="py-name">lines</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                <tt class="py-name">g</tt> <tt class="py-op">=</tt> <tt class="py-name">line</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">':'</tt><tt class="py-op">)</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">g</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt id="link-9" class="py-name" targets="Variable rce.core.user.User.userID=rce.core.user.User-class.html#userID,Method rce.robot.Connection.userID()=rce.robot.Connection-class.html#userID"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-9', 'userID', 'link-9');">userID</a></tt> <tt class="py-keyword">and</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">g</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">rstrip</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">                    <tt class="py-name">found</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">found</tt> </tt>
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication._processGETReq"></a><div id="ConsoleROSProxyAuthentication._processGETReq-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication._processGETReq-toggle" onclick="return toggle('ConsoleROSProxyAuthentication._processGETReq');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_processGETReq">_processGETReq</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication._processGETReq-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication._processGETReq-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method to process a GET request.</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">            <tt class="py-name">action</tt> <tt class="py-op">=</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-string">'action'</tt><tt class="py-op">]</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">            <tt id="link-10" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-10', 'userID', 'link-9');">userID</a></tt> <tt class="py-op">=</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-string">'userID'</tt><tt class="py-op">]</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-name">key</tt> <tt class="py-op">=</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-string">'key'</tt><tt class="py-op">]</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">fail</tt><tt class="py-op">(</tt><tt id="link-11" class="py-name" targets="Class rce.comm.error.InvalidRequest=rce.comm.error.InvalidRequest-class.html,Class rce.core.error.InvalidRequest=rce.core.error.InvalidRequest-class.html,Class rce.rosproxy.InvalidRequest=rce.rosproxy.InvalidRequest-class.html"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-11', 'InvalidRequest', 'link-11');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Request is missing parameter: '</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                                       <tt class="py-string">'{0}'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method rce.rosproxy.ConsoleROSProxyAuthentication._checkDB()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_checkDB"><a title="rce.rosproxy.ConsoleROSProxyAuthentication._checkDB" class="py-name" href="#" onclick="return doclink('link-12', '_checkDB', 'link-12');">_checkDB</a></tt><tt class="py-op">(</tt><tt id="link-13" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-13', 'userID', 'link-9');">userID</a></tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">key</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">fail</tt><tt class="py-op">(</tt><tt class="py-name">UnauthorizedLogin</tt><tt class="py-op">(</tt><tt class="py-string">"Unknown user or key"</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-14" class="py-name" targets="Module rce.util.name=rce.util.name-module.html"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-14', 'name', 'link-14');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">param</tt> <tt class="py-keyword">in</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'action'</tt><tt class="py-op">,</tt> <tt class="py-name">action</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">'userID'</tt><tt class="py-op">,</tt> <tt id="link-15" class="py-name"><a title="rce.core.user.User.userID
+rce.robot.Connection.userID" class="py-name" href="#" onclick="return doclink('link-15', 'userID', 'link-9');">userID</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">                            <tt class="py-op">(</tt><tt class="py-string">'key'</tt><tt class="py-op">,</tt> <tt class="py-name">key</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">param</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">fail</tt><tt class="py-op">(</tt><tt id="link-16" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-16', 'InvalidRequest', 'link-11');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">"Parameter '{0}' has to be unique "</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">                                           <tt class="py-string">'in request.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-17" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-17', 'name', 'link-14');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method rce.console.console.ConsoleClient.parseInputLine()=rce.console.console.ConsoleClient-class.html#parseInputLine,Method rce.rosproxy.ConsoleROSProxyAuthentication.parseInputLine()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#parseInputLine"><a title="rce.console.console.ConsoleClient.parseInputLine
+rce.rosproxy.ConsoleROSProxyAuthentication.parseInputLine" class="py-name" href="#" onclick="return doclink('link-18', 'parseInputLine', 'link-18');">parseInputLine</a></tt><tt class="py-op">(</tt><tt class="py-name">action</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication.parseInputLine"></a><div id="ConsoleROSProxyAuthentication.parseInputLine-def"><a name="L133"></a><tt class="py-lineno">133</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication.parseInputLine-toggle" onclick="return toggle('ConsoleROSProxyAuthentication.parseInputLine');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#parseInputLine">parseInputLine</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">action</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication.parseInputLine-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication.parseInputLine-expanded"><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-docstring">""" Function to route various command requests.</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"><tt class="py-docstring">            @param action:    The command to be executed.</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring">            @type action:     list</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt id="link-19" class="py-name" targets="Method rce.container.ContainerClient.output()=rce.container.ContainerClient-class.html#output"><a title="rce.container.ContainerClient.output" class="py-name" href="#" onclick="return doclink('link-19', 'output', 'link-19');">output</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">action</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt> <tt class="py-keyword">and</tt> <tt class="py-name">action</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-string">''</tt><tt class="py-op">:</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">            <tt class="py-name">func</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-string">'cmd_'</tt> <tt class="py-op">+</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">action</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">func</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">                <tt id="link-20" class="py-name"><a title="rce.container.ContainerClient.output" class="py-name" href="#" onclick="return doclink('link-20', 'output', 'link-19');">output</a></tt> <tt class="py-op">=</tt> <tt class="py-name">func</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">fail</tt><tt class="py-op">(</tt><tt id="link-21" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-21', 'InvalidRequest', 'link-11');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">"No such action"</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">succeed</tt><tt class="py-op">(</tt><tt id="link-22" class="py-name"><a title="rce.container.ContainerClient.output" class="py-name" href="#" onclick="return doclink('link-22', 'output', 'link-19');">output</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication.cmd_SERVICES"></a><div id="ConsoleROSProxyAuthentication.cmd_SERVICES-def"><a name="L147"></a><tt class="py-lineno">147</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication.cmd_SERVICES-toggle" onclick="return toggle('ConsoleROSProxyAuthentication.cmd_SERVICES');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#cmd_SERVICES">cmd_SERVICES</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication.cmd_SERVICES-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication.cmd_SERVICES-expanded"><a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-docstring">""" Handler for services call.</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ros</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method rce.rosproxy.ROSProxy.get_services()=rce.rosproxy.ROSProxy-class.html#get_services"><a title="rce.rosproxy.ROSProxy.get_services" class="py-name" href="#" onclick="return doclink('link-23', 'get_services', 'link-23');">get_services</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication.cmd_TOPICS"></a><div id="ConsoleROSProxyAuthentication.cmd_TOPICS-def"><a name="L152"></a><tt class="py-lineno">152</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication.cmd_TOPICS-toggle" onclick="return toggle('ConsoleROSProxyAuthentication.cmd_TOPICS');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#cmd_TOPICS">cmd_TOPICS</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication.cmd_TOPICS-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication.cmd_TOPICS-expanded"><a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-docstring">""" Handler for topics call.</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_ros</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method rce.rosproxy.ROSProxy.get_topics()=rce.rosproxy.ROSProxy-class.html#get_topics"><a title="rce.rosproxy.ROSProxy.get_topics" class="py-name" href="#" onclick="return doclink('link-24', 'get_topics', 'link-24');">get_topics</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication._processGETResp"></a><div id="ConsoleROSProxyAuthentication._processGETResp-def"><a name="L157"></a><tt class="py-lineno">157</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication._processGETResp-toggle" onclick="return toggle('ConsoleROSProxyAuthentication._processGETResp');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_processGETResp">_processGETResp</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">output</tt><tt class="py-op">,</tt> <tt class="py-param">request</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication._processGETResp-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication._processGETResp-expanded"><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method to process a response to a GET request from</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">            the realm.</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt id="link-25" class="py-name" targets="Variable rce.comm.assembler._IncompleteMsg.msg=rce.comm.assembler._IncompleteMsg-class.html#msg"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-25', 'msg', 'link-25');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'key'</tt> <tt class="py-op">:</tt> <tt id="link-26" class="py-name"><a title="rce.container.ContainerClient.output" class="py-name" href="#" onclick="return doclink('link-26', 'output', 'link-19');">output</a></tt><tt class="py-op">}</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method rce.rosproxy.ConsoleROSProxyAuthentication._render_GET()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_render_GET"><a title="rce.rosproxy.ConsoleROSProxyAuthentication._render_GET" class="py-name" href="#" onclick="return doclink('link-27', '_render_GET', 'link-27');">_render_GET</a></tt><tt class="py-op">(</tt><tt class="py-name">request</tt><tt class="py-op">,</tt> <tt class="py-name">httplib</tt><tt class="py-op">.</tt><tt class="py-name">OK</tt><tt class="py-op">,</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">                         <tt class="py-string">'application/json; charset=utf-8'</tt><tt class="py-op">,</tt> <tt class="py-name">json</tt><tt class="py-op">.</tt><tt class="py-name">dumps</tt><tt class="py-op">(</tt><tt id="link-28" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-28', 'msg', 'link-25');">msg</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication._processGETErr"></a><div id="ConsoleROSProxyAuthentication._processGETErr-def"><a name="L166"></a><tt class="py-lineno">166</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication._processGETErr-toggle" onclick="return toggle('ConsoleROSProxyAuthentication._processGETErr');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_processGETErr">_processGETErr</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">e</tt><tt class="py-op">,</tt> <tt class="py-param">request</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication._processGETErr-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication._processGETErr-expanded"><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method to process an error to a GET request from</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"><tt class="py-docstring">            the realm.</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">check</tt><tt class="py-op">(</tt><tt id="link-29" class="py-name"><a title="rce.comm.error.InvalidRequest
+rce.core.error.InvalidRequest
+rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-29', 'InvalidRequest', 'link-11');">InvalidRequest</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">            <tt id="link-30" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-30', 'msg', 'link-25');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">getErrorMessage</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">            <tt class="py-name">code</tt> <tt class="py-op">=</tt> <tt class="py-name">httplib</tt><tt class="py-op">.</tt><tt class="py-name">BAD_REQUEST</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">check</tt><tt class="py-op">(</tt><tt class="py-name">UnauthorizedLogin</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">            <tt id="link-31" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-31', 'msg', 'link-25');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">getErrorMessage</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">            <tt class="py-name">code</tt> <tt class="py-op">=</tt> <tt class="py-name">httplib</tt><tt class="py-op">.</tt><tt class="py-name">UNAUTHORIZED</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">check</tt><tt class="py-op">(</tt><tt id="link-32" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-32', 'InternalError', 'link-6');">InternalError</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">            <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">printTraceback</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">            <tt id="link-33" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-33', 'msg', 'link-25');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'Internal Error'</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">            <tt class="py-name">code</tt> <tt class="py-op">=</tt> <tt class="py-name">httplib</tt><tt class="py-op">.</tt><tt class="py-name">INTERNAL_SERVER_ERROR</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">            <tt class="py-name">e</tt><tt class="py-op">.</tt><tt class="py-name">printTraceback</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">            <tt id="link-34" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-34', 'msg', 'link-25');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'Fatal Error'</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">            <tt class="py-name">code</tt> <tt class="py-op">=</tt> <tt class="py-name">httplib</tt><tt class="py-op">.</tt><tt class="py-name">INTERNAL_SERVER_ERROR</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="rce.rosproxy.ConsoleROSProxyAuthentication._render_GET" class="py-name" href="#" onclick="return doclink('link-35', '_render_GET', 'link-27');">_render_GET</a></tt><tt class="py-op">(</tt><tt class="py-name">request</tt><tt class="py-op">,</tt> <tt class="py-name">code</tt><tt class="py-op">,</tt> <tt class="py-string">'text/plain; charset=utf-8'</tt><tt class="py-op">,</tt> <tt id="link-36" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-36', 'msg', 'link-25');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication._render_GET"></a><div id="ConsoleROSProxyAuthentication._render_GET-def"><a name="L187"></a><tt class="py-lineno">187</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication._render_GET-toggle" onclick="return toggle('ConsoleROSProxyAuthentication._render_GET');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_render_GET">_render_GET</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">request</tt><tt class="py-op">,</tt> <tt class="py-param">code</tt><tt class="py-op">,</tt> <tt class="py-param">ctype</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication._render_GET-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication._render_GET-expanded"><a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method to render the response to a GET request.</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-name">request</tt><tt class="py-op">.</tt><tt class="py-name">setResponseCode</tt><tt class="py-op">(</tt><tt class="py-name">code</tt><tt class="py-op">)</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">        <tt class="py-name">request</tt><tt class="py-op">.</tt><tt class="py-name">setHeader</tt><tt class="py-op">(</tt><tt class="py-string">'content-type'</tt><tt class="py-op">,</tt> <tt class="py-name">ctype</tt><tt class="py-op">)</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">        <tt class="py-name">request</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt id="link-37" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-37', 'msg', 'link-25');">msg</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">        <tt class="py-name">request</tt><tt class="py-op">.</tt><tt class="py-name">finish</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt>
+<a name="ConsoleROSProxyAuthentication.render_GET"></a><div id="ConsoleROSProxyAuthentication.render_GET-def"><a name="L195"></a><tt class="py-lineno">195</tt> <a class="py-toggle" href="#" id="ConsoleROSProxyAuthentication.render_GET-toggle" onclick="return toggle('ConsoleROSProxyAuthentication.render_GET');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html#render_GET">render_GET</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">request</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConsoleROSProxyAuthentication.render_GET-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ConsoleROSProxyAuthentication.render_GET-expanded"><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-docstring">""" This method is called by the twisted framework when a GET request</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"><tt class="py-docstring">            was received.</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name" targets="Method rce.rosproxy.ConsoleROSProxyAuthentication._processGETReq()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_processGETReq"><a title="rce.rosproxy.ConsoleROSProxyAuthentication._processGETReq" class="py-name" href="#" onclick="return doclink('link-38', '_processGETReq', 'link-38');">_processGETReq</a></tt><tt class="py-op">(</tt><tt class="py-name">request</tt><tt class="py-op">.</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">addCallback</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method rce.rosproxy.ConsoleROSProxyAuthentication._processGETResp()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_processGETResp"><a title="rce.rosproxy.ConsoleROSProxyAuthentication._processGETResp" class="py-name" href="#" onclick="return doclink('link-39', '_processGETResp', 'link-39');">_processGETResp</a></tt><tt class="py-op">,</tt> <tt class="py-name">request</tt><tt class="py-op">)</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">        <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">addErrback</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method rce.rosproxy.ConsoleROSProxyAuthentication._processGETErr()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#_processGETErr"><a title="rce.rosproxy.ConsoleROSProxyAuthentication._processGETErr" class="py-name" href="#" onclick="return doclink('link-40', '_processGETErr', 'link-40');">_processGETErr</a></tt><tt class="py-op">,</tt> <tt class="py-name">request</tt><tt class="py-op">)</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">NOT_DONE_YET</tt> </tt>
+</div></div><a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"> </tt>
+<a name="main"></a><div id="main-def"><a name="L206"></a><tt class="py-lineno">206</tt> <a class="py-toggle" href="#" id="main-toggle" onclick="return toggle('main');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.rosproxy-module.html#main">main</a><tt class="py-op">(</tt><tt class="py-param">reactor</tt><tt class="py-op">,</tt> <tt class="py-param">rosproxyPort</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="main-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="main-expanded"><a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">    <tt class="py-name">f</tt> <tt class="py-op">=</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-string">'/opt/rce/data/rosproxy.log'</tt><tt class="py-op">,</tt> <tt class="py-string">'w'</tt><tt class="py-op">)</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">    <tt class="py-name">log</tt><tt class="py-op">.</tt><tt class="py-name">startLogging</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">    <tt class="py-keyword">def</tt> <tt class="py-def-name">terminate</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt id="link-41" class="py-name" targets="Variable rce.client.connection._Connection.reactor=rce.client.connection._Connection-class.html#reactor,Variable rce.comm.client.RCE.reactor=rce.comm.client.RCE-class.html#reactor,Method rce.container.ContainerClient.reactor()=rce.container.ContainerClient-class.html#reactor,Variable rce.environment.Environment.reactor=rce.environment.Environment-class.html#reactor"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-41', 'reactor', 'link-41');">reactor</a></tt><tt class="py-op">.</tt><tt class="py-name">callFromThread</tt><tt class="py-op">(</tt><tt id="link-42" class="py-name"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-42', 'reactor', 'link-41');">reactor</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Method rce.comm.assembler.MessageAssembler.stop()=rce.comm.assembler.MessageAssembler-class.html#stop,Method rce.slave.interface.Interface.stop()=rce.slave.interface.Interface-class.html#stop,Method rce.util.container.Container.stop()=rce.util.container.Container-class.html#stop"><a title="rce.comm.assembler.MessageAssembler.stop
+rce.slave.interface.Interface.stop
+rce.util.container.Container.stop" class="py-name" href="#" onclick="return doclink('link-43', 'stop', 'link-43');">stop</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line"> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">    <tt class="py-name">rospy</tt><tt class="py-op">.</tt><tt class="py-name">on_shutdown</tt><tt class="py-op">(</tt><tt id="link-44" class="py-name" targets="Method rce.client.ros.Environment.terminate()=rce.client.ros.Environment-class.html#terminate,Method rce.container.ContainerClient.terminate()=rce.container.ContainerClient-class.html#terminate,Method rce.environment.EnvironmentClient.terminate()=rce.environment.EnvironmentClient-class.html#terminate,Method rce.robot.RobotClient.terminate()=rce.robot.RobotClient-class.html#terminate,Method rce.slave.endpoint.Endpoint.terminate()=rce.slave.endpoint.Endpoint-class.html#terminate"><a title="rce.client.ros.Environment.terminate
+rce.container.ContainerClient.terminate
+rce.environment.EnvironmentClient.terminate
+rce.robot.RobotClient.terminate
+rce.slave.endpoint.Endpoint.terminate" class="py-name" href="#" onclick="return doclink('link-44', 'terminate', 'link-44');">terminate</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line"> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">    <tt class="py-comment">#HTTP Server</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">    <tt id="link-45" class="py-name"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-45', 'reactor', 'link-41');">reactor</a></tt><tt class="py-op">.</tt><tt class="py-name">listenTCP</tt><tt class="py-op">(</tt><tt id="link-46" class="py-name" targets="Method rce.container.ContainerClient.rosproxyPort()=rce.container.ContainerClient-class.html#rosproxyPort"><a title="rce.container.ContainerClient.rosproxyPort" class="py-name" href="#" onclick="return doclink('link-46', 'rosproxyPort', 'link-46');">rosproxyPort</a></tt><tt class="py-op">,</tt> <tt class="py-name">Site</tt><tt class="py-op">(</tt><tt id="link-47" class="py-name" targets="Class rce.rosproxy.ConsoleROSProxyAuthentication=rce.rosproxy.ConsoleROSProxyAuthentication-class.html"><a title="rce.rosproxy.ConsoleROSProxyAuthentication" class="py-name" href="#" onclick="return doclink('link-47', 'ConsoleROSProxyAuthentication', 'link-47');">ConsoleROSProxyAuthentication</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">    <tt id="link-48" class="py-name"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-48', 'reactor', 'link-41');">reactor</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method rce.client.ros.Environment.run()=rce.client.ros.Environment-class.html#run"><a title="rce.client.ros.Environment.run" class="py-name" href="#" onclick="return doclink('link-49', 'run', 'link-49');">run</a></tt><tt class="py-op">(</tt><tt class="py-name">installSignalHandlers</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">    <tt class="py-name">f</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name" targets="Method rce.comm.client.RCE.close()=rce.comm.client.RCE-class.html#close"><a title="rce.comm.client.RCE.close" class="py-name" href="#" onclick="return doclink('link-50', 'close', 'link-50');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:10 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

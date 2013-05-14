@@ -1,0 +1,1003 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.cred.RCECredChecker</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        <a href="rce.util.cred-module.html">Module&nbsp;cred</a> ::
+        Class&nbsp;RCECredChecker
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.cred.RCECredChecker-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RCECredChecker</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_util_9" name="uml_class_diagram_for_rce_util_9">
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#credentialInterfaces" title="rce.util.cred.RCECredChecker.credentialInterfaces" alt="" coords="17,31,332,49"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#cache" title="rce.util.cred.RCECredChecker.cache" alt="" coords="17,49,332,68"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#__implemented__" title="rce.util.cred.RCECredChecker.__implemented__" alt="" coords="17,68,332,87"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#__init__" title="Initialize the credentials checker for the RoboEarth Cloud Engine." alt="" coords="17,89,332,108"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#get_new_password" title="Method which is used to interactively get a new password from the user." alt="" coords="17,108,332,127"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#__getstate__" title="rce.util.cred.RCECredChecker.__getstate__" alt="" coords="17,127,332,145"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#getUser" title="Fetch username from db or cache." alt="" coords="17,145,332,164"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#getUserMode" title="Fetch mode for a user." alt="" coords="17,164,332,183"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#getUserGroups" title="Fetch groups for a user." alt="" coords="17,183,332,201"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#userMemebership" title="Test if a user is member of a certain group" alt="" coords="17,201,332,220"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#requestAvatarId" title="rce.util.cred.RCECredChecker.requestAvatarId" alt="" coords="17,220,332,239"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#setUserMode" title="Set the mode for a user" alt="" coords="17,239,332,257"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#addUserGroups" title="Add Group membership to certain groups." alt="" coords="17,257,332,276"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#removeUserGroups" title="Remove Group membership to certain groups." alt="" coords="17,276,332,295"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#addUser" title="Change password for the username:" alt="" coords="17,295,332,313"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#removeUser" title="Remove the given users" alt="" coords="17,313,332,332"/>
+<area shape="rect" id="node599" href="rce.util.cred.RCECredChecker-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="17,351,332,369"/>
+<area shape="rect" id="node1" href="rce.util.cred.RCECredChecker-class.html" title="The RCE file&#45;based, text&#45;based username/password database." alt="" coords="5,6,344,375"/>
+</map>
+  <img src="uml_class_diagram_for_rce_util_9.gif" alt='' usemap="#uml_class_diagram_for_rce_util_9" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>The RCE file-based, text-based username/password database.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pw_file</span>,
+        <span class="summary-sig-arg">provision</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Initialize the credentials checker for the RoboEarth Cloud Engine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#get_new_password" class="summary-sig-name">get_new_password</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>)</span><br />
+      Method which is used to interactively get a new password from the 
+      user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.get_new_password">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__getstate__"></a><span class="summary-sig-name">__getstate__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.__getstate__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_cbPasswordMatch"></a><span class="summary-sig-name">_cbPasswordMatch</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matched</span>,
+        <span class="summary-sig-arg">username</span>)</span><br />
+      Internal method which is called in case the password could be 
+      successfully matched.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker._cbPasswordMatch">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_loadCredentials"></a><span class="summary-sig-name">_loadCredentials</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Internal method to read the credentials database.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker._loadCredentials">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#getUser" class="summary-sig-name">getUser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>)</span><br />
+      Fetch username from db or cache.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.getUser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#getUserMode" class="summary-sig-name">getUserMode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>)</span><br />
+      Fetch mode for a user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.getUserMode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">set</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#getUserGroups" class="summary-sig-name">getUserGroups</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>)</span><br />
+      Fetch groups for a user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.getUserGroups">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#userMemebership" class="summary-sig-name">userMemebership</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">group</span>)</span><br />
+      Test if a user is member of a certain group</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.userMemebership">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="requestAvatarId"></a><span class="summary-sig-name">requestAvatarId</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">c</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.requestAvatarId">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#setUserMode" class="summary-sig-name">setUserMode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">mode</span>)</span><br />
+      Set the mode for a user</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.setUserMode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#addUserGroups" class="summary-sig-name">addUserGroups</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">*groups</span>)</span><br />
+      Add Group membership to certain groups.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.addUserGroups">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#removeUserGroups" class="summary-sig-name">removeUserGroups</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">*groups</span>)</span><br />
+      Remove Group membership to certain groups.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.removeUserGroups">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#addUser" class="summary-sig-name">addUser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">password</span>,
+        <span class="summary-sig-arg">provision</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Change password for the username:</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.addUser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#removeUser" class="summary-sig-name">removeUser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>)</span><br />
+      Remove the given users</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.removeUser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#passwd" class="summary-sig-name">passwd</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">new_password</span>,
+        <span class="summary-sig-arg">control_mode</span>)</span><br />
+      Change password for the username.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.passwd">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__providedBy__"></a><span class="summary-sig-name">__providedBy__</span>(<span class="summary-sig-arg">...</span>)</span><br />
+      Object Specification Descriptor</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.client.connection-pysrc.html">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.cred.RCECredChecker-class.html#__provides__" class="summary-sig-name">__provides__</a>(<span class="summary-sig-arg">...</span>)</span><br />
+      Special descriptor for class __provides__</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.cred.RCECredChecker-class.html#credentialInterfaces" class="summary-name">credentialInterfaces</a> = <code title="(&lt;InterfaceClass twisted.cred.credentials.IUsernameHashedPassword&gt;)"><code class="variable-group">(</code>&lt;InterfaceClass twisted.cred.credentia<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="cache"></a><span class="summary-name">cache</span> = <code title="False">False</code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_credCache"></a><span class="summary-name">_credCache</span> = <code title="None">None</code><br />
+      hash(x)
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_cacheTimestamp"></a><span class="summary-name">_cacheTimestamp</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__implemented__"></a><span class="summary-name">__implemented__</span> = <code title="&lt;implementedBy rce.util.cred.RCECredChecker&gt;">&lt;implementedBy rce.util.cred.RCECredChecker&gt;</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pw_file</span>,
+        <span class="sig-arg">provision</span>=<span class="sig-default">False</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the credentials checker for the RoboEarth Cloud Engine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pw_file</code></strong> (str) - Path to the credentials database.</li>
+        <li><strong class="pname"><code>provision</code></strong> (bool) - Flag which is set if the database is going to be provisioned.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_new_password"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_new_password</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.get_new_password">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method which is used to interactively get a new password from the 
+  user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (str) - User ID of the user for which a new password has to be entered.</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>The new password for the user.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getUser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getUser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.getUser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fetch username from db or cache. (Internal method)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getUserMode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getUserMode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.getUserMode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fetch mode for a user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username for who the mode is to be set.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Mode</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getUserGroups"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getUserGroups</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.getUserGroups">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fetch groups for a user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username for who the mode is to be set.</li>
+    </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>groups</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="userMemebership"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">userMemebership</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">group</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.userMemebership">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Test if a user is member of a certain group</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username of the user</li>
+        <li><strong class="pname"><code>group</code></strong> (str) - group for which membership is to be tested of the user</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>Result indicating membership</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setUserMode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setUserMode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">mode</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.setUserMode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set the mode for a user</p>
+  <p>Default mode for a user is 1. Like in Unix Admin mode is 0. The rest 
+  are open to custom extensions later in the engine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username for who the mode is to be set.</li>
+        <li><strong class="pname"><code>mode</code></strong> (int) - Mode length is set by the _MODE_LENGTH [1] parameter (1 for user;
+          0 for admin)</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>Result of Operation</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addUserGroups"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addUserGroups</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">*groups</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.addUserGroups">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add Group membership to certain groups.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username for who the mode is to be set.</li>
+        <li><strong class="pname"><code>groups</code></strong> (csv strings, e.g. group1,group2) - groups membership to add to user</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>Result of Operation</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeUserGroups"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeUserGroups</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">*groups</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.removeUserGroups">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove Group membership to certain groups.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username for who the mode is to be set.</li>
+        <li><strong class="pname"><code>groups</code></strong> (csv strings eg : group1,group2) - groups memebership to remove from the user</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>Result of Operation</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addUser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addUser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">password</span>,
+        <span class="sig-arg">provision</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.addUser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Change password for the username:</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username</li>
+        <li><strong class="pname"><code>password</code></strong> (str) - password</li>
+        <li><strong class="pname"><code>provision</code></strong> (bool) - Special flag to indicate provisioning mode</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>Result of Operation</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeUser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeUser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.removeUser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove the given users</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>username</code></strong> (str) - username</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>Result of Operation</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="passwd"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">passwd</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">new_password</span>,
+        <span class="sig-arg">control_mode</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.cred-pysrc.html#RCECredChecker.passwd">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Change password for the username.
+
+In admin mode you need to set the boolean indicating admin Mode.
+In case of a normal user you need to pass the old password for
+the user.
+
+Note : In admin mode, the admin is free to set any password he
+       likes as the strict password strength validator is turned
+       off in this case.
+
+@param username:        username
+@type  username:        str
+
+@param new_password:    new password
+@type  new_password:    str
+
+@param control_mode:    in user mode:  old password
+                        in admin mode: True
+@type  control_mode:    in user mode:  str
+                        in admin mode: bool
+
+@return:                Result of Operation
+@rtype:                 bool
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__provides__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__provides__</span>(<span class="sig-arg">...</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Special descriptor for class __provides__</p>
+<p>The descriptor caches the implementedBy info, so that
+we can get declarations for objects without instance-specific
+interfaces a bit quicker.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="credentialInterfaces"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">credentialInterfaces</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code>&lt;InterfaceClass twisted.cred.credentials.IUsernameHashedPassword&gt;<code class="variable-group">)</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:07 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

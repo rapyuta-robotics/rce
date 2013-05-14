@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.monitor.interface.robot.PublisherConverter</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.monitor-module.html">Package&nbsp;monitor</a> ::
+        <a href="rce.monitor.interface-module.html">Package&nbsp;interface</a> ::
+        <a href="rce.monitor.interface.robot-module.html">Module&nbsp;robot</a> ::
+        Class&nbsp;PublisherConverter
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.monitor.interface.robot.PublisherConverter-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class PublisherConverter</h1><p class="nomargin-top"><span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_moni_9" name="uml_class_diagram_for_rce_moni_9">
+<area shape="rect" id="node422" href="rce.monitor.interface.robot._AbstractConverter-class.html#tag" title="Interface tag of the converter." alt="" coords="135,599,249,617"/>
+<area shape="rect" id="node1" href="rce.monitor.interface.robot._AbstractConverter-class.html" title="Abstract base class which provides the basics for the robot&#45;side interfaces." alt="" coords="123,566,261,623"/>
+<area shape="rect" id="node421" href="rce.monitor.interface.robot._ConverterBase-class.html#__init__" title="Initialize the robot&#45;side Interface." alt="" coords="73,676,309,695"/>
+<area shape="rect" id="node421" href="rce.monitor.interface.robot._ConverterBase-class.html#receive" title="Convert a JSON encoded message into a ROS message." alt="" coords="73,695,309,713"/>
+<area shape="rect" id="node2" href="rce.monitor.interface.robot._ConverterBase-class.html" title="Class which implements the basic functionality of a Converter." alt="" coords="61,643,320,719"/>
+<area shape="rect" id="node5" href="rce.monitor.interface.robot.PublisherConverter-class.html" title="Class which is used as a Publisher Converter." alt="" coords="123,739,259,783"/>
+<area shape="rect" id="node426" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
+<area shape="rect" id="node426" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
+<area shape="rect" id="node425" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
+<area shape="rect" id="node424" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
+<area shape="rect" id="node424" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
+<area shape="rect" id="node424" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
+<area shape="rect" id="node424" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
+<area shape="rect" id="node424" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
+<area shape="rect" id="node7" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#UID" title="Unique ID of the interface." alt="" coords="52,351,331,369"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#unregisterProtocol" title="Callback for the protocol to inform the interface that the protocol has &#160;died and should no longer be used." alt="" coords="52,372,331,391"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#remote_connect" title="Connect this interface to another interface using a local protocol." alt="" coords="52,391,331,409"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#remote_disconnect" title="Disconnect this interface from another interface." alt="" coords="52,409,331,428"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#remote_destroy" title="Method should be called to destroy the interface and will take care of &#160;deleting all circular references." alt="" coords="52,428,331,447"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#start" title="This method is used to setup the interface." alt="" coords="52,447,331,465"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#stop" title="This method is used to stop the interface." alt="" coords="52,465,331,484"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#send" title="This method is used to send a message to the endpoint." alt="" coords="52,484,331,503"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#received" title="This method is used to send a received message from the endpoint to the &#160;appropriate protocols." alt="" coords="52,503,331,521"/>
+<area shape="rect" id="node423" href="rce.slave.interface.Interface-class.html#respond" title="This method is used to send a received message from the endpoint to the &#160;specified protocol/interface as a response." alt="" coords="52,521,331,540"/>
+<area shape="rect" id="node6" href="rce.slave.interface.Interface-class.html" title="Abstract base class for an Interface in a slave process." alt="" coords="40,326,341,546"/>
+</map>
+  <img src="uml_class_diagram_for_rce_moni_9.gif" alt='' usemap="#uml_class_diagram_for_rce_moni_9" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Class which is used as a Publisher Converter.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.monitor.interface.robot.PublisherConverter-class.html#_loadClass" class="summary-sig-name" onclick="show_private();">_loadClass</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">loader</span>)</span><br />
+      This method is used as a hook to load the necessary ROS class for the
+      interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter._loadClass">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.monitor.interface.robot.PublisherConverter-class.html#_receive" class="summary-sig-name" onclick="show_private();">_receive</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">msgID</span>)</span><br />
+      This method is used as a hook to send the message received from the 
+      robot to the appropriate protocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter._receive">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.monitor.interface.robot.PublisherConverter-class.html#_sendToClient" class="summary-sig-name" onclick="show_private();">_sendToClient</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">protocol</span>,
+        <span class="summary-sig-arg">remoteID</span>)</span><br />
+      This method is used as a hook to send the message received from the 
+      protocol to the robot.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter._sendToClient">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.monitor.interface.robot._ConverterBase-class.html" onclick="show_private();">_ConverterBase</a></code></b>:
+      <code><a href="rce.monitor.interface.robot._ConverterBase-class.html#__init__">__init__</a></code>,
+      <code><a href="rce.monitor.interface.robot._ConverterBase-class.html#receive">receive</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.monitor.interface.robot._ConverterBase-class.html" onclick="show_private();">_ConverterBase</a></code></b> (private):
+      <code><a href="rce.monitor.interface.robot._ConverterBase-class.html#_send" onclick="show_private();">_send</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.monitor.interface.robot._AbstractConverter-class.html" onclick="show_private();">_AbstractConverter</a></code></b>:
+      <code><a href="rce.monitor.interface.robot._AbstractConverter-class.html#tag">tag</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.interface.Interface-class.html">slave.interface.Interface</a></code></b>:
+      <code><a href="rce.slave.interface.Interface-class.html#received">received</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#remote_connect">remote_connect</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#remote_destroy">remote_destroy</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#remote_disconnect">remote_disconnect</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#respond">respond</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#send">send</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#start">start</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#stop">stop</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#unregisterProtocol">unregisterProtocol</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.interface.Interface-class.html">slave.interface.Interface</a></code></b> (private):
+      <code><a href="rce.slave.interface.Interface-class.html#_start" onclick="show_private();">_start</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#_stop" onclick="show_private();">_stop</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__provides__</code>,
+      <code>jellyFor</code>,
+      <code>remoteMessageReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__implemented__</code>,
+      <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.interface.Interface-class.html">slave.interface.Interface</a></code></b>:
+      <code><a href="rce.slave.interface.Interface-class.html#UID">UID</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_loadClass"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_loadClass</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">loader</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter._loadClass">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is used as a hook to load the necessary ROS class for the 
+  interface. And is called as last step in the constructor.</p>
+  <p>This method has to be overwritten!</p>
+  <p>References to the loaded classes have to be stored in the instance 
+  attributes '_inputMsgCls' and '_outputMsgCls'. If there is no reference 
+  stored, i.e. None, it is assumed that the converter can not convert the 
+  messages in the given direction and an error is raised.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.monitor.interface.robot._ConverterBase-class.html#_loadClass" onclick="show_private();">_ConverterBase._loadClass</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_receive"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_receive</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">msgID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter._receive">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is used as a hook to send the message received from the 
+  robot to the appropriate protocol.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.monitor.interface.robot._AbstractConverter-class.html#_receive" onclick="show_private();">_AbstractConverter._receive</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_sendToClient"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_sendToClient</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">protocol</span>,
+        <span class="sig-arg">remoteID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#PublisherConverter._sendToClient">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is used as a hook to send the message received from the 
+  protocol to the robot.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.monitor.interface.robot._AbstractConverter-class.html#_sendToClient" onclick="show_private();">_AbstractConverter._sendToClient</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:05 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

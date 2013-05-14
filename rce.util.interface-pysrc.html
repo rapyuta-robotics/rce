@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.interface</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        Module&nbsp;interface
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.interface-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.util.interface-module.html">Module rce.util.interface</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-util/rce/util/interface.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-comment"># zope specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">zope</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-0', 'interface', 'link-0');">interface</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">verify</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">zope</tt><tt class="py-op">.</tt><tt id="link-1" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-1', 'interface', 'link-0');">interface</a></tt><tt class="py-op">.</tt><tt class="py-name">exceptions</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Invalid</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"> </tt>
+<a name="InterfaceError"></a><div id="InterfaceError-def"><a name="L38"></a><tt class="py-lineno">38</tt> <a class="py-toggle" href="#" id="InterfaceError-toggle" onclick="return toggle('InterfaceError');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.util.interface.InterfaceError-class.html">InterfaceError</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="InterfaceError-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="InterfaceError-expanded"><a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">    <tt class="py-docstring">""" This error occurs when zope throws an error during an object or a class</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring">        verification.</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">    <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"> </tt>
+<a name="verifyObject"></a><div id="verifyObject-def"><a name="L45"></a><tt class="py-lineno">45</tt> <a class="py-toggle" href="#" id="verifyObject-toggle" onclick="return toggle('verifyObject');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.util.interface-module.html#verifyObject">verifyObject</a><tt class="py-op">(</tt><tt class="py-param">interfaceCls</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="verifyObject-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="verifyObject-expanded"><a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">    <tt class="py-docstring">""" Verifies if the object implements the specified interface. Raises an</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-docstring">        InterfaceError if this is not the case.</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-docstring">        @param interfaceCls:    Interface class which the object should</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt class="py-docstring">                                implement.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt class="py-docstring">        @type  interfaceCls:    zope.interface.Interface</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt class="py-docstring">        @param obj:             Object which should be verified.</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-docstring">        @raise:                 rce.util.interface.InterfaceError</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">        <tt class="py-name">verify</tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Function rce.util.interface.verifyObject()=rce.util.interface-module.html#verifyObject"><a title="rce.util.interface.verifyObject" class="py-name" href="#" onclick="return doclink('link-2', 'verifyObject', 'link-2');">verifyObject</a></tt><tt class="py-op">(</tt><tt class="py-name">interfaceCls</tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Variable rce.core.wrapper.Interface.obj=rce.core.wrapper.Interface-class.html#obj"><a title="rce.core.wrapper.Interface.obj" class="py-name" href="#" onclick="return doclink('link-3', 'obj', 'link-3');">obj</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt> <tt class="py-name">Invalid</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt id="link-4" class="py-name" targets="Class rce.util.interface.InterfaceError=rce.util.interface.InterfaceError-class.html"><a title="rce.util.interface.InterfaceError" class="py-name" href="#" onclick="return doclink('link-4', 'InterfaceError', 'link-4');">InterfaceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Verification of the object of type "{0}" '</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">                             <tt class="py-string">'failed: {1}'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-5" class="py-name"><a title="rce.core.wrapper.Interface.obj" class="py-name" href="#" onclick="return doclink('link-5', 'obj', 'link-3');">obj</a></tt><tt class="py-op">.</tt><tt class="py-name">__class__</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Variable rce.comm.interfaces.IMasterRealm.__name__=rce.comm.interfaces.IMasterRealm-class.html#__name__,Variable rce.comm.interfaces.IMessageReceiver.__name__=rce.comm.interfaces.IMessageReceiver-class.html#__name__,Variable rce.comm.interfaces.IRobot.__name__=rce.comm.interfaces.IRobot-class.html#__name__,Variable rce.comm.interfaces.IRobotRealm.__name__=rce.comm.interfaces.IRobotRealm-class.html#__name__,Variable rce.comm.interfaces.IServersideProtocol.__name__=rce.comm.interfaces.IServersideProtocol-class.html#__name__,Variable rce.util.converters.interfaces.ICustomROSConverter.__name__=rce.util.converters.interfaces.ICustomROSConverter-class.html#__name__,Variable twisted.web.resource.IResource.__name__=twisted.web.resource.IResource-class.html#__name__"><a title="rce.comm.interfaces.IMasterRealm.__name__
+rce.comm.interfaces.IMessageReceiver.__name__
+rce.comm.interfaces.IRobot.__name__
+rce.comm.interfaces.IRobotRealm.__name__
+rce.comm.interfaces.IServersideProtocol.__name__
+rce.util.converters.interfaces.ICustomROSConverter.__name__
+twisted.web.resource.IResource.__name__" class="py-name" href="#" onclick="return doclink('link-6', '__name__', 'link-6');">__name__</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"> </tt>
+<a name="verifyClass"></a><div id="verifyClass-def"><a name="L64"></a><tt class="py-lineno">64</tt> <a class="py-toggle" href="#" id="verifyClass-toggle" onclick="return toggle('verifyClass');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.util.interface-module.html#verifyClass">verifyClass</a><tt class="py-op">(</tt><tt class="py-param">interfaceCls</tt><tt class="py-op">,</tt> <tt class="py-param">cls</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="verifyClass-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="verifyClass-expanded"><a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-docstring">""" Verifies if the class implements the specified interface. Raises an</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line"><tt class="py-docstring">        InterfaceError if this is not the case.</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"><tt class="py-docstring">        @param interfaceCls:    Interface class which the class should</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line"><tt class="py-docstring">                                implement.</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line"><tt class="py-docstring">        @type  interfaceCls:    zope.interface.Interface</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line"><tt class="py-docstring">        @param cls:             Class which should be verified.</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line"><tt class="py-docstring">        @raise:                 rce.util.interface.InterfaceError</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">        <tt class="py-name">verify</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Function rce.util.interface.verifyClass()=rce.util.interface-module.html#verifyClass"><a title="rce.util.interface.verifyClass" class="py-name" href="#" onclick="return doclink('link-7', 'verifyClass', 'link-7');">verifyClass</a></tt><tt class="py-op">(</tt><tt class="py-name">interfaceCls</tt><tt class="py-op">,</tt> <tt class="py-name">cls</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt> <tt class="py-name">Invalid</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt id="link-8" class="py-name"><a title="rce.util.interface.InterfaceError" class="py-name" href="#" onclick="return doclink('link-8', 'InterfaceError', 'link-4');">InterfaceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Verification of the class of type "{0}" '</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">                             <tt class="py-string">'failed: {1}'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">cls</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="rce.comm.interfaces.IMasterRealm.__name__
+rce.comm.interfaces.IMessageReceiver.__name__
+rce.comm.interfaces.IRobot.__name__
+rce.comm.interfaces.IRobotRealm.__name__
+rce.comm.interfaces.IServersideProtocol.__name__
+rce.util.converters.interfaces.ICustomROSConverter.__name__
+twisted.web.resource.IResource.__name__" class="py-name" href="#" onclick="return doclink('link-9', '__name__', 'link-6');">__name__</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:09 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

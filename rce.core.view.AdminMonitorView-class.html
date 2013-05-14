@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.view.AdminMonitorView</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.view-module.html">Module&nbsp;view</a> ::
+        Class&nbsp;AdminMonitorView
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.view.AdminMonitorView-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class AdminMonitorView</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core_33" name="uml_class_diagram_for_rce_core_33">
+<area shape="rect" id="node347" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="84,39,253,57"/>
+<area shape="rect" id="node347" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="84,57,253,76"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="72,6,264,82"/>
+<area shape="rect" id="node346" href="javascript:void(0);" title="twisted.spread.flavors.Serializable.__implemented__" alt="" coords="68,127,269,145"/>
+<area shape="rect" id="node346" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="68,148,269,167"/>
+<area shape="rect" id="node346" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="68,167,269,185"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="56,102,280,191"/>
+<area shape="rect" id="node345" href="javascript:void(0);" title="Serialize a ViewPoint for me and the perspective of the given broker." alt="" coords="76,244,263,263"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="I will be converted to a ViewPoint when passed to or returned from a remote method." alt="" coords="64,211,275,269"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_list_machines" title="Remote call to list machine IPs." alt="" coords="17,321,321,340"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_machine_containers" title="Remote call to list containers in a machine with given IP." alt="" coords="17,340,321,359"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_stats_machine" title="Remote call to list stats of machine with given IP." alt="" coords="17,359,321,377"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_list_users" title="Remote call to list all users currently logged into the RoboEarth Cloud &#160;Engine." alt="" coords="17,377,321,396"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_add_user" title="Remote call to add user." alt="" coords="17,396,321,415"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_remove_user" title="Remote call to remove user." alt="" coords="17,415,321,433"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_update_user" title="Remote call to edit user information." alt="" coords="17,433,321,452"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_list_containers_by_user" title="Remote call to list containers under a given user." alt="" coords="17,452,321,471"/>
+<area shape="rect" id="node344" href="rce.core.view.AdminMonitorView-class.html#view_list_robots_by_user" title="List robots under the user specified." alt="" coords="17,471,321,489"/>
+<area shape="rect" id="node3" href="rce.core.view.AdminMonitorView-class.html" title="View implementing all monitor actions which an admin user can perform to interact with the cloud engine." alt="" coords="5,289,333,495"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core_33.gif" alt='' usemap="#uml_class_diagram_for_rce_core_33" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>View implementing all monitor actions which an admin user can perform 
+  to interact with the cloud engine.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="view_list_machines"></a><span class="summary-sig-name">view_list_machines</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>)</span><br />
+      Remote call to list machine IPs.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_machines">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"># TODO: Depends on modification below.</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_machine_containers" class="summary-sig-name">view_machine_containers</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">machineIP</span>)</span><br />
+      Remote call to list containers in a machine with given IP.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_machine_containers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">{ str : int }</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_stats_machine" class="summary-sig-name">view_stats_machine</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">machineIP</span>)</span><br />
+      Remote call to list stats of machine with given IP.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_stats_machine">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">[ str ]</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_list_users" class="summary-sig-name">view_list_users</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>)</span><br />
+      Remote call to list all users currently logged into the RoboEarth 
+      Cloud Engine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_users">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_add_user" class="summary-sig-name">view_add_user</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">password</span>)</span><br />
+      Remote call to add user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_add_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_remove_user" class="summary-sig-name">view_remove_user</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">username</span>)</span><br />
+      Remote call to remove user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_remove_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_update_user" class="summary-sig-name">view_update_user</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">password</span>)</span><br />
+      Remote call to edit user information.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_update_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_list_containers_by_user" class="summary-sig-name">view_list_containers_by_user</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">userID</span>)</span><br />
+      Remote call to list containers under a given user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_containers_by_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.view.AdminMonitorView-class.html#view_list_robots_by_user" class="summary-sig-name">view_list_robots_by_user</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">user</span>,
+        <span class="summary-sig-arg">userID</span>)</span><br />
+      List robots under the user specified.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_robots_by_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Viewable</code></b>:
+      <code>jellyFor</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>__provides__</code>,
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>__implemented__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="view_machine_containers"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_machine_containers</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">machineIP</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_machine_containers">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to list containers in a machine with given IP.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the container list.</li>
+        <li><strong class="pname"><code>machineIP</code></strong> (str) - IP of machine for which the running containers should be listed.</li>
+    </ul></dd>
+    <dt>Returns: # TODO: Depends on modification below.</dt>
+        <dd>List of running containers.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_stats_machine"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_stats_machine</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">machineIP</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_stats_machine">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to list stats of machine with given IP.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the stats.</li>
+        <li><strong class="pname"><code>machineIP</code></strong> (str) - IP of machine for which the stats should be listed.</li>
+    </ul></dd>
+    <dt>Returns: { str : int }</dt>
+        <dd>Stats of the machine.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_list_users"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_list_users</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_users">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to list all users currently logged into the RoboEarth 
+  Cloud Engine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the listing of logged-in users.</li>
+    </ul></dd>
+    <dt>Returns: [ str ]</dt>
+        <dd>List of the user IDs of logged-in users.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_add_user"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_add_user</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">password</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_add_user">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to add user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the addtion of a new user.</li>
+        <li><strong class="pname"><code>username</code></strong> (str) - The username of the new user.</li>
+        <li><strong class="pname"><code>password</code></strong> (str) - The password of the new user.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_remove_user"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_remove_user</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">username</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_remove_user">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to remove user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the removal of the user.</li>
+        <li><strong class="pname"><code>username</code></strong> (str) - The username of the user which should be removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_update_user"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_update_user</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">username</span>,
+        <span class="sig-arg">password</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_update_user">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to edit user information.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the addtion of a new user.</li>
+        <li><strong class="pname"><code>username</code></strong> (str) - The username of the user which should be updated.</li>
+        <li><strong class="pname"><code>password</code></strong> (str) - The new password for the user which should be updated.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_list_containers_by_user"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_list_containers_by_user</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">userID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_containers_by_user">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remote call to list containers under a given user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the listing of the containers of a particular 
+          user.</li>
+        <li><strong class="pname"><code>userID</code></strong> (str) - The username of the user for which the containers should be 
+          listed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="view_list_robots_by_user"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">view_list_robots_by_user</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">user</span>,
+        <span class="sig-arg">userID</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.view-pysrc.html#AdminMonitorView.view_list_robots_by_user">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>List robots under the user specified.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>user</code></strong> (rce.core.user.User) - User who requested the listing of the robots of a particular 
+          user.</li>
+        <li><strong class="pname"><code>userID</code></strong> (str) - The username of the user for which the robots should be listed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:04 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

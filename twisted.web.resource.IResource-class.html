@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>twisted.web.resource.IResource</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        twisted ::
+        web ::
+        resource ::
+        IResource ::
+        Class&nbsp;IResource
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="twisted.web.resource.IResource-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class IResource</h1><p class="nomargin-top"></p>
+<center>
+<center>  <map id="uml_class_diagram_for_twisted_" name="uml_class_diagram_for_twisted_">
+<area shape="rect" id="node1" href="javascript:void(0);" title="zope.interface.Interface" alt="" coords="44,6,207,50"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#isLeaf" title="twisted.web.resource.IResource.isLeaf" alt="" coords="17,95,233,113"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#__bases__" title="twisted.web.resource.IResource.__bases__" alt="" coords="17,113,233,132"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#__identifier__" title="twisted.web.resource.IResource.__identifier__" alt="" coords="17,132,233,151"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#__iro__" title="twisted.web.resource.IResource.__iro__" alt="" coords="17,151,233,169"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#__name__" title="twisted.web.resource.IResource.__name__" alt="" coords="17,169,233,188"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#__sro__" title="twisted.web.resource.IResource.__sro__" alt="" coords="17,188,233,207"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#dependents" title="twisted.web.resource.IResource.dependents" alt="" coords="17,207,233,225"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#getChildWithDefault" title="Return a child with the given name for the given request." alt="" coords="17,228,233,247"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#putChild" title="Put a child IResource implementor at the given path." alt="" coords="17,247,233,265"/>
+<area shape="rect" id="node664" href="twisted.web.resource.IResource-class.html#render" title="Render a request." alt="" coords="17,265,233,284"/>
+<area shape="rect" id="node2" href="twisted.web.resource.IResource-class.html" title="A web resource." alt="" coords="5,70,245,290"/>
+</map>
+  <img src="uml_class_diagram_for_twisted_.gif" alt='' usemap="#uml_class_diagram_for_twisted_" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>A web resource.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="twisted.web.resource.IResource-class.html#getChildWithDefault" class="summary-sig-name">getChildWithDefault</a>(<span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">request</span>)</span><br />
+      Return a child with the given name for the given request.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="twisted.web.resource.IResource-class.html#putChild" class="summary-sig-name">putChild</a>(<span class="summary-sig-arg">path</span>,
+        <span class="summary-sig-arg">child</span>)</span><br />
+      Put a child IResource implementor at the given path.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="twisted.web.resource.IResource-class.html#render" class="summary-sig-name">render</a>(<span class="summary-sig-arg">request</span>)</span><br />
+      Render a request.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="twisted.web.resource.IResource-class.html#isLeaf" class="summary-name">isLeaf</a> = <code title="Attribute(&quot;&quot;&quot;
+        Signal if this IResource implementor is a &quot;leaf node&quot; or not. \
+If True,
+        getChildWithDefault will not be called on this Resource.
+        &quot;&quot;&quot;)">Attribute(<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="twisted.web.resource.IResource-class.html#_InterfaceClass__attrs" class="summary-name" onclick="show_private();">_InterfaceClass__attrs</a> = <code title="{'getChildWithDefault': &lt;zope.interface.interface.Method object at 0x9\
+eb664c&gt;,
+ 'isLeaf': &lt;zope.interface.interface.Attribute object at 0x9eaec2c&gt;,
+ 'putChild': &lt;zope.interface.interface.Method object at 0x9eb668c&gt;,
+ 'render': &lt;zope.interface.interface.Method object at 0x9eb65ec&gt;}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">getChildWithDefault</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;zope.interfa<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__bases__"></a><span class="summary-name">__bases__</span> = <code title="(&lt;InterfaceClass zope.interface.Interface&gt;)"><code class="variable-group">(</code>&lt;InterfaceClass zope.interface.Interface&gt;<code class="variable-group">)</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__identifier__"></a><span class="summary-name">__identifier__</span> = <code title="'twisted.web.resource.IResource'"><code class="variable-quote">'</code><code class="variable-string">twisted.web.resource.IResource</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="twisted.web.resource.IResource-class.html#__iro__" class="summary-name">__iro__</a> = <code title="(&lt;InterfaceClass twisted.web.resource.IResource&gt;,
+ &lt;InterfaceClass zope.interface.Interface&gt;)"><code class="variable-group">(</code>&lt;InterfaceClass twisted.web.resource.IResource&gt;<code class="variable-op">, </code>&lt;I<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__name__"></a><span class="summary-name">__name__</span> = <code title="'IResource'"><code class="variable-quote">'</code><code class="variable-string">IResource</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="twisted.web.resource.IResource-class.html#__sro__" class="summary-name">__sro__</a> = <code title="(&lt;InterfaceClass twisted.web.resource.IResource&gt;,
+ &lt;InterfaceClass zope.interface.Interface&gt;)"><code class="variable-group">(</code>&lt;InterfaceClass twisted.web.resource.IResource&gt;<code class="variable-op">, </code>&lt;I<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="twisted.web.resource.IResource-class.html#_implied" class="summary-name" onclick="show_private();">_implied</a> = <code title="{&lt;InterfaceClass twisted.web.resource.IResource&gt;: (),
+ &lt;InterfaceClass zope.interface.Interface&gt;: ()}"><code class="variable-group">{</code>&lt;InterfaceClass twisted.web.resource.IResource&gt;<code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="dependents"></a><span class="summary-name">dependents</span> = <code title="&lt;WeakKeyDictionary at 166390956&gt;">&lt;WeakKeyDictionary at 166390956&gt;</code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>zope.interface.Interface</code></b> (private):
+      <code>_Element__tagged_values</code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="getChildWithDefault"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getChildWithDefault</span>(<span class="sig-arg">name</span>,
+        <span class="sig-arg">request</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a child with the given name for the given request. This is the 
+  external interface used by the Resource publishing machinery. If 
+  implementing IResource without subclassing Resource, it must be provided.
+  However, if subclassing Resource, getChild overridden instead.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (<code>bytes</code>) - A single path component from a requested URL.  For example, a 
+          request for <i>http://example.com/foo/bar</i> will result in 
+          calls to this method with <code>b&quot;foo&quot;</code> and 
+          <code>b&quot;bar&quot;</code> as values for this argument.</li>
+        <li><strong class="pname"><code>request</code></strong> (<code class="link">twisted.web.server.Request</code>) - A representation of all of the information about the request that
+          is being made for this child.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="putChild"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putChild</span>(<span class="sig-arg">path</span>,
+        <span class="sig-arg">child</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Put a child IResource implementor at the given path.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>path</code></strong> (<code>bytes</code>) - A single path component, to be interpreted relative to the path 
+          this resource is found at, at which to put the given child. For 
+          example, if resource A can be found at 
+          <i>http://example.com/foo</i> then a call like 
+          <code>A.putChild(b&quot;bar&quot;, B)</code> will make resource B
+          available at <i>http://example.com/foo/bar</i>.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="render"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">render</span>(<span class="sig-arg">request</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Render a request. This is called on the leaf resource for a 
+  request.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Either <code>server.NOT_DONE_YET</code> to indicate an 
+          asynchronous or a <code>bytes</code> instance to write as the 
+          response to the request.  If <code>NOT_DONE_YET</code> is 
+          returned, at some point later (for example, in a Deferred 
+          callback) call 
+          <code>request.write(b&quot;&lt;html&gt;&quot;)</code> to write 
+          data to the request, and <code>request.finish()</code> to send 
+          the data to the browser.</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>twisted.web.error.UnsupportedMethod</strong></code> - If the HTTP verb requested is not supported by this resource.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="isLeaf"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">isLeaf</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+Attribute(&quot;&quot;&quot;
+        Signal if this IResource implementor is a &quot;leaf node&quot; or not. <span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+If True,
+        getChildWithDefault will not be called on this Resource.
+        &quot;&quot;&quot;)
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_InterfaceClass__attrs"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_InterfaceClass__attrs</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">getChildWithDefault</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;zope.interface.interface.Method object at 0x9<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+eb664c&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">isLeaf</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;zope.interface.interface.Attribute object at 0x9eaec2c&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">putChild</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;zope.interface.interface.Method object at 0x9eb668c&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">render</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;zope.interface.interface.Method object at 0x9eb65ec&gt;<code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__iro__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__iro__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code>&lt;InterfaceClass twisted.web.resource.IResource&gt;<code class="variable-op">,</code>
+ &lt;InterfaceClass zope.interface.Interface&gt;<code class="variable-group">)</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__sro__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__sro__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code>&lt;InterfaceClass twisted.web.resource.IResource&gt;<code class="variable-op">,</code>
+ &lt;InterfaceClass zope.interface.Interface&gt;<code class="variable-group">)</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_implied"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_implied</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code>&lt;InterfaceClass twisted.web.resource.IResource&gt;<code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-group">)</code><code class="variable-op">,</code>
+ &lt;InterfaceClass zope.interface.Interface&gt;<code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-group">)</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:09 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

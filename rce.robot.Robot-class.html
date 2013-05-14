@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.robot.Robot</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.robot-module.html">Module&nbsp;robot</a> ::
+        Class&nbsp;Robot
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.robot.Robot-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Robot</h1><p class="nomargin-top"><span class="codelink"><a href="rce.robot-pysrc.html#Robot">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_robo_3" name="uml_class_diagram_for_rce_robo_3">
+<area shape="rect" id="node515" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
+<area shape="rect" id="node515" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
+<area shape="rect" id="node515" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
+<area shape="rect" id="node515" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
+<area shape="rect" id="node515" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
+<area shape="rect" id="node2" href="rce.slave.namespace.Namespace-class.html" title="Abstract base class for a Namespace in a slave process." alt="" coords="91,326,293,370"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#__init__" title="Initialize the Robot." alt="" coords="29,423,353,441"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#converter" title="Reference to the message converter used by the Converter interfaces." alt="" coords="29,441,353,460"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#loader" title="Reference to ROS components loader." alt="" coords="29,460,353,479"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#receivedFromClient" title="Process a data message which has been received from the robot client and &#160;send the message to the appropriate interface." alt="" coords="29,479,353,497"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#sendToClient" title="Process a data message which has been received from an interface send the &#160;message to the registered connection." alt="" coords="29,497,353,516"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#remote_createInterface" title="Create an Interface object in the robot namespace and therefore in the &#160;endpoint." alt="" coords="29,516,353,535"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#registerInterface" title="rce.robot.Robot.registerInterface" alt="" coords="29,535,353,553"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#unregisterInterface" title="rce.robot.Robot.unregisterInterface" alt="" coords="29,553,353,572"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#destroy" title="# TODO: Add doc" alt="" coords="29,572,353,591"/>
+<area shape="rect" id="node513" href="rce.robot.Robot-class.html#remote_destroy" title="Method should be called to destroy the robot and will take care of &#160;destroying all objects owned by this robot as well as deleting all circular references." alt="" coords="29,591,353,609"/>
+<area shape="rect" id="node3" href="rce.robot.Robot-class.html" title="Representation of a namespace in the robot process, which is part of the cloud engine internal communication." alt="" coords="17,390,364,615"/>
+<area shape="rect" id="node516" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
+<area shape="rect" id="node517" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
+<area shape="rect" id="node517" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
+</map>
+  <img src="uml_class_diagram_for_rce_robo_3.gif" alt='' usemap="#uml_class_diagram_for_rce_robo_3" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Representation of a namespace in the robot process, which is part of 
+  the cloud engine internal communication.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">client</span>,
+        <span class="summary-sig-arg">connection</span>)</span><br />
+      Initialize the Robot.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#converter" class="summary-sig-name">converter</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Reference to the message converter used by the Converter interfaces.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.converter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#loader" class="summary-sig-name">loader</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Reference to ROS components loader.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.loader">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#receivedFromClient" class="summary-sig-name">receivedFromClient</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">clsName</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Process a data message which has been received from the robot client 
+      and send the message to the appropriate interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.receivedFromClient">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#sendToClient" class="summary-sig-name">sendToClient</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">msgType</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Process a data message which has been received from an interface send
+      the message to the registered connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.sendToClient">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.master.network.Interface (subclass of rce.master.base.Proxy)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#remote_createInterface" class="summary-sig-name">remote_createInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uid</span>,
+        <span class="summary-sig-arg">iType</span>,
+        <span class="summary-sig-arg">msgType</span>,
+        <span class="summary-sig-arg">tag</span>)</span><br />
+      Create an Interface object in the robot namespace and therefore in 
+      the endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.remote_createInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#registerInterface" class="summary-sig-name">registerInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.registerInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#unregisterInterface" class="summary-sig-name">unregisterInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.unregisterInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      # TODO: Add doc</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.robot.Robot-class.html#remote_destroy" class="summary-sig-name">remote_destroy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the robot and will take care of 
+      destroying all objects owned by this robot as well as deleting all 
+      circular references.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.robot-pysrc.html#Robot.remote_destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__provides__</code>,
+      <code>jellyFor</code>,
+      <code>remoteMessageReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>__providedBy__</code>,
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.robot.Robot-class.html#_MAP" class="summary-name" onclick="show_private();">_MAP</a> = <code title="[ServiceClientConverter, PublisherConverter, SubscriberConverter, Serv\
+iceProviderConverter, ServiceClientForwarder, PublisherForwarder, Subs\
+criberForwarder, ServiceProviderForwarder]">[ServiceClientConverter, PublisherConverter, Subscriber<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>__implemented__</code>,
+      <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">client</span>,
+        <span class="sig-arg">connection</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Robot.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>client</code></strong> (rce.robot.RobotClient) - Robot Client which is responsible for monitoring the robots in 
+          this process.</li>
+        <li><strong class="pname"><code>connection</code></strong> - The connection manager for robot namespaces.</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="rce.slave.namespace.Namespace-class.html#__init__">slave.namespace.Namespace.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="converter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">converter</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.converter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reference to the message converter used by the Converter 
+  interfaces.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="loader"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">loader</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.loader">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reference to ROS components loader.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="receivedFromClient"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">receivedFromClient</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">clsName</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.receivedFromClient">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process a data message which has been received from the robot client 
+  and send the message to the appropriate interface.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface to which this message
+          should be sent.</li>
+        <li><strong class="pname"><code>clsName</code></strong> (str) - Message type/Service type consisting of the package and the name 
+          of the message/service, i.e. 'std_msgs/Int32'.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (str) - Message ID which can be used to get a correspondence between 
+          request and response message for a service call.</li>
+        <li><strong class="pname"><code>msg</code></strong> ({str : {} / base_types / StringIO} / StringIO) - Message which should be sent. It has to be a JSON compatible 
+          dictionary where part or the complete message can be replaced by 
+          a StringIO instance which is interpreted as binary data.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendToClient"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendToClient</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">msgType</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.sendToClient">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process a data message which has been received from an interface send 
+  the message to the registered connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface from which this 
+          message was sent.</li>
+        <li><strong class="pname"><code>clsName</code></strong> (str) - Message type/Service type consisting of the package and the name 
+          of the message/service, i.e. 'std_msgs/Int32'.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (str) - Message ID which can be used to get a correspondence between 
+          request and response message for a service call.</li>
+        <li><strong class="pname"><code>msg</code></strong> ({str : {} / base_types / StringIO} / StringIO) - Message which should be sent. It has to be a JSON compatible 
+          dictionary where part or the complete message can be replaced by 
+          a StringIO instance which is interpreted as binary data.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_createInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_createInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uid</span>,
+        <span class="sig-arg">iType</span>,
+        <span class="sig-arg">msgType</span>,
+        <span class="sig-arg">tag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.remote_createInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create an Interface object in the robot namespace and therefore in the
+  endpoint.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uid</code></strong> (str) - Unique ID which is used to identify the interface in the internal
+          communication.</li>
+        <li><strong class="pname"><code>iType</code></strong> - Type of the interface encoded as an integer. Refer to 
+          rce.slave.interface.Types for more information.</li>
+        <li><strong class="pname"><code>clsName</code></strong> (str) - Message type/Service type consisting of the package and the name 
+          of the message/service, i.e. 'std_msgs/Int32'.</li>
+        <li><strong class="pname"><code>tag</code></strong> (str) - Unique ID which is used to identify the interface in the external
+          communication.</li>
+        <li><strong class="pname"><code>IType</code></strong> (int)</li>
+    </ul></dd>
+    <dt>Returns: rce.master.network.Interface (subclass of rce.master.base.Proxy)</dt>
+        <dd>New Interface instance.</dd>
+    <dt>Overrides:
+        <a href="rce.slave.namespace.Namespace-class.html#remote_createInterface">slave.namespace.Namespace.remote_createInterface</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registerInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.registerInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.slave.namespace.Namespace-class.html#registerInterface">slave.namespace.Namespace.registerInterface</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="unregisterInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unregisterInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.unregisterInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.slave.namespace.Namespace-class.html#unregisterInterface">slave.namespace.Namespace.unregisterInterface</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_destroy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_destroy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Robot.remote_destroy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the robot and will take care of 
+  destroying all objects owned by this robot as well as deleting all 
+  circular references.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.slave.namespace.Namespace-class.html#remote_destroy">slave.namespace.Namespace.remote_destroy</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_MAP"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_MAP</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+[ServiceClientConverter, PublisherConverter, SubscriberConverter, Serv<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+iceProviderConverter, ServiceClientForwarder, PublisherForwarder, Subs<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+criberForwarder, ServiceProviderForwarder]
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:06 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

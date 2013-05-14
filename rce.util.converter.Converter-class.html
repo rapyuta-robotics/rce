@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.util.converter.Converter</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.util-module.html">Package&nbsp;util</a> ::
+        <a href="rce.util.converter-module.html">Module&nbsp;converter</a> ::
+        Class&nbsp;Converter
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.util.converter.Converter-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Converter</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.converter-pysrc.html#Converter">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_util_3" name="uml_class_diagram_for_rce_util_3">
+<area shape="rect" id="node590" href="rce.util.converter.Converter-class.html#__init__" title="Initialize the Converter." alt="" coords="17,39,261,57"/>
+<area shape="rect" id="node590" href="rce.util.converter.Converter-class.html#addCustomConverter" title="Register a new custom Converter." alt="" coords="17,57,261,76"/>
+<area shape="rect" id="node590" href="rce.util.converter.Converter-class.html#removeCustomConverter" title="Unregister a custom Converter." alt="" coords="17,76,261,95"/>
+<area shape="rect" id="node590" href="rce.util.converter.Converter-class.html#encode" title="Generate JSON compatible data from a ROS message." alt="" coords="17,95,261,113"/>
+<area shape="rect" id="node590" href="rce.util.converter.Converter-class.html#decode" title="Generate a ROS message from JSON compatible data." alt="" coords="17,113,261,132"/>
+<area shape="rect" id="node1" href="rce.util.converter.Converter-class.html" title="This class is used to provide a possibility to convert a ROS message to a JSON compatible format and back." alt="" coords="5,6,272,138"/>
+</map>
+  <img src="uml_class_diagram_for_rce_util_3.gif" alt='' usemap="#uml_class_diagram_for_rce_util_3" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>This class is used to provide a possibility to convert a ROS message 
+  to a JSON compatible format and back.</p>
+  <p>To add customized Converters use the method 'addCustomConverter' and 
+  the class must implement the interface 'IROSConverter'. As an example 
+  view the class ImageConverter.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.converter.Converter-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">loader</span>)</span><br />
+      Initialize the Converter.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="addCustomConverter"></a><span class="summary-sig-name">addCustomConverter</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">converter</span>)</span><br />
+      Register a new custom Converter.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.addCustomConverter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.converter.Converter-class.html#removeCustomConverter" class="summary-sig-name">removeCustomConverter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msgType</span>)</span><br />
+      Unregister a custom Converter.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.removeCustomConverter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_encode"></a><span class="summary-sig-name">_encode</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">rosMsg</span>)</span><br />
+      Internally used method which is responsible for the heavy lifting.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter._encode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">{}</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.converter.Converter-class.html#encode" class="summary-sig-name">encode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">rosMsg</span>)</span><br />
+      Generate JSON compatible data from a ROS message.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.encode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_decode"></a><span class="summary-sig-name">_decode</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msgCls</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Internally used method which is responsible for the heavy lifting.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter._decode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.converter.Converter-class.html#decode" class="summary-sig-name">decode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msgCls</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Generate a ROS message from JSON compatible data.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.decode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.converter.Converter-class.html#_BASE_TYPES" class="summary-name" onclick="show_private();">_BASE_TYPES</a> = <code title="{'bool': &lt;type 'bool'&gt;,
+ 'byte': &lt;type 'int'&gt;,
+ 'char': &lt;type 'int'&gt;,
+ 'float32': &lt;type 'float'&gt;,
+ 'float64': &lt;type 'float'&gt;,
+ 'int16': &lt;type 'int'&gt;,
+ 'int32': &lt;type 'int'&gt;,
+ 'int64': &lt;type 'long'&gt;,
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">bool</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'bool'&gt;<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">byte</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'int'&gt;<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">c</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.converter.Converter-class.html#_SPECIAL_TYPES" class="summary-name" onclick="show_private();">_SPECIAL_TYPES</a> = <code title="{'duration': &lt;class 'rce.util.converter._DurationConverter'&gt;,
+ 'time': &lt;class 'rce.util.converter._TimeConverter'&gt;}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">duration</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'rce.util.converter._Dura<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">loader</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Converter.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>loader</code></strong> (Loader) - Used loader for ROS resources.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeCustomConverter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeCustomConverter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msgType</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.removeCustomConverter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Unregister a custom Converter.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msgType</code></strong> (str) - Message type of ROS message as a string, i.e. 'std_msgs/Int8', 
+          for which the converter should be removed.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="encode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">encode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">rosMsg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.encode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generate JSON compatible data from a ROS message.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>rosMsg</code></strong> (ROS message instance) - The ROS message instance which should be converted.</li>
+    </ul></dd>
+    <dt>Returns: {}</dt>
+        <dd>Dictionary containing the parsed message. The basic form does map
+          each field in the ROS message to a key / value pair in the 
+          returned data dict. Binaries are added as StringIO instances.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="decode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">decode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msgCls</span>,
+        <span class="sig-arg">data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.converter-pysrc.html#Converter.decode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generate a ROS message from JSON compatible data.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msgCls</code></strong> (ROS Message class) - ROS message class into which the decoded data should filled.</li>
+        <li><strong class="pname"><code>data</code></strong> - Dictionary with keys matching the fields in the desired ROS 
+          message. Binary files should be included as StringIO instances.</li>
+        <li><strong class="pname"><code>data</code></strong> - { str : {} }</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>ROS message of type rosMsg containing the given data.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_BASE_TYPES"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_BASE_TYPES</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">bool</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'bool'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">byte</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'int'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">char</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'int'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">float32</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'float'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">float64</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'float'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">int16</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'int'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">int32</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'int'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">int64</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;type 'long'&gt;<code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_SPECIAL_TYPES"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_SPECIAL_TYPES</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">duration</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'rce.util.converter._DurationConverter'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">time</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'rce.util.converter._TimeConverter'&gt;<code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:07 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

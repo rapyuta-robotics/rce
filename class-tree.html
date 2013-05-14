@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class Hierarchy</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Trees&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">&nbsp;</td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="class-tree.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<center><b>
+ [ <a href="module-tree.html">Module Hierarchy</a>
+ | <a href="class-tree.html">Class Hierarchy</a> ]
+</b></center><br />
+<h1 class="epydoc">Class Hierarchy</h1>
+<ul class="nomargin-top">
+    <li> <strong class="uidlink">twisted.spread.pb.Avatar</strong>:
+      <em class="summary">A default IPerspective implementor.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.network.EndpointAvatar-class.html">rce.core.network.EndpointAvatar</a></strong>:
+      <em class="summary">Avatar for internal PB connection from an Endpoint.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.environment.EnvironmentEndpointAvatar-class.html">rce.core.environment.EnvironmentEndpointAvatar</a></strong>:
+      <em class="summary">Avatar for internal PB connection from an Environment Endpoint.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.user.User-class.html">rce.core.user.User</a></strong>:
+      <em class="summary">Represents a User avatar.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.internet.protocol.BaseProtocol</strong>:
+      <em class="summary">This is the abstract superclass of all protocols.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.internet.protocol.ProcessProtocol</strong>:
+      <em class="summary">Base process protocol implementation which does simple dispatching 
+        for stdin, stdout, and stderr file descriptors.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.monitor.node.NodeProtocol-class.html">rce.monitor.node.NodeProtocol</a></strong>:
+      <em class="summary">Node process protocol.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.internet.protocol.Protocol</strong>:
+      <em class="summary">This is the base class for streaming connection-oriented protocols.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.protocols.basic.IntNStringReceiver</strong>:
+      <em class="summary">Generic class for length prefixed protocols.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.protocols.basic.Int32StringReceiver</strong>:
+      <em class="summary">A receiver for int32-prefixed strings.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.slave.protocol.RCEInternalProtocol-class.html">rce.slave.protocol.RCEInternalProtocol</a></strong>:
+      <em class="summary">Protocol which is used to connect Endpoints such that Interfaces in
+        different Endpoint are able to communicate.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">autobahn.websocket.WebSocketProtocol</strong>:
+      <em class="summary">A Twisted Protocol class for WebSockets.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="autobahn.websocket.WebSocketClientProtocol-class.html">autobahn.websocket.WebSocketClientProtocol</a></strong>:
+      <em class="summary">Client protocol for WebSockets.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.comm.client.RCERobotProtocol-class.html">rce.comm.client.RCERobotProtocol</a></strong>:
+      <em class="summary">WebSocket client protocol which is used to communicate with the 
+        Robot Manager.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="autobahn.websocket.WebSocketServerProtocol-class.html">autobahn.websocket.WebSocketServerProtocol</a></strong>:
+      <em class="summary">A Twisted protocol for WebSockets servers.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.comm.server.RobotWebSocketProtocol-class.html">rce.comm.server.RobotWebSocketProtocol</a></strong>:
+      <em class="summary">Protocol which is used for the connections from the robots to the 
+        robot manager.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.internet.protocol.Factory</strong>:
+      <em class="summary">This is a factory which produces protocols.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.internet.protocol.ClientFactory</strong>:
+      <em class="summary">A Protocol factory for clients.</em>
+    <ul>
+    <li> <strong class="uidlink">autobahn.websocket.WebSocketClientFactory</strong>:
+      <em class="summary">A Twisted factory for WebSockets client protocols.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.comm.client.RCERobotFactory-class.html">rce.comm.client.RCERobotFactory</a></strong>:
+      <em class="summary">WebSocket protocol factory which is used for the communication with
+        the Robot Manager.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.internet.protocol.ServerFactory</strong>:
+      <em class="summary">Subclass this to indicate that your protocol.Factory is only usable
+        for servers.</em>
+    <ul>
+    <li> <strong class="uidlink">autobahn.websocket.WebSocketServerFactory</strong>:
+      <em class="summary">A Twisted factory for WebSockets server protocols.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.comm.server.CloudEngineWebSocketFactory-class.html">rce.comm.server.CloudEngineWebSocketFactory</a></strong>:
+      <em class="summary">Factory which is used for the connections from the robots to the 
+        RoboEarth Cloud Engine.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.endpoint._RCEInternalServerFactory-class.html" onclick="show_private();">rce.slave.endpoint._RCEInternalServerFactory</a></strong>:
+      <em class="summary">Server Factory for the cloud engine internal communication.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">zope.interface.Interface</strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.util.converters.interfaces.ICustomROSConverter-class.html">rce.util.converters.interfaces.ICustomROSConverter</a></strong>:
+      <em class="summary">Interface which declares the necessary methods which all ROS 
+        message types converters have to implement.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.interfaces.IMasterRealm-class.html">rce.comm.interfaces.IMasterRealm</a></strong>:
+      <em class="summary">Interface which the Master realm has to implement.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.interfaces.IMessageReceiver-class.html">rce.comm.interfaces.IMessageReceiver</a></strong>:
+      <em class="summary">Interface which declares the necessary callback for the 
+        communication client/server.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="twisted.web.resource.IResource-class.html">twisted.web.resource.IResource</a></strong>:
+      <em class="summary">A web resource.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.interfaces.IRobot-class.html">rce.comm.interfaces.IRobot</a></strong>:
+      <em class="summary">Interface which the Robot Avatar has to implement.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.interfaces.IRobotRealm-class.html">rce.comm.interfaces.IRobotRealm</a></strong>:
+      <em class="summary">Interface which the Robot realm has to implement.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.interfaces.IServersideProtocol-class.html">rce.comm.interfaces.IServersideProtocol</a></strong>:
+      <em class="summary">Interface which the Protocol has to implement on the server side.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.spread.jelly.Jellyable</strong>:
+      <em class="summary">Inherit from me to Jelly yourself directly with the `getStateFor' 
+        convenience method.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.spread.flavors.Serializable</strong>:
+      <em class="summary">An object that can be passed remotely.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.spread.flavors.Referenceable</strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.slave.endpoint.Endpoint-class.html">rce.slave.endpoint.Endpoint</a></strong>:
+      <em class="summary">Abstract base class for an Endpoint in a slave process.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.environment.EnvironmentClient-class.html">rce.environment.EnvironmentClient</a></strong>:
+      <em class="summary">Environment client is responsible for the cloud engine components 
+        inside a container.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.interface.Interface-class.html">rce.slave.interface.Interface</a></strong>:
+      <em class="summary">Abstract base class for an Interface in a slave process.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.environment._ROSInterfaceBase-class.html" onclick="show_private();">rce.monitor.interface.environment._ROSInterfaceBase</a></strong>:
+      <em class="summary">Abstract base class which provides the basics for the ROS-side 
+        interfaces.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.environment.PublisherInterface-class.html">rce.monitor.interface.environment.PublisherInterface</a></strong>:
+      <em class="summary">Class which is used as a Publisher Interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.environment.ServiceClientInterface-class.html">rce.monitor.interface.environment.ServiceClientInterface</a></strong>:
+      <em class="summary">Class which is used as a Service-Client Interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.environment.ServiceProviderInterface-class.html">rce.monitor.interface.environment.ServiceProviderInterface</a></strong>:
+      <em class="summary">Class which is used as a Service-Provider Interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.environment.SubscriberInterface-class.html">rce.monitor.interface.environment.SubscriberInterface</a></strong>:
+      <em class="summary">Class which is used as a Subscriber Interface.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.namespace.Namespace-class.html">rce.slave.namespace.Namespace</a></strong>:
+      <em class="summary">Abstract base class for a Namespace in a slave process.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.environment.Environment-class.html">rce.environment.Environment</a></strong>:
+      <em class="summary">Representation of the namespace in the environment process, which 
+        is part of the cloud engine internal communication.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.node.Node-class.html">rce.monitor.node.Node</a></strong>:
+      <em class="summary">Representation of a ROS Node (process) inside an environment.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.parameter.Parameter-class.html">rce.monitor.parameter.Parameter</a></strong>:
+      <em class="summary">Representation of a Parameter inside an environment.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network._ConnectionValidator-class.html" onclick="show_private();">rce.core.network._ConnectionValidator</a></strong>:
+      <em class="summary">Small helper to provide a callback to the endpoint to validate the 
+        connection and to register the protocol who is responsible for the 
+        it.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.protocol._Protocol-class.html" onclick="show_private();">rce.slave.protocol._Protocol</a></strong>:
+      <em class="summary">Abstract base class for a internal Protocol which interacts with 
+        the Endpoint, Namespace, and Interfaces in a slave process.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.slave.protocol.Loopback-class.html">rce.slave.protocol.Loopback</a></strong>:
+      <em class="summary">Special Protocol 'Loopback' which can be used to connect Interfaces
+        which are in the same Endpoint.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.protocol.RCEInternalProtocol-class.html">rce.slave.protocol.RCEInternalProtocol</a></strong>:
+      <em class="summary">Protocol which is used to connect Endpoints such that Interfaces in
+        different Endpoint are able to communicate.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.spread.flavors.Viewable</strong>:
+      <em class="summary">I will be converted to a <code class="link">ViewPoint</code> when 
+        passed to or returned from a remote method.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.view.AdminMonitorView-class.html">rce.core.view.AdminMonitorView</a></strong>:
+      <em class="summary">View implementing all monitor actions which an admin user can 
+        perform to interact with the cloud engine.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.view.ControlView-class.html">rce.core.view.ControlView</a></strong>:
+      <em class="summary">View implementing all control actions which a user can perform to 
+        interact with the cloud engine.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.view.MonitorView-class.html">rce.core.view.MonitorView</a></strong>:
+      <em class="summary">View implementing all monitor actions which a normal user can 
+        perform to interact with the cloud engine.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">ConfigParser.RawConfigParser</strong>
+    <ul>
+    <li> <strong class="uidlink">ConfigParser.ConfigParser</strong>
+    <ul>
+    <li> <strong class="uidlink">ConfigParser.SafeConfigParser</strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.util.settings._RCESettingsParser-class.html" onclick="show_private();">rce.util.settings._RCESettingsParser</a></strong>:
+      <em class="summary">Configuration parser used for the cloud engine settings.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.spread.pb.Referenceable</strong>
+    </li>
+    <li> <strong class="uidlink">twisted.spread.pb.Referenceable</strong>
+    </li>
+    <li> <strong class="uidlink">twisted.web.resource.Resource</strong>:
+      <em class="summary">Define a web-accessible resource.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.rosproxy.ConsoleROSProxyAuthentication-class.html">rce.rosproxy.ConsoleROSProxyAuthentication</a></strong>:
+      <em class="summary">Authenticator and Request handler for the ROS Proxy Web Server.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.server.RobotResource-class.html">rce.comm.server.RobotResource</a></strong>:
+      <em class="summary">Twisted web.Resource which is used in the Master to distribute new 
+        robots connections.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">autobahn.websocket.WebSocketFactory</strong>:
+      <em class="summary">Mixin for WebSocketClientFactory and WebSocketServerFactory.</em>
+    <ul>
+    <li> <strong class="uidlink">autobahn.websocket.WebSocketClientFactory</strong>:
+      <em class="summary">A Twisted factory for WebSockets client protocols.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.comm.client.RCERobotFactory-class.html">rce.comm.client.RCERobotFactory</a></strong>:
+      <em class="summary">WebSocket protocol factory which is used for the communication with
+        the Robot Manager.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">autobahn.websocket.WebSocketServerFactory</strong>:
+      <em class="summary">A Twisted factory for WebSockets server protocols.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.comm.server.CloudEngineWebSocketFactory-class.html">rce.comm.server.CloudEngineWebSocketFactory</a></strong>:
+      <em class="summary">Factory which is used for the connections from the robots to the 
+        RoboEarth Cloud Engine.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">twisted.protocols.basic._PauseableMixin</strong>
+    <ul>
+    <li> <strong class="uidlink">twisted.protocols.basic.IntNStringReceiver</strong>:
+      <em class="summary">Generic class for length prefixed protocols.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.protocols.basic.Int32StringReceiver</strong>:
+      <em class="summary">A receiver for int32-prefixed strings.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.slave.protocol.RCEInternalProtocol-class.html">rce.slave.protocol.RCEInternalProtocol</a></strong>:
+      <em class="summary">Protocol which is used to connect Endpoints such that Interfaces in
+        different Endpoint are able to communicate.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">object</strong>:
+      <em class="summary">The most base type</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.monitor.common.ArgumentMixin-class.html">rce.monitor.common.ArgumentMixin</a></strong>:
+      <em class="summary">Class which can be used as a mixin to add similar capabilities to 
+        dynamically modify arguments as for a ROS launch file.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.monitor.node.Node-class.html">rce.monitor.node.Node</a></strong>:
+      <em class="summary">Representation of a ROS Node (process) inside an environment.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.parameter.Parameter-class.html">rce.monitor.parameter.Parameter</a></strong>:
+      <em class="summary">Representation of a Parameter inside an environment.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">exceptions.BaseException</strong>:
+      <em class="summary">Common base class for all exceptions</em>
+    <ul>
+    <li> <strong class="uidlink">exceptions.Exception</strong>:
+      <em class="summary">Common base class for all non-exit exceptions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.AccessDenied-class.html">rce.util.sysinfo.AccessDenied</a></strong>:
+      <em class="summary">Exception raised when permission to perform an action is denied.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.assembler.AssemblerError-class.html">rce.comm.assembler.AssemblerError</a></strong>:
+      <em class="summary">Exception is raised when an error in the message assembler occurs.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.connection.ConnectionError-class.html">rce.client.connection.ConnectionError</a></strong>:
+      <em class="summary">Error is raised when there is no connection or the connection is 
+        not valid.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.client.ConnectionError-class.html">rce.comm.client.ConnectionError</a></strong>:
+      <em class="summary">Error is raised when there is no connection or the connection is 
+        not valid.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.container.ContainerError-class.html">rce.util.container.ContainerError</a></strong>:
+      <em class="summary">Exception is raised when a LXC command fails.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.machine.ContainerProcessError-class.html">rce.core.machine.ContainerProcessError</a></strong>:
+      <em class="summary">Exception is raised if there is no free container process.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.robot.ConversionError-class.html">rce.monitor.interface.robot.ConversionError</a></strong>:
+      <em class="summary">Exception is raised in case a ROS message could not be converted.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.cred.CredentialError-class.html">rce.util.cred.CredentialError</a></strong>:
+      <em class="summary">Exception is raised if the CredChecker encountered an error.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.error.DeadConnection-class.html">rce.comm.error.DeadConnection</a></strong>:
+      <em class="summary">Exception is used to signal to the client protocol that the 
+        connection is dead.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.common.EnvironmentVariableNotFound-class.html">rce.monitor.common.EnvironmentVariableNotFound</a></strong>:
+      <em class="summary">Exception is raised in case the requested environment variable was 
+        not found.</em>
+    </li>
+    <li> <strong class="uidlink">twisted.spread.pb.Error</strong>:
+      <em class="summary">This error can be raised to generate known error conditions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.error.AlreadyDead-class.html">rce.core.error.AlreadyDead</a></strong>:
+      <em class="summary">Exception is raised when a object is called which is already dead.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.endpoint.ConnectionError-class.html">rce.slave.endpoint.ConnectionError</a></strong>:
+      <em class="summary">Error is raised when the connection failed unexpectedly.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.ConnectionError-class.html">rce.core.network.ConnectionError</a></strong>:
+      <em class="summary">Error is raised when the connection failed unexpectedly.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.name.IllegalName-class.html">rce.util.name.IllegalName</a></strong>:
+      <em class="summary">Exception is raised in case the name is not legal.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.error.InternalError-class.html">rce.util.error.InternalError</a></strong>:
+      <em class="summary">This class is used to signal an internal error.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.InvalidKey-class.html">rce.core.network.InvalidKey</a></strong>:
+      <em class="summary">this class is used to signal an invalid key during the 
+        initialization of the ROS message connections.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.error.InvalidRequest-class.html">rce.core.error.InvalidRequest</a></strong>:
+      <em class="summary">Exception is raised if the request can not be processed.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.interface.InvalidResoureName-class.html">rce.slave.interface.InvalidResoureName</a></strong>:
+      <em class="summary">Exception is raised in case the interface resource name is invalid.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.error.MaxNumberExceeded-class.html">rce.core.error.MaxNumberExceeded</a></strong>:
+      <em class="summary">Indicates that a quantity has exceeded an upper limit.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.robot.ForwardingError-class.html">rce.robot.ForwardingError</a></strong>:
+      <em class="summary">Exception is raised if the call could not be forwarded.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.interface.InterfaceError-class.html">rce.util.interface.InterfaceError</a></strong>:
+      <em class="summary">This error occurs when zope throws an error during an object or a 
+        class verification.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.rosproxy.InvalidRequest-class.html">rce.rosproxy.InvalidRequest</a></strong>:
+      <em class="summary">Exception is raised in case the HTTP request could not be 
+        processed.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.error.InvalidRequest-class.html">rce.comm.error.InvalidRequest</a></strong>:
+      <em class="summary">Exception is used to signal an invalid request.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.NoSuchProcess-class.html">rce.util.sysinfo.NoSuchProcess</a></strong>:
+      <em class="summary">Exception raised when a process with a certain PID doesn't or no 
+        longer exists (zombie).</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.loader.ResourceNotFound-class.html">rce.util.loader.ResourceNotFound</a></strong>:
+      <em class="summary">Exception is raised by the Loader when a resource can not be found.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.machine.RobotProcessError-class.html">rce.core.machine.RobotProcessError</a></strong>:
+      <em class="summary">Exception is raised if there is no free robot process.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.monitor.interface.robot.ServiceError-class.html">rce.monitor.interface.robot.ServiceError</a></strong>:
+      <em class="summary">Exception is raised in case a response message was received, but 
+        not corresponding request is available.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface.TimeoutExceeded-class.html">rce.client.interface.TimeoutExceeded</a></strong>:
+      <em class="summary">Exception is raised when the timeout has passed without getting the
+        reference of the Event.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.server._VersionError-class.html" onclick="show_private();">rce.comm.server._VersionError</a></strong>:
+      <em class="summary">Error is raised during Master-Robot authentication in case the used
+        client version is insufficient.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.Connection-class.html">rce.core.network.Connection</a></strong>:
+      <em class="summary">Representation of a connection between two interfaces.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.robot.Connection-class.html">rce.robot.Connection</a></strong>:
+      <em class="summary">Representation of a connection to a robot client.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.container.Container-class.html">rce.util.container.Container</a></strong>:
+      <em class="summary">Class representing a single container.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.converter.Converter-class.html">rce.util.converter.Converter</a></strong>:
+      <em class="summary">This class is used to provide a possibility to convert a ROS 
+        message to a JSON compatible format and back.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.machine.Distributor-class.html">rce.core.machine.Distributor</a></strong>:
+      <em class="summary">The Distributor is responsible for selecting the appropriate robot 
+        process to create a WebSocket connection.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.EndpointConnection-class.html">rce.core.network.EndpointConnection</a></strong>:
+      <em class="summary">Representation of a connection between two endpoints, where the two
+        endpoints are not the same.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.ros.Environment-class.html">rce.client.ros.Environment</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.converters.image.ImageConverter-class.html">rce.util.converters.image.ImageConverter</a></strong>:
+      <em class="summary">Convert images from PNG file format to ROS sensor message format 
+        and back.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.InterfaceConnection-class.html">rce.core.network.InterfaceConnection</a></strong>:
+      <em class="summary">Representation of a connection between an interface and a protocol,
+        where both blong to the same endpoint.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.machine.LoadBalancer-class.html">rce.core.machine.LoadBalancer</a></strong>:
+      <em class="summary">The Load Balancer is responsible for selecting the appropriate 
+        container to launch a new container.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.loader.Loader-class.html">rce.util.loader.Loader</a></strong>:
+      <em class="summary">The Loader should be used to dynamically find and load message and 
+        service classes.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.machine.Machine-class.html">rce.core.machine.Machine</a></strong>:
+      <em class="summary">Representation of a machine in which containers can be created.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.assembler.MessageAssembler-class.html">rce.comm.assembler.MessageAssembler</a></strong>:
+      <em class="summary">Class which is used to store incomplete messages for a certain time
+        and which is used to assemble them when possible.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.Network-class.html">rce.core.network.Network</a></strong>:
+      <em class="summary">The network is responsible for keeping track of all endpoints, 
+        namespaces, and interfaces in the cloud engine.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.Process-class.html">rce.util.sysinfo.Process</a></strong>:
+      <em class="summary">Linux process implementation.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.base.Proxy-class.html">rce.core.base.Proxy</a></strong>:
+      <em class="summary">The Proxy should be used to represent an object from a slave 
+        process in the Master.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.container.Container-class.html">rce.core.container.Container</a></strong>:
+      <em class="summary">Representation of an LXC container.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.Endpoint-class.html">rce.core.network.Endpoint</a></strong>:
+      <em class="summary">Representation of an endpoint, which is a process which is part of 
+        the cloud engine internal communication.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.environment.EnvironmentEndpoint-class.html">rce.core.environment.EnvironmentEndpoint</a></strong>:
+      <em class="summary">Representation of an endpoint which is a process that lives inside 
+        a container and is part of the cloud engine internal communication.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.Interface-class.html">rce.core.network.Interface</a></strong>:
+      <em class="summary">Representation of an interface, which is part of the cloud engine 
+        internal communication.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.Namespace-class.html">rce.core.network.Namespace</a></strong>:
+      <em class="summary">Representation of a namespace, which is part of the cloud engine 
+        internal communication.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.environment.Environment-class.html">rce.core.environment.Environment</a></strong>:
+      <em class="summary">Representation of a namespace which has a ROS environment assigned 
+        and is part of the cloud engine internal communication.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.environment.Node-class.html">rce.core.environment.Node</a></strong>:
+      <em class="summary">Representation of a node (ROS process) inside a ROS environment.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.environment.Parameter-class.html">rce.core.environment.Parameter</a></strong>:
+      <em class="summary">Representation of a parameter inside a ROS environment.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.network.Protocol-class.html">rce.core.network.Protocol</a></strong>:
+      <em class="summary">Representation of a protocol, which is part of the cloud engine 
+        internal communication.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.client.RCE-class.html">rce.comm.client.RCE</a></strong>:
+      <em class="summary">Class represents a connection to the RoboEarth Cloud Engine.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.cred.RCECredChecker-class.html">rce.util.cred.RCECredChecker</a></strong>:
+      <em class="summary">The RCE file-based, text-based username/password database.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.cred.RCEInternalChecker-class.html">rce.util.cred.RCEInternalChecker</a></strong>:
+      <em class="summary">RCE Internal Auth system</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.rosproxy.ROSProxy-class.html">rce.rosproxy.ROSProxy</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.master.RoboEarthCloudEngine-class.html">rce.master.RoboEarthCloudEngine</a></strong>:
+      <em class="summary">Realm for the twisted cred system.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.robot.RobotView-class.html">rce.robot.RobotView</a></strong>:
+      <em class="summary">Wrapper for a RemoteReference of type RobotView.</em>
+    </li>
+    <li> <strong class="uidlink">twisted.conch.insults.insults.TerminalProtocol</strong>
+    <ul>
+    <li> <strong class="uidlink">twisted.conch.recvline.RecvLine</strong>:
+      <em class="summary"><code class="link">TerminalProtocol</code> which adds line editing 
+        features.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.conch.recvline.HistoricRecvLine</strong>:
+      <em class="summary"><code class="link">TerminalProtocol</code> which adds both basic 
+        line-editing features and input history.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.console.console.ConsoleClient-class.html">rce.console.console.ConsoleClient</a></strong>:
+      <em class="summary">The class creates the terminal and manages connections with Master 
+        and ROSAPI servers on specific containers</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.slave.interface.Types-class.html">rce.slave.interface.Types</a></strong>:
+      <em class="summary">Available Interface types.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.master.UserRealm-class.html">rce.master.UserRealm</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface._Base-class.html" onclick="show_private();">rce.client.interface._Base</a></strong>:
+      <em class="summary">Abstract base for all Interface classes.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.interface._CB_Base-class.html" onclick="show_private();">rce.client.interface._CB_Base</a></strong>:
+      <em class="summary">Abstract base for all Interface classes which have to be registered
+        with the connection.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.interface._ServiceClient-class.html" onclick="show_private();">rce.client.interface._ServiceClient</a></strong>:
+      <em class="summary">Abstract implementation of a Service Client Interface.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.interface.ROSServiceClient-class.html">rce.client.interface.ROSServiceClient</a></strong>:
+      <em class="summary">Representation of a Service Client Interface using ROS.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface.ServiceClient-class.html">rce.client.interface.ServiceClient</a></strong>:
+      <em class="summary">Representation of a Service Client Interface.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface._ServiceProvider-class.html" onclick="show_private();">rce.client.interface._ServiceProvider</a></strong>:
+      <em class="summary">Abstract implementation of a Service Provider Interface.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.interface.ROSServiceProvider-class.html">rce.client.interface.ROSServiceProvider</a></strong>:
+      <em class="summary">Representation of a Service Provider Interface using ROS.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface.ServiceProvider-class.html">rce.client.interface.ServiceProvider</a></strong>:
+      <em class="summary">Representation of a Service Provider Interface.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface._Subscriber-class.html" onclick="show_private();">rce.client.interface._Subscriber</a></strong>:
+      <em class="summary">Abstract implementation of a Subscriber Interface.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.interface.ROSSubscriber-class.html">rce.client.interface.ROSSubscriber</a></strong>:
+      <em class="summary">Representation of a Subscriber Interface using ROS.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface.Subscriber-class.html">rce.client.interface.Subscriber</a></strong>:
+      <em class="summary">Representation of a Subscriber Interface.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface._Publisher-class.html" onclick="show_private();">rce.client.interface._Publisher</a></strong>:
+      <em class="summary">Abstract implementation of a Publisher Interface.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.interface.Publisher-class.html">rce.client.interface.Publisher</a></strong>:
+      <em class="summary">Representation of a Publisher Interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface.ROSPublisher-class.html">rce.client.interface.ROSPublisher</a></strong>:
+      <em class="summary">Representation of a Publisher Interface using ROS.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.connection._Connection-class.html" onclick="show_private();">rce.client.connection._Connection</a></strong>:
+      <em class="summary">Abstract implementation of a Connection.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.client.connection.Connection-class.html">rce.client.connection.Connection</a></strong>:
+      <em class="summary">Connection which should be used for JSON based messages.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.connection.ROSConnection-class.html">rce.client.connection.ROSConnection</a></strong>:
+      <em class="summary">Connection which should be used for ROS based messages.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.converter._DurationConverter-class.html" onclick="show_private();">rce.util.converter._DurationConverter</a></strong>:
+      <em class="summary">Convert ROS Duration type to JSON style and back.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.client.interface._EventRef-class.html" onclick="show_private();">rce.client.interface._EventRef</a></strong>:
+      <em class="summary">Helper class which acts as a threading.Event, but which can be used
+        to pass a reference together which signaling the event.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.comm.assembler._IncompleteMsg-class.html" onclick="show_private();">rce.comm.assembler._IncompleteMsg</a></strong>:
+      <em class="summary">Class which represents an incomplete class.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.settings._RCESettingsParser-class.html" onclick="show_private();">rce.util.settings._RCESettingsParser</a></strong>:
+      <em class="summary">Configuration parser used for the cloud engine settings.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.settings._Settings-class.html" onclick="show_private();">rce.util.settings._Settings</a></strong>:
+      <em class="summary">Class contains all settings variables.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.converter._TimeConverter-class.html" onclick="show_private();">rce.util.converter._TimeConverter</a></strong>:
+      <em class="summary">Convert ROS Time type to JSON style and back.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.wrapper._Wrapper-class.html" onclick="show_private();">rce.core.wrapper._Wrapper</a></strong>:
+      <em class="summary">Base class for Wrapper classes, which are used to store additional 
+        information (of interest to the User) with the cloud engine 
+        representation of the objects.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.core.wrapper.Container-class.html">rce.core.wrapper.Container</a></strong>:
+      <em class="summary">Wrapper for a Container object.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.wrapper.Interface-class.html">rce.core.wrapper.Interface</a></strong>:
+      <em class="summary">Wrapper for a Container object.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.core.wrapper.Robot-class.html">rce.core.wrapper.Robot</a></strong>:
+      <em class="summary">Wrapper for a Robot object.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">dict</strong>:
+      <em class="summary">dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+    (key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+    d = {}
+    for k, v in iterable:
+        d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+    in the keyword argument list.</em>
+    <ul>
+    <li> <strong class="uidlink">twisted.python.usage.Options</strong>:
+      <em class="summary">An option list parser class</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.console.console.CustomOptions-class.html">rce.console.console.CustomOptions</a></strong>:
+      <em class="summary">Custom Class to override functionality of usage.Options</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.console.console.ConnectionOptions-class.html">rce.console.console.ConnectionOptions</a></strong>:
+      <em class="summary">Options for connection command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.ConnectionSubOptions-class.html">rce.console.console.ConnectionSubOptions</a></strong>:
+      <em class="summary">Sub options for connection subcommands.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.ContainerOptions-class.html">rce.console.console.ContainerOptions</a></strong>:
+      <em class="summary">Options for container command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.InterfaceAddOptions-class.html">rce.console.console.InterfaceAddOptions</a></strong>:
+      <em class="summary">Parameters for adding interfaces.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.InterfaceOptions-class.html">rce.console.console.InterfaceOptions</a></strong>:
+      <em class="summary">Options for interface command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.InterfaceRemoveOptions-class.html">rce.console.console.InterfaceRemoveOptions</a></strong>:
+      <em class="summary">Parameters for removing interfaces.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.MachineOptions-class.html">rce.console.console.MachineOptions</a></strong>:
+      <em class="summary">Options for machine command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.NodeOptions-class.html">rce.console.console.NodeOptions</a></strong>:
+      <em class="summary">Options for node command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.NodeStartOptions-class.html">rce.console.console.NodeStartOptions</a></strong>:
+      <em class="summary">Parameters for node start.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.NodeStopOptions-class.html">rce.console.console.NodeStopOptions</a></strong>:
+      <em class="summary">Parameters for node stop.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.ParameterAddOptions-class.html">rce.console.console.ParameterAddOptions</a></strong>:
+      <em class="summary">Parameters for adding ROS parameters.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.ParameterOptions-class.html">rce.console.console.ParameterOptions</a></strong>:
+      <em class="summary">Options for parameter command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.ParameterRemoveOptions-class.html">rce.console.console.ParameterRemoveOptions</a></strong>:
+      <em class="summary">Parameters for removing ROS parameters.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.RobotOptions-class.html">rce.console.console.RobotOptions</a></strong>:
+      <em class="summary">Options for robot command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.UserAddOptions-class.html">rce.console.console.UserAddOptions</a></strong>:
+      <em class="summary">Parameters for user add.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.UserChangePasswordOptions-class.html">rce.console.console.UserChangePasswordOptions</a></strong>:
+      <em class="summary">Parameters for changing password by a non-admin.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.UserOptions-class.html">rce.console.console.UserOptions</a></strong>:
+      <em class="summary">Options for user command.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.UserRemoveOptions-class.html">rce.console.console.UserRemoveOptions</a></strong>:
+      <em class="summary">Parameters for user remove.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.console.console.UserUpdateOptions-class.html">rce.console.console.UserUpdateOptions</a></strong>:
+      <em class="summary">Parameters for user update.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">int</strong>:
+      <em class="summary">int(x=0) -&gt; int or long int(x, base=10) -&gt; int or long</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.constant-class.html">rce.util.sysinfo.constant</a></strong>:
+      <em class="summary">A constant type; overrides base int to provide a useful name on 
+        str().</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">tuple</strong>:
+      <em class="summary">tuple() -&gt; empty tuple tuple(iterable) -&gt; tuple initialized 
+        from iterable's items</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="rce.util.cred.Userinfo-class.html">rce.util.cred.Userinfo</a></strong>:
+      <em class="summary">Userinfo(password, mode, groups)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.Process._nt_ext_mem-class.html" onclick="show_private();">rce.util.sysinfo.Process._nt_ext_mem</a></strong>:
+      <em class="summary">meminfo(rss, vms, shared, text, lib, data, dirty)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_connection-class.html">rce.util.sysinfo.nt_connection</a></strong>:
+      <em class="summary">connection(fd, family, type, local_address, remote_address, status)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_cputimes-class.html">rce.util.sysinfo.nt_cputimes</a></strong>:
+      <em class="summary">cputimes(user, system)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_ctxsw-class.html">rce.util.sysinfo.nt_ctxsw</a></strong>:
+      <em class="summary">amount(voluntary, involuntary)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_disk_iostat-class.html">rce.util.sysinfo.nt_disk_iostat</a></strong>:
+      <em class="summary">iostat(read_count, write_count, read_bytes, write_bytes, read_time,
+        write_time)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_gids-class.html">rce.util.sysinfo.nt_gids</a></strong>:
+      <em class="summary">group(real, effective, saved)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_io-class.html">rce.util.sysinfo.nt_io</a></strong>:
+      <em class="summary">io(read_count, write_count, read_bytes, write_bytes)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_meminfo-class.html">rce.util.sysinfo.nt_meminfo</a></strong>:
+      <em class="summary">meminfo(rss, vms)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.Process.nt_mmap_ext-class.html">rce.util.sysinfo.Process.nt_mmap_ext</a></strong>:
+      <em class="summary">mmap(addr, perms, path, rss, size, pss, shared_clean, shared_dirty,
+        private_clean, private_dirty, referenced, anonymous, swap)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.Process.nt_mmap_grouped-class.html">rce.util.sysinfo.Process.nt_mmap_grouped</a></strong>:
+      <em class="summary">mmap(path, rss, size, pss, shared_clean, shared_dirty, 
+        private_clean, private_dirty, referenced, anonymous, swap)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_net_iostat-class.html">rce.util.sysinfo.nt_net_iostat</a></strong>:
+      <em class="summary">iostat(bytes_sent, bytes_recv, packets_sent, packets_recv, errin, 
+        errout, dropin, dropout)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_openfile-class.html">rce.util.sysinfo.nt_openfile</a></strong>:
+      <em class="summary">openfile(path, fd)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_sys_cputimes-class.html">rce.util.sysinfo.nt_sys_cputimes</a></strong>:
+      <em class="summary">cputimes(user, nice, system, idle, iowait, irq, softirq)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_thread-class.html">rce.util.sysinfo.nt_thread</a></strong>:
+      <em class="summary">thread(id, user_time, system_time)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_uids-class.html">rce.util.sysinfo.nt_uids</a></strong>:
+      <em class="summary">user(real, effective, saved)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="rce.util.sysinfo.nt_virtmem_info-class.html">rce.util.sysinfo.nt_virtmem_info</a></strong>:
+      <em class="summary">vmem(total, available, percent, used, free, active, inactive, 
+        buffers, cached)</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+</ul>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Trees&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:53:58 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

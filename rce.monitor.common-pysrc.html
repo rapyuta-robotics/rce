@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.monitor.common</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.monitor-module.html">Package&nbsp;monitor</a> ::
+        Module&nbsp;common
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.monitor.common-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.monitor.common-module.html">Module rce.monitor.common</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-core/rce/monitor/common.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-comment"># Python specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">re</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"> </tt>
+<a name="EnvironmentVariableNotFound"></a><div id="EnvironmentVariableNotFound-def"><a name="L38"></a><tt class="py-lineno">38</tt> <a class="py-toggle" href="#" id="EnvironmentVariableNotFound-toggle" onclick="return toggle('EnvironmentVariableNotFound');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.common.EnvironmentVariableNotFound-class.html">EnvironmentVariableNotFound</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="EnvironmentVariableNotFound-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="EnvironmentVariableNotFound-expanded"><a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">    <tt class="py-docstring">""" Exception is raised in case the requested environment variable was not</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring">        found.</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"> </tt>
+<a name="ArgumentMixin"></a><div id="ArgumentMixin-def"><a name="L44"></a><tt class="py-lineno">44</tt> <a class="py-toggle" href="#" id="ArgumentMixin-toggle" onclick="return toggle('ArgumentMixin');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.common.ArgumentMixin-class.html">ArgumentMixin</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ArgumentMixin-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ArgumentMixin-expanded"><a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which can be used as a mixin to add similar capabilities to</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-docstring">        dynamically modify arguments as for a ROS launch file.</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">    <tt id="link-0" class="py-name" targets="Variable rce.monitor.common.ArgumentMixin._RE_FIND=rce.monitor.common.ArgumentMixin-class.html#_RE_FIND"><a title="rce.monitor.common.ArgumentMixin._RE_FIND" class="py-name" href="#" onclick="return doclink('link-0', '_RE_FIND', 'link-0');">_RE_FIND</a></tt> <tt class="py-op">=</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">compile</tt><tt class="py-op">(</tt><tt class="py-string">'\\$\\( *find +(?P&lt;pkg&gt;[a-zA-Z][a-zA-z0-9_]*) *\\)'</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">    <tt id="link-1" class="py-name" targets="Variable rce.monitor.common.ArgumentMixin._RE_ENV=rce.monitor.common.ArgumentMixin-class.html#_RE_ENV"><a title="rce.monitor.common.ArgumentMixin._RE_ENV" class="py-name" href="#" onclick="return doclink('link-1', '_RE_ENV', 'link-1');">_RE_ENV</a></tt> <tt class="py-op">=</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">compile</tt><tt class="py-op">(</tt><tt class="py-string">'\\$\\( *env +(?P&lt;var&gt;[a-zA-Z][a-zA-z0-9_]*) *\\)'</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"> </tt>
+<a name="ArgumentMixin.__init__"></a><div id="ArgumentMixin.__init__-def"><a name="L51"></a><tt class="py-lineno">51</tt> <a class="py-toggle" href="#" id="ArgumentMixin.__init__-toggle" onclick="return toggle('ArgumentMixin.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.common.ArgumentMixin-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">loader</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kw</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ArgumentMixin.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ArgumentMixin.__init__-expanded"><a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-docstring">""" Initialize the argument mixin. It needs the manager instance as</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt class="py-docstring">            fist argument.</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-docstring">            @param loader:      Loader which can be used to import ROS</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-docstring">                                resources.</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-docstring">            @type  loader:      rce.util.loader.Loader</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_loader</tt> <tt class="py-op">=</tt> <tt id="link-2" class="py-name" targets="Variable rce.client.connection.ROSConnection.loader=rce.client.connection.ROSConnection-class.html#loader,Variable rce.environment.Environment.loader=rce.environment.Environment-class.html#loader,Method rce.robot.Robot.loader()=rce.robot.Robot-class.html#loader,Method rce.robot.RobotClient.loader()=rce.robot.RobotClient-class.html#loader,Module rce.util.loader=rce.util.loader-module.html"><a title="rce.client.connection.ROSConnection.loader
+rce.environment.Environment.loader
+rce.robot.Robot.loader
+rce.robot.RobotClient.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-2', 'loader', 'link-2');">loader</a></tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt>
+<a name="ArgumentMixin._replaceFind"></a><div id="ArgumentMixin._replaceFind-def"><a name="L61"></a><tt class="py-lineno">61</tt> <a class="py-toggle" href="#" id="ArgumentMixin._replaceFind-toggle" onclick="return toggle('ArgumentMixin._replaceFind');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.common.ArgumentMixin-class.html#_replaceFind">_replaceFind</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">match</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ArgumentMixin._replaceFind-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ArgumentMixin._replaceFind-expanded"><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method to replace found matches of _RE_FIND regular</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"><tt class="py-docstring">            expression with corresponding package path.</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">        <tt id="link-3" class="py-name" targets="Variable rce.util.sysinfo.Process.nt_mmap_ext.path=rce.util.sysinfo.Process.nt_mmap_ext-class.html#path,Variable rce.util.sysinfo.Process.nt_mmap_grouped.path=rce.util.sysinfo.Process.nt_mmap_grouped-class.html#path,Variable rce.util.sysinfo.nt_openfile.path=rce.util.sysinfo.nt_openfile-class.html#path"><a title="rce.util.sysinfo.Process.nt_mmap_ext.path
+rce.util.sysinfo.Process.nt_mmap_grouped.path
+rce.util.sysinfo.nt_openfile.path" class="py-name" href="#" onclick="return doclink('link-3', 'path', 'link-3');">path</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_loader</tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Method rce.util.loader.Loader.findPkgPath()=rce.util.loader.Loader-class.html#findPkgPath"><a title="rce.util.loader.Loader.findPkgPath" class="py-name" href="#" onclick="return doclink('link-4', 'findPkgPath', 'link-4');">findPkgPath</a></tt><tt class="py-op">(</tt><tt class="py-name">match</tt><tt class="py-op">.</tt><tt class="py-name">group</tt><tt class="py-op">(</tt><tt class="py-string">'pkg'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'"{0}"'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-5" class="py-name"><a title="rce.util.sysinfo.Process.nt_mmap_ext.path
+rce.util.sysinfo.Process.nt_mmap_grouped.path
+rce.util.sysinfo.nt_openfile.path" class="py-name" href="#" onclick="return doclink('link-5', 'path', 'link-3');">path</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">if</tt> <tt class="py-string">' '</tt> <tt class="py-keyword">in</tt> <tt id="link-6" class="py-name"><a title="rce.util.sysinfo.Process.nt_mmap_ext.path
+rce.util.sysinfo.Process.nt_mmap_grouped.path
+rce.util.sysinfo.nt_openfile.path" class="py-name" href="#" onclick="return doclink('link-6', 'path', 'link-3');">path</a></tt> <tt class="py-keyword">else</tt> <tt id="link-7" class="py-name"><a title="rce.util.sysinfo.Process.nt_mmap_ext.path
+rce.util.sysinfo.Process.nt_mmap_grouped.path
+rce.util.sysinfo.nt_openfile.path" class="py-name" href="#" onclick="return doclink('link-7', 'path', 'link-3');">path</a></tt> </tt>
+</div><a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line"> </tt>
+<a name="ArgumentMixin._replaceEnv"></a><div id="ArgumentMixin._replaceEnv-def"><a name="L68"></a><tt class="py-lineno">68</tt> <a class="py-toggle" href="#" id="ArgumentMixin._replaceEnv-toggle" onclick="return toggle('ArgumentMixin._replaceEnv');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.common.ArgumentMixin-class.html#_replaceEnv">_replaceEnv</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">match</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ArgumentMixin._replaceEnv-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ArgumentMixin._replaceEnv-expanded"><a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method to replace found matches of _RE_ENV regular</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line"><tt class="py-docstring">            expression with corresponding environment variable.</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">        <tt class="py-name">var</tt> <tt class="py-op">=</tt> <tt class="py-name">match</tt><tt class="py-op">.</tt><tt class="py-name">group</tt><tt class="py-op">(</tt><tt class="py-string">'var'</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">environ</tt><tt class="py-op">[</tt><tt class="py-name">var</tt><tt class="py-op">]</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-8" class="py-name" targets="Class rce.monitor.common.EnvironmentVariableNotFound=rce.monitor.common.EnvironmentVariableNotFound-class.html"><a title="rce.monitor.common.EnvironmentVariableNotFound" class="py-name" href="#" onclick="return doclink('link-8', 'EnvironmentVariableNotFound', 'link-8');">EnvironmentVariableNotFound</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not find environment '</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">                                              <tt class="py-string">'variable: {0}'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">var</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"> </tt>
+<a name="ArgumentMixin.processArgument"></a><div id="ArgumentMixin.processArgument-def"><a name="L80"></a><tt class="py-lineno">80</tt> <a class="py-toggle" href="#" id="ArgumentMixin.processArgument-toggle" onclick="return toggle('ArgumentMixin.processArgument');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.common.ArgumentMixin-class.html#processArgument">processArgument</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ArgumentMixin.processArgument-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ArgumentMixin.processArgument-expanded"><a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">        <tt class="py-docstring">""" Run the replacement methods over the argument if it is a string.</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line"><tt class="py-docstring">            @param value:       Value which should be modified if necessary.</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            Value which should be used instead of the given</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line"><tt class="py-docstring">                                value.</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt class="py-name">basestring</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+<a name="L90"></a><tt class="py-lineno">90</tt>  <tt class="py-line"> </tt>
+<a name="L91"></a><tt class="py-lineno">91</tt>  <tt class="py-line">        <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="rce.monitor.common.ArgumentMixin._RE_FIND" class="py-name" href="#" onclick="return doclink('link-9', '_RE_FIND', 'link-0');">_RE_FIND</a></tt><tt class="py-op">.</tt><tt class="py-name">subn</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method rce.monitor.common.ArgumentMixin._replaceFind()=rce.monitor.common.ArgumentMixin-class.html#_replaceFind"><a title="rce.monitor.common.ArgumentMixin._replaceFind" class="py-name" href="#" onclick="return doclink('link-10', '_replaceFind', 'link-10');">_replaceFind</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line">        <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="rce.monitor.common.ArgumentMixin._RE_ENV" class="py-name" href="#" onclick="return doclink('link-11', '_RE_ENV', 'link-1');">_RE_ENV</a></tt><tt class="py-op">.</tt><tt class="py-name">subn</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method rce.monitor.common.ArgumentMixin._replaceEnv()=rce.monitor.common.ArgumentMixin-class.html#_replaceEnv"><a title="rce.monitor.common.ArgumentMixin._replaceEnv" class="py-name" href="#" onclick="return doclink('link-12', '_replaceEnv', 'link-12');">_replaceEnv</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L93"></a><tt class="py-lineno">93</tt>  <tt class="py-line"> </tt>
+<a name="L94"></a><tt class="py-lineno">94</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+</div></div><a name="L95"></a><tt class="py-lineno">95</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:10 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

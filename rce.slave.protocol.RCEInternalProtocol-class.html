@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.slave.protocol.RCEInternalProtocol</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.slave-module.html">Package&nbsp;slave</a> ::
+        <a href="rce.slave.protocol-module.html">Module&nbsp;protocol</a> ::
+        Class&nbsp;RCEInternalProtocol
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.slave.protocol.RCEInternalProtocol-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RCEInternalProtocol</h1><p class="nomargin-top"><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_slav_10" name="uml_class_diagram_for_rce_slav_10">
+<area shape="rect" id="node579" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="119,73,288,92"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="107,41,299,98"/>
+<area shape="rect" id="node578" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="103,211,304,229"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="91,178,315,235"/>
+<area shape="rect" id="node574" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="399,31,621,49"/>
+<area shape="rect" id="node574" href="javascript:void(0);" title="hash(x)" alt="" coords="399,49,621,68"/>
+<area shape="rect" id="node574" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="399,71,621,89"/>
+<area shape="rect" id="node574" href="javascript:void(0);" title="Called when a connection is made." alt="" coords="399,89,621,108"/>
+<area shape="rect" id="node574" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="399,108,621,127"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="387,6,632,133"/>
+<area shape="rect" id="node573" href="javascript:void(0);" title="twisted.internet.protocol.Protocol.__implemented__" alt="" coords="413,187,607,205"/>
+<area shape="rect" id="node573" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="413,208,607,227"/>
+<area shape="rect" id="node573" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="413,227,607,245"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="401,162,617,251"/>
+<area shape="rect" id="node577" href="javascript:void(0);" title="hash(x)" alt="" coords="29,327,377,345"/>
+<area shape="rect" id="node577" href="javascript:void(0);" title="(internal)" alt="" coords="29,348,377,367"/>
+<area shape="rect" id="node577" href="javascript:void(0);" title="A remote message has been received." alt="" coords="29,367,377,385"/>
+<area shape="rect" id="node7" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="17,302,388,391"/>
+<area shape="rect" id="node572" href="javascript:void(0);" title="Emulates the to&#45;be&#45;deprecated IntNStringReceiver.recvd attribute." alt="" coords="444,313,695,332"/>
+<area shape="rect" id="node572" href="javascript:void(0);" title="Override this for notification when each complete string is received." alt="" coords="444,332,695,351"/>
+<area shape="rect" id="node572" href="javascript:void(0);" title="Callback invoked when a length prefix greater than MAX_LENGTH is received." alt="" coords="444,351,695,369"/>
+<area shape="rect" id="node572" href="javascript:void(0);" title="Convert int prefixed strings into calls to stringReceived." alt="" coords="444,369,695,388"/>
+<area shape="rect" id="node572" href="javascript:void(0);" title="Send a prefixed string to the other end of the connection." alt="" coords="444,388,695,407"/>
+<area shape="rect" id="node10" href="javascript:void(0);" title="Generic class for length prefixed protocols." alt="" coords="432,281,707,413"/>
+<area shape="rect" id="node571" href="javascript:void(0);" title="format used for struct packing/unpacking." alt="" coords="441,467,696,485"/>
+<area shape="rect" id="node571" href="javascript:void(0);" title="length of the prefix, in bytes." alt="" coords="441,485,696,504"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="A receiver for int32&#45;prefixed strings." alt="" coords="429,442,707,518"/>
+<area shape="rect" id="node570" href="rce.slave.protocol.RCEInternalProtocol-class.html#MAX_LENGTH" title="rce.slave.protocol.RCEInternalProtocol.MAX_LENGTH" alt="" coords="208,572,564,591"/>
+<area shape="rect" id="node570" href="rce.slave.protocol.RCEInternalProtocol-class.html#__init__" title="Initialize the Protocol." alt="" coords="208,593,564,612"/>
+<area shape="rect" id="node570" href="rce.slave.protocol.RCEInternalProtocol-class.html#sendInit" title="Send an init message to the other side." alt="" coords="208,612,564,631"/>
+<area shape="rect" id="node570" href="rce.slave.protocol.RCEInternalProtocol-class.html#sendMessage" title="Send a message received from an Interface to the other side." alt="" coords="208,631,564,649"/>
+<area shape="rect" id="node570" href="rce.slave.protocol.RCEInternalProtocol-class.html#connectionLost" title="Method is called by the twisted framework when the connection is lost." alt="" coords="208,649,564,668"/>
+<area shape="rect" id="node570" href="rce.slave.protocol.RCEInternalProtocol-class.html#remote_destroy" title="Method should be called to destroy the connection and the protocol." alt="" coords="208,668,564,687"/>
+<area shape="rect" id="node6" href="rce.slave.protocol.RCEInternalProtocol-class.html" title="Protocol which is used to connect Endpoints such that Interfaces in different Endpoint are able to communicate." alt="" coords="196,547,575,693"/>
+<area shape="rect" id="node576" href="rce.slave.protocol._Protocol-class.html#messageReceived" title="Protocol internal method used to send a received message to the stored &#160;receivers." alt="" coords="17,465,389,484"/>
+<area shape="rect" id="node576" href="rce.slave.protocol._Protocol-class.html#registerConnection" title="Register the connection between the local Interface and the remote &#160;Interface such that the two interfaces can communicate with each other." alt="" coords="17,484,389,503"/>
+<area shape="rect" id="node576" href="rce.slave.protocol._Protocol-class.html#unregisterConnection" title="Unregister the connection between the local Interface and the remote &#160;Interface such that the two interfaces can no longer communicate with each &#160;other." alt="" coords="17,503,389,521"/>
+<area shape="rect" id="node9" href="rce.slave.protocol._Protocol-class.html" title="Abstract base class for a internal Protocol which interacts with the Endpoint, Namespace, and Interfaces in a slave process." alt="" coords="5,433,400,527"/>
+<area shape="rect" id="node575" href="javascript:void(0);" title="twisted.protocols.basic._PauseableMixin.paused" alt="" coords="659,177,897,196"/>
+<area shape="rect" id="node575" href="javascript:void(0);" title="twisted.protocols.basic._PauseableMixin.pauseProducing" alt="" coords="659,199,897,217"/>
+<area shape="rect" id="node575" href="javascript:void(0);" title="twisted.protocols.basic._PauseableMixin.resumeProducing" alt="" coords="659,217,897,236"/>
+<area shape="rect" id="node575" href="javascript:void(0);" title="twisted.protocols.basic._PauseableMixin.stopProducing" alt="" coords="659,236,897,255"/>
+<area shape="rect" id="node8" href="javascript:void(0);" title="twisted.protocols.basic._PauseableMixin" alt="" coords="647,153,908,261"/>
+</map>
+  <img src="uml_class_diagram_for_rce_slav_10.gif" alt='' usemap="#uml_class_diagram_for_rce_slav_10" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Protocol which is used to connect Endpoints such that Interfaces in 
+  different Endpoint are able to communicate.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">endpoint</span>)</span><br />
+      Initialize the Protocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#_initReceived" class="summary-sig-name" onclick="show_private();">_initReceived</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Internally used method process a complete string message as long as 
+      the connection is not yet initialized.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol._initReceived">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_initSuccessful"></a><span class="summary-sig-name">_initSuccessful</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">_</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol._initSuccessful">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_initFailed"></a><span class="summary-sig-name">_initFailed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">failure</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol._initFailed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#_messageReceived" class="summary-sig-name" onclick="show_private();">_messageReceived</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Internally used method process a complete string message after the 
+      connection has been initialized.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol._messageReceived">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#sendInit" class="summary-sig-name">sendInit</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">connID</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Send an init message to the other side.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.sendInit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#sendMessage" class="summary-sig-name">sendMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">remoteID</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Send a message received from an Interface to the other side.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.sendMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#connectionLost" class="summary-sig-name">connectionLost</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">reason</span>)</span><br />
+      Method is called by the twisted framework when the connection is 
+      lost.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.connectionLost">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.slave.protocol.RCEInternalProtocol-class.html#remote_destroy" class="summary-sig-name">remote_destroy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the connection and the protocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.remote_destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.protocols.basic.IntNStringReceiver</code></b>:
+      <code>dataReceived</code>,
+      <code>lengthLimitExceeded</code>,
+      <code>recvd</code>,
+      <code>sendString</code>,
+      <code>stringReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.Protocol</code></b>:
+      <code>__provides__</code>,
+      <code>logPrefix</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
+      <code>__providedBy__</code>,
+      <code>connectionMade</code>,
+      <code>makeConnection</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.protocols.basic._PauseableMixin</code></b>:
+      <code>pauseProducing</code>,
+      <code>resumeProducing</code>,
+      <code>stopProducing</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.protocol._Protocol-class.html" onclick="show_private();">_Protocol</a></code></b>:
+      <code><a href="rce.slave.protocol._Protocol-class.html#messageReceived">messageReceived</a></code>,
+      <code><a href="rce.slave.protocol._Protocol-class.html#registerConnection">registerConnection</a></code>,
+      <code><a href="rce.slave.protocol._Protocol-class.html#unregisterConnection">unregisterConnection</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>jellyFor</code>,
+      <code>remoteMessageReceived</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Serializable</code></b>:
+      <code>processUniqueID</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.jelly.Jellyable</code></b>:
+      <code>getStateFor</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MAX_LENGTH"></a><span class="summary-name">MAX_LENGTH</span> = <code title="1000000">1000000</code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_MSG_ID_STRUCT"></a><span class="summary-name">_MSG_ID_STRUCT</span> = <code title="struct.Struct('!B')">struct.Struct('!B')</code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_TRUE"></a><span class="summary-name">_TRUE</span> = <code title="'\x01'"><code class="variable-quote">'</code><code class="variable-string">\x01</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_FALSE"></a><span class="summary-name">_FALSE</span> = <code title="'\x00'"><code class="variable-quote">'</code><code class="variable-string">\x00</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.protocols.basic.Int32StringReceiver</code></b>:
+      <code>prefixLength</code>,
+      <code>structFormat</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.Protocol</code></b>:
+      <code>__implemented__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
+      <code>connected</code>,
+      <code>transport</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.protocols.basic._PauseableMixin</code></b>:
+      <code>paused</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
+      <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.protocols.basic.IntNStringReceiver</code></b> (private):
+      <code>_compatibilityOffset</code>,
+      <code>_unprocessed</code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">endpoint</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Protocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>endpoint</code></strong> (rce.slave.endpoint.Endpoint) - Endpoint for which this Protocol is created.</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="rce.slave.protocol._Protocol-class.html#__init__">_Protocol.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_initReceived"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_initReceived</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol._initReceived">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Internally used method process a complete string message as long as 
+  the connection is not yet initialized.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which was received.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_messageReceived"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_messageReceived</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol._messageReceived">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Internally used method process a complete string message after the 
+  connection has been initialized.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which was received.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendInit"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendInit</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">connID</span>,
+        <span class="sig-arg">key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.sendInit">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Send an init message to the other side.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>connID</code></strong> (str) - Unique ID which is used to identify the connection.</li>
+        <li><strong class="pname"><code>key</code></strong> (str) - Key which should be sent with the init message to authenticate 
+          this endpoint.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">remoteID</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.sendMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Send a message received from an Interface to the other side.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>interface</code></strong> (rce.slave.interface.Interface) - Interface which wants to send the message.</li>
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which should be sent.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (uuid.UUID) - Unique ID which can be used to find a correspondence between 
+          request / response message.</li>
+        <li><strong class="pname"><code>remoteID</code></strong> (uuid.UUID) - If the remote ID is supplied than only this Interface will 
+          receive the message, regardless of additional interfaces which 
+          might be registered.</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="rce.slave.protocol._Protocol-class.html#sendMessage">_Protocol.sendMessage</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="connectionLost"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">connectionLost</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">reason</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.connectionLost">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method is called by the twisted framework when the connection is 
+  lost.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        twisted.internet.protocol.Protocol.connectionLost
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_destroy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_destroy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.slave.protocol-pysrc.html#RCEInternalProtocol.remote_destroy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the connection and the protocol. It
+  also takes care of any circular references.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.slave.protocol._Protocol-class.html#remote_destroy">_Protocol.remote_destroy</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:07 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

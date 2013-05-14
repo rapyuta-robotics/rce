@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.network.Endpoint</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.network-module.html">Module&nbsp;network</a> ::
+        Class&nbsp;Endpoint
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.network.Endpoint-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Endpoint</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core_19" name="uml_class_diagram_for_rce_core_19">
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#callRemote" title="Make a call to the RemoteReference and return the result as a Deferred." alt="" coords="48,39,271,57"/>
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#callback" title="Register the remote reference which provides the necessary methods for this Proxy." alt="" coords="48,57,271,76"/>
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#errback" title="Register a failure object which was received during the creation of the &#160;object in the remote process." alt="" coords="48,76,271,95"/>
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#notifyOnDeath" title="Register a callback which will be called once the remote object is dead, &#160;i.e." alt="" coords="48,95,271,113"/>
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" title="Unregister a callback which would have been called once the remote object &#160;is dead." alt="" coords="48,113,271,132"/>
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#__call__" title="Return a reference to the remote object as soon as the reference is &#160;available." alt="" coords="48,132,271,151"/>
+<area shape="rect" id="node310" href="rce.core.base.Proxy-class.html#destroyExternal" title="Method to compare given remote reference with Proxy&#39;s remote reference and &#160;destroy if they are the same." alt="" coords="48,151,271,169"/>
+<area shape="rect" id="node1" href="rce.core.base.Proxy-class.html" title="The Proxy should be used to represent an object from a slave process in the Master." alt="" coords="36,6,281,175"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#__init__" title="Initialize the Endpoint." alt="" coords="17,228,301,247"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#connect" title="Tell the endpoint to connect to the given address using the authentication &#160;details matching the given connection ID." alt="" coords="17,247,301,265"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#createNamespace" title="Create a Namespace object in the endpoint." alt="" coords="17,265,301,284"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#destroy" title="Method should be called to destroy the endpoint and will take care of &#160;destroying all objects owned by this Endpoint as well as deleting all &#160;circular references." alt="" coords="17,284,301,303"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#destroyInterface" title="Method should be called to destroy the interface proxy referenced by the &#160;remote namespace." alt="" coords="17,303,301,321"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#destroyNamespace" title="Method should be called to destroy the namespace proxy referenced by the &#160;remote namespace." alt="" coords="17,321,301,340"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#destroyProtocol" title="Method should be called to destroy the protocol proxy referenced by the &#160;remote namespace." alt="" coords="17,340,301,359"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#getAddress" title="Get the address of the endpoint&#39;s internal communication server." alt="" coords="17,359,301,377"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#getInterfaceConnection" title="Get the connection between an interface and a protocol." alt="" coords="17,377,301,396"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#getLoopback" title="Get the &#39;loopback&#39; protocol, which is a special protocol that is used to &#160;connect two interfaces which are in the same endpoint." alt="" coords="17,396,301,415"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#getUID" title="Get a ID which is unique within the endpoint." alt="" coords="17,415,301,433"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="17,433,301,452"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#registerInterface" title="rce.core.network.Endpoint.registerInterface" alt="" coords="17,452,301,471"/>
+<area shape="rect" id="node309" href="rce.core.network.Endpoint-class.html#unregisterProtocol" title="rce.core.network.Endpoint.unregisterProtocol" alt="" coords="17,489,301,508"/>
+<area shape="rect" id="node2" href="rce.core.network.Endpoint-class.html" title="Representation of an endpoint, which is a process which is part of the cloud engine internal communication." alt="" coords="5,195,312,514"/>
+<area shape="rect" id="node3" href="rce.core.environment.EnvironmentEndpoint-class.html" title="Representation of an endpoint which is a process that lives inside a container and is part of the cloud engine internal communication." alt="" coords="43,534,277,573"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core_19.gif" alt='' usemap="#uml_class_diagram_for_rce_core_19" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Representation of an endpoint, which is a process which is part of the
+  cloud engine internal communication.</p>
+  <p>This class is an abstract implementation, where some methods have to 
+  be adapted.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">network</span>)</span><br />
+      Initialize the Endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#connect" class="summary-sig-name">connect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">connID</span>,
+        <span class="summary-sig-arg">addr</span>)</span><br />
+      Tell the endpoint to connect to the given address using the 
+      authentication details matching the given connection ID.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.connect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.namespace.Namespace (subclass of rce.core.base.Proxy)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#createNamespace" class="summary-sig-name">createNamespace</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Create a Namespace object in the endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.createNamespace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#destroy" class="summary-sig-name">destroy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the endpoint and will take care of
+      destroying all objects owned by this Endpoint as well as deleting all
+      circular references.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#destroyInterface" class="summary-sig-name">destroyInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteInterface</span>)</span><br />
+      Method should be called to destroy the interface proxy referenced by 
+      the remote namespace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroyInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#destroyNamespace" class="summary-sig-name">destroyNamespace</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteNamespace</span>)</span><br />
+      Method should be called to destroy the namespace proxy referenced by 
+      the remote namespace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroyNamespace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#destroyProtocol" class="summary-sig-name">destroyProtocol</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteProtocol</span>)</span><br />
+      Method should be called to destroy the protocol proxy referenced by 
+      the remote namespace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroyProtocol">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#getAddress" class="summary-sig-name">getAddress</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the address of the endpoint's internal communication server.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getAddress">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.network.InterfaceConnection</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#getInterfaceConnection" class="summary-sig-name">getInterfaceConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>,
+        <span class="summary-sig-arg">protocol</span>)</span><br />
+      Get the connection between an interface and a protocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getInterfaceConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.network.Protocol (subclass of rce.core.base.Proxy)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#getLoopback" class="summary-sig-name">getLoopback</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the 'loopback' protocol, which is a special protocol that is used
+      to connect two interfaces which are in the same endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getLoopback">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">uuid.UUID</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#getUID" class="summary-sig-name">getUID</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get a ID which is unique within the endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getUID">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#prepareConnection" class="summary-sig-name">prepareConnection</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">connID</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">auth</span>)</span><br />
+      Prepare the endpoint for the connection attempt by adding the 
+      necessary connection information to the remote process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.prepareConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="registerInterface"></a><span class="summary-sig-name">registerInterface</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.registerInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="registerNamespace"></a><span class="summary-sig-name">registerNamespace</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">namespace</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.registerNamespace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="registerProtocol"></a><span class="summary-sig-name">registerProtocol</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">protocol</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.registerProtocol">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">uuid.UUID</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.Endpoint-class.html#returnUID" class="summary-sig-name">returnUID</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uid</span>)</span><br />
+      Return a unique ID such that it could be reused again.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.returnUID">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unregisterInterface"></a><span class="summary-sig-name">unregisterInterface</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">interface</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.unregisterInterface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unregisterNamespace"></a><span class="summary-sig-name">unregisterNamespace</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">namespace</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.unregisterNamespace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unregisterProtocol"></a><span class="summary-sig-name">unregisterProtocol</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">protocol</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.unregisterProtocol">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.core.base.Proxy-class.html">base.Proxy</a></code></b>:
+      <code><a href="rce.core.base.Proxy-class.html#__call__">__call__</a></code>,
+      <code><a href="rce.core.base.Proxy-class.html#callRemote">callRemote</a></code>,
+      <code><a href="rce.core.base.Proxy-class.html#callback">callback</a></code>,
+      <code><a href="rce.core.base.Proxy-class.html#destroyExternal">destroyExternal</a></code>,
+      <code><a href="rce.core.base.Proxy-class.html#dontNotifyOnDeath">dontNotifyOnDeath</a></code>,
+      <code><a href="rce.core.base.Proxy-class.html#errback">errback</a></code>,
+      <code><a href="rce.core.base.Proxy-class.html#notifyOnDeath">notifyOnDeath</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">network</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Endpoint.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>network</code></strong> (rce.core.network.Network) - Network to which the endpoint belongs.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="connect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">connect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">connID</span>,
+        <span class="sig-arg">addr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.connect">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Tell the endpoint to connect to the given address using the 
+  authentication details matching the given connection ID. This means that 
+  the connection has to be first prepared using 'prepareConnection', before
+  the actual command can be sent. Only one side should get the 'connect' 
+  command, because the receiver will be the client and not both sides can 
+  be the client.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>connID</code></strong> (str) - Unique ID which is used to identify the connection.</li>
+        <li><strong class="pname"><code>addr</code></strong> ((str, int)) - Address to which the endpoint should connect. It consists of an 
+          IP address and a port number.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>None.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="createNamespace"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createNamespace</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.createNamespace">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a Namespace object in the endpoint.</p>
+  <dl class="fields">
+    <dt>Returns: rce.core.namespace.Namespace (subclass of rce.core.base.Proxy)</dt>
+        <dd>New namespace instance.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the endpoint and will take care of 
+  destroying all objects owned by this Endpoint as well as deleting all 
+  circular references.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.core.base.Proxy-class.html#destroy">base.Proxy.destroy</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteInterface</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroyInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the interface proxy referenced by 
+  the remote namespace.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteInterface</code></strong> (twisted.spread.pb.RemoteReference) - Reference to Interface in Remote process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyNamespace"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyNamespace</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteNamespace</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroyNamespace">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the namespace proxy referenced by 
+  the remote namespace.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteNamespace</code></strong> (twisted.spread.pb.RemoteReference) - Reference to Namespace in Remote process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyProtocol"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyProtocol</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteProtocol</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.destroyProtocol">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the protocol proxy referenced by 
+  the remote namespace.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteProtocol</code></strong> (twisted.spread.pb.RemoteReference) - Reference to Protocol in Remote process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getAddress"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getAddress</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getAddress">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the address of the endpoint's internal communication server.</p>
+  <dl class="fields">
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Address of the endpoint's internal communication server. (type: 
+          twisted.internet.address.IPv4Address)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getInterfaceConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getInterfaceConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">interface</span>,
+        <span class="sig-arg">protocol</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getInterfaceConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the connection between an interface and a protocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>interface</code></strong> (rce.core.network.Interface) - Interface which belongs to this endpoint and which is on one side
+          of the connection.</li>
+        <li><strong class="pname"><code>protocol</code></strong> (rce.core.network.Protocol) - Protocol which belongs to this endpoint and which is on one side 
+          of the connection.</li>
+    </ul></dd>
+    <dt>Returns: rce.core.network.InterfaceConnection</dt>
+        <dd>Connection between the interface and the protocol.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getLoopback"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getLoopback</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getLoopback">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the 'loopback' protocol, which is a special protocol that is used 
+  to connect two interfaces which are in the same endpoint.</p>
+  <dl class="fields">
+    <dt>Returns: rce.core.network.Protocol (subclass of rce.core.base.Proxy)</dt>
+        <dd>Loopback protocol.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getUID"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getUID</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.getUID">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get a ID which is unique within the endpoint.</p>
+  <dl class="fields">
+    <dt>Returns: uuid.UUID</dt>
+        <dd>Unique ID (within the endpoint)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="prepareConnection"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">prepareConnection</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">connID</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">auth</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.prepareConnection">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Prepare the endpoint for the connection attempt by adding the 
+  necessary connection information to the remote process. When the returned
+  Deferred fires the endpoint is ready for the connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>connID</code></strong> (str) - Unique ID which is used to identify the connection and respond 
+          with the appropriate key.</li>
+        <li><strong class="pname"><code>key</code></strong> (str) - Key which is used by the other side to authenticate the endpoint.</li>
+        <li><strong class="pname"><code>auth</code></strong> (rce.core.network._ConnectionValidator) - Authenticator which is used to validate the key from the other 
+          side.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>None. Deferred fires as soon as the endpoint is ready for the 
+          connection attempt.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="returnUID"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">returnUID</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#Endpoint.returnUID">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a unique ID such that it could be reused again.</p>
+  <dl class="fields">
+    <dt>Returns: uuid.UUID</dt>
+        <dd>Unique ID which should be returned.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:03 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,953 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.comm.server.RobotWebSocketProtocol</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.comm-module.html">Package&nbsp;comm</a> ::
+        <a href="rce.comm.server-module.html">Module&nbsp;server</a> ::
+        Class&nbsp;RobotWebSocketProtocol
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.comm.server.RobotWebSocketProtocol-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RobotWebSocketProtocol</h1><p class="nomargin-top"><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_comm_17" name="uml_class_diagram_for_rce_comm_17">
+<area shape="rect" id="node146" href="javascript:void(0);" title="WebSockets protocol spec (draft) versions supported by this implementation." alt="" coords="17,236,525,255"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="WebSocket protocol versions supported by this implementation." alt="" coords="17,255,525,273"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Mapping from protocol spec (draft) version to protocol version." alt="" coords="17,273,525,292"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Mapping from protocol version to the latest protocol spec (draft) version &#160;using that protocol version." alt="" coords="17,292,525,311"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Default WebSockets protocol spec version this implementation speaks." alt="" coords="17,311,525,329"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="By default, this implementation will not allow to speak the obsoleted &#160;Hixie&#45;76 protocol version." alt="" coords="17,329,525,348"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Protocol defined magic used during WebSocket handshake (used in Hybi&#45;drafts and final RFC6455." alt="" coords="17,348,525,367"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="For synched/chopped writes, this is the reactor reentry delay in seconds." alt="" coords="17,367,525,385"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="WebSockets text message type (UTF&#45;8 payload)." alt="" coords="17,385,525,404"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="WebSockets binary message type (arbitrary binary payload)." alt="" coords="17,404,525,423"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSED" alt="" coords="17,423,525,441"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CONNECTING" alt="" coords="17,441,525,460"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSING" alt="" coords="17,460,525,479"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Status codes allowed to send in close." alt="" coords="17,497,525,516"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when initial WebSockets handshake was completed." alt="" coords="17,519,525,537"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when receiving a new message has begun." alt="" coords="17,537,525,556"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when receiving a new message frame has begun." alt="" coords="17,556,525,575"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when receiving data witin message frame." alt="" coords="17,575,525,593"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when a message frame has been completely received." alt="" coords="17,593,525,612"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback fired when complete message frame has been received." alt="" coords="17,612,525,631"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when a message has been completely received." alt="" coords="17,631,525,649"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when Ping was received." alt="" coords="17,649,525,668"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when Pong was received." alt="" coords="17,668,525,687"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Callback when a Close frame was received." alt="" coords="17,687,525,705"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="We (a client) expected the peer (a server) to drop the connection, but it &#160;didn&#39;t (in time self.serverConnectionDropTimeout)." alt="" coords="17,705,525,724"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="We expected the peer to complete the opening handshake with to us." alt="" coords="17,724,525,743"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="We expected the peer to respond to us initiating a close handshake." alt="" coords="17,743,525,761"/>
+<area shape="rect" id="node146" href="javascript:void(0);" title="Hybi&#45;Variant of sendMessage()." alt="" coords="17,780,525,799"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="A Twisted Protocol class for WebSockets." alt="" coords="5,211,536,805"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" title="Called by Twisted when new TCP connection from client was accepted." alt="" coords="79,857,464,876"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" title="Called by Twisted when established TCP connection from client was lost." alt="" coords="79,876,464,895"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key" title="autobahn.websocket.WebSocketServerProtocol.parseHixie76Key" alt="" coords="79,895,464,913"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" title="Process WebSockets opening handshake request from client." alt="" coords="79,913,464,932"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake" title="During opening handshake the client request was invalid, we send a HTTP &#160;error response and then drop the connection." alt="" coords="79,932,464,951"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse" title="Send out HTTP error response." alt="" coords="79,951,464,969"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml" title="Send HTML page HTTP response." alt="" coords="79,969,464,988"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect" title="Send HTTP Redirect (303) response." alt="" coords="79,988,464,1007"/>
+<area shape="rect" id="node145" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus" title="Used to send out server status/version upon receiving a HTTP/GET without &#160;upgrade to WebSocket header (and option serverStatus is True)." alt="" coords="79,1007,464,1025"/>
+<area shape="rect" id="node2" href="autobahn.websocket.WebSocketServerProtocol-class.html" title="A Twisted protocol for WebSockets servers." alt="" coords="67,825,475,1031"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#MSG_QUEUE_TIMEOUT" title="rce.comm.server.RobotWebSocketProtocol.MSG_QUEUE_TIMEOUT" alt="" coords="112,1076,431,1095"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#__implemented__" title="rce.comm.server.RobotWebSocketProtocol.__implemented__" alt="" coords="112,1095,431,1113"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#__init__" title="Initialize the Protocol." alt="" coords="112,1116,431,1135"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#onConnect" title="Method is called by the Autobahn engine when a request to establish a &#160;connection has been received." alt="" coords="112,1135,431,1153"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#processCompleteMessage" title="Process complete messages by calling the appropriate handler for the &#160;manager." alt="" coords="112,1153,431,1172"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#onMessage" title="Method is called by the Autobahn engine when a message has been received &#160;from the client." alt="" coords="112,1172,431,1191"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendMessage" title="Internally used method to send a message to the robot." alt="" coords="112,1191,431,1209"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendDataMessage" title="Callback for Connection object to send a data message to the robot using &#160;this websocket connection." alt="" coords="112,1209,431,1228"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendErrorMessage" title="Callback for Connection object to send an error message to the robot using &#160;this websocket connection." alt="" coords="112,1228,431,1247"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#onClose" title="Method is called by the Autobahn engine when the connection has been lost." alt="" coords="112,1247,431,1265"/>
+<area shape="rect" id="node144" href="rce.comm.server.RobotWebSocketProtocol-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="112,1265,431,1284"/>
+<area shape="rect" id="node4" href="rce.comm.server.RobotWebSocketProtocol-class.html" title="Protocol which is used for the connections from the robots to the robot manager." alt="" coords="100,1051,441,1290"/>
+<area shape="rect" id="node147" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="175,167,368,185"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="163,134,379,191"/>
+<area shape="rect" id="node148" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="160,31,383,49"/>
+<area shape="rect" id="node148" href="javascript:void(0);" title="hash(x)" alt="" coords="160,49,383,68"/>
+<area shape="rect" id="node148" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="160,71,383,89"/>
+<area shape="rect" id="node148" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="160,89,383,108"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="148,6,393,114"/>
+</map>
+  <img src="uml_class_diagram_for_rce_comm_17.gif" alt='' usemap="#uml_class_diagram_for_rce_comm_17" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Protocol which is used for the connections from the robots to the 
+  robot manager.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">realm</span>)</span><br />
+      Initialize the Protocol.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#onConnect" class="summary-sig-name">onConnect</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">req</span>)</span><br />
+      Method is called by the Autobahn engine when a request to establish a
+      connection has been received.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.onConnect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_authenticate_success"></a><span class="summary-sig-name">_authenticate_success</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">avatar</span>)</span><br />
+      Method is called by deferred when the connection has been 
+      successfully authenticated while being in 'onConnect'.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._authenticate_success">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_authenticate_failed"></a><span class="summary-sig-name">_authenticate_failed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">e</span>)</span><br />
+      Method is called by deferred when the connection could not been 
+      authenticated while being in 'onConnect'.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._authenticate_failed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#processCompleteMessage" class="summary-sig-name">processCompleteMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Process complete messages by calling the appropriate handler for the 
+      manager.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.processCompleteMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_process_createContainer"></a><span class="summary-sig-name">_process_createContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Internally used method to process a request to create a container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._process_createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_process_destroyContainer"></a><span class="summary-sig-name">_process_destroyContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Internally used method to process a request to destroy a container.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._process_destroyContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_process_configureComponent"></a><span class="summary-sig-name">_process_configureComponent</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Internally used method to process a request to configure components.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._process_configureComponent">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_process_configureConnection"></a><span class="summary-sig-name">_process_configureConnection</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Internally used method to process a request to configure connections.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._process_configureConnection">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_process_DataMessage"></a><span class="summary-sig-name">_process_DataMessage</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Internally used method to process a data message.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol._process_DataMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#onMessage" class="summary-sig-name">onMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">binary</span>)</span><br />
+      Method is called by the Autobahn engine when a message has been 
+      received from the client.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.onMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#sendMessage" class="summary-sig-name">sendMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Internally used method to send a message to the robot.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#sendDataMessage" class="summary-sig-name">sendDataMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">clsName</span>,
+        <span class="summary-sig-arg">msgID</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Callback for Connection object to send a data message to the robot 
+      using this websocket connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendDataMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#sendErrorMessage" class="summary-sig-name">sendErrorMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Callback for Connection object to send an error message to the robot 
+      using this websocket connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendErrorMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#onClose" class="summary-sig-name">onClose</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">wasClean</span>,
+        <span class="summary-sig-arg">code</span>,
+        <span class="summary-sig-arg">reason</span>)</span><br />
+      Method is called by the Autobahn engine when the connection has been 
+      lost.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.onClose">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#__provides__" class="summary-sig-name">__provides__</a>(<span class="summary-sig-arg">...</span>)</span><br />
+      Special descriptor for class __provides__</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html">autobahn.websocket.WebSocketServerProtocol</a></code></b>:
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost">connectionLost</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade">connectionMade</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake">failHandshake</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key">parseHixie76Key</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake">processHandshake</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml">sendHtml</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse">sendHttpErrorResponse</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect">sendRedirect</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus">sendServerStatus</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html">autobahn.websocket.WebSocketServerProtocol</a></code></b> (private):
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#_processHandshake_buildResponse" onclick="show_private();">_processHandshake_buildResponse</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#_processHandshake_failed" onclick="show_private();">_processHandshake_failed</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>autobahn.websocket.WebSocketProtocol</code></b>:
+      <code>beginMessage</code>,
+      <code>beginMessageFrame</code>,
+      <code>consumeData</code>,
+      <code>dataReceived</code>,
+      <code>doTrack</code>,
+      <code>dropConnection</code>,
+      <code>endMessage</code>,
+      <code>failConnection</code>,
+      <code>invalidPayload</code>,
+      <code>logRxFrame</code>,
+      <code>logRxOctets</code>,
+      <code>logTxFrame</code>,
+      <code>logTxOctets</code>,
+      <code>onCloseFrame</code>,
+      <code>onCloseHandshakeTimeout</code>,
+      <code>onFrameBegin</code>,
+      <code>onFrameData</code>,
+      <code>onFrameEnd</code>,
+      <code>onMessageBegin</code>,
+      <code>onMessageEnd</code>,
+      <code>onMessageFrame</code>,
+      <code>onMessageFrameBegin</code>,
+      <code>onMessageFrameData</code>,
+      <code>onMessageFrameEnd</code>,
+      <code>onOpen</code>,
+      <code>onOpenHandshakeTimeout</code>,
+      <code>onPing</code>,
+      <code>onPong</code>,
+      <code>onServerConnectionDropTimeout</code>,
+      <code>processControlFrame</code>,
+      <code>processData</code>,
+      <code>processDataHixie76</code>,
+      <code>processDataHybi</code>,
+      <code>protocolViolation</code>,
+      <code>registerProducer</code>,
+      <code>sendClose</code>,
+      <code>sendCloseFrame</code>,
+      <code>sendData</code>,
+      <code>sendFrame</code>,
+      <code>sendMessageFrame</code>,
+      <code>sendMessageFrameData</code>,
+      <code>sendMessageHixie76</code>,
+      <code>sendMessageHybi</code>,
+      <code>sendPing</code>,
+      <code>sendPong</code>,
+      <code>sendPreparedMessage</code>,
+      <code>setTrackTimings</code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>autobahn.websocket.WebSocketProtocol</code></b> (private):
+      <code>_send</code>,
+      <code>_trigger</code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.Protocol</code></b>:
+      <code>logPrefix</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
+      <code>__providedBy__</code>,
+      <code>makeConnection</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MSG_QUEUE_TIMEOUT"></a><span class="summary-name">MSG_QUEUE_TIMEOUT</span> = <code title="60">60</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.comm.server.RobotWebSocketProtocol-class.html#__implemented__" class="summary-name">__implemented__</a> = <code title="&lt;implementedBy rce.comm.server.RobotWebSocketProtocol&gt;">&lt;implementedBy rce.comm.server.RobotWebSocke<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>autobahn.websocket.WebSocketProtocol</code></b>:
+      <code>CLOSE_STATUS_CODES_ALLOWED</code>,
+      <code>CLOSE_STATUS_CODE_ABNORMAL_CLOSE</code>,
+      <code>CLOSE_STATUS_CODE_GOING_AWAY</code>,
+      <code>CLOSE_STATUS_CODE_INTERNAL_ERROR</code>,
+      <code>CLOSE_STATUS_CODE_INVALID_PAYLOAD</code>,
+      <code>CLOSE_STATUS_CODE_MANDATORY_EXTENSION</code>,
+      <code>CLOSE_STATUS_CODE_MESSAGE_TOO_BIG</code>,
+      <code>CLOSE_STATUS_CODE_NORMAL</code>,
+      <code>CLOSE_STATUS_CODE_NULL</code>,
+      <code>CLOSE_STATUS_CODE_POLICY_VIOLATION</code>,
+      <code>CLOSE_STATUS_CODE_PROTOCOL_ERROR</code>,
+      <code>CLOSE_STATUS_CODE_RESERVED1</code>,
+      <code>CLOSE_STATUS_CODE_TLS_HANDSHAKE_FAILED</code>,
+      <code>CLOSE_STATUS_CODE_UNSUPPORTED_DATA</code>,
+      <code>DEFAULT_ALLOW_HIXIE76</code>,
+      <code>DEFAULT_SPEC_VERSION</code>,
+      <code>MESSAGE_TYPE_BINARY</code>,
+      <code>MESSAGE_TYPE_TEXT</code>,
+      <code>PROTOCOL_TO_SPEC_VERSION</code>,
+      <code>QUEUED_WRITE_DELAY</code>,
+      <code>SEND_STATE_GROUND</code>,
+      <code>SEND_STATE_INSIDE_MESSAGE</code>,
+      <code>SEND_STATE_INSIDE_MESSAGE_FRAME</code>,
+      <code>SEND_STATE_MESSAGE_BEGIN</code>,
+      <code>SPEC_TO_PROTOCOL_VERSION</code>,
+      <code>STATE_CLOSED</code>,
+      <code>STATE_CLOSING</code>,
+      <code>STATE_CONNECTING</code>,
+      <code>STATE_OPEN</code>,
+      <code>SUPPORTED_PROTOCOL_VERSIONS</code>,
+      <code>SUPPORTED_SPEC_VERSIONS</code>,
+      <code>WS_MAGIC</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
+      <code>connected</code>,
+      <code>transport</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">realm</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Protocol.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>realm</code></strong> (rce.comm.interfaces.IRobotRealm) - Robot realm implementing necessary callback methods.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="onConnect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">onConnect</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">req</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.onConnect">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method is called by the Autobahn engine when a request to establish a 
+  connection has been received.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>req</code></strong> (autobahn.websocket.ConnectionRequest) - Connection Request object.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Deferred which fires callback with None or errback with 
+          autobahn.websocket.HttpException</dd>
+    <dt>Overrides:
+        autobahn.websocket.WebSocketServerProtocol.onConnect
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="processCompleteMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">processCompleteMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.processCompleteMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process complete messages by calling the appropriate handler for the 
+  manager. (Called by rce.comm.assembler.MessageAssembler)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="onMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">onMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>,
+        <span class="sig-arg">binary</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.onMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method is called by the Autobahn engine when a message has been 
+  received from the client.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which was received as a string.</li>
+        <li><strong class="pname"><code>binary</code></strong> (bool) - Flag which is True if the message has binary format and False 
+          otherwise.</li>
+    </ul></dd>
+    <dt>Overrides:
+        autobahn.websocket.WebSocketProtocol.onMessage
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Internally used method to send a message to the robot.</p>
+  <p>Should not be used from outside the Protocol; instead use the methods 
+  'sendDataMessage' or 'sendErrorMessage'.</p>
+  <p>(Overwrites method from 
+  autobahn.websocket.WebSocketServerProtocol)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msg</code></strong> - Message which should be sent.</li>
+    </ul></dd>
+    <dt>Overrides:
+        autobahn.websocket.WebSocketProtocol.sendMessage
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendDataMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendDataMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">clsName</span>,
+        <span class="sig-arg">msgID</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendDataMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for Connection object to send a data message to the robot 
+  using this websocket connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface from the message is 
+          sent.</li>
+        <li><strong class="pname"><code>clsName</code></strong> (str) - Message type/Service type consisting of the package and the name 
+          of the message/service, i.e. 'std_msgs/Int32'.</li>
+        <li><strong class="pname"><code>msgID</code></strong> (str) - Message ID which can be used to get a correspondence between 
+          request and response message for a service call.</li>
+        <li><strong class="pname"><code>msg</code></strong> ({str : {} / base_types / StringIO} / StringIO) - Message which should be sent. It has to be a JSON compatible 
+          dictionary where part or the complete message can be replaced by 
+          a StringIO instance which is interpreted as binary data.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendErrorMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendErrorMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendErrorMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for Connection object to send an error message to the robot 
+  using this websocket connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>msg</code></strong> (str) - Message which should be sent to the robot.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="onClose"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">onClose</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">wasClean</span>,
+        <span class="sig-arg">code</span>,
+        <span class="sig-arg">reason</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.onClose">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method is called by the Autobahn engine when the connection has been 
+  lost.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        autobahn.websocket.WebSocketProtocol.onClose
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__provides__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__provides__</span>(<span class="sig-arg">...</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Special descriptor for class __provides__</p>
+<p>The descriptor caches the implementedBy info, so that
+we can get declarations for objects without instance-specific
+interfaces a bit quicker.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        twisted.internet.protocol.BaseProtocol.__provides__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__implemented__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__implemented__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+&lt;implementedBy rce.comm.server.RobotWebSocketProtocol&gt;
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:01 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.core.base.Proxy</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.core-module.html">Package&nbsp;core</a> ::
+        <a href="rce.core.base-module.html">Module&nbsp;base</a> ::
+        Class&nbsp;Proxy
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.core.base.Proxy-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Proxy</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_rce_core" name="uml_class_diagram_for_rce_core">
+<area shape="rect" id="node1" href="rce.core.container.Container-class.html" title="Representation of an LXC container." alt="" coords="5,233,155,271"/>
+<area shape="rect" id="node2" href="rce.core.network.Namespace-class.html" title="Representation of a namespace, which is part of the cloud engine internal communication." alt="" coords="184,233,341,271"/>
+<area shape="rect" id="node6" href="rce.core.environment.Environment-class.html" title="Representation of a namespace which has a ROS environment assigned and is part of the cloud engine internal communication." alt="" coords="171,291,355,330"/>
+<area shape="rect" id="node3" href="rce.core.environment.Node-class.html" title="Representation of a node (ROS process) inside a ROS environment." alt="" coords="371,233,512,271"/>
+<area shape="rect" id="node4" href="rce.core.network.Endpoint-class.html" title="Representation of an endpoint, which is a process which is part of the cloud engine internal communication." alt="" coords="541,233,677,271"/>
+<area shape="rect" id="node5" href="rce.core.environment.EnvironmentEndpoint-class.html" title="Representation of an endpoint which is a process that lives inside a container and is part of the cloud engine internal communication." alt="" coords="492,291,727,330"/>
+<area shape="rect" id="node7" href="rce.core.environment.Parameter-class.html" title="Representation of a parameter inside a ROS environment." alt="" coords="707,233,877,271"/>
+<area shape="rect" id="node8" href="rce.core.network.Protocol-class.html" title="Representation of a protocol, which is part of the cloud engine internal communication." alt="" coords="907,233,1040,271"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#__init__" title="Initialize the Proxy." alt="" coords="497,39,720,57"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#callRemote" title="Make a call to the RemoteReference and return the result as a Deferred." alt="" coords="497,57,720,76"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#callback" title="Register the remote reference which provides the necessary methods for this Proxy." alt="" coords="497,76,720,95"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#errback" title="Register a failure object which was received during the creation of the &#160;object in the remote process." alt="" coords="497,95,720,113"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#notifyOnDeath" title="Register a callback which will be called once the remote object is dead, &#160;i.e." alt="" coords="497,113,720,132"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" title="Unregister a callback which would have been called once the remote object &#160;is dead." alt="" coords="497,132,720,151"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#__call__" title="Return a reference to the remote object as soon as the reference is &#160;available." alt="" coords="497,151,720,169"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#destroy" title="Method should be called to destroy the Proxy as well as the remote object." alt="" coords="497,169,720,188"/>
+<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#destroyExternal" title="Method to compare given remote reference with Proxy&#39;s remote reference and &#160;destroy if they are the same." alt="" coords="497,188,720,207"/>
+<area shape="rect" id="node9" href="rce.core.base.Proxy-class.html" title="The Proxy should be used to represent an object from a slave process in the Master." alt="" coords="485,6,731,213"/>
+<area shape="rect" id="node10" href="rce.core.network.Interface-class.html" title="Representation of an interface, which is part of the cloud engine internal communication." alt="" coords="1069,233,1205,271"/>
+</map>
+  <img src="uml_class_diagram_for_rce_core.gif" alt='' usemap="#uml_class_diagram_for_rce_core" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>The Proxy should be used to represent an object from a slave process 
+  in the Master. It provides the same methods as the 
+  twisted.spread.pb.RemoteReference. Additionally, the Proxy is callable to
+  get a Deferred which fires as soon as the RemoteReference or a Failure is
+  present.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kw</span>)</span><br />
+      Initialize the Proxy.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#callRemote" class="summary-sig-name">callRemote</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">_name</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kw</span>)</span><br />
+      Make a call to the RemoteReference and return the result as a 
+      Deferred.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.callRemote">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#callback" class="summary-sig-name">callback</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">obj</span>)</span><br />
+      Register the remote reference which provides the necessary methods 
+      for this Proxy.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.callback">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#errback" class="summary-sig-name">errback</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">f</span>)</span><br />
+      Register a failure object which was received during the creation of 
+      the object in the remote process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.errback">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#notifyOnDeath" class="summary-sig-name">notifyOnDeath</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cb</span>)</span><br />
+      Register a callback which will be called once the remote object is 
+      dead, i.e.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.notifyOnDeath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" class="summary-sig-name">dontNotifyOnDeath</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cb</span>)</span><br />
+      Unregister a callback which would have been called once the remote 
+      object is dead.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.dontNotifyOnDeath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#__call__" class="summary-sig-name">__call__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a reference to the remote object as soon as the reference is 
+      available.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__call__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the Proxy as well as the remote 
+      object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroyExternal"></a><span class="summary-sig-name">destroyExternal</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteObject</span>)</span><br />
+      Method to compare given remote reference with Proxy's remote 
+      reference and destroy if they are the same.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.destroyExternal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__filter"></a><span class="summary-sig-name">__filter</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">failure</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Internally used method which is used as an errback to check the 
+      failure for errors indicating that the Proxy is dead.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__filter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__notify"></a><span class="summary-sig-name">__notify</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">failure</span>)</span><br />
+      Method is used as a callback to inform the Proxy that a failure 
+      occurred.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__notify">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.base.Proxy-class.html#__destroy" class="summary-sig-name" onclick="show_private();">__destroy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method to destroy Proxy.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__disconnected"></a><span class="summary-sig-name">__disconnected</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">_</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__disconnected">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kw</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the Proxy.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="callRemote"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">callRemote</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">_name</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kw</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.callRemote">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Make a call to the RemoteReference and return the result as a 
+  Deferred. It exists to allow queuing of calls to remote reference before 
+  the remote reference has arrived.</p>
+  <p>For more information refer to twisted.spread.pb.RemoteReference.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>_name</code></strong> (str) - Name of the method which should be called. The prefix 'remote_' 
+          will be added to the name in the remote object to select the 
+          method which should be called.</li>
+        <li><strong class="pname"><code>*args</code></strong> - Positional arguments which will be passed to the remote method.</li>
+        <li><strong class="pname"><code>**kw</code></strong> - Keyworded arguments which will be passed to the remote method.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Deferred which will fire with the result of the call or a Failure
+          if there was a problem.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="callback"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">callback</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">obj</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.callback">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register the remote reference which provides the necessary methods for
+  this Proxy. Fires all pending callbacks passing on the remote reference 
+  as a parameter.</p>
+  <p>Exactly one call can be made to either 'callback' or 'errback'!</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>obj</code></strong> (twisted.spread.pb.RemoteReference) - Remote reference which should be registered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="errback"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">errback</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">f</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.errback">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register a failure object which was received during the creation of 
+  the object in the remote process.</p>
+  <p>Exactly one call can be made to either 'callback' or 'errback'!</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>f</code></strong> (twisted.python.failure.Failure) - Failure object which should be registered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="notifyOnDeath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">notifyOnDeath</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cb</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.notifyOnDeath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register a callback which will be called once the remote object is 
+  dead, i.e. no longer connected to this process or a failure was 
+  received.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cb</code></strong> (callable) - Callback which should be registered. It should take this instance
+          as only argument.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="dontNotifyOnDeath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">dontNotifyOnDeath</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cb</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.dontNotifyOnDeath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Unregister a callback which would have been called once the remote 
+  object is dead.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cb</code></strong> (callable) - Callback which should be unregistered.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__call__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__call__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Call operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__call__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a reference to the remote object as soon as the reference is 
+  available.</p>
+  <dl class="fields">
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Reference to the RemoteObject instance. (type: 
+          rce.master.base.RemoteReference)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__destroy"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__destroy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy.__destroy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method to destroy Proxy. Takes care of whether it's been called from 
+  the remote side or the local side. Calls __notify to clear up pending 
+  callbacks of callRemote or notifyOnDeath. Calls remote reference's 
+  (self.__obj) destroy function to make sure object on the remote side is 
+  also dead</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:02 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

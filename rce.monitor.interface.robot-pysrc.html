@@ -1,0 +1,1540 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.monitor.interface.robot</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.monitor-module.html">Package&nbsp;monitor</a> ::
+        <a href="rce.monitor.interface-module.html">Package&nbsp;interface</a> ::
+        Module&nbsp;robot
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.monitor.interface.robot-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.monitor.interface.robot-module.html">Module rce.monitor.interface.robot</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-core/rce/monitor/interface/robot.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># Python specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">zlib</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">uuid</tt> <tt class="py-keyword">import</tt> <tt class="py-name">uuid4</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">cStringIO</tt> <tt class="py-keyword">import</tt> <tt class="py-name">StringIO</tt><tt class="py-op">,</tt> <tt class="py-name">InputType</tt><tt class="py-op">,</tt> <tt class="py-name">OutputType</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">StringIO</tt> <tt class="py-keyword">import</tt> <tt class="py-name">StringIO</tt> <tt class="py-keyword">as</tt> <tt class="py-name">pyStringIO</tt> </tt>
+<a name="_checkIsStringIO"></a><div id="_checkIsStringIO-def"><a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt> <a class="py-toggle" href="#" id="_checkIsStringIO-toggle" onclick="return toggle('_checkIsStringIO');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot-module.html#_checkIsStringIO">_checkIsStringIO</a><tt class="py-op">(</tt><tt class="py-param">obj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_checkIsStringIO-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_checkIsStringIO-expanded"><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt id="link-0" class="py-name" targets="Variable rce.core.wrapper.Interface.obj=rce.core.wrapper.Interface-class.html#obj"><a title="rce.core.wrapper.Interface.obj" class="py-name" href="#" onclick="return doclink('link-0', 'obj', 'link-0');">obj</a></tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-name">InputType</tt><tt class="py-op">,</tt> <tt class="py-name">OutputType</tt><tt class="py-op">,</tt> <tt class="py-name">pyStringIO</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">StringIO</tt> <tt class="py-keyword">import</tt> <tt class="py-name">StringIO</tt> </tt>
+<a name="_checkIsStringIO"></a><div id="_checkIsStringIO-def"><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt> <a class="py-toggle" href="#" id="_checkIsStringIO-toggle" onclick="return toggle('_checkIsStringIO');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot-module.html#_checkIsStringIO">_checkIsStringIO</a><tt class="py-op">(</tt><tt class="py-param">obj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_checkIsStringIO-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_checkIsStringIO-expanded"><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt id="link-1" class="py-name"><a title="rce.core.wrapper.Interface.obj" class="py-name" href="#" onclick="return doclink('link-1', 'obj', 'link-0');">obj</a></tt><tt class="py-op">,</tt> <tt class="py-name">StringIO</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-2', 'rce', 'link-2');">rce</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-3', 'util', 'link-3');">util</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module rce.comm.error=rce.comm.error-module.html,Module rce.core.error=rce.core.error-module.html,Module rce.util.error=rce.util.error-module.html"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-4', 'error', 'link-4');">error</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class rce.util.error.InternalError=rce.util.error.InternalError-class.html"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-5', 'InternalError', 'link-5');">InternalError</a></tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="rce" class="py-name" href="#" onclick="return doclink('link-6', 'rce', 'link-2');">rce</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Package rce.slave=rce.slave-module.html"><a title="rce.slave" class="py-name" href="#" onclick="return doclink('link-7', 'slave', 'link-7');">slave</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-8', 'interface', 'link-8');">interface</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name" targets="Class rce.core.network.Interface=rce.core.network.Interface-class.html,Class rce.core.wrapper.Interface=rce.core.wrapper.Interface-class.html,Class rce.slave.interface.Interface=rce.slave.interface.Interface-class.html"><a title="rce.core.network.Interface
+rce.core.wrapper.Interface
+rce.slave.interface.Interface" class="py-name" href="#" onclick="return doclink('link-9', 'Interface', 'link-9');">Interface</a></tt><tt class="py-op">,</tt> <tt id="link-10" class="py-name" targets="Class rce.slave.interface.InvalidResoureName=rce.slave.interface.InvalidResoureName-class.html"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-10', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-11" class="py-name"><a title="rce" class="py-name" href="#" onclick="return doclink('link-11', 'rce', 'link-2');">rce</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-12', 'util', 'link-3');">util</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Variable rce.monitor.interface.robot.settings=rce.monitor.interface.robot-module.html#settings,Variable rce.util.network.settings=rce.util.network-module.html#settings,Module rce.util.settings=rce.util.settings-module.html"><a title="rce.monitor.interface.robot.settings
+rce.util.network.settings
+rce.util.settings" class="py-name" href="#" onclick="return doclink('link-13', 'settings', 'link-13');">settings</a></tt> <tt class="py-keyword">import</tt> <tt id="link-14" class="py-name" targets="Function rce.util.settings.getSettings()=rce.util.settings-module.html#getSettings"><a title="rce.util.settings.getSettings" class="py-name" href="#" onclick="return doclink('link-14', 'getSettings', 'link-14');">getSettings</a></tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt id="link-15" class="py-name"><a title="rce.monitor.interface.robot.settings
+rce.util.network.settings
+rce.util.settings" class="py-name" href="#" onclick="return doclink('link-15', 'settings', 'link-13');">settings</a></tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="rce.util.settings.getSettings" class="py-name" href="#" onclick="return doclink('link-16', 'getSettings', 'link-14');">getSettings</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="ConversionError"></a><div id="ConversionError-def"><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt> <a class="py-toggle" href="#" id="ConversionError-toggle" onclick="return toggle('ConversionError');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ConversionError-class.html">ConversionError</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ConversionError-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ConversionError-expanded"><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">    <tt class="py-docstring">""" Exception is raised in case a ROS message could not be converted.</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+</div><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="ServiceError"></a><div id="ServiceError-def"><a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt> <a class="py-toggle" href="#" id="ServiceError-toggle" onclick="return toggle('ServiceError');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceError-class.html">ServiceError</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceError-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ServiceError-expanded"><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">    <tt class="py-docstring">""" Exception is raised in case a response message was received, but not</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"><tt class="py-docstring">        corresponding request is available.</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+</div><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="_AbstractConverter"></a><div id="_AbstractConverter-def"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="_AbstractConverter-toggle" onclick="return toggle('_AbstractConverter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot._AbstractConverter-class.html">_AbstractConverter</a><tt class="py-op">(</tt><tt class="py-base-class">Interface</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_AbstractConverter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_AbstractConverter-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">    <tt class="py-docstring">""" Abstract base class which provides the basics for the robot-side</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-docstring">        interfaces.</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="_AbstractConverter.__init__"></a><div id="_AbstractConverter.__init__-def"><a name="L71"></a><tt class="py-lineno"> 71</tt> <a class="py-toggle" href="#" id="_AbstractConverter.__init__-toggle" onclick="return toggle('_AbstractConverter.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._AbstractConverter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">owner</tt><tt class="py-op">,</tt> <tt class="py-param">uid</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_AbstractConverter.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_AbstractConverter.__init__-expanded"><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-docstring">""" Initialize the robot-side Interface.</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-docstring">            @param owner:       Namespace to which this interface belongs.</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-docstring">            @type  owner:       rce.robot.Robot</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-docstring">            @param uid:         Unique ID which is used to identify the</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-docstring">                                interface in the internal communication.</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-docstring">            @type  uid:         uuid.UUID</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring">            @param clsName:     Message type/Service type consisting of the</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">                                package and the name of the message/service,</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">                                i.e. 'std_msgs/Int32'.</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">            @type  clsName:     str</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring">            @param tag:         Unique ID which is used to identify the</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">                                interface in the external communication.</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">            @type  tag:         str</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt> <tt class="py-op">=</tt> <tt class="py-name">owner</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt> <tt class="py-op">=</tt> <tt class="py-name">clsName</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name" targets="Method rce.monitor.interface.robot._AbstractConverter.tag()=rce.monitor.interface.robot._AbstractConverter-class.html#tag"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-17', 'tag', 'link-17');">tag</a></tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt id="link-18" class="py-name"><a title="rce.core.network.Interface
+rce.core.wrapper.Interface
+rce.slave.interface.Interface" class="py-name" href="#" onclick="return doclink('link-18', 'Interface', 'link-9');">Interface</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method rce.client.connection._Connection.__init__()=rce.client.connection._Connection-class.html#__init__,Method rce.client.interface.ROSPublisher.__init__()=rce.client.interface.ROSPublisher-class.html#__init__,Method rce.client.interface.ROSServiceClient.__init__()=rce.client.interface.ROSServiceClient-class.html#__init__,Method rce.client.interface.ROSServiceProvider.__init__()=rce.client.interface.ROSServiceProvider-class.html#__init__,Method rce.client.interface.ROSSubscriber.__init__()=rce.client.interface.ROSSubscriber-class.html#__init__,Method rce.client.interface.ServiceClient.__init__()=rce.client.interface.ServiceClient-class.html#__init__,Method rce.client.interface._Base.__init__()=rce.client.interface._Base-class.html#__init__,Method rce.client.interface._CB_Base.__init__()=rce.client.interface._CB_Base-class.html#__init__,Method rce.client.interface._EventRef.__init__()=rce.client.interface._EventRef-class.html#__init__,Method rce.client.interface._ServiceClient.__init__()=rce.client.interface._ServiceClient-class.html#__init__,Method rce.client.interface._ServiceProvider.__init__()=rce.client.interface._ServiceProvider-class.html#__init__,Method rce.client.interface._Subscriber.__init__()=rce.client.interface._Subscriber-class.html#__init__,Method rce.client.ros.Environment.__init__()=rce.client.ros.Environment-class.html#__init__,Method rce.comm.assembler.MessageAssembler.__init__()=rce.comm.assembler.MessageAssembler-class.html#__init__,Method rce.comm.assembler._IncompleteMsg.__init__()=rce.comm.assembler._IncompleteMsg-class.html#__init__,Method rce.comm.client.RCE.__init__()=rce.comm.client.RCE-class.html#__init__,Method rce.comm.client.RCERobotFactory.__init__()=rce.comm.client.RCERobotFactory-class.html#__init__,Method rce.comm.client.RCERobotProtocol.__init__()=rce.comm.client.RCERobotProtocol-class.html#__init__,Method rce.comm.server.CloudEngineWebSocketFactory.__init__()=rce.comm.server.CloudEngineWebSocketFactory-class.html#__init__,Method rce.comm.server.RobotResource.__init__()=rce.comm.server.RobotResource-class.html#__init__,Method rce.comm.server.RobotWebSocketProtocol.__init__()=rce.comm.server.RobotWebSocketProtocol-class.html#__init__,Method rce.console.console.ConsoleClient.__init__()=rce.console.console.ConsoleClient-class.html#__init__,Method rce.console.console.CustomOptions.__init__()=rce.console.console.CustomOptions-class.html#__init__,Method rce.container.ContainerClient.__init__()=rce.container.ContainerClient-class.html#__init__,Method rce.container.RCEContainer.__init__()=rce.container.RCEContainer-class.html#__init__,Method rce.core.base.Proxy.__init__()=rce.core.base.Proxy-class.html#__init__,Method rce.core.container.Container.__init__()=rce.core.container.Container-class.html#__init__,Method rce.core.environment.Environment.__init__()=rce.core.environment.Environment-class.html#__init__,Method rce.core.environment.EnvironmentEndpoint.__init__()=rce.core.environment.EnvironmentEndpoint-class.html#__init__,Method rce.core.environment.Node.__init__()=rce.core.environment.Node-class.html#__init__,Method rce.core.environment.Parameter.__init__()=rce.core.environment.Parameter-class.html#__init__,Method rce.core.machine.Distributor.__init__()=rce.core.machine.Distributor-class.html#__init__,Method rce.core.machine.LoadBalancer.__init__()=rce.core.machine.LoadBalancer-class.html#__init__,Method rce.core.machine.Machine.__init__()=rce.core.machine.Machine-class.html#__init__,Method rce.core.machine.MachineAvatar.__init__()=rce.core.machine.MachineAvatar-class.html#__init__,Method rce.core.network.Connection.__init__()=rce.core.network.Connection-class.html#__init__,Method rce.core.network.Endpoint.__init__()=rce.core.network.Endpoint-class.html#__init__,Method rce.core.network.EndpointAvatar.__init__()=rce.core.network.EndpointAvatar-class.html#__init__,Method rce.core.network.EndpointConnection.__init__()=rce.core.network.EndpointConnection-class.html#__init__,Method rce.core.network.Interface.__init__()=rce.core.network.Interface-class.html#__init__,Method rce.core.network.InterfaceConnection.__init__()=rce.core.network.InterfaceConnection-class.html#__init__,Method rce.core.network.Namespace.__init__()=rce.core.network.Namespace-class.html#__init__,Method rce.core.network.Network.__init__()=rce.core.network.Network-class.html#__init__,Method rce.core.network.Protocol.__init__()=rce.core.network.Protocol-class.html#__init__,Method rce.core.network._ConnectionValidator.__init__()=rce.core.network._ConnectionValidator-class.html#__init__,Method rce.core.robot.Robot.__init__()=rce.core.robot.Robot-class.html#__init__,Method rce.core.robot.RobotEndpoint.__init__()=rce.core.robot.RobotEndpoint-class.html#__init__,Method rce.core.user.User.__init__()=rce.core.user.User-class.html#__init__,Method rce.core.wrapper.Container.__init__()=rce.core.wrapper.Container-class.html#__init__,Method rce.core.wrapper.Interface.__init__()=rce.core.wrapper.Interface-class.html#__init__,Method rce.core.wrapper.Robot.__init__()=rce.core.wrapper.Robot-class.html#__init__,Method rce.core.wrapper._Wrapper.__init__()=rce.core.wrapper._Wrapper-class.html#__init__,Method rce.environment.Environment.__init__()=rce.environment.Environment-class.html#__init__,Method rce.environment.EnvironmentClient.__init__()=rce.environment.EnvironmentClient-class.html#__init__,Method rce.master.RoboEarthCloudEngine.__init__()=rce.master.RoboEarthCloudEngine-class.html#__init__,Method rce.master.UserRealm.__init__()=rce.master.UserRealm-class.html#__init__,Method rce.monitor.common.ArgumentMixin.__init__()=rce.monitor.common.ArgumentMixin-class.html#__init__,Method rce.monitor.interface.environment.PublisherInterface.__init__()=rce.monitor.interface.environment.PublisherInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceClientInterface.__init__()=rce.monitor.interface.environment.ServiceClientInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceProviderInterface.__init__()=rce.monitor.interface.environment.ServiceProviderInterface-class.html#__init__,Method rce.monitor.interface.environment._ROSInterfaceBase.__init__()=rce.monitor.interface.environment._ROSInterfaceBase-class.html#__init__,Method rce.monitor.interface.robot.ServiceClientConverter.__init__()=rce.monitor.interface.robot.ServiceClientConverter-class.html#__init__,Method rce.monitor.interface.robot.ServiceClientForwarder.__init__()=rce.monitor.interface.robot.ServiceClientForwarder-class.html#__init__,Method rce.monitor.interface.robot._AbstractConverter.__init__()=rce.monitor.interface.robot._AbstractConverter-class.html#__init__,Method rce.monitor.interface.robot._ConverterBase.__init__()=rce.monitor.interface.robot._ConverterBase-class.html#__init__,Method rce.monitor.node.Node.__init__()=rce.monitor.node.Node-class.html#__init__,Method rce.monitor.node.NodeProtocol.__init__()=rce.monitor.node.NodeProtocol-class.html#__init__,Method rce.monitor.parameter.Parameter.__init__()=rce.monitor.parameter.Parameter-class.html#__init__,Method rce.robot.Connection.__init__()=rce.robot.Connection-class.html#__init__,Method rce.robot.Robot.__init__()=rce.robot.Robot-class.html#__init__,Method rce.robot.RobotClient.__init__()=rce.robot.RobotClient-class.html#__init__,Method rce.robot.RobotView.__init__()=rce.robot.RobotView-class.html#__init__,Method rce.rosproxy.ConsoleROSProxyAuthentication.__init__()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#__init__,Method rce.slave.endpoint.Endpoint.__init__()=rce.slave.endpoint.Endpoint-class.html#__init__,Method rce.slave.endpoint._RCEInternalServerFactory.__init__()=rce.slave.endpoint._RCEInternalServerFactory-class.html#__init__,Method rce.slave.interface.Interface.__init__()=rce.slave.interface.Interface-class.html#__init__,Method rce.slave.namespace.Namespace.__init__()=rce.slave.namespace.Namespace-class.html#__init__,Method rce.slave.protocol.RCEInternalProtocol.__init__()=rce.slave.protocol.RCEInternalProtocol-class.html#__init__,Method rce.slave.protocol._Protocol.__init__()=rce.slave.protocol._Protocol-class.html#__init__,Method rce.util.container.Container.__init__()=rce.util.container.Container-class.html#__init__,Method rce.util.converter.Converter.__init__()=rce.util.converter.Converter-class.html#__init__,Method rce.util.cred.RCECredChecker.__init__()=rce.util.cred.RCECredChecker-class.html#__init__,Method rce.util.cred.RCEInternalChecker.__init__()=rce.util.cred.RCEInternalChecker-class.html#__init__,Method rce.util.loader.Loader.__init__()=rce.util.loader.Loader-class.html#__init__,Method rce.util.settings._RCESettingsParser.__init__()=rce.util.settings._RCESettingsParser-class.html#__init__,Method rce.util.settings._Settings.__init__()=rce.util.settings._Settings-class.html#__init__,Method rce.util.sysinfo.AccessDenied.__init__()=rce.util.sysinfo.AccessDenied-class.html#__init__,Method rce.util.sysinfo.NoSuchProcess.__init__()=rce.util.sysinfo.NoSuchProcess-class.html#__init__,Method rce.util.sysinfo.Process.__init__()=rce.util.sysinfo.Process-class.html#__init__"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-19', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">owner</tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">property</tt> </tt>
+<a name="_AbstractConverter.tag"></a><div id="_AbstractConverter.tag-def"><a name="L97"></a><tt class="py-lineno"> 97</tt> <a class="py-toggle" href="#" id="_AbstractConverter.tag-toggle" onclick="return toggle('_AbstractConverter.tag');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._AbstractConverter-class.html#tag">tag</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_AbstractConverter.tag-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_AbstractConverter.tag-expanded"><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-docstring">""" Interface tag of the converter. """</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt> </tt>
+</div><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="_AbstractConverter._receive"></a><div id="_AbstractConverter._receive-def"><a name="L101"></a><tt class="py-lineno">101</tt> <a class="py-toggle" href="#" id="_AbstractConverter._receive-toggle" onclick="return toggle('_AbstractConverter._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._AbstractConverter-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_AbstractConverter._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_AbstractConverter._receive-expanded"><a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-docstring">""" This method is used as a hook to send the message received from the</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-docstring">            robot to the appropriate protocol.</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-string">"The method '_receive' has to "</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                                  <tt class="py-string">'be implemented.'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="_AbstractConverter._sendToClient"></a><div id="_AbstractConverter._sendToClient-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="_AbstractConverter._sendToClient-toggle" onclick="return toggle('_AbstractConverter._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._AbstractConverter-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_AbstractConverter._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_AbstractConverter._sendToClient-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-docstring">""" This method is used as a hook to send the message received from the</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring">            protocol to the robot.</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-string">"The method '_sendToClient' has to "</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">                                  <tt class="py-string">'be implemented.'</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt>
+<a name="_ConverterBase"></a><div id="_ConverterBase-def"><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt> <a class="py-toggle" href="#" id="_ConverterBase-toggle" onclick="return toggle('_ConverterBase');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ConverterBase-class.html">_ConverterBase</a><tt class="py-op">(</tt><tt class="py-base-class">_AbstractConverter</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ConverterBase-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_ConverterBase-expanded"><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which implements the basic functionality of a Converter.</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="_ConverterBase.__init__"></a><div id="_ConverterBase.__init__-def"><a name="L119"></a><tt class="py-lineno">119</tt> <a class="py-toggle" href="#" id="_ConverterBase.__init__-toggle" onclick="return toggle('_ConverterBase.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ConverterBase-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">owner</tt><tt class="py-op">,</tt> <tt class="py-param">uid</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ConverterBase.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_ConverterBase.__init__-expanded"><a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt id="link-20" class="py-name" targets="Class rce.monitor.interface.robot._AbstractConverter=rce.monitor.interface.robot._AbstractConverter-class.html"><a title="rce.monitor.interface.robot._AbstractConverter" class="py-name" href="#" onclick="return doclink('link-20', '_AbstractConverter', 'link-20');">_AbstractConverter</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-21', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">owner</tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">,</tt> <tt class="py-name">clsName</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-22', 'tag', 'link-17');">tag</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_converter</tt> <tt class="py-op">=</tt> <tt class="py-name">owner</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method rce.robot.Robot.converter()=rce.robot.Robot-class.html#converter,Method rce.robot.RobotClient.converter()=rce.robot.RobotClient-class.html#converter,Module rce.util.converter=rce.util.converter-module.html"><a title="rce.robot.Robot.converter
+rce.robot.RobotClient.converter
+rce.util.converter" class="py-name" href="#" onclick="return doclink('link-23', 'converter', 'link-23');">converter</a></tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_inputMsgCls</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_outputMsgCls</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method rce.monitor.interface.robot.PublisherConverter._loadClass()=rce.monitor.interface.robot.PublisherConverter-class.html#_loadClass,Method rce.monitor.interface.robot.ServiceClientConverter._loadClass()=rce.monitor.interface.robot.ServiceClientConverter-class.html#_loadClass,Method rce.monitor.interface.robot.ServiceProviderConverter._loadClass()=rce.monitor.interface.robot.ServiceProviderConverter-class.html#_loadClass,Method rce.monitor.interface.robot.SubscriberConverter._loadClass()=rce.monitor.interface.robot.SubscriberConverter-class.html#_loadClass,Method rce.monitor.interface.robot._ConverterBase._loadClass()=rce.monitor.interface.robot._ConverterBase-class.html#_loadClass"><a title="rce.monitor.interface.robot.PublisherConverter._loadClass
+rce.monitor.interface.robot.ServiceClientConverter._loadClass
+rce.monitor.interface.robot.ServiceProviderConverter._loadClass
+rce.monitor.interface.robot.SubscriberConverter._loadClass
+rce.monitor.interface.robot._ConverterBase._loadClass" class="py-name" href="#" onclick="return doclink('link-24', '_loadClass', 'link-24');">_loadClass</a></tt><tt class="py-op">(</tt><tt class="py-name">owner</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Variable rce.client.connection.ROSConnection.loader=rce.client.connection.ROSConnection-class.html#loader,Variable rce.environment.Environment.loader=rce.environment.Environment-class.html#loader,Method rce.robot.Robot.loader()=rce.robot.Robot-class.html#loader,Method rce.robot.RobotClient.loader()=rce.robot.RobotClient-class.html#loader,Module rce.util.loader=rce.util.loader-module.html"><a title="rce.client.connection.ROSConnection.loader
+rce.environment.Environment.loader
+rce.robot.Robot.loader
+rce.robot.RobotClient.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-25', 'loader', 'link-25');">loader</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">    <tt id="link-26" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-26', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-27" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter" class="py-name" href="#" onclick="return doclink('link-27', '_AbstractConverter', 'link-20');">_AbstractConverter</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-28', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="_ConverterBase._loadClass"></a><div id="_ConverterBase._loadClass-def"><a name="L131"></a><tt class="py-lineno">131</tt> <a class="py-toggle" href="#" id="_ConverterBase._loadClass-toggle" onclick="return toggle('_ConverterBase._loadClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ConverterBase-class.html#_loadClass">_loadClass</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">loader</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ConverterBase._loadClass-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_ConverterBase._loadClass-expanded"><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-docstring">""" This method is used as a hook to load the necessary ROS class</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"><tt class="py-docstring">            for the interface. And is called as last step in the constructor.</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"><tt class="py-docstring">            This method has to be overwritten!</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">            References to the loaded classes have to be stored in the instance</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-docstring">            attributes '_inputMsgCls' and '_outputMsgCls'.</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">            If there is no reference stored, i.e. None, it is assumed that</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">            the converter can not convert the messages in the given direction</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">            and an error is raised.</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-string">"The method 'loadClass' has to "</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                                  <tt class="py-string">'be implemented.'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="_ConverterBase.receive"></a><div id="_ConverterBase.receive-def"><a name="L146"></a><tt class="py-lineno">146</tt> <a class="py-toggle" href="#" id="_ConverterBase.receive-toggle" onclick="return toggle('_ConverterBase.receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ConverterBase-class.html#receive">receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ConverterBase.receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_ConverterBase.receive-expanded"><a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-docstring">""" Convert a JSON encoded message into a ROS message.</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">            @param clsName:     Message/Service type of the received message.</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring">            @type  clsName:     str</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"><tt class="py-docstring">            @param msgID:       Identifier which is used to match request /</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-docstring">                                response message.</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msgID:       str</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         JSON compatible message which should be</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">                                processed.</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         dict</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_inputMsgCls</tt><tt class="py-op">:</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-29" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-29', 'InternalError', 'link-5');">InternalError</a></tt><tt class="py-op">(</tt><tt class="py-string">'This converter can not handle incoming'</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">                                <tt class="py-string">' messages.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">clsName</tt> <tt class="py-op">!=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">:</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-30" class="py-name"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-30', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt><tt class="py-op">(</tt><tt class="py-string">'Sent message type does not match the '</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">                                     <tt class="py-string">'used message type for this interface.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">            <tt id="link-31" class="py-name" targets="Variable rce.comm.assembler._IncompleteMsg.msg=rce.comm.assembler._IncompleteMsg-class.html#msg"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-31', 'msg', 'link-31');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_converter</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Static Method rce.slave.interface.Types.decode()=rce.slave.interface.Types-class.html#decode,Method rce.util.converter.Converter.decode()=rce.util.converter.Converter-class.html#decode,Method rce.util.converter._DurationConverter.decode()=rce.util.converter._DurationConverter-class.html#decode,Method rce.util.converter._TimeConverter.decode()=rce.util.converter._TimeConverter-class.html#decode,Method rce.util.converters.image.ImageConverter.decode()=rce.util.converters.image.ImageConverter-class.html#decode,Method rce.util.converters.interfaces.ICustomROSConverter.decode()=rce.util.converters.interfaces.ICustomROSConverter-class.html#decode"><a title="rce.slave.interface.Types.decode
+rce.util.converter.Converter.decode
+rce.util.converter._DurationConverter.decode
+rce.util.converter._TimeConverter.decode
+rce.util.converters.image.ImageConverter.decode
+rce.util.converters.interfaces.ICustomROSConverter.decode" class="py-name" href="#" onclick="return doclink('link-32', 'decode', 'link-32');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_inputMsgCls</tt><tt class="py-op">,</tt> <tt id="link-33" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-33', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-op">(</tt><tt class="py-name">TypeError</tt><tt class="py-op">,</tt> <tt class="py-name">ValueError</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-34" class="py-name" targets="Class rce.monitor.interface.robot.ConversionError=rce.monitor.interface.robot.ConversionError-class.html"><a title="rce.monitor.interface.robot.ConversionError" class="py-name" href="#" onclick="return doclink('link-34', 'ConversionError', 'link-34');">ConversionError</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">StringIO</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt id="link-35" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-35', 'msg', 'link-31');">msg</a></tt><tt class="py-op">.</tt><tt class="py-name">serialize</tt><tt class="py-op">(</tt><tt class="py-name">buf</tt><tt class="py-op">)</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt id="link-36" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-36', 'msg', 'link-31');">msg</a></tt> <tt class="py-op">=</tt> <tt class="py-name">buf</tt><tt class="py-op">.</tt><tt class="py-name">getvalue</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Method rce.monitor.interface.robot.PublisherConverter._receive()=rce.monitor.interface.robot.PublisherConverter-class.html#_receive,Method rce.monitor.interface.robot.PublisherForwarder._receive()=rce.monitor.interface.robot.PublisherForwarder-class.html#_receive,Method rce.monitor.interface.robot.ServiceClientConverter._receive()=rce.monitor.interface.robot.ServiceClientConverter-class.html#_receive,Method rce.monitor.interface.robot.ServiceClientForwarder._receive()=rce.monitor.interface.robot.ServiceClientForwarder-class.html#_receive,Method rce.monitor.interface.robot.ServiceProviderConverter._receive()=rce.monitor.interface.robot.ServiceProviderConverter-class.html#_receive,Method rce.monitor.interface.robot.ServiceProviderForwarder._receive()=rce.monitor.interface.robot.ServiceProviderForwarder-class.html#_receive,Method rce.monitor.interface.robot.SubscriberConverter._receive()=rce.monitor.interface.robot.SubscriberConverter-class.html#_receive,Method rce.monitor.interface.robot.SubscriberForwarder._receive()=rce.monitor.interface.robot.SubscriberForwarder-class.html#_receive,Method rce.monitor.interface.robot._AbstractConverter._receive()=rce.monitor.interface.robot._AbstractConverter-class.html#_receive"><a title="rce.monitor.interface.robot.PublisherConverter._receive
+rce.monitor.interface.robot.PublisherForwarder._receive
+rce.monitor.interface.robot.ServiceClientConverter._receive
+rce.monitor.interface.robot.ServiceClientForwarder._receive
+rce.monitor.interface.robot.ServiceProviderConverter._receive
+rce.monitor.interface.robot.ServiceProviderForwarder._receive
+rce.monitor.interface.robot.SubscriberConverter._receive
+rce.monitor.interface.robot.SubscriberForwarder._receive
+rce.monitor.interface.robot._AbstractConverter._receive" class="py-name" href="#" onclick="return doclink('link-37', '_receive', 'link-37');">_receive</a></tt><tt class="py-op">(</tt><tt id="link-38" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-38', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"> </tt>
+<a name="_ConverterBase._send"></a><div id="_ConverterBase._send-def"><a name="L179"></a><tt class="py-lineno">179</tt> <a class="py-toggle" href="#" id="_ConverterBase._send-toggle" onclick="return toggle('_ConverterBase._send');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ConverterBase-class.html#_send">_send</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ConverterBase._send-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_ConverterBase._send-expanded"><a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">        <tt class="py-docstring">""" Convert a ROS message into a JSON encoded message.</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         Received ROS message in serialized form.</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         str</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"><tt class="py-docstring">            @param msgID:       Unique ID to identify the message.</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msgID:       str</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring">            @param protocol:    Protocol instance through which the message</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">                                was sent.</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line"><tt class="py-docstring">            @type  protocol:    rce.slave.protocol._Protocol</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line"><tt class="py-docstring">            @param remoteID:    Unique ID of the Interface which sent the</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"><tt class="py-docstring">                                message.</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"><tt class="py-docstring">            @type  remoteID:    uuid.UUID</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_outputMsgCls</tt><tt class="py-op">:</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-39" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-39', 'InternalError', 'link-5');">InternalError</a></tt><tt class="py-op">(</tt><tt class="py-string">'This converter can not handle outgoing '</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">                                <tt class="py-string">'messages.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line"> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-name">rosMsg</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_outputMsgCls</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">        <tt class="py-name">rosMsg</tt><tt class="py-op">.</tt><tt class="py-name">deserialize</tt><tt class="py-op">(</tt><tt id="link-40" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-40', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">            <tt class="py-name">jsonMsg</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_converter</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Static Method rce.slave.interface.Types.encode()=rce.slave.interface.Types-class.html#encode,Method rce.util.converter.Converter.encode()=rce.util.converter.Converter-class.html#encode,Method rce.util.converter._DurationConverter.encode()=rce.util.converter._DurationConverter-class.html#encode,Method rce.util.converter._TimeConverter.encode()=rce.util.converter._TimeConverter-class.html#encode,Method rce.util.converters.image.ImageConverter.encode()=rce.util.converters.image.ImageConverter-class.html#encode,Method rce.util.converters.interfaces.ICustomROSConverter.encode()=rce.util.converters.interfaces.ICustomROSConverter-class.html#encode"><a title="rce.slave.interface.Types.encode
+rce.util.converter.Converter.encode
+rce.util.converter._DurationConverter.encode
+rce.util.converter._TimeConverter.encode
+rce.util.converters.image.ImageConverter.encode
+rce.util.converters.interfaces.ICustomROSConverter.encode" class="py-name" href="#" onclick="return doclink('link-41', 'encode', 'link-41');">encode</a></tt><tt class="py-op">(</tt><tt class="py-name">rosMsg</tt><tt class="py-op">)</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-op">(</tt><tt class="py-name">TypeError</tt><tt class="py-op">,</tt> <tt class="py-name">ValueError</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-42" class="py-name"><a title="rce.monitor.interface.robot.ConversionError" class="py-name" href="#" onclick="return doclink('link-42', 'ConversionError', 'link-34');">ConversionError</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Method rce.monitor.interface.robot.PublisherConverter._sendToClient()=rce.monitor.interface.robot.PublisherConverter-class.html#_sendToClient,Method rce.monitor.interface.robot.PublisherForwarder._sendToClient()=rce.monitor.interface.robot.PublisherForwarder-class.html#_sendToClient,Method rce.monitor.interface.robot.ServiceClientConverter._sendToClient()=rce.monitor.interface.robot.ServiceClientConverter-class.html#_sendToClient,Method rce.monitor.interface.robot.ServiceClientForwarder._sendToClient()=rce.monitor.interface.robot.ServiceClientForwarder-class.html#_sendToClient,Method rce.monitor.interface.robot.ServiceProviderConverter._sendToClient()=rce.monitor.interface.robot.ServiceProviderConverter-class.html#_sendToClient,Method rce.monitor.interface.robot.ServiceProviderForwarder._sendToClient()=rce.monitor.interface.robot.ServiceProviderForwarder-class.html#_sendToClient,Method rce.monitor.interface.robot.SubscriberConverter._sendToClient()=rce.monitor.interface.robot.SubscriberConverter-class.html#_sendToClient,Method rce.monitor.interface.robot.SubscriberForwarder._sendToClient()=rce.monitor.interface.robot.SubscriberForwarder-class.html#_sendToClient,Method rce.monitor.interface.robot._AbstractConverter._sendToClient()=rce.monitor.interface.robot._AbstractConverter-class.html#_sendToClient"><a title="rce.monitor.interface.robot.PublisherConverter._sendToClient
+rce.monitor.interface.robot.PublisherForwarder._sendToClient
+rce.monitor.interface.robot.ServiceClientConverter._sendToClient
+rce.monitor.interface.robot.ServiceClientForwarder._sendToClient
+rce.monitor.interface.robot.ServiceProviderConverter._sendToClient
+rce.monitor.interface.robot.ServiceProviderForwarder._sendToClient
+rce.monitor.interface.robot.SubscriberConverter._sendToClient
+rce.monitor.interface.robot.SubscriberForwarder._sendToClient
+rce.monitor.interface.robot._AbstractConverter._sendToClient" class="py-name" href="#" onclick="return doclink('link-43', '_sendToClient', 'link-43');">_sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">jsonMsg</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-44" class="py-name" targets="Module rce.slave.protocol=rce.slave.protocol-module.html"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-44', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientConverter"></a><div id="ServiceClientConverter-def"><a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt> <a class="py-toggle" href="#" id="ServiceClientConverter-toggle" onclick="return toggle('ServiceClientConverter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientConverter-class.html">ServiceClientConverter</a><tt class="py-op">(</tt><tt class="py-base-class">_ConverterBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientConverter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ServiceClientConverter-expanded"><a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Service-Client Converter.</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="ServiceClientConverter.__init__"></a><div id="ServiceClientConverter.__init__-def"><a name="L214"></a><tt class="py-lineno">214</tt> <a class="py-toggle" href="#" id="ServiceClientConverter.__init__-toggle" onclick="return toggle('ServiceClientConverter.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientConverter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">owner</tt><tt class="py-op">,</tt> <tt class="py-param">uid</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientConverter.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientConverter.__init__-expanded"><a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">        <tt id="link-45" class="py-name" targets="Class rce.monitor.interface.robot._ConverterBase=rce.monitor.interface.robot._ConverterBase-class.html"><a title="rce.monitor.interface.robot._ConverterBase" class="py-name" href="#" onclick="return doclink('link-45', '_ConverterBase', 'link-45');">_ConverterBase</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-46', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">owner</tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">,</tt> <tt class="py-name">clsName</tt><tt class="py-op">,</tt> <tt id="link-47" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-47', 'tag', 'link-17');">tag</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+</div><a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">    <tt id="link-48" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-48', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-49" class="py-name"><a title="rce.monitor.interface.robot._ConverterBase" class="py-name" href="#" onclick="return doclink('link-49', '_ConverterBase', 'link-45');">_ConverterBase</a></tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-50', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientConverter._loadClass"></a><div id="ServiceClientConverter._loadClass-def"><a name="L221"></a><tt class="py-lineno">221</tt> <a class="py-toggle" href="#" id="ServiceClientConverter._loadClass-toggle" onclick="return toggle('ServiceClientConverter._loadClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientConverter-class.html#_loadClass">_loadClass</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">loader</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientConverter._loadClass-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientConverter._loadClass-expanded"><a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">        <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line"> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-51" class="py-name"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-51', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt><tt class="py-op">(</tt><tt class="py-string">'srv type is not valid. Has to be of the '</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">                                     <tt class="py-string">'from pkg/msg, i.e. std_msgs/Int8.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-name">srvCls</tt> <tt class="py-op">=</tt> <tt id="link-52" class="py-name"><a title="rce.client.connection.ROSConnection.loader
+rce.environment.Environment.loader
+rce.robot.Robot.loader
+rce.robot.RobotClient.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-52', 'loader', 'link-25');">loader</a></tt><tt class="py-op">.</tt><tt id="link-53" class="py-name" targets="Method rce.util.loader.Loader.loadSrv()=rce.util.loader.Loader-class.html#loadSrv"><a title="rce.util.loader.Loader.loadSrv" class="py-name" href="#" onclick="return doclink('link-53', 'loadSrv', 'link-53');">loadSrv</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_inputMsgCls</tt> <tt class="py-op">=</tt> <tt class="py-name">srvCls</tt><tt class="py-op">.</tt><tt class="py-name">_response_class</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_outputMsgCls</tt> <tt class="py-op">=</tt> <tt class="py-name">srvCls</tt><tt class="py-op">.</tt><tt class="py-name">_request_class</tt> </tt>
+</div><a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientConverter._receive"></a><div id="ServiceClientConverter._receive-def"><a name="L232"></a><tt class="py-lineno">232</tt> <a class="py-toggle" href="#" id="ServiceClientConverter._receive-toggle" onclick="return toggle('ServiceClientConverter._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientConverter-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientConverter._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientConverter._receive-expanded"><a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">            <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-54" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-54', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-55" class="py-name" targets="Class rce.monitor.interface.robot.ServiceError=rce.monitor.interface.robot.ServiceError-class.html"><a title="rce.monitor.interface.robot.ServiceError" class="py-name" href="#" onclick="return doclink('link-55', 'ServiceError', 'link-55');">ServiceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Service Client does not wait for a response '</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">                               <tt class="py-string">'with message ID {0}.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line"> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Method rce.slave.interface.Interface.respond()=rce.slave.interface.Interface-class.html#respond"><a title="rce.slave.interface.Interface.respond" class="py-name" href="#" onclick="return doclink('link-56', 'respond', 'link-56');">respond</a></tt><tt class="py-op">(</tt><tt id="link-57" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-57', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-58" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-58', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientConverter._sendToClient"></a><div id="ServiceClientConverter._sendToClient-def"><a name="L241"></a><tt class="py-lineno">241</tt> <a class="py-toggle" href="#" id="ServiceClientConverter._sendToClient-toggle" onclick="return toggle('ServiceClientConverter._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientConverter-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientConverter._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientConverter._sendToClient-expanded"><a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">            <tt class="py-name">uid</tt> <tt class="py-op">=</tt> <tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hex</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">uid</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt><tt class="py-op">:</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt><tt class="py-op">[</tt><tt class="py-name">uid</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-59" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-59', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method rce.robot.Robot.sendToClient()=rce.robot.Robot-class.html#sendToClient"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-60', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-61" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-61', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderConverter"></a><div id="ServiceProviderConverter-def"><a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt> <a class="py-toggle" href="#" id="ServiceProviderConverter-toggle" onclick="return toggle('ServiceProviderConverter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderConverter-class.html">ServiceProviderConverter</a><tt class="py-op">(</tt><tt class="py-base-class">_ConverterBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderConverter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ServiceProviderConverter-expanded"><a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Service-Provider Converter.</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="ServiceProviderConverter.remote_connect"></a><div id="ServiceProviderConverter.remote_connect-def"><a name="L255"></a><tt class="py-lineno">255</tt> <a class="py-toggle" href="#" id="ServiceProviderConverter.remote_connect-toggle" onclick="return toggle('ServiceProviderConverter.remote_connect');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderConverter-class.html#remote_connect">remote_connect</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderConverter.remote_connect-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderConverter.remote_connect-expanded"><a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_protocols</tt><tt class="py-op">:</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-62" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-62', 'InternalError', 'link-5');">InternalError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not register more than one interface '</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">                                <tt class="py-string">'at a time with a Service-Provider.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line"> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-63" class="py-name"><a title="rce.monitor.interface.robot._ConverterBase" class="py-name" href="#" onclick="return doclink('link-63', '_ConverterBase', 'link-45');">_ConverterBase</a></tt><tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Method rce.monitor.interface.environment.ServiceProviderInterface.remote_connect()=rce.monitor.interface.environment.ServiceProviderInterface-class.html#remote_connect,Method rce.monitor.interface.robot.ServiceProviderConverter.remote_connect()=rce.monitor.interface.robot.ServiceProviderConverter-class.html#remote_connect,Method rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect()=rce.monitor.interface.robot.ServiceProviderForwarder-class.html#remote_connect,Method rce.slave.endpoint.Endpoint.remote_connect()=rce.slave.endpoint.Endpoint-class.html#remote_connect,Method rce.slave.interface.Interface.remote_connect()=rce.slave.interface.Interface-class.html#remote_connect"><a title="rce.monitor.interface.environment.ServiceProviderInterface.remote_connect
+rce.monitor.interface.robot.ServiceProviderConverter.remote_connect
+rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect
+rce.slave.endpoint.Endpoint.remote_connect
+rce.slave.interface.Interface.remote_connect" class="py-name" href="#" onclick="return doclink('link-64', 'remote_connect', 'link-64');">remote_connect</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-65" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-65', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line"> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">    <tt id="link-66" class="py-name"><a title="rce.monitor.interface.environment.ServiceProviderInterface.remote_connect
+rce.monitor.interface.robot.ServiceProviderConverter.remote_connect
+rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect
+rce.slave.endpoint.Endpoint.remote_connect
+rce.slave.interface.Interface.remote_connect" class="py-name" href="#" onclick="return doclink('link-66', 'remote_connect', 'link-64');">remote_connect</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-67" class="py-name"><a title="rce.monitor.interface.robot._ConverterBase" class="py-name" href="#" onclick="return doclink('link-67', '_ConverterBase', 'link-45');">_ConverterBase</a></tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="rce.monitor.interface.environment.ServiceProviderInterface.remote_connect
+rce.monitor.interface.robot.ServiceProviderConverter.remote_connect
+rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect
+rce.slave.endpoint.Endpoint.remote_connect
+rce.slave.interface.Interface.remote_connect" class="py-name" href="#" onclick="return doclink('link-68', 'remote_connect', 'link-64');">remote_connect</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderConverter._loadClass"></a><div id="ServiceProviderConverter._loadClass-def"><a name="L264"></a><tt class="py-lineno">264</tt> <a class="py-toggle" href="#" id="ServiceProviderConverter._loadClass-toggle" onclick="return toggle('ServiceProviderConverter._loadClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderConverter-class.html#_loadClass">_loadClass</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">loader</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderConverter._loadClass-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderConverter._loadClass-expanded"><a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">        <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-69" class="py-name"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-69', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt><tt class="py-op">(</tt><tt class="py-string">'srv type is not valid. Has to be of the '</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">                                     <tt class="py-string">'from pkg/msg, i.e. std_msgs/Int8.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-name">srvCls</tt> <tt class="py-op">=</tt> <tt id="link-70" class="py-name"><a title="rce.client.connection.ROSConnection.loader
+rce.environment.Environment.loader
+rce.robot.Robot.loader
+rce.robot.RobotClient.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-70', 'loader', 'link-25');">loader</a></tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="rce.util.loader.Loader.loadSrv" class="py-name" href="#" onclick="return doclink('link-71', 'loadSrv', 'link-53');">loadSrv</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_inputMsgCls</tt> <tt class="py-op">=</tt> <tt class="py-name">srvCls</tt><tt class="py-op">.</tt><tt class="py-name">_request_class</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_outputMsgCls</tt> <tt class="py-op">=</tt> <tt class="py-name">srvCls</tt><tt class="py-op">.</tt><tt class="py-name">_response_class</tt> </tt>
+</div><a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderConverter._receive"></a><div id="ServiceProviderConverter._receive-def"><a name="L275"></a><tt class="py-lineno">275</tt> <a class="py-toggle" href="#" id="ServiceProviderConverter._receive-toggle" onclick="return toggle('ServiceProviderConverter._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderConverter-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderConverter._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderConverter._receive-expanded"><a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name" targets="Method rce.slave.interface.Interface.received()=rce.slave.interface.Interface-class.html#received"><a title="rce.slave.interface.Interface.received" class="py-name" href="#" onclick="return doclink('link-72', 'received', 'link-72');">received</a></tt><tt class="py-op">(</tt><tt id="link-73" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-73', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderConverter._sendToClient"></a><div id="ServiceProviderConverter._sendToClient-def"><a name="L278"></a><tt class="py-lineno">278</tt> <a class="py-toggle" href="#" id="ServiceProviderConverter._sendToClient-toggle" onclick="return toggle('ServiceProviderConverter._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderConverter-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderConverter._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderConverter._sendToClient-expanded"><a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-74', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-75" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-75', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line"> </tt>
+<a name="PublisherConverter"></a><div id="PublisherConverter-def"><a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line"> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt> <a class="py-toggle" href="#" id="PublisherConverter-toggle" onclick="return toggle('PublisherConverter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherConverter-class.html">PublisherConverter</a><tt class="py-op">(</tt><tt class="py-base-class">_ConverterBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherConverter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="PublisherConverter-expanded"><a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Publisher Converter.</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="PublisherConverter._loadClass"></a><div id="PublisherConverter._loadClass-def"><a name="L285"></a><tt class="py-lineno">285</tt> <a class="py-toggle" href="#" id="PublisherConverter._loadClass-toggle" onclick="return toggle('PublisherConverter._loadClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherConverter-class.html#_loadClass">_loadClass</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">loader</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherConverter._loadClass-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PublisherConverter._loadClass-expanded"><a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">        <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-76" class="py-name"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-76', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt><tt class="py-op">(</tt><tt class="py-string">'msg type is not valid. Has to be of the '</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">                                     <tt class="py-string">'from pkg/msg, i.e. std_msgs/Int8.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line"> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_outputMsgCls</tt> <tt class="py-op">=</tt> <tt id="link-77" class="py-name"><a title="rce.client.connection.ROSConnection.loader
+rce.environment.Environment.loader
+rce.robot.Robot.loader
+rce.robot.RobotClient.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-77', 'loader', 'link-25');">loader</a></tt><tt class="py-op">.</tt><tt id="link-78" class="py-name" targets="Method rce.util.loader.Loader.loadMsg()=rce.util.loader.Loader-class.html#loadMsg"><a title="rce.util.loader.Loader.loadMsg" class="py-name" href="#" onclick="return doclink('link-78', 'loadMsg', 'link-78');">loadMsg</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"> </tt>
+<a name="PublisherConverter._receive"></a><div id="PublisherConverter._receive-def"><a name="L294"></a><tt class="py-lineno">294</tt> <a class="py-toggle" href="#" id="PublisherConverter._receive-toggle" onclick="return toggle('PublisherConverter._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherConverter-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherConverter._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PublisherConverter._receive-expanded"><a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="rce.slave.interface.Interface.received" class="py-name" href="#" onclick="return doclink('link-79', 'received', 'link-72');">received</a></tt><tt class="py-op">(</tt><tt id="link-80" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-80', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line"> </tt>
+<a name="PublisherConverter._sendToClient"></a><div id="PublisherConverter._sendToClient-def"><a name="L297"></a><tt class="py-lineno">297</tt> <a class="py-toggle" href="#" id="PublisherConverter._sendToClient-toggle" onclick="return toggle('PublisherConverter._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherConverter-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherConverter._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PublisherConverter._sendToClient-expanded"><a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-81', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-82" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-82', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"> </tt>
+<a name="SubscriberConverter"></a><div id="SubscriberConverter-def"><a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt> <a class="py-toggle" href="#" id="SubscriberConverter-toggle" onclick="return toggle('SubscriberConverter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberConverter-class.html">SubscriberConverter</a><tt class="py-op">(</tt><tt class="py-base-class">_ConverterBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberConverter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SubscriberConverter-expanded"><a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Subscriber Converter.</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="SubscriberConverter._loadClass"></a><div id="SubscriberConverter._loadClass-def"><a name="L304"></a><tt class="py-lineno">304</tt> <a class="py-toggle" href="#" id="SubscriberConverter._loadClass-toggle" onclick="return toggle('SubscriberConverter._loadClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberConverter-class.html#_loadClass">_loadClass</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">loader</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberConverter._loadClass-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SubscriberConverter._loadClass-expanded"><a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">        <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line"> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-83" class="py-name"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-83', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt><tt class="py-op">(</tt><tt class="py-string">'msg type is not valid. Has to be of the '</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">                                     <tt class="py-string">'from pkg/msg, i.e. std_msgs/Int8.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_inputMsgCls</tt> <tt class="py-op">=</tt> <tt id="link-84" class="py-name"><a title="rce.client.connection.ROSConnection.loader
+rce.environment.Environment.loader
+rce.robot.Robot.loader
+rce.robot.RobotClient.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-84', 'loader', 'link-25');">loader</a></tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="rce.util.loader.Loader.loadMsg" class="py-name" href="#" onclick="return doclink('link-85', 'loadMsg', 'link-78');">loadMsg</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"> </tt>
+<a name="SubscriberConverter._receive"></a><div id="SubscriberConverter._receive-def"><a name="L313"></a><tt class="py-lineno">313</tt> <a class="py-toggle" href="#" id="SubscriberConverter._receive-toggle" onclick="return toggle('SubscriberConverter._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberConverter-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberConverter._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SubscriberConverter._receive-expanded"><a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="rce.slave.interface.Interface.received" class="py-name" href="#" onclick="return doclink('link-86', 'received', 'link-72');">received</a></tt><tt class="py-op">(</tt><tt id="link-87" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-87', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"> </tt>
+<a name="SubscriberConverter._sendToClient"></a><div id="SubscriberConverter._sendToClient-def"><a name="L316"></a><tt class="py-lineno">316</tt> <a class="py-toggle" href="#" id="SubscriberConverter._sendToClient-toggle" onclick="return toggle('SubscriberConverter._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberConverter-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberConverter._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SubscriberConverter._sendToClient-expanded"><a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-88" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-88', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-89" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-89', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"> </tt>
+<a name="_ForwarderBase"></a><div id="_ForwarderBase-def"><a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line"> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt> <a class="py-toggle" href="#" id="_ForwarderBase-toggle" onclick="return toggle('_ForwarderBase');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ForwarderBase-class.html">_ForwarderBase</a><tt class="py-op">(</tt><tt class="py-base-class">_AbstractConverter</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ForwarderBase-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_ForwarderBase-expanded"><a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which implements the basic functionality of a Forwarder.</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">    <tt id="link-90" class="py-name" targets="Variable rce.client.interface._GZIP_LVL=rce.client.interface-module.html#_GZIP_LVL,Variable rce.monitor.interface.robot._ForwarderBase._GZIP_LVL=rce.monitor.interface.robot._ForwarderBase-class.html#_GZIP_LVL"><a title="rce.client.interface._GZIP_LVL
+rce.monitor.interface.robot._ForwarderBase._GZIP_LVL" class="py-name" href="#" onclick="return doclink('link-90', '_GZIP_LVL', 'link-90');">_GZIP_LVL</a></tt> <tt class="py-op">=</tt> <tt id="link-91" class="py-name"><a title="rce.monitor.interface.robot.settings
+rce.util.network.settings
+rce.util.settings" class="py-name" href="#" onclick="return doclink('link-91', 'settings', 'link-13');">settings</a></tt><tt class="py-op">.</tt><tt id="link-92" class="py-name" targets="Variable rce.util.settings._Settings.gzip_lvl=rce.util.settings._Settings-class.html#gzip_lvl"><a title="rce.util.settings._Settings.gzip_lvl" class="py-name" href="#" onclick="return doclink('link-92', 'gzip_lvl', 'link-92');">gzip_lvl</a></tt> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"> </tt>
+<a name="_ForwarderBase.receive"></a><div id="_ForwarderBase.receive-def"><a name="L325"></a><tt class="py-lineno">325</tt> <a class="py-toggle" href="#" id="_ForwarderBase.receive-toggle" onclick="return toggle('_ForwarderBase.receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ForwarderBase-class.html#receive">receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ForwarderBase.receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_ForwarderBase.receive-expanded"><a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">        <tt class="py-docstring">""" Unwrap and inflate a JSON encoded ROS message.</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"><tt class="py-docstring">            @param clsName:     Message/Service type of the received message.</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line"><tt class="py-docstring">            @type  clsName:     str</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"><tt class="py-docstring">            @param msgID:       Identifier which is used to match request /</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"><tt class="py-docstring">                                response message.</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msgID:       str</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         JSON compatible message which should be</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line"><tt class="py-docstring">                                processed.</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         dict</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">clsName</tt> <tt class="py-op">!=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">:</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-93" class="py-name"><a title="rce.slave.interface.InvalidResoureName" class="py-name" href="#" onclick="return doclink('link-93', 'InvalidResoureName', 'link-10');">InvalidResoureName</a></tt><tt class="py-op">(</tt><tt class="py-string">'Sent message type does not match the '</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">                                     <tt class="py-string">'used message type for this interface.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line"> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-94" class="py-name" targets="Function rce.comm.assembler._checkIsStringIO()=rce.comm.assembler-module.html#_checkIsStringIO,Function rce.monitor.interface.robot._checkIsStringIO()=rce.monitor.interface.robot-module.html#_checkIsStringIO,Function rce.util.converter._checkIsStringIO()=rce.util.converter-module.html#_checkIsStringIO,Function rce.util.converters.image._checkIsStringIO()=rce.util.converters.image-module.html#_checkIsStringIO"><a title="rce.comm.assembler._checkIsStringIO
+rce.monitor.interface.robot._checkIsStringIO
+rce.util.converter._checkIsStringIO
+rce.util.converters.image._checkIsStringIO" class="py-name" href="#" onclick="return doclink('link-94', '_checkIsStringIO', 'link-94');">_checkIsStringIO</a></tt><tt class="py-op">(</tt><tt id="link-95" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-95', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-96" class="py-name"><a title="rce.monitor.interface.robot.ConversionError" class="py-name" href="#" onclick="return doclink('link-96', 'ConversionError', 'link-34');">ConversionError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Sent message is not a binary message.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line"> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="rce.monitor.interface.robot.PublisherConverter._receive
+rce.monitor.interface.robot.PublisherForwarder._receive
+rce.monitor.interface.robot.ServiceClientConverter._receive
+rce.monitor.interface.robot.ServiceClientForwarder._receive
+rce.monitor.interface.robot.ServiceProviderConverter._receive
+rce.monitor.interface.robot.ServiceProviderForwarder._receive
+rce.monitor.interface.robot.SubscriberConverter._receive
+rce.monitor.interface.robot.SubscriberForwarder._receive
+rce.monitor.interface.robot._AbstractConverter._receive" class="py-name" href="#" onclick="return doclink('link-97', '_receive', 'link-37');">_receive</a></tt><tt class="py-op">(</tt><tt class="py-name">zlib</tt><tt class="py-op">.</tt><tt class="py-name">decompress</tt><tt class="py-op">(</tt><tt id="link-98" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-98', 'msg', 'link-31');">msg</a></tt><tt class="py-op">.</tt><tt class="py-name">getvalue</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"> </tt>
+<a name="_ForwarderBase._send"></a><div id="_ForwarderBase._send-def"><a name="L348"></a><tt class="py-lineno">348</tt> <a class="py-toggle" href="#" id="_ForwarderBase._send-toggle" onclick="return toggle('_ForwarderBase._send');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot._ForwarderBase-class.html#_send">_send</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_ForwarderBase._send-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_ForwarderBase._send-expanded"><a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">        <tt class="py-docstring">""" Wrap and deflate a ROS message in a JSON encoded message.</tt> </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         Received ROS message in serialized form.</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         str</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line"><tt class="py-docstring">            @param msgID:       Unique ID to identify the message.</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msgID:       str</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line"><tt class="py-docstring">            @param protocol:    Protocol instance through which the message</tt> </tt>
+<a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line"><tt class="py-docstring">                                was sent.</tt> </tt>
+<a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line"><tt class="py-docstring">            @type  protocol:    rce.slave.protocol._Protocol</tt> </tt>
+<a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line"><tt class="py-docstring">            @param remoteID:    Unique ID of the Interface which sent the</tt> </tt>
+<a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line"><tt class="py-docstring">                                message.</tt> </tt>
+<a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line"><tt class="py-docstring">            @type  remoteID:    uuid.UUID</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="rce.monitor.interface.robot.PublisherConverter._sendToClient
+rce.monitor.interface.robot.PublisherForwarder._sendToClient
+rce.monitor.interface.robot.ServiceClientConverter._sendToClient
+rce.monitor.interface.robot.ServiceClientForwarder._sendToClient
+rce.monitor.interface.robot.ServiceProviderConverter._sendToClient
+rce.monitor.interface.robot.ServiceProviderForwarder._sendToClient
+rce.monitor.interface.robot.SubscriberConverter._sendToClient
+rce.monitor.interface.robot.SubscriberForwarder._sendToClient
+rce.monitor.interface.robot._AbstractConverter._sendToClient" class="py-name" href="#" onclick="return doclink('link-99', '_sendToClient', 'link-43');">_sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">StringIO</tt><tt class="py-op">(</tt><tt class="py-name">zlib</tt><tt class="py-op">.</tt><tt class="py-name">compress</tt><tt class="py-op">(</tt><tt id="link-100" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-100', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-101" class="py-name"><a title="rce.client.interface._GZIP_LVL
+rce.monitor.interface.robot._ForwarderBase._GZIP_LVL" class="py-name" href="#" onclick="return doclink('link-101', '_GZIP_LVL', 'link-90');">_GZIP_LVL</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line">                           <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-102" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-102', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientForwarder"></a><div id="ServiceClientForwarder-def"><a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line"> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt> <a class="py-toggle" href="#" id="ServiceClientForwarder-toggle" onclick="return toggle('ServiceClientForwarder');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientForwarder-class.html">ServiceClientForwarder</a><tt class="py-op">(</tt><tt class="py-base-class">_ForwarderBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientForwarder-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ServiceClientForwarder-expanded"><a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Service-Client Forwarder.</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="ServiceClientForwarder.__init__"></a><div id="ServiceClientForwarder.__init__-def"><a name="L372"></a><tt class="py-lineno">372</tt> <a class="py-toggle" href="#" id="ServiceClientForwarder.__init__-toggle" onclick="return toggle('ServiceClientForwarder.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientForwarder-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">owner</tt><tt class="py-op">,</tt> <tt class="py-param">uid</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientForwarder.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientForwarder.__init__-expanded"><a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line">        <tt id="link-103" class="py-name" targets="Class rce.monitor.interface.robot._ForwarderBase=rce.monitor.interface.robot._ForwarderBase-class.html"><a title="rce.monitor.interface.robot._ForwarderBase" class="py-name" href="#" onclick="return doclink('link-103', '_ForwarderBase', 'link-103');">_ForwarderBase</a></tt><tt class="py-op">.</tt><tt id="link-104" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-104', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">owner</tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">,</tt> <tt class="py-name">clsName</tt><tt class="py-op">,</tt> <tt id="link-105" class="py-name"><a title="rce.monitor.interface.robot._AbstractConverter.tag" class="py-name" href="#" onclick="return doclink('link-105', 'tag', 'link-17');">tag</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line"> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+</div><a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line"> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line">    <tt id="link-106" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-106', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-107" class="py-name"><a title="rce.monitor.interface.robot._ForwarderBase" class="py-name" href="#" onclick="return doclink('link-107', '_ForwarderBase', 'link-103');">_ForwarderBase</a></tt><tt class="py-op">.</tt><tt id="link-108" class="py-name"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-108', '__init__', 'link-19');">__init__</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientForwarder._receive"></a><div id="ServiceClientForwarder._receive-def"><a name="L379"></a><tt class="py-lineno">379</tt> <a class="py-toggle" href="#" id="ServiceClientForwarder._receive-toggle" onclick="return toggle('ServiceClientForwarder._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientForwarder-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientForwarder._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientForwarder._receive-expanded"><a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L381"></a><tt class="py-lineno">381</tt>  <tt class="py-line">            <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-109" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-109', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+<a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L383"></a><tt class="py-lineno">383</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-110" class="py-name"><a title="rce.monitor.interface.robot.ServiceError" class="py-name" href="#" onclick="return doclink('link-110', 'ServiceError', 'link-55');">ServiceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Service Client does not wait for a response '</tt> </tt>
+<a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line">                               <tt class="py-string">'with message ID {0}.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line"> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-111" class="py-name"><a title="rce.slave.interface.Interface.respond" class="py-name" href="#" onclick="return doclink('link-111', 'respond', 'link-56');">respond</a></tt><tt class="py-op">(</tt><tt id="link-112" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-112', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-113" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-113', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line"> </tt>
+<a name="ServiceClientForwarder._sendToClient"></a><div id="ServiceClientForwarder._sendToClient-def"><a name="L388"></a><tt class="py-lineno">388</tt> <a class="py-toggle" href="#" id="ServiceClientForwarder._sendToClient-toggle" onclick="return toggle('ServiceClientForwarder._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceClientForwarder-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceClientForwarder._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceClientForwarder._sendToClient-expanded"><a name="L389"></a><tt class="py-lineno">389</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L390"></a><tt class="py-lineno">390</tt>  <tt class="py-line">            <tt class="py-name">uid</tt> <tt class="py-op">=</tt> <tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hex</tt> </tt>
+<a name="L391"></a><tt class="py-lineno">391</tt>  <tt class="py-line"> </tt>
+<a name="L392"></a><tt class="py-lineno">392</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">uid</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt><tt class="py-op">:</tt> </tt>
+<a name="L393"></a><tt class="py-lineno">393</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L394"></a><tt class="py-lineno">394</tt>  <tt class="py-line"> </tt>
+<a name="L395"></a><tt class="py-lineno">395</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_pendingRequests</tt><tt class="py-op">[</tt><tt class="py-name">uid</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-114" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-114', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+<a name="L396"></a><tt class="py-lineno">396</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-115', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-116" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-116', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L397"></a><tt class="py-lineno">397</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderForwarder"></a><div id="ServiceProviderForwarder-def"><a name="L398"></a><tt class="py-lineno">398</tt>  <tt class="py-line"> </tt>
+<a name="L399"></a><tt class="py-lineno">399</tt> <a class="py-toggle" href="#" id="ServiceProviderForwarder-toggle" onclick="return toggle('ServiceProviderForwarder');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderForwarder-class.html">ServiceProviderForwarder</a><tt class="py-op">(</tt><tt class="py-base-class">_ForwarderBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderForwarder-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ServiceProviderForwarder-expanded"><a name="L400"></a><tt class="py-lineno">400</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Service-Provider Forwarder.</tt> </tt>
+<a name="L401"></a><tt class="py-lineno">401</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="ServiceProviderForwarder.remote_connect"></a><div id="ServiceProviderForwarder.remote_connect-def"><a name="L402"></a><tt class="py-lineno">402</tt> <a class="py-toggle" href="#" id="ServiceProviderForwarder.remote_connect-toggle" onclick="return toggle('ServiceProviderForwarder.remote_connect');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderForwarder-class.html#remote_connect">remote_connect</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderForwarder.remote_connect-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderForwarder.remote_connect-expanded"><a name="L403"></a><tt class="py-lineno">403</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_protocols</tt><tt class="py-op">:</tt> </tt>
+<a name="L404"></a><tt class="py-lineno">404</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-117" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-117', 'InternalError', 'link-5');">InternalError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not register more than one interface '</tt> </tt>
+<a name="L405"></a><tt class="py-lineno">405</tt>  <tt class="py-line">                                <tt class="py-string">'at a time with a Service-Provider.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L406"></a><tt class="py-lineno">406</tt>  <tt class="py-line"> </tt>
+<a name="L407"></a><tt class="py-lineno">407</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-118" class="py-name"><a title="rce.monitor.interface.robot._ForwarderBase" class="py-name" href="#" onclick="return doclink('link-118', '_ForwarderBase', 'link-103');">_ForwarderBase</a></tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="rce.monitor.interface.environment.ServiceProviderInterface.remote_connect
+rce.monitor.interface.robot.ServiceProviderConverter.remote_connect
+rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect
+rce.slave.endpoint.Endpoint.remote_connect
+rce.slave.interface.Interface.remote_connect" class="py-name" href="#" onclick="return doclink('link-119', 'remote_connect', 'link-64');">remote_connect</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-120" class="py-name"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-120', 'protocol', 'link-44');">protocol</a></tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L408"></a><tt class="py-lineno">408</tt>  <tt class="py-line"> </tt>
+<a name="L409"></a><tt class="py-lineno">409</tt>  <tt class="py-line">    <tt id="link-121" class="py-name"><a title="rce.monitor.interface.environment.ServiceProviderInterface.remote_connect
+rce.monitor.interface.robot.ServiceProviderConverter.remote_connect
+rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect
+rce.slave.endpoint.Endpoint.remote_connect
+rce.slave.interface.Interface.remote_connect" class="py-name" href="#" onclick="return doclink('link-121', 'remote_connect', 'link-64');">remote_connect</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-122" class="py-name"><a title="rce.monitor.interface.robot._ForwarderBase" class="py-name" href="#" onclick="return doclink('link-122', '_ForwarderBase', 'link-103');">_ForwarderBase</a></tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="rce.monitor.interface.environment.ServiceProviderInterface.remote_connect
+rce.monitor.interface.robot.ServiceProviderConverter.remote_connect
+rce.monitor.interface.robot.ServiceProviderForwarder.remote_connect
+rce.slave.endpoint.Endpoint.remote_connect
+rce.slave.interface.Interface.remote_connect" class="py-name" href="#" onclick="return doclink('link-123', 'remote_connect', 'link-64');">remote_connect</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+<a name="L410"></a><tt class="py-lineno">410</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderForwarder._receive"></a><div id="ServiceProviderForwarder._receive-def"><a name="L411"></a><tt class="py-lineno">411</tt> <a class="py-toggle" href="#" id="ServiceProviderForwarder._receive-toggle" onclick="return toggle('ServiceProviderForwarder._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderForwarder-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderForwarder._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderForwarder._receive-expanded"><a name="L412"></a><tt class="py-lineno">412</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="rce.slave.interface.Interface.received" class="py-name" href="#" onclick="return doclink('link-124', 'received', 'link-72');">received</a></tt><tt class="py-op">(</tt><tt id="link-125" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-125', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L413"></a><tt class="py-lineno">413</tt>  <tt class="py-line"> </tt>
+<a name="ServiceProviderForwarder._sendToClient"></a><div id="ServiceProviderForwarder._sendToClient-def"><a name="L414"></a><tt class="py-lineno">414</tt> <a class="py-toggle" href="#" id="ServiceProviderForwarder._sendToClient-toggle" onclick="return toggle('ServiceProviderForwarder._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.ServiceProviderForwarder-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceProviderForwarder._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ServiceProviderForwarder._sendToClient-expanded"><a name="L415"></a><tt class="py-lineno">415</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-126" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-126', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-127" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-127', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L416"></a><tt class="py-lineno">416</tt>  <tt class="py-line"> </tt>
+<a name="PublisherForwarder"></a><div id="PublisherForwarder-def"><a name="L417"></a><tt class="py-lineno">417</tt>  <tt class="py-line"> </tt>
+<a name="L418"></a><tt class="py-lineno">418</tt> <a class="py-toggle" href="#" id="PublisherForwarder-toggle" onclick="return toggle('PublisherForwarder');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherForwarder-class.html">PublisherForwarder</a><tt class="py-op">(</tt><tt class="py-base-class">_ForwarderBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherForwarder-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="PublisherForwarder-expanded"><a name="L419"></a><tt class="py-lineno">419</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Publisher Forwarder.</tt> </tt>
+<a name="L420"></a><tt class="py-lineno">420</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="PublisherForwarder._receive"></a><div id="PublisherForwarder._receive-def"><a name="L421"></a><tt class="py-lineno">421</tt> <a class="py-toggle" href="#" id="PublisherForwarder._receive-toggle" onclick="return toggle('PublisherForwarder._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherForwarder-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherForwarder._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PublisherForwarder._receive-expanded"><a name="L422"></a><tt class="py-lineno">422</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="rce.slave.interface.Interface.received" class="py-name" href="#" onclick="return doclink('link-128', 'received', 'link-72');">received</a></tt><tt class="py-op">(</tt><tt id="link-129" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-129', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L423"></a><tt class="py-lineno">423</tt>  <tt class="py-line"> </tt>
+<a name="PublisherForwarder._sendToClient"></a><div id="PublisherForwarder._sendToClient-def"><a name="L424"></a><tt class="py-lineno">424</tt> <a class="py-toggle" href="#" id="PublisherForwarder._sendToClient-toggle" onclick="return toggle('PublisherForwarder._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.PublisherForwarder-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PublisherForwarder._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PublisherForwarder._sendToClient-expanded"><a name="L425"></a><tt class="py-lineno">425</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-130', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-131" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-131', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L426"></a><tt class="py-lineno">426</tt>  <tt class="py-line"> </tt>
+<a name="SubscriberForwarder"></a><div id="SubscriberForwarder-def"><a name="L427"></a><tt class="py-lineno">427</tt>  <tt class="py-line"> </tt>
+<a name="L428"></a><tt class="py-lineno">428</tt> <a class="py-toggle" href="#" id="SubscriberForwarder-toggle" onclick="return toggle('SubscriberForwarder');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberForwarder-class.html">SubscriberForwarder</a><tt class="py-op">(</tt><tt class="py-base-class">_ForwarderBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberForwarder-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SubscriberForwarder-expanded"><a name="L429"></a><tt class="py-lineno">429</tt>  <tt class="py-line">    <tt class="py-docstring">""" Class which is used as a Subscriber Forwarder.</tt> </tt>
+<a name="L430"></a><tt class="py-lineno">430</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="SubscriberForwarder._receive"></a><div id="SubscriberForwarder._receive-def"><a name="L431"></a><tt class="py-lineno">431</tt> <a class="py-toggle" href="#" id="SubscriberForwarder._receive-toggle" onclick="return toggle('SubscriberForwarder._receive');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberForwarder-class.html#_receive">_receive</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberForwarder._receive-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SubscriberForwarder._receive-expanded"><a name="L432"></a><tt class="py-lineno">432</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-132" class="py-name"><a title="rce.slave.interface.Interface.received" class="py-name" href="#" onclick="return doclink('link-132', 'received', 'link-72');">received</a></tt><tt class="py-op">(</tt><tt id="link-133" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-133', 'msg', 'link-31');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L433"></a><tt class="py-lineno">433</tt>  <tt class="py-line"> </tt>
+<a name="SubscriberForwarder._sendToClient"></a><div id="SubscriberForwarder._sendToClient-def"><a name="L434"></a><tt class="py-lineno">434</tt> <a class="py-toggle" href="#" id="SubscriberForwarder._sendToClient-toggle" onclick="return toggle('SubscriberForwarder._sendToClient');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.monitor.interface.robot.SubscriberForwarder-class.html#_sendToClient">_sendToClient</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">protocol</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SubscriberForwarder._sendToClient-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SubscriberForwarder._sendToClient-expanded"><a name="L435"></a><tt class="py-lineno">435</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_owner</tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="rce.robot.Robot.sendToClient" class="py-name" href="#" onclick="return doclink('link-134', 'sendToClient', 'link-60');">sendToClient</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_tag</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_clsName</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-135" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-135', 'msg', 'link-31');">msg</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L436"></a><tt class="py-lineno">436</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:09 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

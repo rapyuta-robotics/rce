@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>rce.slave.protocol</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="rce-module.html">Package&nbsp;rce</a> ::
+        <a href="rce.slave-module.html">Package&nbsp;slave</a> ::
+        Module&nbsp;protocol
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="rce.slave.protocol-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="rce.slave.protocol-module.html">Module rce.slave.protocol</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-core/rce/slave/protocol.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># Python specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">struct</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">uuid</tt> <tt class="py-keyword">import</tt> <tt class="py-name">UUID</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-comment"># twisted specific imports</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">python</tt> <tt class="py-keyword">import</tt> <tt class="py-name">log</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">internet</tt><tt class="py-op">.</tt><tt class="py-name">defer</tt> <tt class="py-keyword">import</tt> <tt class="py-name">succeed</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">protocols</tt><tt class="py-op">.</tt><tt class="py-name">basic</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Int32StringReceiver</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">spread</tt><tt class="py-op">.</tt><tt class="py-name">pb</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Referenceable</tt><tt class="py-op">,</tt> \ </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">    <tt class="py-name">DeadReferenceError</tt><tt class="py-op">,</tt> <tt class="py-name">PBConnectionLost</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-0', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-1', 'util', 'link-1');">util</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module rce.comm.error=rce.comm.error-module.html,Module rce.core.error=rce.core.error-module.html,Module rce.util.error=rce.util.error-module.html"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-2', 'error', 'link-2');">error</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Class rce.util.error.InternalError=rce.util.error.InternalError-class.html"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-3', 'InternalError', 'link-3');">InternalError</a></tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"> </tt>
+<a name="_Protocol"></a><div id="_Protocol-def"><a name="L48"></a><tt class="py-lineno"> 48</tt> <a class="py-toggle" href="#" id="_Protocol-toggle" onclick="return toggle('_Protocol');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html">_Protocol</a><tt class="py-op">(</tt><tt class="py-base-class">Referenceable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_Protocol-expanded"><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt class="py-docstring">""" Abstract base class for a internal Protocol which interacts with the</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">        Endpoint, Namespace, and Interfaces in a slave process.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="_Protocol.__init__"></a><div id="_Protocol.__init__-def"><a name="L52"></a><tt class="py-lineno"> 52</tt> <a class="py-toggle" href="#" id="_Protocol.__init__-toggle" onclick="return toggle('_Protocol.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">endpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Protocol.__init__-expanded"><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-docstring">""" Initialize the Protocol.</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name" targets="Variable rce.core.network.Interface.endpoint=rce.core.network.Interface-class.html#endpoint,Module rce.slave.endpoint=rce.slave.endpoint-module.html"><a title="rce.core.network.Interface.endpoint
+rce.slave.endpoint" class="py-name" href="#" onclick="return doclink('link-4', 'endpoint', 'link-4');">endpoint</a></tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="_Protocol.sendMessage"></a><div id="_Protocol.sendMessage-def"><a name="L58"></a><tt class="py-lineno"> 58</tt> <a class="py-toggle" href="#" id="_Protocol.sendMessage-toggle" onclick="return toggle('_Protocol.sendMessage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html#sendMessage">sendMessage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol.sendMessage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Protocol.sendMessage-expanded"><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-docstring">""" Send a message received from an Interface to the other side.</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-docstring">            @param interface:   Interface which wants to send the message.</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"><tt class="py-docstring">            @type  interface:   rce.slave.interface.Interface</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         Message which should be sent.</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         str</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"><tt class="py-docstring">            @param msgID:       Unique ID which can be used to find a</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"><tt class="py-docstring">                                correspondence between request / response</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-docstring">                                message.</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msgID:       uuid.UUID</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"><tt class="py-docstring">            @param remoteID:    If the remote ID is supplied than only this</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-docstring">                                Interface will receive the message, regardless</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-docstring">                                of additional interfaces which might be</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-docstring">                                registered.</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-docstring">            @type  remoteID:    uuid.UUID</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-string">"Method 'sendMessage' has to be "</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">                                  <tt class="py-string">'implemented.'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="_Protocol.messageReceived"></a><div id="_Protocol.messageReceived-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="_Protocol.messageReceived-toggle" onclick="return toggle('_Protocol.messageReceived');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html#messageReceived">messageReceived</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">destID</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol.messageReceived-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Protocol.messageReceived-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-docstring">""" Protocol internal method used to send a received message to the</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">            stored receivers.</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring">            @param remoteID:    Unique ID of the Interface on the other side</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring">                                which sent the message.</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">            @type  remoteID:    uuid.UUID</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         Message which was received.</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         str</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-docstring">            @param msgID:       Unique ID which can be used to find a</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">                                correspondence between request / response</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">                                message.</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msgID:       uuid.UUID</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">            @param destID:      If the dest ID is supplied than only this</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">                                Interface will receive the message, regardless</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring">                                of additional interfaces which might be</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">                                registered.</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">            @type  destID:      uuid.UUID</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">remoteID</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-name">log</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Variable rce.comm.assembler._IncompleteMsg.msg=rce.comm.assembler._IncompleteMsg-class.html#msg"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-5', 'msg', 'link-5');">msg</a></tt><tt class="py-op">(</tt><tt class="py-string">'Received message dropped, because there is no interface '</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">                    <tt class="py-string">'ready for the message.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-6" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-6', 'interface', 'link-6');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">[</tt><tt class="py-name">remoteID</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">destID</tt><tt class="py-op">:</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-7" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-7', 'interface', 'link-6');">interface</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Variable rce.core.network.Interface.UID=rce.core.network.Interface-class.html#UID,Variable rce.slave.interface.Interface.UID=rce.slave.interface.Interface-class.html#UID"><a title="rce.core.network.Interface.UID
+rce.slave.interface.Interface.UID" class="py-name" href="#" onclick="return doclink('link-8', 'UID', 'link-8');">UID</a></tt> <tt class="py-op">==</tt> <tt class="py-name">destID</tt><tt class="py-op">:</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                    <tt id="link-9" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-9', 'interface', 'link-6');">interface</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method rce.slave.interface.Interface.send()=rce.slave.interface.Interface-class.html#send"><a title="rce.slave.interface.Interface.send" class="py-name" href="#" onclick="return doclink('link-10', 'send', 'link-10');">send</a></tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-11', 'msg', 'link-5');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">                <tt id="link-12" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-12', 'interface', 'link-6');">interface</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="rce.slave.interface.Interface.send" class="py-name" href="#" onclick="return doclink('link-13', 'send', 'link-10');">send</a></tt><tt class="py-op">(</tt><tt id="link-14" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-14', 'msg', 'link-5');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="_Protocol.registerConnection"></a><div id="_Protocol.registerConnection-def"><a name="L116"></a><tt class="py-lineno">116</tt> <a class="py-toggle" href="#" id="_Protocol.registerConnection-toggle" onclick="return toggle('_Protocol.registerConnection');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html#registerConnection">registerConnection</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol.registerConnection-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Protocol.registerConnection-expanded"><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-docstring">""" Register the connection between the local Interface and the remote</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">            Interface such that the two interfaces can communicate with each</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring">            other.</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-docstring">            @param interface:   Reference to the local Interface.</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-docstring">            @type  interface:   rce.slave.interface.Interface</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"><tt class="py-docstring">            @param remoteID:    Unique ID of the remote Interface.</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-docstring">            @type  remoteID:    uuid.UUID</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">remoteID</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">:</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">[</tt><tt class="py-name">remoteID</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-15" class="py-name" targets="Method rce.client.interface._EventRef.set()=rce.client.interface._EventRef-class.html#set"><a title="rce.client.interface._EventRef.set" class="py-name" href="#" onclick="return doclink('link-15', 'set', 'link-15');">set</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">            <tt class="py-keyword">assert</tt> <tt id="link-16" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-16', 'interface', 'link-6');">interface</a></tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">[</tt><tt class="py-name">remoteID</tt><tt class="py-op">]</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">[</tt><tt class="py-name">remoteID</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">add</tt><tt class="py-op">(</tt><tt id="link-17" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-17', 'interface', 'link-6');">interface</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="_Protocol.unregisterConnection"></a><div id="_Protocol.unregisterConnection-def"><a name="L134"></a><tt class="py-lineno">134</tt> <a class="py-toggle" href="#" id="_Protocol.unregisterConnection-toggle" onclick="return toggle('_Protocol.unregisterConnection');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html#unregisterConnection">unregisterConnection</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol.unregisterConnection-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Protocol.unregisterConnection-expanded"><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-docstring">""" Unregister the connection between the local Interface and the</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring">            remote Interface such that the two interfaces can no longer</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">            communicate with each other.</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">            @param interface:   Reference to the local Interface.</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">            @type  interface:   rce.slave.interface.Interface</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">            @param remoteID:    Unique ID of the remote Interface.</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring">            @type  remoteID:    uuid.UUID</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">remoteID</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-name">receivers</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">[</tt><tt class="py-name">remoteID</tt><tt class="py-op">]</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt id="link-18" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-18', 'interface', 'link-6');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">receivers</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-name">receivers</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt id="link-19" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-19', 'interface', 'link-6');">interface</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">receivers</tt><tt class="py-op">:</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">            <tt class="py-keyword">del</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">[</tt><tt class="py-name">remoteID</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"> </tt>
+<a name="_Protocol.remote_destroy"></a><div id="_Protocol.remote_destroy-def"><a name="L154"></a><tt class="py-lineno">154</tt> <a class="py-toggle" href="#" id="_Protocol.remote_destroy-toggle" onclick="return toggle('_Protocol.remote_destroy');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol._Protocol-class.html#remote_destroy">remote_destroy</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Protocol.remote_destroy-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Protocol.remote_destroy-expanded"><a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method should be called to destroy the protocol and will take care</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">            of destroying all connections of this Protocol as well as</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">            deleting all circular references.</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">:</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-20" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-20', 'interface', 'link-6');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">reduce</tt><tt class="py-op">(</tt><tt id="link-21" class="py-name"><a title="rce.client.interface._EventRef.set" class="py-name" href="#" onclick="return doclink('link-21', 'set', 'link-15');">set</a></tt><tt class="py-op">.</tt><tt class="py-name">union</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt><tt class="py-op">.</tt><tt class="py-name">itervalues</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">                <tt id="link-22" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-22', 'interface', 'link-6');">interface</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method rce.core.network.Endpoint.unregisterProtocol()=rce.core.network.Endpoint-class.html#unregisterProtocol,Method rce.robot.Connection.unregisterProtocol()=rce.robot.Connection-class.html#unregisterProtocol,Method rce.slave.endpoint.Endpoint.unregisterProtocol()=rce.slave.endpoint.Endpoint-class.html#unregisterProtocol,Method rce.slave.interface.Interface.unregisterProtocol()=rce.slave.interface.Interface-class.html#unregisterProtocol"><a title="rce.core.network.Endpoint.unregisterProtocol
+rce.robot.Connection.unregisterProtocol
+rce.slave.endpoint.Endpoint.unregisterProtocol
+rce.slave.interface.Interface.unregisterProtocol" class="py-name" href="#" onclick="return doclink('link-23', 'unregisterProtocol', 'link-23');">unregisterProtocol</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_receivers</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt class="py-name">_avatar</tt><tt class="py-op">:</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">            <tt class="py-keyword">def</tt> <tt class="py-def-name">eb</tt><tt class="py-op">(</tt><tt class="py-param">failure</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">failure</tt><tt class="py-op">.</tt><tt class="py-name">check</tt><tt class="py-op">(</tt><tt class="py-name">PBConnectionLost</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">                    <tt class="py-name">log</tt><tt class="py-op">.</tt><tt class="py-name">err</tt><tt class="py-op">(</tt><tt class="py-name">failure</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt class="py-name">_avatar</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method rce.core.base.Proxy.callRemote()=rce.core.base.Proxy-class.html#callRemote"><a title="rce.core.base.Proxy.callRemote" class="py-name" href="#" onclick="return doclink('link-24', 'callRemote', 'link-24');">callRemote</a></tt><tt class="py-op">(</tt><tt class="py-string">'protocolDied'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">addErrback</tt><tt class="py-op">(</tt><tt class="py-name">eb</tt><tt class="py-op">)</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-op">(</tt><tt class="py-name">DeadReferenceError</tt><tt class="py-op">,</tt> <tt class="py-name">PBConnectionLost</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">succeed</tt><tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"> </tt>
+<a name="Loopback"></a><div id="Loopback-def"><a name="L176"></a><tt class="py-lineno">176</tt> <a class="py-toggle" href="#" id="Loopback-toggle" onclick="return toggle('Loopback');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.slave.protocol.Loopback-class.html">Loopback</a><tt class="py-op">(</tt><tt class="py-base-class">_Protocol</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Loopback-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Loopback-expanded"><a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">    <tt class="py-docstring">""" Special Protocol 'Loopback' which can be used to connect Interfaces</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"><tt class="py-docstring">        which are in the same Endpoint.</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="Loopback.sendMessage"></a><div id="Loopback.sendMessage-def"><a name="L180"></a><tt class="py-lineno">180</tt> <a class="py-toggle" href="#" id="Loopback.sendMessage-toggle" onclick="return toggle('Loopback.sendMessage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.Loopback-class.html#sendMessage">sendMessage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Loopback.sendMessage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Loopback.sendMessage-expanded"><a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method rce.slave.protocol._Protocol.messageReceived()=rce.slave.protocol._Protocol-class.html#messageReceived"><a title="rce.slave.protocol._Protocol.messageReceived" class="py-name" href="#" onclick="return doclink('link-25', 'messageReceived', 'link-25');">messageReceived</a></tt><tt class="py-op">(</tt><tt id="link-26" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-26', 'interface', 'link-6');">interface</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="rce.core.network.Interface.UID
+rce.slave.interface.Interface.UID" class="py-name" href="#" onclick="return doclink('link-27', 'UID', 'link-8');">UID</a></tt><tt class="py-op">,</tt> <tt id="link-28" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-28', 'msg', 'link-5');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt class="py-name">remoteID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">    <tt id="link-29" class="py-name" targets="Method rce.client.connection._Connection.sendMessage()=rce.client.connection._Connection-class.html#sendMessage,Method rce.comm.client.RCE.sendMessage()=rce.comm.client.RCE-class.html#sendMessage,Method rce.comm.client.RCERobotProtocol.sendMessage()=rce.comm.client.RCERobotProtocol-class.html#sendMessage,Method rce.comm.server.RobotWebSocketProtocol.sendMessage()=rce.comm.server.RobotWebSocketProtocol-class.html#sendMessage,Method rce.robot.Connection.sendMessage()=rce.robot.Connection-class.html#sendMessage,Method rce.slave.protocol.Loopback.sendMessage()=rce.slave.protocol.Loopback-class.html#sendMessage,Method rce.slave.protocol.RCEInternalProtocol.sendMessage()=rce.slave.protocol.RCEInternalProtocol-class.html#sendMessage,Method rce.slave.protocol._Protocol.sendMessage()=rce.slave.protocol._Protocol-class.html#sendMessage"><a title="rce.client.connection._Connection.sendMessage
+rce.comm.client.RCE.sendMessage
+rce.comm.client.RCERobotProtocol.sendMessage
+rce.comm.server.RobotWebSocketProtocol.sendMessage
+rce.robot.Connection.sendMessage
+rce.slave.protocol.Loopback.sendMessage
+rce.slave.protocol.RCEInternalProtocol.sendMessage
+rce.slave.protocol._Protocol.sendMessage" class="py-name" href="#" onclick="return doclink('link-29', 'sendMessage', 'link-29');">sendMessage</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-30" class="py-name" targets="Class rce.slave.protocol._Protocol=rce.slave.protocol._Protocol-class.html"><a title="rce.slave.protocol._Protocol" class="py-name" href="#" onclick="return doclink('link-30', '_Protocol', 'link-30');">_Protocol</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="rce.client.connection._Connection.sendMessage
+rce.comm.client.RCE.sendMessage
+rce.comm.client.RCERobotProtocol.sendMessage
+rce.comm.server.RobotWebSocketProtocol.sendMessage
+rce.robot.Connection.sendMessage
+rce.slave.protocol.Loopback.sendMessage
+rce.slave.protocol.RCEInternalProtocol.sendMessage
+rce.slave.protocol._Protocol.sendMessage" class="py-name" href="#" onclick="return doclink('link-31', 'sendMessage', 'link-29');">sendMessage</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+</div><a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol"></a><div id="RCEInternalProtocol-def"><a name="L186"></a><tt class="py-lineno">186</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol-toggle" onclick="return toggle('RCEInternalProtocol');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html">RCEInternalProtocol</a><tt class="py-op">(</tt><tt class="py-base-class">Int32StringReceiver</tt><tt class="py-op">,</tt> <tt class="py-base-class">_Protocol</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="RCEInternalProtocol-expanded"><a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">    <tt class="py-docstring">""" Protocol which is used to connect Endpoints such that Interfaces in</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring">        different Endpoint are able to communicate.</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">    <tt class="py-comment"># CONFIG</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">    <tt id="link-32" class="py-name" targets="Variable rce.slave.protocol.RCEInternalProtocol.MAX_LENGTH=rce.slave.protocol.RCEInternalProtocol-class.html#MAX_LENGTH"><a title="rce.slave.protocol.RCEInternalProtocol.MAX_LENGTH" class="py-name" href="#" onclick="return doclink('link-32', 'MAX_LENGTH', 'link-32');">MAX_LENGTH</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1000000</tt>  <tt class="py-comment"># Maximal message length in bytes</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line"> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">    <tt id="link-33" class="py-name" targets="Variable rce.slave.protocol.RCEInternalProtocol._MSG_ID_STRUCT=rce.slave.protocol.RCEInternalProtocol-class.html#_MSG_ID_STRUCT"><a title="rce.slave.protocol.RCEInternalProtocol._MSG_ID_STRUCT" class="py-name" href="#" onclick="return doclink('link-33', '_MSG_ID_STRUCT', 'link-33');">_MSG_ID_STRUCT</a></tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">Struct</tt><tt class="py-op">(</tt><tt class="py-string">'!B'</tt><tt class="py-op">)</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">    <tt id="link-34" class="py-name" targets="Variable rce.slave.protocol.RCEInternalProtocol._TRUE=rce.slave.protocol.RCEInternalProtocol-class.html#_TRUE"><a title="rce.slave.protocol.RCEInternalProtocol._TRUE" class="py-name" href="#" onclick="return doclink('link-34', '_TRUE', 'link-34');">_TRUE</a></tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-string">'!?'</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">    <tt id="link-35" class="py-name" targets="Variable rce.slave.protocol.RCEInternalProtocol._FALSE=rce.slave.protocol.RCEInternalProtocol-class.html#_FALSE"><a title="rce.slave.protocol.RCEInternalProtocol._FALSE" class="py-name" href="#" onclick="return doclink('link-35', '_FALSE', 'link-35');">_FALSE</a></tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-string">'!?'</tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol.__init__"></a><div id="RCEInternalProtocol.__init__-def"><a name="L197"></a><tt class="py-lineno">197</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol.__init__-toggle" onclick="return toggle('RCEInternalProtocol.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">endpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol.__init__-expanded"><a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-docstring">""" Initialize the Protocol.</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line"><tt class="py-docstring">            @param endpoint:    Endpoint for which this Protocol is created.</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"><tt class="py-docstring">            @type  endpoint:    rce.slave.endpoint.Endpoint</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">        <tt id="link-36" class="py-name"><a title="rce.slave.protocol._Protocol" class="py-name" href="#" onclick="return doclink('link-36', '_Protocol', 'link-30');">_Protocol</a></tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Method rce.client.connection._Connection.__init__()=rce.client.connection._Connection-class.html#__init__,Method rce.client.interface.ROSPublisher.__init__()=rce.client.interface.ROSPublisher-class.html#__init__,Method rce.client.interface.ROSServiceClient.__init__()=rce.client.interface.ROSServiceClient-class.html#__init__,Method rce.client.interface.ROSServiceProvider.__init__()=rce.client.interface.ROSServiceProvider-class.html#__init__,Method rce.client.interface.ROSSubscriber.__init__()=rce.client.interface.ROSSubscriber-class.html#__init__,Method rce.client.interface.ServiceClient.__init__()=rce.client.interface.ServiceClient-class.html#__init__,Method rce.client.interface._Base.__init__()=rce.client.interface._Base-class.html#__init__,Method rce.client.interface._CB_Base.__init__()=rce.client.interface._CB_Base-class.html#__init__,Method rce.client.interface._EventRef.__init__()=rce.client.interface._EventRef-class.html#__init__,Method rce.client.interface._ServiceClient.__init__()=rce.client.interface._ServiceClient-class.html#__init__,Method rce.client.interface._ServiceProvider.__init__()=rce.client.interface._ServiceProvider-class.html#__init__,Method rce.client.interface._Subscriber.__init__()=rce.client.interface._Subscriber-class.html#__init__,Method rce.client.ros.Environment.__init__()=rce.client.ros.Environment-class.html#__init__,Method rce.comm.assembler.MessageAssembler.__init__()=rce.comm.assembler.MessageAssembler-class.html#__init__,Method rce.comm.assembler._IncompleteMsg.__init__()=rce.comm.assembler._IncompleteMsg-class.html#__init__,Method rce.comm.client.RCE.__init__()=rce.comm.client.RCE-class.html#__init__,Method rce.comm.client.RCERobotFactory.__init__()=rce.comm.client.RCERobotFactory-class.html#__init__,Method rce.comm.client.RCERobotProtocol.__init__()=rce.comm.client.RCERobotProtocol-class.html#__init__,Method rce.comm.server.CloudEngineWebSocketFactory.__init__()=rce.comm.server.CloudEngineWebSocketFactory-class.html#__init__,Method rce.comm.server.RobotResource.__init__()=rce.comm.server.RobotResource-class.html#__init__,Method rce.comm.server.RobotWebSocketProtocol.__init__()=rce.comm.server.RobotWebSocketProtocol-class.html#__init__,Method rce.console.console.ConsoleClient.__init__()=rce.console.console.ConsoleClient-class.html#__init__,Method rce.console.console.CustomOptions.__init__()=rce.console.console.CustomOptions-class.html#__init__,Method rce.container.ContainerClient.__init__()=rce.container.ContainerClient-class.html#__init__,Method rce.container.RCEContainer.__init__()=rce.container.RCEContainer-class.html#__init__,Method rce.core.base.Proxy.__init__()=rce.core.base.Proxy-class.html#__init__,Method rce.core.container.Container.__init__()=rce.core.container.Container-class.html#__init__,Method rce.core.environment.Environment.__init__()=rce.core.environment.Environment-class.html#__init__,Method rce.core.environment.EnvironmentEndpoint.__init__()=rce.core.environment.EnvironmentEndpoint-class.html#__init__,Method rce.core.environment.Node.__init__()=rce.core.environment.Node-class.html#__init__,Method rce.core.environment.Parameter.__init__()=rce.core.environment.Parameter-class.html#__init__,Method rce.core.machine.Distributor.__init__()=rce.core.machine.Distributor-class.html#__init__,Method rce.core.machine.LoadBalancer.__init__()=rce.core.machine.LoadBalancer-class.html#__init__,Method rce.core.machine.Machine.__init__()=rce.core.machine.Machine-class.html#__init__,Method rce.core.machine.MachineAvatar.__init__()=rce.core.machine.MachineAvatar-class.html#__init__,Method rce.core.network.Connection.__init__()=rce.core.network.Connection-class.html#__init__,Method rce.core.network.Endpoint.__init__()=rce.core.network.Endpoint-class.html#__init__,Method rce.core.network.EndpointAvatar.__init__()=rce.core.network.EndpointAvatar-class.html#__init__,Method rce.core.network.EndpointConnection.__init__()=rce.core.network.EndpointConnection-class.html#__init__,Method rce.core.network.Interface.__init__()=rce.core.network.Interface-class.html#__init__,Method rce.core.network.InterfaceConnection.__init__()=rce.core.network.InterfaceConnection-class.html#__init__,Method rce.core.network.Namespace.__init__()=rce.core.network.Namespace-class.html#__init__,Method rce.core.network.Network.__init__()=rce.core.network.Network-class.html#__init__,Method rce.core.network.Protocol.__init__()=rce.core.network.Protocol-class.html#__init__,Method rce.core.network._ConnectionValidator.__init__()=rce.core.network._ConnectionValidator-class.html#__init__,Method rce.core.robot.Robot.__init__()=rce.core.robot.Robot-class.html#__init__,Method rce.core.robot.RobotEndpoint.__init__()=rce.core.robot.RobotEndpoint-class.html#__init__,Method rce.core.user.User.__init__()=rce.core.user.User-class.html#__init__,Method rce.core.wrapper.Container.__init__()=rce.core.wrapper.Container-class.html#__init__,Method rce.core.wrapper.Interface.__init__()=rce.core.wrapper.Interface-class.html#__init__,Method rce.core.wrapper.Robot.__init__()=rce.core.wrapper.Robot-class.html#__init__,Method rce.core.wrapper._Wrapper.__init__()=rce.core.wrapper._Wrapper-class.html#__init__,Method rce.environment.Environment.__init__()=rce.environment.Environment-class.html#__init__,Method rce.environment.EnvironmentClient.__init__()=rce.environment.EnvironmentClient-class.html#__init__,Method rce.master.RoboEarthCloudEngine.__init__()=rce.master.RoboEarthCloudEngine-class.html#__init__,Method rce.master.UserRealm.__init__()=rce.master.UserRealm-class.html#__init__,Method rce.monitor.common.ArgumentMixin.__init__()=rce.monitor.common.ArgumentMixin-class.html#__init__,Method rce.monitor.interface.environment.PublisherInterface.__init__()=rce.monitor.interface.environment.PublisherInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceClientInterface.__init__()=rce.monitor.interface.environment.ServiceClientInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceProviderInterface.__init__()=rce.monitor.interface.environment.ServiceProviderInterface-class.html#__init__,Method rce.monitor.interface.environment._ROSInterfaceBase.__init__()=rce.monitor.interface.environment._ROSInterfaceBase-class.html#__init__,Method rce.monitor.interface.robot.ServiceClientConverter.__init__()=rce.monitor.interface.robot.ServiceClientConverter-class.html#__init__,Method rce.monitor.interface.robot.ServiceClientForwarder.__init__()=rce.monitor.interface.robot.ServiceClientForwarder-class.html#__init__,Method rce.monitor.interface.robot._AbstractConverter.__init__()=rce.monitor.interface.robot._AbstractConverter-class.html#__init__,Method rce.monitor.interface.robot._ConverterBase.__init__()=rce.monitor.interface.robot._ConverterBase-class.html#__init__,Method rce.monitor.node.Node.__init__()=rce.monitor.node.Node-class.html#__init__,Method rce.monitor.node.NodeProtocol.__init__()=rce.monitor.node.NodeProtocol-class.html#__init__,Method rce.monitor.parameter.Parameter.__init__()=rce.monitor.parameter.Parameter-class.html#__init__,Method rce.robot.Connection.__init__()=rce.robot.Connection-class.html#__init__,Method rce.robot.Robot.__init__()=rce.robot.Robot-class.html#__init__,Method rce.robot.RobotClient.__init__()=rce.robot.RobotClient-class.html#__init__,Method rce.robot.RobotView.__init__()=rce.robot.RobotView-class.html#__init__,Method rce.rosproxy.ConsoleROSProxyAuthentication.__init__()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#__init__,Method rce.slave.endpoint.Endpoint.__init__()=rce.slave.endpoint.Endpoint-class.html#__init__,Method rce.slave.endpoint._RCEInternalServerFactory.__init__()=rce.slave.endpoint._RCEInternalServerFactory-class.html#__init__,Method rce.slave.interface.Interface.__init__()=rce.slave.interface.Interface-class.html#__init__,Method rce.slave.namespace.Namespace.__init__()=rce.slave.namespace.Namespace-class.html#__init__,Method rce.slave.protocol.RCEInternalProtocol.__init__()=rce.slave.protocol.RCEInternalProtocol-class.html#__init__,Method rce.slave.protocol._Protocol.__init__()=rce.slave.protocol._Protocol-class.html#__init__,Method rce.util.container.Container.__init__()=rce.util.container.Container-class.html#__init__,Method rce.util.converter.Converter.__init__()=rce.util.converter.Converter-class.html#__init__,Method rce.util.cred.RCECredChecker.__init__()=rce.util.cred.RCECredChecker-class.html#__init__,Method rce.util.cred.RCEInternalChecker.__init__()=rce.util.cred.RCEInternalChecker-class.html#__init__,Method rce.util.loader.Loader.__init__()=rce.util.loader.Loader-class.html#__init__,Method rce.util.settings._RCESettingsParser.__init__()=rce.util.settings._RCESettingsParser-class.html#__init__,Method rce.util.settings._Settings.__init__()=rce.util.settings._Settings-class.html#__init__,Method rce.util.sysinfo.AccessDenied.__init__()=rce.util.sysinfo.AccessDenied-class.html#__init__,Method rce.util.sysinfo.NoSuchProcess.__init__()=rce.util.sysinfo.NoSuchProcess-class.html#__init__,Method rce.util.sysinfo.Process.__init__()=rce.util.sysinfo.Process-class.html#__init__"><a title="rce.client.connection._Connection.__init__
+rce.client.interface.ROSPublisher.__init__
+rce.client.interface.ROSServiceClient.__init__
+rce.client.interface.ROSServiceProvider.__init__
+rce.client.interface.ROSSubscriber.__init__
+rce.client.interface.ServiceClient.__init__
+rce.client.interface._Base.__init__
+rce.client.interface._CB_Base.__init__
+rce.client.interface._EventRef.__init__
+rce.client.interface._ServiceClient.__init__
+rce.client.interface._ServiceProvider.__init__
+rce.client.interface._Subscriber.__init__
+rce.client.ros.Environment.__init__
+rce.comm.assembler.MessageAssembler.__init__
+rce.comm.assembler._IncompleteMsg.__init__
+rce.comm.client.RCE.__init__
+rce.comm.client.RCERobotFactory.__init__
+rce.comm.client.RCERobotProtocol.__init__
+rce.comm.server.CloudEngineWebSocketFactory.__init__
+rce.comm.server.RobotResource.__init__
+rce.comm.server.RobotWebSocketProtocol.__init__
+rce.console.console.ConsoleClient.__init__
+rce.console.console.CustomOptions.__init__
+rce.container.ContainerClient.__init__
+rce.container.RCEContainer.__init__
+rce.core.base.Proxy.__init__
+rce.core.container.Container.__init__
+rce.core.environment.Environment.__init__
+rce.core.environment.EnvironmentEndpoint.__init__
+rce.core.environment.Node.__init__
+rce.core.environment.Parameter.__init__
+rce.core.machine.Distributor.__init__
+rce.core.machine.LoadBalancer.__init__
+rce.core.machine.Machine.__init__
+rce.core.machine.MachineAvatar.__init__
+rce.core.network.Connection.__init__
+rce.core.network.Endpoint.__init__
+rce.core.network.EndpointAvatar.__init__
+rce.core.network.EndpointConnection.__init__
+rce.core.network.Interface.__init__
+rce.core.network.InterfaceConnection.__init__
+rce.core.network.Namespace.__init__
+rce.core.network.Network.__init__
+rce.core.network.Protocol.__init__
+rce.core.network._ConnectionValidator.__init__
+rce.core.robot.Robot.__init__
+rce.core.robot.RobotEndpoint.__init__
+rce.core.user.User.__init__
+rce.core.wrapper.Container.__init__
+rce.core.wrapper.Interface.__init__
+rce.core.wrapper.Robot.__init__
+rce.core.wrapper._Wrapper.__init__
+rce.environment.Environment.__init__
+rce.environment.EnvironmentClient.__init__
+rce.master.RoboEarthCloudEngine.__init__
+rce.master.UserRealm.__init__
+rce.monitor.common.ArgumentMixin.__init__
+rce.monitor.interface.environment.PublisherInterface.__init__
+rce.monitor.interface.environment.ServiceClientInterface.__init__
+rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment._ROSInterfaceBase.__init__
+rce.monitor.interface.robot.ServiceClientConverter.__init__
+rce.monitor.interface.robot.ServiceClientForwarder.__init__
+rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.node.Node.__init__
+rce.monitor.node.NodeProtocol.__init__
+rce.monitor.parameter.Parameter.__init__
+rce.robot.Connection.__init__
+rce.robot.Robot.__init__
+rce.robot.RobotClient.__init__
+rce.robot.RobotView.__init__
+rce.rosproxy.ConsoleROSProxyAuthentication.__init__
+rce.slave.endpoint.Endpoint.__init__
+rce.slave.endpoint._RCEInternalServerFactory.__init__
+rce.slave.interface.Interface.__init__
+rce.slave.namespace.Namespace.__init__
+rce.slave.protocol.RCEInternalProtocol.__init__
+rce.slave.protocol._Protocol.__init__
+rce.util.container.Container.__init__
+rce.util.converter.Converter.__init__
+rce.util.cred.RCECredChecker.__init__
+rce.util.cred.RCEInternalChecker.__init__
+rce.util.loader.Loader.__init__
+rce.util.settings._RCESettingsParser.__init__
+rce.util.settings._Settings.__init__
+rce.util.sysinfo.AccessDenied.__init__
+rce.util.sysinfo.NoSuchProcess.__init__
+rce.util.sysinfo.Process.__init__" class="py-name" href="#" onclick="return doclink('link-37', '__init__', 'link-37');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-38" class="py-name"><a title="rce.core.network.Interface.endpoint
+rce.slave.endpoint" class="py-name" href="#" onclick="return doclink('link-38', 'endpoint', 'link-4');">endpoint</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">        <tt id="link-39" class="py-name"><a title="rce.core.network.Interface.endpoint
+rce.slave.endpoint" class="py-name" href="#" onclick="return doclink('link-39', 'endpoint', 'link-4');">endpoint</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method rce.core.network.Endpoint.registerProtocol()=rce.core.network.Endpoint-class.html#registerProtocol,Method rce.robot.Connection.registerProtocol()=rce.robot.Connection-class.html#registerProtocol,Method rce.slave.endpoint.Endpoint.registerProtocol()=rce.slave.endpoint.Endpoint-class.html#registerProtocol"><a title="rce.core.network.Endpoint.registerProtocol
+rce.robot.Connection.registerProtocol
+rce.slave.endpoint.Endpoint.registerProtocol" class="py-name" href="#" onclick="return doclink('link-40', 'registerProtocol', 'link-40');">registerProtocol</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_initialized</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">stringReceived</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Method rce.slave.protocol.RCEInternalProtocol._initReceived()=rce.slave.protocol.RCEInternalProtocol-class.html#_initReceived"><a title="rce.slave.protocol.RCEInternalProtocol._initReceived" class="py-name" href="#" onclick="return doclink('link-41', '_initReceived', 'link-41');">_initReceived</a></tt> </tt>
+</div><a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol._initReceived"></a><div id="RCEInternalProtocol._initReceived-def"><a name="L210"></a><tt class="py-lineno">210</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol._initReceived-toggle" onclick="return toggle('RCEInternalProtocol._initReceived');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#_initReceived">_initReceived</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol._initReceived-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol._initReceived-expanded"><a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method process a complete string message as long as</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line"><tt class="py-docstring">            the connection is not yet initialized.</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         Message which was received.</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         str</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt id="link-42" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-42', 'msg', 'link-5');">msg</a></tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">32</tt><tt class="py-op">:</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">            <tt class="py-name">log</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-43', 'msg', 'link-5');">msg</a></tt><tt class="py-op">(</tt><tt class="py-string">'Protocol Error: iInit message has invalid format.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">transport</tt><tt class="py-op">.</tt><tt class="py-name">loseConnection</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Method rce.slave.endpoint.Endpoint.processInit()=rce.slave.endpoint.Endpoint-class.html#processInit"><a title="rce.slave.endpoint.Endpoint.processInit" class="py-name" href="#" onclick="return doclink('link-44', 'processInit', 'link-44');">processInit</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-45" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-45', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-number">16</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-46" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-46', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-number">16</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">        <tt class="py-name">d</tt><tt class="py-op">.</tt><tt class="py-name">addCallbacks</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method rce.slave.protocol.RCEInternalProtocol._initSuccessful()=rce.slave.protocol.RCEInternalProtocol-class.html#_initSuccessful"><a title="rce.slave.protocol.RCEInternalProtocol._initSuccessful" class="py-name" href="#" onclick="return doclink('link-47', '_initSuccessful', 'link-47');">_initSuccessful</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name" targets="Method rce.slave.protocol.RCEInternalProtocol._initFailed()=rce.slave.protocol.RCEInternalProtocol-class.html#_initFailed"><a title="rce.slave.protocol.RCEInternalProtocol._initFailed" class="py-name" href="#" onclick="return doclink('link-48', '_initFailed', 'link-48');">_initFailed</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol._initSuccessful"></a><div id="RCEInternalProtocol._initSuccessful-def"><a name="L225"></a><tt class="py-lineno">225</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol._initSuccessful-toggle" onclick="return toggle('RCEInternalProtocol._initSuccessful');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#_initSuccessful">_initSuccessful</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">_</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol._initSuccessful-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol._initSuccessful-expanded"><a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">stringReceived</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method rce.slave.protocol.RCEInternalProtocol._messageReceived()=rce.slave.protocol.RCEInternalProtocol-class.html#_messageReceived"><a title="rce.slave.protocol.RCEInternalProtocol._messageReceived" class="py-name" href="#" onclick="return doclink('link-49', '_messageReceived', 'link-49');">_messageReceived</a></tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_initialized</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol._initFailed"></a><div id="RCEInternalProtocol._initFailed-def"><a name="L229"></a><tt class="py-lineno">229</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol._initFailed-toggle" onclick="return toggle('RCEInternalProtocol._initFailed');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#_initFailed">_initFailed</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">failure</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol._initFailed-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol._initFailed-expanded"><a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-name">log</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-50', 'msg', 'link-5');">msg</a></tt><tt class="py-op">(</tt><tt class="py-string">'Protocol Error: {0}'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">failure</tt><tt class="py-op">.</tt><tt class="py-name">getErrorMessage</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">transport</tt><tt class="py-op">.</tt><tt class="py-name">loseConnection</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol._messageReceived"></a><div id="RCEInternalProtocol._messageReceived-def"><a name="L233"></a><tt class="py-lineno">233</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol._messageReceived-toggle" onclick="return toggle('RCEInternalProtocol._messageReceived');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#_messageReceived">_messageReceived</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol._messageReceived-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol._messageReceived-expanded"><a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">        <tt class="py-docstring">""" Internally used method process a complete string message after</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line"><tt class="py-docstring">            the connection has been initialized.</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:         Message which was received.</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:         str</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt id="link-51" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-51', 'msg', 'link-5');">msg</a></tt><tt class="py-op">)</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">17</tt><tt class="py-op">:</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">transport</tt><tt class="py-op">.</tt><tt class="py-name">loseConnection</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">        <tt class="py-name">flag</tt> <tt class="py-op">=</tt> <tt id="link-52" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-52', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">flag</tt> <tt class="py-op">==</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="rce.slave.protocol.RCEInternalProtocol._TRUE" class="py-name" href="#" onclick="return doclink('link-53', '_TRUE', 'link-34');">_TRUE</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">            <tt class="py-name">destID</tt> <tt class="py-op">=</tt> <tt class="py-name">UUID</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">=</tt><tt id="link-54" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-54', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-number">17</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">            <tt class="py-name">offset</tt> <tt class="py-op">=</tt> <tt class="py-number">17</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">flag</tt> <tt class="py-op">==</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="rce.slave.protocol.RCEInternalProtocol._FALSE" class="py-name" href="#" onclick="return doclink('link-55', '_FALSE', 'link-35');">_FALSE</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">            <tt class="py-name">destID</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">            <tt class="py-name">offset</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">            <tt class="py-name">log</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-56', 'msg', 'link-5');">msg</a></tt><tt class="py-op">(</tt><tt class="py-string">'Protocol Error: Could not identify flag.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">transport</tt><tt class="py-op">.</tt><tt class="py-name">loseConnection</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">        <tt class="py-name">remoteID</tt> <tt class="py-op">=</tt> <tt class="py-name">UUID</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">=</tt><tt id="link-57" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-57', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-name">offset</tt><tt class="py-op">:</tt><tt class="py-name">offset</tt> <tt class="py-op">+</tt> <tt class="py-number">16</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">+=</tt> <tt class="py-number">16</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line"> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">        <tt class="py-name">idLen</tt><tt class="py-op">,</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="rce.slave.protocol.RCEInternalProtocol._MSG_ID_STRUCT" class="py-name" href="#" onclick="return doclink('link-58', '_MSG_ID_STRUCT', 'link-33');">_MSG_ID_STRUCT</a></tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt id="link-59" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-59', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-name">offset</tt><tt class="py-op">:</tt><tt class="py-name">offset</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line"> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-name">msgID</tt> <tt class="py-op">=</tt> <tt id="link-60" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-60', 'msg', 'link-5');">msg</a></tt><tt class="py-op">[</tt><tt class="py-name">offset</tt><tt class="py-op">:</tt><tt class="py-name">offset</tt> <tt class="py-op">+</tt> <tt class="py-name">idLen</tt><tt class="py-op">]</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">+=</tt> <tt class="py-name">idLen</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line"> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="rce.slave.protocol._Protocol.messageReceived" class="py-name" href="#" onclick="return doclink('link-61', 'messageReceived', 'link-25');">messageReceived</a></tt><tt class="py-op">(</tt><tt class="py-name">remoteID</tt><tt class="py-op">,</tt> <tt class="py-name">buffer</tt><tt class="py-op">(</tt><tt id="link-62" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-62', 'msg', 'link-5');">msg</a></tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt class="py-name">destID</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol.sendInit"></a><div id="RCEInternalProtocol.sendInit-def"><a name="L267"></a><tt class="py-lineno">267</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol.sendInit-toggle" onclick="return toggle('RCEInternalProtocol.sendInit');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#sendInit">sendInit</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">connID</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol.sendInit-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol.sendInit-expanded"><a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">        <tt class="py-docstring">""" Send an init message to the other side.</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"><tt class="py-docstring">            @param connID:      Unique ID which is used to identify the</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line"><tt class="py-docstring">                                connection.</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line"><tt class="py-docstring">            @type  connID:      str</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"><tt class="py-docstring">            @param key:         Key which should be sent with the init message</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line"><tt class="py-docstring">                                to authenticate this endpoint.</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"><tt class="py-docstring">            @type  key:         str</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">connID</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">16</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">16</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line"> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sendString</tt><tt class="py-op">(</tt><tt class="py-name">connID</tt> <tt class="py-op">+</tt> <tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol.sendMessage"></a><div id="RCEInternalProtocol.sendMessage-def"><a name="L283"></a><tt class="py-lineno">283</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol.sendMessage-toggle" onclick="return toggle('RCEInternalProtocol.sendMessage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#sendMessage">sendMessage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">msgID</tt><tt class="py-op">,</tt> <tt class="py-param">remoteID</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol.sendMessage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol.sendMessage-expanded"><a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_initialized</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">        <tt class="py-name">uid</tt> <tt class="py-op">=</tt> <tt id="link-63" class="py-name"><a title="rce.client.interface
+rce.monitor.interface
+rce.slave.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-63', 'interface', 'link-6');">interface</a></tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="rce.core.network.Interface.UID
+rce.slave.interface.Interface.UID" class="py-name" href="#" onclick="return doclink('link-64', 'UID', 'link-8');">UID</a></tt><tt class="py-op">.</tt><tt class="py-name">bytes</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">uid</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">16</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line"> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">            <tt class="py-name">idLen</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="rce.slave.protocol.RCEInternalProtocol._MSG_ID_STRUCT" class="py-name" href="#" onclick="return doclink('link-65', '_MSG_ID_STRUCT', 'link-33');">_MSG_ID_STRUCT</a></tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">msgID</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-66', 'error', 'link-2');">error</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-67" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-67', 'InternalError', 'link-3');">InternalError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Message ID is too long.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">remoteID</tt><tt class="py-op">:</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">            <tt class="py-name">flag</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="rce.slave.protocol.RCEInternalProtocol._TRUE" class="py-name" href="#" onclick="return doclink('link-68', '_TRUE', 'link-34');">_TRUE</a></tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">            <tt class="py-name">rmtID</tt> <tt class="py-op">=</tt> <tt class="py-name">remoteID</tt><tt class="py-op">.</tt><tt class="py-name">bytes</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">            <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rmtID</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">16</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">            <tt class="py-name">flag</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="rce.slave.protocol.RCEInternalProtocol._FALSE" class="py-name" href="#" onclick="return doclink('link-69', '_FALSE', 'link-35');">_FALSE</a></tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">            <tt class="py-name">rmtID</tt> <tt class="py-op">=</tt> <tt class="py-string">''</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sendString</tt><tt class="py-op">(</tt><tt class="py-string">''</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">flag</tt><tt class="py-op">,</tt> <tt class="py-name">rmtID</tt><tt class="py-op">,</tt> <tt class="py-name">uid</tt><tt class="py-op">,</tt> <tt class="py-name">idLen</tt><tt class="py-op">,</tt> <tt class="py-name">msgID</tt><tt class="py-op">,</tt> <tt id="link-70" class="py-name"><a title="rce.comm.assembler._IncompleteMsg.msg" class="py-name" href="#" onclick="return doclink('link-70', 'msg', 'link-5');">msg</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">    <tt id="link-71" class="py-name"><a title="rce.client.connection._Connection.sendMessage
+rce.comm.client.RCE.sendMessage
+rce.comm.client.RCERobotProtocol.sendMessage
+rce.comm.server.RobotWebSocketProtocol.sendMessage
+rce.robot.Connection.sendMessage
+rce.slave.protocol.Loopback.sendMessage
+rce.slave.protocol.RCEInternalProtocol.sendMessage
+rce.slave.protocol._Protocol.sendMessage" class="py-name" href="#" onclick="return doclink('link-71', 'sendMessage', 'link-29');">sendMessage</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> <tt class="py-op">=</tt> <tt id="link-72" class="py-name"><a title="rce.slave.protocol._Protocol" class="py-name" href="#" onclick="return doclink('link-72', '_Protocol', 'link-30');">_Protocol</a></tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="rce.client.connection._Connection.sendMessage
+rce.comm.client.RCE.sendMessage
+rce.comm.client.RCERobotProtocol.sendMessage
+rce.comm.server.RobotWebSocketProtocol.sendMessage
+rce.robot.Connection.sendMessage
+rce.slave.protocol.Loopback.sendMessage
+rce.slave.protocol.RCEInternalProtocol.sendMessage
+rce.slave.protocol._Protocol.sendMessage" class="py-name" href="#" onclick="return doclink('link-73', 'sendMessage', 'link-29');">sendMessage</a></tt><tt class="py-op">.</tt><tt class="py-name">__doc__</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol.connectionLost"></a><div id="RCEInternalProtocol.connectionLost-def"><a name="L306"></a><tt class="py-lineno">306</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol.connectionLost-toggle" onclick="return toggle('RCEInternalProtocol.connectionLost');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#connectionLost">connectionLost</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">reason</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol.connectionLost-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol.connectionLost-expanded"><a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method is called by the twisted framework when the connection is</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line"><tt class="py-docstring">            lost.</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">        <tt id="link-74" class="py-name"><a title="rce.slave.protocol._Protocol" class="py-name" href="#" onclick="return doclink('link-74', '_Protocol', 'link-30');">_Protocol</a></tt><tt class="py-op">.</tt><tt id="link-75" class="py-name" targets="Method rce.container.RCEContainer.remote_destroy()=rce.container.RCEContainer-class.html#remote_destroy,Method rce.environment.Environment.remote_destroy()=rce.environment.Environment-class.html#remote_destroy,Method rce.monitor.node.Node.remote_destroy()=rce.monitor.node.Node-class.html#remote_destroy,Method rce.monitor.parameter.Parameter.remote_destroy()=rce.monitor.parameter.Parameter-class.html#remote_destroy,Method rce.robot.Robot.remote_destroy()=rce.robot.Robot-class.html#remote_destroy,Method rce.slave.interface.Interface.remote_destroy()=rce.slave.interface.Interface-class.html#remote_destroy,Method rce.slave.namespace.Namespace.remote_destroy()=rce.slave.namespace.Namespace-class.html#remote_destroy,Method rce.slave.protocol.RCEInternalProtocol.remote_destroy()=rce.slave.protocol.RCEInternalProtocol-class.html#remote_destroy,Method rce.slave.protocol._Protocol.remote_destroy()=rce.slave.protocol._Protocol-class.html#remote_destroy"><a title="rce.container.RCEContainer.remote_destroy
+rce.environment.Environment.remote_destroy
+rce.monitor.node.Node.remote_destroy
+rce.monitor.parameter.Parameter.remote_destroy
+rce.robot.Robot.remote_destroy
+rce.slave.interface.Interface.remote_destroy
+rce.slave.namespace.Namespace.remote_destroy
+rce.slave.protocol.RCEInternalProtocol.remote_destroy
+rce.slave.protocol._Protocol.remote_destroy" class="py-name" href="#" onclick="return doclink('link-75', 'remote_destroy', 'link-75');">remote_destroy</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">:</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="rce.core.network.Endpoint.unregisterProtocol
+rce.robot.Connection.unregisterProtocol
+rce.slave.endpoint.Endpoint.unregisterProtocol
+rce.slave.interface.Interface.unregisterProtocol" class="py-name" href="#" onclick="return doclink('link-76', 'unregisterProtocol', 'link-23');">unregisterProtocol</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"> </tt>
+<a name="RCEInternalProtocol.remote_destroy"></a><div id="RCEInternalProtocol.remote_destroy-def"><a name="L316"></a><tt class="py-lineno">316</tt> <a class="py-toggle" href="#" id="RCEInternalProtocol.remote_destroy-toggle" onclick="return toggle('RCEInternalProtocol.remote_destroy');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.protocol.RCEInternalProtocol-class.html#remote_destroy">remote_destroy</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RCEInternalProtocol.remote_destroy-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RCEInternalProtocol.remote_destroy-expanded"><a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method should be called to destroy the connection and the protocol.</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"><tt class="py-docstring">            It also takes care of any circular references.</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">transport</tt><tt class="py-op">.</tt><tt class="py-name">loseConnection</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="rce-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue May 14 15:54:09 2013
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
