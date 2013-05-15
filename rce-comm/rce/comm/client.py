@@ -78,7 +78,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
     def connectionMade(self):
         WebSocketClientProtocol.connectionMade(self)
         self._buffermanager = BufferManager(self.transport, self)
-        self.transport.registerProducer(self._buffermanager, False)
+        self.transport.registerProducer(self._buffermanager, True)
 
     def onOpen(self):
         """ This method is called by twisted as soon as the WebSocket

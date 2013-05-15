@@ -201,7 +201,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     def connectionMade(self):
         WebSocketServerProtocol.connectionMade(self)
         self._buffermanager = BufferManager(self.transport, self)
-        self.transport.registerProducer(self._buffermanager, False)
+        self.transport.registerProducer(self._buffermanager, True)
 
     def onConnect(self, req):
         """ Method is called by the Autobahn engine when a request to establish
