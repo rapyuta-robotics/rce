@@ -53,28 +53,10 @@ from autobahn.websocket import connectWS, WebSocketClientFactory, \
 # rce specific imports
 from rce.comm import types
 from rce.comm._version import CURRENT_VERSION
+from rce.comm.buffer import BufferManager
 from rce.comm.interfaces import IRobot, IMessageReceiver
 from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
 from rce.util.interface import verifyObject
-
-
-class BufferManager(object):
-    implements(IPullProducer)
-
-    def __init__(self, consumer, protocol):
-        self.consumer = consumer
-        self.protocol = protocol
-
-    def resumeProducing(self):
-        try:
-            data = self.protocol._binary_buff.popleft()
-            msg = data[0] + data[1].getvalue()
-            WebSocketClientProtocol.sendMessage(self.protocol, msg, binary=True)
-        except IndexError:
-            pass
-
-    def stopProducing(self):
-        pass
 
 
 class RCERobotProtocol(WebSocketClientProtocol):
