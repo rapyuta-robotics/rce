@@ -46,9 +46,11 @@ class BufferManager(object):
         self._paused = False
         while not self._paused:
             try:
-                data = self.protocol._binary_buff.popleft()
-                msg = data[0] + data[1].getvalue()
-                WebSocketProtocol.sendMessage(self.protocol, msg, binary=True)
+                uriBinary, msgURI = self.protocol._binary_buff.popleft()
+                WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
+                for data in uriBinary:
+                    msg = data[0] + data[1].getvalue()
+                    WebSocketProtocol.sendMessage(self.protocol, msg, binary=True)
             except IndexError:
                 pass
 

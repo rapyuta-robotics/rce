@@ -108,10 +108,10 @@ class RCERobotProtocol(WebSocketClientProtocol):
         def send(msg):
             binaries, jsonMsg = recursiveBinarySearch(msg)
 
-            WebSocketClientProtocol.sendMessage(self, json.dumps(jsonMsg))
-
-            for data in binaries:
-                self._binary_buff.append(data)
+            if not uriBinary :
+                WebSocketClientProtocol.sendMessage(self, json.dumps(msgURI))
+            else:
+                self._binary_buff.append((uriBinary, msgURI))
 
 
         if isInIOThread():

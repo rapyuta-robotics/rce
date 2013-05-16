@@ -446,10 +446,10 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         uriBinary, msgURI = recursiveBinarySearch(msg)
 
-        WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
-
-        for binData in uriBinary:
-            self._binary_buff.append(binData)
+        if not uriBinary :
+            WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
+        else:
+            self._binary_buff.append((uriBinary, msgURI))
 
     def sendDataMessage(self, iTag, clsName, msgID, msg):
         """ Callback for Connection object to send a data message to the robot
