@@ -29,6 +29,7 @@
 #     \author/s: Dhananjay Sathe
 #
 #
+from zope.interface import implements
 
 from autobahn.websocket import WebSocketProtocol
 from collections import defaultdict, deque
