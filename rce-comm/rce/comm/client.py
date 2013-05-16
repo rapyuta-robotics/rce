@@ -36,7 +36,6 @@ import itertools
 from urllib import urlencode
 from urllib2 import urlopen, HTTPError
 from hashlib import sha256
-from collections import deque
 
 # zope specific imports
 from zope.interface import implements
@@ -73,7 +72,6 @@ class RCERobotProtocol(WebSocketClientProtocol):
         self._connection = conn
         self._assembler = MessageAssembler(self, 60)
         self._registered = False
-        self._binary_buff = deque(maxlen=10)
 
     def connectionMade(self):
         WebSocketClientProtocol.connectionMade(self)
@@ -111,7 +109,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
             if not uriBinary :
                 WebSocketClientProtocol.sendMessage(self, json.dumps(msgURI))
             else:
-                self._binary_buff.append((uriBinary, msgURI))
+                self._buffermanager.push_data((uriBinary, msgURI))
 
 
         if isInIOThread():

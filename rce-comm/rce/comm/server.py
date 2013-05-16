@@ -32,8 +32,6 @@
 
 # Python specific imports
 import json
-from collections import deque
-
 
 try:
     from cStringIO import StringIO
@@ -196,7 +194,6 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         self._realm = realm
         self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
-        self._binary_buff = deque(maxlen=10)
 
     def connectionMade(self):
         WebSocketServerProtocol.connectionMade(self)
@@ -449,7 +446,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         if not uriBinary :
             WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
         else:
-            self._binary_buff.append((uriBinary, msgURI))
+            self._buffermanager.push_data((uriBinary, msgURI))
 
     def sendDataMessage(self, iTag, clsName, msgID, msg):
         """ Callback for Connection object to send a data message to the robot

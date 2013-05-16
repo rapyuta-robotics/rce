@@ -41,13 +41,22 @@ class BufferManager(object):
         self.consumer = consumer
         self.protocol = protocol
         self._paused = False
+        self._binary_buff = deque(maxlen=10)
+
+    def push_data(self, data):
+        """ Method to push data into the buffer manager from the protocol
+        
+            @param data:       Data to be sent and accompanying message
+            @type  data:       tuple - (uriBinary, msgURI)
+        """
+        self._binary_buff.append(data)
 
     def resumeProducing(self):
         self._paused = False
         while not self._paused:
             try:
-                uriBinary, msgURI = self.protocol._binary_buff.popleft()
-                WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
+                uriBinary, msgURI = self._binary_buff.popleft()
+                WebSocketProtocol.sendMessage(self, json.dumps(msgURI))
                 for data in uriBinary:
                     msg = data[0] + data[1].getvalue()
                     WebSocketProtocol.sendMessage(self.protocol, msg, binary=True)
