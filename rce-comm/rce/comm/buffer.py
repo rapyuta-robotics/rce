@@ -30,19 +30,20 @@
 #
 #
 from zope.interface import implements
-from twisted.internet.interfaces import IPushProducer
+from twisted.internet.interfaces import IPullProducer
 
 from autobahn.websocket import WebSocketProtocol
 from collections import defaultdict, deque
 
 
 class BufferManager(object):
-    implements(IPushProducer)
+    implements(IPullProducer)
 
     def __init__(self, consumer, protocol):
         self.consumer = consumer
         self.protocol = protocol
-        self._paused = False
+        self._paused = True
+        self._new = True
         self._binary_buff = deque(maxlen=10)
 
     def push_data(self, data):
@@ -54,7 +55,10 @@ class BufferManager(object):
         self._binary_buff.append(data)
 
     def resumeProducing(self):
-        self._paused = False
+        if not self._new:
+            self._paused = False
+        else:
+            self._new = False
         while not self._paused:
             try:
                 uriBinary, msgURI = self._binary_buff.popleft()
@@ -63,13 +67,11 @@ class BufferManager(object):
                     msg = data[0] + data[1].getvalue()
                     WebSocketProtocol.sendMessage(self.protocol, msg, binary=True)
             except IndexError:
+                self._paused = True
                 pass
 
-    def pauseProducing(self):
-        self._paused = True
-
     def stopProducing(self):
-        pass
+        self._paused = True
 
 # TODO Implement Buffer Queues
 class BufferQueue(object):
