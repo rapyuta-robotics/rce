@@ -43,7 +43,6 @@ from zope.interface import implements
 # twisted specific imports
 from twisted.python.threadable import isInIOThread
 from twisted.internet.threads import deferToThreadPool
-from twisted.internet.interfaces import IPullProducer
 
 # Autobahn specific imports
 from autobahn.websocket import connectWS, WebSocketClientFactory, \
