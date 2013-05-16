@@ -62,7 +62,7 @@ class BufferManager(object):
         while not self._paused:
             try:
                 uriBinary, msgURI = self._binary_buff.popleft()
-                WebSocketProtocol.sendMessage(self, json.dumps(msgURI))
+                WebSocketProtocol.sendMessage(self.protocol, json.dumps(msgURI))
                 for data in uriBinary:
                     msg = data[0] + data[1].getvalue()
                     WebSocketProtocol.sendMessage(self.protocol, msg, binary=True)
