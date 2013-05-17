@@ -378,9 +378,9 @@ def clean():
     os.remove(PATH)
 
     if settings:
-        check_call(_CLEAN.format(settings.rootfs), shell=True)
-        check_call(_CLEAN.format(settings.conf_dir), shell=True)
-        check_call(_CLEAN.format(settings.data_dir), shell=True)
+        base_path = os.path.dirname(settings.rootfs)
+        check_call(_CLEAN.format(base_path), shell=True)
+
         try:
             os.remove(settings.pw_file)
         except OSError:
