@@ -340,6 +340,7 @@ def provision_container(config):
         'git clone https://github.com/IDSCETHZurich/rce.git && '
         'cd rce && sudo sh install.sh',
         'cd && echo "source /opt/rce/setup.sh" >> .bashrc'
+        'echo "source /opt/rce/setup.sh" >> /etc/profile'
     ]
     if config.container_ros_release > 'fuerte':
         cmds.append('source .bashrc && rosdep init && rosdep update')
