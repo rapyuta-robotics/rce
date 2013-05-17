@@ -45,8 +45,16 @@ if [ $? -ne 0 ]; then
     exit
 fi
 
+#setup some environment variables
+
+TMP_HOME=$HOME
+export HOME=/root
+
 # Enter the container filesystem
 chroot $RESULT /bin/bash
+
+# restore environment variables
+export HOME=$TMP_HOME
 
 # Tear down the container filesystem
 rce-setup-rcemake down
