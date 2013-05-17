@@ -36,7 +36,7 @@ import sys
 import readline
 import glob
 import string
-from subprocess import check_call
+from subprocess import check_call, call
 from ConfigParser import SafeConfigParser, NoSectionError
 
 # rce specific imports
@@ -355,7 +355,7 @@ def clean():
     """ Clean the cache and delete the container filesystem.
     """
     try:
-        settings = getSettings(True)
+        settings = getSettings(True, checks=False)
     except NoValidSettings:
         settings = None
         release = None
@@ -369,7 +369,7 @@ def clean():
         release = settings.container_ubuntu_release
 
     if release:
-        check_call(_CONTAINER_CLEAN.format(base=release), shell=True,
+        call(_CONTAINER_CLEAN.format(base=release), shell=True,
                    cwd=os.path.dirname(sys.argv[0]))
 
     if not os.path.exists(PATH):
@@ -381,7 +381,10 @@ def clean():
         check_call(_CLEAN.format(settings.rootfs), shell=True)
         check_call(_CLEAN.format(settings.conf_dir), shell=True)
         check_call(_CLEAN.format(settings.data_dir), shell=True)
-        os.remove(settings.pw_file)
+        try:
+            os.remove(settings.pw_file)
+        except OSError:
+            pass
 
 
 def _get_argparse():
