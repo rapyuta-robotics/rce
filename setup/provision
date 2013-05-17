@@ -61,7 +61,7 @@ _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
 _CONTAINER = ('sudo bash container.bash --baserel={base} --path={path} '
               '--rosrel={ros}')
 _CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={base} --clean'
-_CLEAN = 'sudo rm -r {0}'
+_CLEAN = 'sudo rm -rf {0}'
 
 
 #########################
