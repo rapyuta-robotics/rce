@@ -76,7 +76,7 @@ def getSettings(throw=False, checks=True):
             raise _settings
         else:
             print(str(e))
-            print('Please run the provision script.')
+            print('Please check your configuration')
             exit(1)
 
     return _settings
