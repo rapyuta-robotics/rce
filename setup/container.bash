@@ -164,6 +164,7 @@ clean()
 {
     baserel=$1
     cache="/var/cache/lxc/$baserel"
+    mkdir -p /var/lock/subsys/
 
     if [ ! -e $cache ]; then
         exit 0
