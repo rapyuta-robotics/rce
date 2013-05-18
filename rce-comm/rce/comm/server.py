@@ -55,12 +55,11 @@ from autobahn.websocket import HttpException, \
 
 # rce specific imports
 from rce.comm import types
-from rce.comm.buffer import BufferManager
 from rce.comm._version import MINIMAL_VERSION, CURRENT_VERSION
 from rce.comm.error import InvalidRequest, DeadConnection
-from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
 from rce.comm.interfaces import IMasterRealm, IRobotRealm, \
     IServersideProtocol, IRobot, IMessageReceiver
+from rce.comm.protocol import RCERobotProtocolMixin
 from rce.util.interface import verifyObject
 
 
@@ -172,14 +171,11 @@ class RobotResource(Resource):
         return NOT_DONE_YET
 
 
-class RobotWebSocketProtocol(WebSocketServerProtocol):
+class RCERobotServerProtocol(WebSocketServerProtocol, RCERobotProtocolMixin):
     """ Protocol which is used for the connections from the robots to the
         robot manager.
     """
     implements(IServersideProtocol)
-
-    # CONFIG
-    MSG_QUEUE_TIMEOUT = 60
 
     def __init__(self, realm):
         """ Initialize the Protocol.
@@ -191,13 +187,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         verifyObject(IRobotRealm, realm)
 
         self._realm = realm
-        self._assembler = MessageAssembler(self, self.MSG_QUEUE_TIMEOUT)
         self._avatar = None
 
-    def connectionMade(self):
-        WebSocketServerProtocol.connectionMade(self)
-        self._buffermanager = BufferManager(self.transport, self)
-        self.transport.registerProducer(self._buffermanager, False)
+        RCERobotProtocolMixin.__init__(self)
 
     def onConnect(self, req):
         """ Method is called by the Autobahn engine when a request to establish
@@ -240,7 +232,8 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
 
         self._realm.registerWebsocketProtocol(avatar, self)
         self._avatar = avatar
-        self._assembler.start()
+
+        self.start()
 
     def _authenticate_failed(self, e):
         """ Method is called by deferred when the connection could not been
@@ -416,10 +409,8 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                 format and False otherwise.
             @type  binary:      bool
         """
-#        log.msg('WebSocket: Received new message from client. '
-#                '(binary={0})'.format(binary))
         try:
-            self._assembler.processMessage(msg, binary)
+            self.processMessage(msg, binary)
         except InvalidRequest as e:
             msg = 'Invalid Request: {0}'.format(e)
             self.sendErrorMessage(msg)
@@ -429,23 +420,6 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             import traceback
             traceback.print_exc()
             self.sendErrorMessage("Fatal Error")
-
-    def sendMessage(self, msg):
-        """ Internally used method to send a message to the robot.
-
-            Should not be used from outside the Protocol; instead use the
-            methods 'sendDataMessage' or 'sendErrorMessage'.
-
-            (Overwrites method from autobahn.websocket.WebSocketServerProtocol)
-
-            @param msg:     Message which should be sent.
-        """
-        uriBinary, msgURI = recursiveBinarySearch(msg)
-
-        if not uriBinary :
-            WebSocketServerProtocol.sendMessage(self, json.dumps(msgURI))
-        else:
-            self._buffermanager.push_data((uriBinary, msgURI))
 
     def sendDataMessage(self, iTag, clsName, msgID, msg):
         """ Callback for Connection object to send a data message to the robot
@@ -471,9 +445,10 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
-        self.sendMessage({'type' : types.DATA_MESSAGE,
-                          'data' : {'iTag' : iTag, 'type' : clsName,
-                                    'msgID' : msgID, 'msg' : msg}})
+        # TODO: Make the priority selectables
+        self.addToQueue({'type' : types.DATA_MESSAGE,
+                         'data' : {'iTag' : iTag, 'type' : clsName,
+                                   'msgID' : msgID, 'msg' : msg}}, 1)
 
     def sendErrorMessage(self, msg):
         """ Callback for Connection object to send an error message to the robot
@@ -482,7 +457,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
             @param msg:         Message which should be sent to the robot.
             @type  msg:         str
         """
-        self.sendMessage({'data' : msg, 'type' : types.ERROR})
+        self.addToQueue({'data' : msg, 'type' : types.ERROR}, 0)
 
     def onClose(self, wasClean, code, reason):
         """ Method is called by the Autobahn engine when the connection has
@@ -491,10 +466,9 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         if self._avatar:
             self._realm.unregisterWebsocketProtocol(self._avatar, self)
 
-        self._assembler.stop()
-
         self._avatar = None
-        self._assembler = None
+
+        self.stop()
 
 
 class CloudEngineWebSocketFactory(WebSocketServerFactory):
@@ -525,6 +499,6 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
         """ Method is called by the twisted reactor when a new connection
             attempt is made.
         """
-        p = RobotWebSocketProtocol(self._realm)
+        p = RCERobotServerProtocol(self._realm)
         p.factory = self
         return p

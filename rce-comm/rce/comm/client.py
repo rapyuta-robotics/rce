@@ -51,13 +51,12 @@ from autobahn.websocket import connectWS, WebSocketClientFactory, \
 # rce specific imports
 from rce.comm import types
 from rce.comm._version import CURRENT_VERSION
-from rce.comm.buffer import BufferManager
 from rce.comm.interfaces import IRobot, IMessageReceiver
-from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
+from rce.comm.protocol import RCERobotProtocolMixin
 from rce.util.interface import verifyObject
 
 
-class RCERobotProtocol(WebSocketClientProtocol):
+class RCERobotClientProtocol(WebSocketClientProtocol, RCERobotProtocolMixin):
     """ WebSocket client protocol which is used to communicate with the Robot
         Manager.
     """
@@ -69,27 +68,24 @@ class RCERobotProtocol(WebSocketClientProtocol):
             @type  conn:        rce.comm.client.RCE
         """
         self._connection = conn
-        self._assembler = MessageAssembler(self, 60)
         self._registered = False
 
-    def connectionMade(self):
-        WebSocketClientProtocol.connectionMade(self)
-        self._buffermanager = BufferManager(self.transport, self)
-        self.transport.registerProducer(self._buffermanager, False)
+        RCERobotProtocolMixin.__init__(self)
 
     def onOpen(self):
         """ This method is called by twisted as soon as the WebSocket
             connection has been successfully established.
         """
-        self._assembler.start()
         self._connection.registerConnection(self)
         self._registered = True
+
+        self.start()
 
     def onMessage(self, msg, binary):
         """ This method is called by twisted when a new message has been
             received.
         """
-        self._assembler.processMessage(msg, binary)
+        self.processMessage(msg, binary)
 
     def processCompleteMessage(self, msg):
         """ Callback for MessageAssembler which will be called as soon as a
@@ -97,33 +93,15 @@ class RCERobotProtocol(WebSocketClientProtocol):
         """
         self._connection.receivedMessage(msg)
 
-    def sendMessage(self, msg):
-        """ Internally used method to send messages via RCERobotProtocol.
-
-            @param msg:         Message which should be sent.
-        """
-        def send(msg):
-            binaries, jsonMsg = recursiveBinarySearch(msg)
-
-            if not binaries :
-                WebSocketClientProtocol.sendMessage(self, json.dumps(jsonMsg))
-            else:
-                self._buffermanager.push_data((binaries, jsonMsg))
-
-
-        if isInIOThread():
-            send(msg)
-        else:
-            self._connection.reactor.callFromThread(send, msg)
-
     def onClose(self, *args):
         """ This method is called by twisted when the connection has been
             closed.
         """
         if self._registered:
             self._connection.unregisterConnection(self)
-            self._assembler.stop()
             self._registered = False
+
+        self.stop()
 
     def failHandshake(self, reason):
         """ This method is called by twisted when the connection could not be
@@ -154,7 +132,7 @@ class RCERobotFactory(WebSocketClientFactory):
         """ This method is called by twisted when a new connection should be
             made.
         """
-        p = RCERobotProtocol(self._connection)
+        p = RCERobotClientProtocol(self._connection)
         p.factory = self
         return p
 
@@ -317,18 +295,26 @@ class RCE(object):
         if self._conn:
             self._conn.dropConnection()
 
-    def _sendMessage(self, msgType, msgData):
+    def _sendMessage(self, msgType, msgData, priority):
         """ Internally used method to send messages via RCERobotProtocol.
 
             @param msgType:     String describing the type of the message.
             @type  msgType:     str
 
             @param msgData:     Message which should be sent.
+
+            @param priority:    Priority of the message.
+            @type  priority:    int
         """
         if not self._conn:
             raise ConnectionError('No connection registered.')
 
-        self._conn.sendMessage({'type':msgType, 'data':msgData})
+        msg = {'type':msgType, 'data':msgData}
+
+        if isInIOThread():
+            self._conn.addToQueue(msg, priority)
+        else:
+            self._reactor.callFromThread(self._conn.addToQueue, msg, priority)
 
     def sendMessage(self, dest, msgType, msg, msgID):
         """ Send a data message to the cloud engine.
@@ -350,8 +336,9 @@ class RCE(object):
                                 response message.
             @type  msgID:       str
         """
+        # TODO: Make the priority selectables
         self._sendMessage(types.DATA_MESSAGE, {'iTag':dest, 'type':msgType,
-                                               'msgID':msgID, 'msg':msg})
+                                               'msgID':msgID, 'msg':msg}, 1)
 
     def createContainer(self, cTag):
         """ Create a container.
@@ -361,7 +348,7 @@ class RCE(object):
             @type  cTag:        str
         """
         print("Request creation of container '{0}'.".format(cTag))
-        self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag})
+        self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag}, 0)
 
     def destroyContainer(self, cTag):
         """ Destroy a container.
@@ -370,7 +357,7 @@ class RCE(object):
             @type  cTag:        str
         """
         print("Request destruction of container '{0}'.".format(cTag))
-        self._sendMessage(types.DESTROY_CONTAINER, {'containerTag':cTag})
+        self._sendMessage(types.DESTROY_CONTAINER, {'containerTag':cTag}, 0)
 
     def addNode(self, cTag, nTag, pkg, exe, args='', name='', namespace=''):
         """ Add a node.
@@ -419,7 +406,7 @@ class RCE(object):
         if namespace:
             node['namespace'] = namespace
 
-        self._sendMessage(types.CONFIGURE_COMPONENT, {'addNodes':[node]})
+        self._sendMessage(types.CONFIGURE_COMPONENT, {'addNodes':[node]}, 0)
 
     def removeNode(self, cTag, nTag):
         """ Remove a node.
@@ -434,7 +421,7 @@ class RCE(object):
         print("Request removal of node '{0}' from container "
               "'{1}'.".format(nTag, cTag))
         node = {'containerTag':cTag, 'nodeTag':nTag}
-        self._sendMessage(types.CONFIGURE_COMPONENT, {'removeNodes':[node]})
+        self._sendMessage(types.CONFIGURE_COMPONENT, {'removeNodes':[node]}, 0)
 
     def addParameter(self, cTag, name, value):
         """ Add a parameter.
@@ -456,7 +443,7 @@ class RCE(object):
         print("Request addition of parameter '{0}' to container "
               "'{1}'.".format(name, cTag))
         param = {'containerTag':cTag, 'name':name, 'value':value}
-        self._sendMessage(types.CONFIGURE_COMPONENT, {'setParam':[param]})
+        self._sendMessage(types.CONFIGURE_COMPONENT, {'setParam':[param]}, 0)
 
     def removeParameter(self, cTag, name):
         """ Remove a parameter.
@@ -471,7 +458,7 @@ class RCE(object):
         print("Request removal of parameter '{0}' from container "
               "'{1}'.".format(name, cTag))
         param = {'containerTag':cTag, 'name':name}
-        self._sendMessage(types.CONFIGURE_COMPONENT, {'deleteParam':[param]})
+        self._sendMessage(types.CONFIGURE_COMPONENT, {'deleteParam':[param]}, 0)
 
     def addInterface(self, eTag, iTag, iType, iCls, addr=''):
         """ Add an interface.
@@ -513,7 +500,8 @@ class RCE(object):
         if addr:
             iface['addr'] = addr
 
-        self._sendMessage(types.CONFIGURE_COMPONENT, {'addInterfaces':[iface]})
+        self._sendMessage(types.CONFIGURE_COMPONENT, {'addInterfaces':[iface]},
+                          0)
 
     def removeInterface(self, eTag, iTag):
         """ Remove an interface.
@@ -529,7 +517,7 @@ class RCE(object):
         print("Request removal of interface '{0}'.".format(iTag))
         iface = {'endpointTag':eTag, 'interfaceTag':iTag}
         self._sendMessage(types.CONFIGURE_COMPONENT,
-                          {'removeInterfaces':[iface]})
+                          {'removeInterfaces':[iface]}, 0)
 
     def addConnection(self, tagA, tagB):
         """ Create a connection.
@@ -542,7 +530,7 @@ class RCE(object):
         print("Request creation of connection between interface '{0}' and "
               "'{1}'.".format(tagA, tagB))
         conn = {'tagA':tagA, 'tagB':tagB}
-        self._sendMessage(types.CONFIGURE_CONNECTION, {'connect':[conn]})
+        self._sendMessage(types.CONFIGURE_CONNECTION, {'connect':[conn]}, 0)
 
     def removeConnection(self, tagA, tagB):
         """ Destroy a connection.
@@ -555,7 +543,7 @@ class RCE(object):
         print("Request destruction of connection between interface '{0}' and "
               "'{1}'.".format(tagA, tagB))
         conn = {'tagA':tagA, 'tagB':tagB}
-        self._sendMessage(types.CONFIGURE_CONNECTION, {'disconnect':[conn]})
+        self._sendMessage(types.CONFIGURE_CONNECTION, {'disconnect':[conn]}, 0)
 
     def receivedMessage(self, msg):
         """ Callback from RCERobotProtocol.

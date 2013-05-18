@@ -181,7 +181,7 @@ class MessageAssembler(object):
     """ Class which is used to store incomplete messages for a certain time
         and which is used to assemble them when possible.
     """
-    def __init__(self, protocol, timeout):
+    def __init__(self, protocol, timeout=30):
         """ Initialize the binary assembler.
 
             @param protocol:    Protocol instance for which this assembler is
@@ -192,7 +192,7 @@ class MessageAssembler(object):
             @type  timeout:     int
         """
         self._protocol = protocol
-        self._timeout = timeout
+        self._timeout = timedelta(seconds=timeout)
 
         # Set of _IncompleteMessage instances
         self._incompleteMsgs = set()
@@ -308,7 +308,7 @@ class MessageAssembler(object):
     def start(self):
         """ Start the cleaner of the assembler.
         """
-        self._cleaner.start(self._timeout / 4)
+        self._cleaner.start(self._timeout.seconds / 4)
 
     def stop(self):
         """ Stop the cleaner of the assembler and remove any circular
@@ -322,7 +322,7 @@ class MessageAssembler(object):
     def _cleanUp(self):
         """ Internally used method to remove old incomplete messages.
         """
-        limit = datetime.now() - timedelta(seconds=self._timeout)
+        limit = datetime.now() - self._timeout
 
         toClean = [msg for msg in self._incompleteMsgs if msg.older(limit)]
 

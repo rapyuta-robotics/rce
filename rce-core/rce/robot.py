@@ -799,7 +799,6 @@ def main(reactor, cred, masterIP, masterPort, consolePort,
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
 
-    #portal = Portal(client, (client,))
     robot = CloudEngineWebSocketFactory(client,
                                         'ws://localhost:{0}'.format(extPort))
     listenWS(robot)
