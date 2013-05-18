@@ -78,6 +78,10 @@ class Connection(object):
     def __init__(self, client, userID, robotID):
         """ Initialize the representation of a connection to a robot client.
 
+            @param client:      Client which is responsible for managing the
+                                Robot process.
+            @type  client:      rce.robot.RobotClient
+
             @param userID:      User ID of the robot owner
             @type  userID:      str
 
@@ -124,9 +128,7 @@ class Connection(object):
         self._avatar = None
         self._protocol = None
 
-    # ##
-    # ## Callbacks for RobotClient
-    # ##
+    # Callbacks for RobotClient
 
     def registerAvatar(self, avatar):
         """ Register User Avatar.
@@ -166,9 +168,7 @@ class Connection(object):
         """
         self._protocol = None
 
-    # ##
-    # ## Callbacks for View & Namespace
-    # ##
+    # Callbacks for View & Namespace
 
     def reportError(self, msg):
         self._protocol.sendErrorMessage(msg)
@@ -187,9 +187,7 @@ class Connection(object):
 
     sendMessage.__doc__ = IServersideProtocol.get('sendDataMessage').getDoc()
 
-    # ##
-    # ## Forwarding to View
-    # ##
+    # Forwarding to View
 
     def createContainer(self, tag):
         if not self._view:
@@ -271,9 +269,7 @@ class Connection(object):
 
     removeConnection.__doc__ = IRobot.get('removeConnection').getDoc()
 
-    # ##
-    # ## Forwarding to Namespace
-    # ##
+    # Forwarding to Namespace
 
     def processReceivedMessage(self, iTag, clsName, msgID, msg):
         if not self._namespace:
@@ -455,7 +451,7 @@ class Robot(Namespace):
         """ Reference to the message converter used by the Converter
             interfaces.
         """
-        return self._endpoint._converter
+        return self._endpoint.converter
 
     def receivedFromClient(self, iTag, clsName, msgID, msg):
         """ Process a data message which has been received from the robot

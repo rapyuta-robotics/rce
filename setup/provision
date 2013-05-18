@@ -372,7 +372,7 @@ def clean():
 
     if release:
         call(_CONTAINER_CLEAN.format(base=release), shell=True,
-                   cwd=os.path.dirname(sys.argv[0]))
+             cwd=os.path.dirname(sys.argv[0]))
 
     if not os.path.exists(PATH):
         return

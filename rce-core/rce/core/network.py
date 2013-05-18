@@ -410,7 +410,7 @@ class Endpoint(Proxy):
 
         self._network.unregisterEndpoint(self)
         self._network = None
-        
+
         assert len(self._protocols) == 0
         assert len(self._interfaces) == 0
         assert len(self._namespaces) == 0
@@ -757,8 +757,8 @@ class LoopbackConnection(object):
     def __init__(self, protocol):
         """ Initialize the loopback connection for an endpoint.
 
-            @param protocol:    Protocol instance providing loopback 
-                                functionality in the endpoint. 
+            @param protocol:    Protocol instance providing loopback
+                                functionality in the endpoint.
             @type  protocol:    rce.core.network.Protocol
         """
         self._protocol = protocol
