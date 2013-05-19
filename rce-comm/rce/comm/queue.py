@@ -104,7 +104,7 @@ class PriorityQueue(object):
 
         old_len = len(self._queue)
         self._queue = [ele for ele in self._queue if ele[1] < timeout]
-        new_len = len()
+        new_len = len(self._queue)
 
         if old_len != new_len:
             heapify(self._queue)
