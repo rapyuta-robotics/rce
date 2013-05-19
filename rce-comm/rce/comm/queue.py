@@ -103,9 +103,10 @@ class PriorityQueue(object):
         timeout = datetime.now() + self._timeout
 
         old_len = len(self._queue)
-        heapify([ele for ele in self._queue if ele[1] < timeout])
-        new_len = len(self._queue)
+        self._queue = [ele for ele in self._queue if ele[1] < timeout]
+        new_len = len()
 
         if old_len != new_len:
+            heapify(self._queue)
             log.msg('{0} elements have been dropped from '
                     'queue.'.format(old_len - new_len))
