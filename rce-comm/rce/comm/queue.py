@@ -74,9 +74,11 @@ class PriorityQueue(object):
 
             @raise:             IndexError if the queue is empty.
         """
+        timeout = datetime.now() + self._timeout
+
         while 1:
             data = heappop(self._queue)
-            if data[1] < datetime.now() + self._timeout:
+            if data[1] < timeout:
                 return data[2]
 
     def size(self):
