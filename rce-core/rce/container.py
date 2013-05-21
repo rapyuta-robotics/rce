@@ -34,6 +34,7 @@
 import os
 import sys
 import shutil
+import pwd
 
 pjoin = os.path.join
 
@@ -56,7 +57,7 @@ from rce.util.container import Container
 from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
 from rce.core.error import MaxNumberExceeded
-#from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
+# from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
 
@@ -138,7 +139,13 @@ iface eth0 inet static
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
 """
-
+def chown_recursive(path, uid, gid):
+        os.chown(path, uid, gid)
+        for root, dirs, files in os.walk(path):
+            for name in dirs:
+                os.chown(os.path.join(root, name), uid, gid)
+            for name in files:
+                os.chown(os.path.join(root, name), uid, gid)
 
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
@@ -187,6 +194,14 @@ class RCEContainer(Referenceable):
 
         os.mkdir(rceDir)
         os.mkdir(rosDir)
+
+        if self._client.rosRel > 'fuerte':
+            user = pwd.getpwnam('rce')
+            user_ros = os.path.join(rceDir, '.ros')
+            shutil.copytree('/root/.ros/rosdep',
+                            os.path.join(user_ros, 'rosdep'))
+            chown_recursive(user_ros, user.pw_uid, user.pw_gid)
+
 
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
@@ -354,7 +369,7 @@ class ContainerClient(Referenceable):
     """
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
                  intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-                 dataDir, pkgDir):
+                 dataDir, pkgDir, rosRel):
         """ Initialize the Container Client.
 
             @param reactor:       Reference to the twisted reactor.
@@ -414,6 +429,10 @@ class ContainerClient(Referenceable):
                                   host directory will be bound in the container
                                   filesystem (without the @param rootfsDir).
             @type  pkgDir:        [(str, str)]
+            
+            @param rosRel:       Container filesytem ROS release in this 
+                                 deployment instance of the cloud engine
+            @type  rosRel:       str
         """
         self._reactor = reactor
         self._internalIP = intIP
@@ -439,6 +458,7 @@ class ContainerClient(Referenceable):
 
         self._nrs = set(range(100, 200))
         self._containers = set()
+        self._rosRel = rosRel
 
         # Network configuration
         self._network = bridgeIP[:bridgeIP.rfind('.')]
@@ -497,6 +517,13 @@ class ContainerClient(Referenceable):
     def pkgDirIter(self):
         """ Iterator over all file system paths of package directories. """
         return self._pkgDir.__iter__()
+
+    @property
+    def rosRel(self):
+        """ Container filesytem ROS release in this 
+            deployment instance of the cloud engine
+        """
+        return self._rosRel
 
     @property
     def masterIP(self):
@@ -615,7 +642,7 @@ class ContainerClient(Referenceable):
 
 def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
          internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, pkgDir, maxNr):
+         dataDir, pkgDir, maxNr, rosRel):
     log.startLogging(sys.stdout)
 
     def _err(reason):
@@ -627,7 +654,8 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
 
     client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
                              infraPasswd, internalIP, bridgeIP, envPort,
-                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir)
+                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir,
+                             rosRel)
 
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
