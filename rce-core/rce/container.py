@@ -34,7 +34,6 @@
 import os
 import sys
 import shutil
-import pwd
 
 pjoin = os.path.join
 
@@ -77,6 +76,7 @@ script
     . /opt/rce/setup.sh
 
     # start environment node
+    {chown_cmd}
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
 end script
 """
@@ -139,13 +139,7 @@ iface eth0 inet static
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
 """
-def chown_recursive(path, uid, gid):
-        os.chown(path, uid, gid)
-        for root, dirs, files in os.walk(path):
-            for name in dirs:
-                os.chown(os.path.join(root, name), uid, gid)
-            for name in files:
-                os.chown(os.path.join(root, name), uid, gid)
+
 
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
@@ -196,12 +190,12 @@ class RCEContainer(Referenceable):
         os.mkdir(rosDir)
 
         if self._client.rosRel > 'fuerte':
-            user = pwd.getpwnam('rce')
-            user_ros = os.path.join(rceDir, '.ros')
-            shutil.copytree('/root/.ros/rosdep',
-                            os.path.join(user_ros, 'rosdep'))
-            chown_recursive(user_ros, user.pw_uid, user.pw_gid)
-
+            user_rosdep = os.path.join(rceDir, '.ros/rosdep')
+            root_rosdep = os.path.join(self._client.rootfs, '/root/.ros/rosdep')
+            shutil.copytree(root_rosdep, user_rosdep)
+            chown_cmd = 'chown -R rce:rce /opt/rce/data/.ros'
+        else:
+            chown_cmd = '#'
 
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
@@ -252,7 +246,9 @@ class RCEContainer(Referenceable):
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
-                                         uid=uid, passwd=passwd))
+                                         uid=uid, passwd=passwd,
+                                         chown_cmd=chown_cmd))
+
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
         # TODO: For the moment there is no upstart launcher.
