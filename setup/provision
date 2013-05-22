@@ -339,7 +339,7 @@ def provision_container(config):
         'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
         'git clone https://github.com/IDSCETHZurich/rce.git && '
         'cd rce && sudo sh install.sh',
-        'cd && echo "source /opt/rce/setup.sh" >> .bashrc'
+        'echo "source /opt/rce/setup.sh" >> /root/.bashrc',
         'echo "source /opt/rce/setup.sh" >> /etc/profile'
     ]
     if config.container_ros_release > 'fuerte':

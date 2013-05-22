@@ -191,7 +191,7 @@ class RCEContainer(Referenceable):
 
         if self._client.rosRel > 'fuerte':
             user_rosdep = os.path.join(rceDir, '.ros/rosdep')
-            root_rosdep = os.path.join(self._client.rootfs, '/root/.ros/rosdep')
+            root_rosdep = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
             shutil.copytree(root_rosdep, user_rosdep)
             chown_cmd = 'chown -R rce:rce /opt/rce/data/.ros'
         else:
