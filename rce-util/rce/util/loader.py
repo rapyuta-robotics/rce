@@ -395,4 +395,4 @@ class Loader(object):
             return nodeDict[exe]
         except KeyError:
             raise ResourceNotFound('Can not find executable "{0}" in '
-                                   'ROS package "{0}".'.format(exe, pkg))
+                                   'ROS package "{1}".'.format(exe, pkg))
