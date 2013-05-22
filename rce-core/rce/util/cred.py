@@ -50,7 +50,6 @@ from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
 
-# ## AES Encryption Stuff
 # AES Encryptors strength depends on input password length, ensure it with
 # appropriate hash
 # the block size for the cipher object; must be 32 for AES 256
@@ -75,22 +74,21 @@ salter = lambda u, p: sha256(u + p).hexdigest()
 formatUser = lambda name, pw, mode, groups: '\t'.join((name, pw, mode,
                                                        ':'.join(groups)))
 
-# ## Cloud engine Specific Types and Declarations
-Userinfo = namedtuple('Userinfo', 'password mode groups')
+# Cloud engine specific Types and Declarations
+UserInfo = namedtuple('UserInfo', 'password mode groups')
 
 # User mode mask length, modify these for future adaptations
 _MODE_LENGTH = 1
-_DEFAULT_USER_MODE = '1'  # should be as many digits as the above e.g.:
-                            #   1 or 01 or 001
+_DEFAULT_USER_MODE = '1'  # should be as many digits as the above e.g.: 1, 01
 
 # default groups a user belongs to
 _DEFAULT_GROUPS = ('user',)
 
-# ## Used Regex patterns
-_RE = r'(\w+)\s(.+)\s(\d{' + str(_MODE_LENGTH) + '})\s(.+)'
+# Used Regex patterns
+_RE = r'(\w+)\s([0-9a-fA-F]{64})\s(\d{' + str(_MODE_LENGTH) + '})\s([\w:]+)$'
 _PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 
-# ## Used doc strings
+# Used doc strings
 _PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
                   'contain at least one uppercase, lowercase, digit, and '
                   'special character.')
@@ -196,8 +194,8 @@ class RCECredChecker(object):
                 except AttributeError:
                     raise CredentialError('Credential database corrupted')
                 try:
-                    yield parts[0], Userinfo(parts[1], int(parts[2]),
-                                         set(parts[3].split(':')))
+                    yield parts[0], UserInfo(parts[1], int(parts[2]),
+                                             set(parts[3].split(':')))
                 except KeyError:
                     raise CredentialError('Credential database corrupted')
 
@@ -454,9 +452,10 @@ class RCEInternalChecker(object):
         self.credentialInterfaces = (IUsernameHashedPassword,)
 
     def add_checker(self, method):
-        """ Add a method to check the validity of a UUID
-        This method belongs to the RCE Realm Object and has access to the
-        valid uuid and checks them and raises a CredentialError if absent
+        """ Add a method to check the validity of a UUID.
+
+            This method belongs to the RCE Realm Object, has access to the
+            valid uuid and checks them, and raises a CredentialError if absent.
         """
         self.checkUidValidity = method
 

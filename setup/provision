@@ -36,7 +36,7 @@ import sys
 import readline
 import glob
 import string
-from subprocess import check_call
+from subprocess import check_call, call
 from ConfigParser import SafeConfigParser, NoSectionError
 
 # rce specific imports
@@ -61,7 +61,7 @@ _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
 _CONTAINER = ('sudo bash container.bash --baserel={base} --path={path} '
               '--rosrel={ros}')
 _CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={base} --clean'
-_CLEAN = 'sudo rm -r {0}'
+_CLEAN = 'sudo rm -rf {0}'
 
 
 #########################
@@ -339,9 +339,11 @@ def provision_container(config):
         'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
         'git clone https://github.com/IDSCETHZurich/rce.git && '
         'cd rce && sudo sh install.sh',
-        'mkdir -p $HOME && cd && echo "source /opt/rce/setup.sh" >> .bashrc'
+        'echo "source /opt/rce/setup.sh" >> /root/.bashrc',
+        'echo "source /opt/rce/setup.sh" >> /etc/profile'
     ]
-
+    if config.container_ros_release > 'fuerte':
+        cmds.append('source .bashrc && rosdep init && rosdep update')
     if config.dev_mode:
         cmds.append('echo "root:admin" | chpasswd')
     else:
@@ -355,7 +357,7 @@ def clean():
     """ Clean the cache and delete the container filesystem.
     """
     try:
-        settings = getSettings(True)
+        settings = getSettings(True, checks=False)
     except NoValidSettings:
         settings = None
         release = None
@@ -369,8 +371,8 @@ def clean():
         release = settings.container_ubuntu_release
 
     if release:
-        check_call(_CONTAINER_CLEAN.format(base=release), shell=True,
-                   cwd=os.path.dirname(sys.argv[0]))
+        call(_CONTAINER_CLEAN.format(base=release), shell=True,
+             cwd=os.path.dirname(sys.argv[0]))
 
     if not os.path.exists(PATH):
         return
@@ -378,10 +380,13 @@ def clean():
     os.remove(PATH)
 
     if settings:
-        check_call(_CLEAN.format(settings.rootfs), shell=True)
-        check_call(_CLEAN.format(settings.conf_dir), shell=True)
-        check_call(_CLEAN.format(settings.data_dir), shell=True)
-        os.remove(settings.pw_file)
+        base_path = os.path.dirname(settings.rootfs)
+        check_call(_CLEAN.format(base_path), shell=True)
+
+        try:
+            os.remove(settings.pw_file)
+        except OSError:
+            pass
 
 
 def _get_argparse():

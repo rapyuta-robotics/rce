@@ -37,15 +37,24 @@ if [ $(id -u) -ne 0 ]; then
 fi
 
 # Setup the container filesystem
-ROOTFS=$(rce-setup-rcemake up)
+RESULT=$(rce-setup-rcemake up)
 
 if [ $? -ne 0 ]; then
     echo "Could not setup the rce environment."
+    echo $RESULT
     exit
 fi
 
+#setup some environment variables
+
+TMP_HOME=$HOME
+export HOME=/root
+
 # Enter the container filesystem
-chroot $ROOTFS /bin/bash
+chroot $RESULT /bin/bash
+
+# restore environment variables
+export HOME=$TMP_HOME
 
 # Tear down the container filesystem
 rce-setup-rcemake down

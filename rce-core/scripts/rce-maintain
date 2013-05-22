@@ -30,11 +30,39 @@
 #
 #
 
-
+#  Python specific imports
 from subprocess import check_call
-from ConfigParser import SafeConfigParser, NoOptionError
-from rce.util.cred import _MODE_LENGTH, _RE
 import re
+
+
+def fixcreds():
+    from rce.util.settings import getSettings, NoValidSettings
+    from rce.util.cred import _MODE_LENGTH, _RE
+
+    # NOTE: getSettings() terminates execution immediately,
+    #       if the settings file is not valid
+    old_file = getSettings().pw_file
+    new_file = '.'.join((old_file, 'recovered'))
+    regex = re.compile(_RE)
+
+    print('Attempting to recover data to: {0}'.format(new_file))
+
+    try:
+        with open(old_file, 'r') as old, open(new_file, 'w') as new:
+            print('You will be informed of any users that have corrupted '
+                  'data fields. You should consider recreating the '
+                  'corrupted users.')
+
+            for line in old:
+                match = regex.match(line)
+
+                if match and len(match.groups()) == 4:
+                    new.write(line + '\n')
+                else:
+                    print("Data for user '{0}' is corrupted and will be "
+                          'dropped!'.format(line.split()[0]))
+    except IOError:
+        print('Could not read/write the credentials file and/or backup file.')
 
 
 def _get_argparse():
@@ -44,7 +72,7 @@ def _get_argparse():
                             description='Maintenance utility for the '
                                         'RoboEarth Cloud Engine.')
 
-    parser.add_argument('mode', choices=['all', 'rce', 'rootfs', 'packages'
+    parser.add_argument('mode', choices=['all', 'rce', 'rootfs', 'packages',
                                          'fixcreds'])
 
     return parser
@@ -58,7 +86,6 @@ _GIT_UPDATE = ('mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
 
 
 if __name__ == '__main__':
-    from rce.util.settings import PATH, getSettings
     args = _get_argparse().parse_args()
 
     msg = []
@@ -86,31 +113,9 @@ if __name__ == '__main__':
                    shell=True)
 
     if args.mode == 'fixcreds':
-        try:
-            pwfile = getSettings()._pw_file
-        except NoOptionError:
-            print 'Something seems to be wrong with you configuration file , please check it'
-        try:
-            with open(pwfile) as f:
-                newfile = '.'.join((pwfile, 'recovered'))
-                newfile = open(newfile)
-                print ('Attempting to recover data to : {0} \n'
-                   'You will be informed of any users that have corrupted data fields'
-                   ' in the process you should consider recreating them'.format(newfile))
-                for line in f:
-                    try:
-                        parts = re.match(_RE, line).groups()
-                        if len(parts) != 4:
-                            raise AssertionError
-                        newfile.write(line + '\n')
-                    except (AssertionError, AttributeError):
-                        print "Data for user '{0}' corrupted ! dropping ...".format(line.split()[0])
-            newfile.close()
-        except IOError:
-            print 'Password file is missing/moved please re-provision/restore it first'
-
+        fixcreds()
 
     if args.mode == 'packages':
-        pass
         # TODO: This is where hooks for using the packages delivery
         #       mechanism from the machine would fall into place
+        pass

@@ -38,7 +38,7 @@ from zope.interface import implements
 
 # rce specific imports
 from rce.comm.interfaces import IRobot, IMessageReceiver
-from rce.comm.client import RCE
+from rce.comm.client import RCE, ConnectionError
 from rce.client.interface import HAS_ROS
 from rce.client.interface import Publisher, Subscriber, \
     ServiceClient, ServiceProvider
@@ -47,12 +47,6 @@ if HAS_ROS:
     from rce.client.interface import ROSPublisher, ROSSubscriber, \
         ROSServiceClient, ROSServiceProvider
     from rce.util.loader import Loader
-
-
-class ConnectionError(Exception):
-    """ Error is raised when there is no connection or the connection is
-        not valid.
-    """
 
 
 class _Connection(object):

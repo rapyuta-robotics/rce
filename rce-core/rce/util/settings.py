@@ -76,7 +76,7 @@ def getSettings(throw=False, checks=True):
             raise _settings
         else:
             print(str(e))
-            print('Please run the provision script.')
+            print('Please check your configuration.')
             exit(1)
 
     return _settings
@@ -354,9 +354,9 @@ class _Settings(object):
             @param parser:      Cloud engine settings parser which is used to
                                 parse the configuration file.
             @type  parser:      rce.util.settings._RCESettingsParser
-            
-            @param parser:      Enable/Disable path checks 
-            @type  parser:      boolean
+
+            @param checks:      Enable/Disable path checks.
+            @type  checks:      bool
 
             @return:            New _Settings instance containing the parsed
                                 settings.
@@ -401,7 +401,6 @@ class _Settings(object):
         usedNames = set()
 
         if checks:
-
             for name, path in parser.items('machine/packages'):
                 _valid_dir(path, "ROS package '{0}'".format(name))
 
@@ -473,13 +472,15 @@ class _RCESettingsParser(SafeConfigParser, object):
         # AWS Specific IP resolution method for the global ipv4 address
         try:
             if ifname == 'aws_dns':
-                return urllib2.urlopen(_RCESettingsParser._AWS_IP_V4_ADDR, timeout=3).read()
+                return urllib2.urlopen(_RCESettingsParser._AWS_IP_V4_ADDR,
+                                       timeout=3).read()
         except URLError:
-            raise NoValidSettings("There seems to be somethign wrong with AWS or configuration settings")
-
+            raise NoValidSettings('There seems to be something wrong with '
+                                  'AWS or configuration settings.')
 
         if ifname not in self._ifaces:
-            raise NoValidSettings("The network device '{0}' does not exist on your "
-                                  'system check your configuration'.format(ifname))
+            raise NoValidSettings("The network device '{0}' does not exist on "
+                                  'your system check your '
+                                  'configuration.'.format(ifname))
 
         return _getIP(ifname)

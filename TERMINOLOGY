@@ -1,0 +1,133 @@
+Master Process
+==============
+
+The master is the main process of Rapyuta that monitors and maintains the
+command data structure which includes:
+1. organization of connection between robots and Rapyuta
+2. processing of all conﬁguration requests from robots
+3. monitoring network of other task sets
+
+
+Container Process
+=================
+
+This process needs to be started on a machine to be able to start linux
+containers on that machine. The Machine class as well as ContainerClient (which
+is an endpoint on the machine (slave) side) class reside in this process. This
+process needs super-user privileges since it starts and stops linux containers.
+There can be many such processes but only one can run per machine.
+
+
+Robot Process
+=============
+
+This process has to be started for any robot to connect to the cloud engine.
+This process creates, destroys and maintains a list of Robot Namespaces. There
+can be many such processes however using the current settings only one can run
+per machine. Its tasks include:
+1. forwarding of conﬁguration requests to the Master
+2. conversion of data messages
+3. communication with robots and other Endpoints
+
+
+Environment Process
+===================
+
+Environments are the processes that run inside containers and manage ROS
+environments. There is a one-to-one relationship between an environment and a
+container It has a connection to the master independent of the Container
+process. Its tasks include:
+1. communication with ROS nodes and other Endpoints
+2. launching/stopping ROS nodes
+3. adding/removing parameters
+
+
+Proxy
+=====
+
+Proxy is the representation of an entity of the cloud engine on the master side.
+Examples include - Robot Proxy, Environment Proxy, etc.
+
+
+Network
+=======
+
+This is singleton class that exists in the master process and manages all the
+network connections of all the Endpoints in the cloud engine.
+
+
+Endpoint
+========
+
+An Endpoint represents a process which is capable of communicating with
+non-Rapyuta components. The actual communication is relalized using an
+Interface.
+
+
+Namespace
+=========
+
+Namespace is the representation of an entity in the cloud engine on the slave
+side which is capable of communicating with non-Rapyuta components. Its purpose
+is to group indiviudal Interfaces of the same entity in an Endpoint.
+
+
+Robot Namespace
+===============
+
+This class represents a robot in the cloud engine. When a robot connects to
+robot process, it gets a representative namespace in the robot process which
+then handles its request to the master process and everywhere else.
+
+
+Environment Namespace
+=====================
+
+Environment Namespaces are objects representative of the linux containers that
+get created by the container process. Thus, there is one-to-one relationship
+between an Environment Namespace and running linux container.
+
+
+Interfaces
+==========
+
+The Interfaces are the actual interface used for external communication with a
+non-Rapyuta component. All Interfaces run in an Endpoint and belong to a
+Namespace of the Endpoint. They implement an abstract Interface class that can
+represent a service-provider,  service-client, topic-publisher or a
+topic-subscriber. Interfaces of Environment Endpoints are standard ROS
+interfaces. Meanwhile, Interfaces of Robot Endpoints provide either converters,
+which convert a data message from the external communication format
+(JSON object) to the internal communication format (serialized ROS message) and
+vice versa or forwarders which send the serialized ROS message as binary blob.
+
+
+Protocols
+=========
+There are a few different protocols in use in the cloud engine.
+These include:
+1. WebsocketServerProtocol/WebsocketClientProtocol
+     They handle the connection between a client(rce-ros) and a robot process.
+2. RCEInternalProtocol
+     It handles the internal communication between different Endpoints int the
+     cloud engine, i.e. between Environment Processes and Robot Processes.
+
+
+Connection
+==========
+
+A Connection represents a connection between two endpoints. When interfaces are
+connected they either create a new connection between their endpoints or reuse
+an old connection. Its subclasses include EndpointConnection,
+LoopbackConnection, and InterfaceConnection, etc.
+
+
+User
+====
+
+The User represents generally a human who has one or more robots that need to
+be connected to the cloud. Each User has a unique API key, which is used by the
+robots for authentication. Additionally, all requests are initially processed by
+the User and handed off to another component for further processing if
+necessary. The User can have multiple Namespaces which, in turn, can have
+several Interfaces.

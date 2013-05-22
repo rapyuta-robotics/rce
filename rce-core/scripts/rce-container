@@ -91,4 +91,4 @@ if __name__ == '__main__':
          settings.internal_port, settings.internal_IP, settings.container_IP,
          settings.comm_port, settings.ros_proxy_port, settings.rootfs,
          settings.conf_dir, settings.data_dir, settings.packages,
-         args.maxContainers)
+         args.maxContainers, settings.container_ros_release)

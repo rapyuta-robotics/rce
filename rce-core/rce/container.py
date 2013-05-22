@@ -56,7 +56,7 @@ from rce.util.container import Container
 from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
 from rce.core.error import MaxNumberExceeded
-#from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
+# from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
 
@@ -76,6 +76,7 @@ script
     . /opt/rce/setup.sh
 
     # start environment node
+    {chown_cmd}
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
 end script
 """
@@ -188,6 +189,14 @@ class RCEContainer(Referenceable):
         os.mkdir(rceDir)
         os.mkdir(rosDir)
 
+        if self._client.rosRel > 'fuerte':
+            user_rosdep = os.path.join(rceDir, '.ros/rosdep')
+            root_rosdep = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
+            shutil.copytree(root_rosdep, user_rosdep)
+            chown_cmd = 'chown -R rce:rce /opt/rce/data/.ros'
+        else:
+            chown_cmd = '#'
+
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
         self._address = '{0}:{1}'.format(ip, client.envPort)
@@ -237,7 +246,9 @@ class RCEContainer(Referenceable):
             f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
                                          masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
-                                         uid=uid, passwd=passwd))
+                                         uid=uid, passwd=passwd,
+                                         chown_cmd=chown_cmd))
+
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
         # TODO: For the moment there is no upstart launcher.
@@ -354,7 +365,7 @@ class ContainerClient(Referenceable):
     """
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
                  intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-                 dataDir, pkgDir):
+                 dataDir, pkgDir, rosRel):
         """ Initialize the Container Client.
 
             @param reactor:       Reference to the twisted reactor.
@@ -414,6 +425,10 @@ class ContainerClient(Referenceable):
                                   host directory will be bound in the container
                                   filesystem (without the @param rootfsDir).
             @type  pkgDir:        [(str, str)]
+            
+            @param rosRel:       Container filesytem ROS release in this 
+                                 deployment instance of the cloud engine
+            @type  rosRel:       str
         """
         self._reactor = reactor
         self._internalIP = intIP
@@ -439,6 +454,7 @@ class ContainerClient(Referenceable):
 
         self._nrs = set(range(100, 200))
         self._containers = set()
+        self._rosRel = rosRel
 
         # Network configuration
         self._network = bridgeIP[:bridgeIP.rfind('.')]
@@ -497,6 +513,13 @@ class ContainerClient(Referenceable):
     def pkgDirIter(self):
         """ Iterator over all file system paths of package directories. """
         return self._pkgDir.__iter__()
+
+    @property
+    def rosRel(self):
+        """ Container filesytem ROS release in this 
+            deployment instance of the cloud engine
+        """
+        return self._rosRel
 
     @property
     def masterIP(self):
@@ -615,7 +638,7 @@ class ContainerClient(Referenceable):
 
 def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
          internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, pkgDir, maxNr):
+         dataDir, pkgDir, maxNr, rosRel):
     log.startLogging(sys.stdout)
 
     def _err(reason):
@@ -627,7 +650,8 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
 
     client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
                              infraPasswd, internalIP, bridgeIP, envPort,
-                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir)
+                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir,
+                             rosRel)
 
     d = factory.login(cred, (client, maxNr))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
