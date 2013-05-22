@@ -70,6 +70,7 @@ import sys
 
 # ROS specific imports
 import rospkg
+import roslib.packages
 
 
 class ResourceNotFound(Exception):
@@ -99,12 +100,6 @@ class Loader(object):
         # Key:    tuple (package name, clsType, cls)
         # Value:  msg/srv module
         self._moduleCache = {}
-
-        # Key:    package name
-        # Value:  node paths dictionary
-        #                Keys:   node name
-        #                Value:  absolute path to node
-        self._nodeCache = {}
 
     def _getDepends(self, pkg):
         """ roslib.launcher
@@ -345,31 +340,6 @@ class Loader(object):
             raise ResourceNotFound('Can not find ROS package '
                                    '"{0}".'.format(pkg))
 
-    def _findNodes(self, pkg):
-        """ Internally used method to search for all nodes in the package.
-        """
-        nodes = {}
-
-        for path, dirs, files in os.walk(self.findPkgPath(pkg)):
-            for f in files:
-                p = os.path.join(path, f)
-
-                if os.access(p, os.X_OK):
-                    if f in nodes:
-                        print('Found multiple executables with the name '
-                              '"{0}" in ROS package "{1}". Only the first '
-                              'match will be kept.'.format(f, pkg))
-                    else:
-                        nodes[f] = p
-
-            for d in dirs[:]:
-                if d[0] == '.':
-                    dirs.remove(d)
-                elif d  in ['build', 'rospack_nosubdirs']:
-                    dirs.remove(d)
-
-        return nodes
-
     def findNode(self, pkg, exe):
         """ Find the node/executable in the given package.
 
@@ -386,13 +356,8 @@ class Loader(object):
             @raise:         rce.util.loader.ResourceNotFound
         """
         try:
-            nodeDict = self._nodeCache[pkg]
-        except KeyError:
-            nodeDict = self._findNodes(pkg)
-            self._nodeCache[pkg] = nodeDict
-
-        try:
-            return nodeDict[exe]
-        except KeyError:
+            return roslib.packages.find_node(pkg, exe,
+                                            rospack=self._rp)[0]
+        except IndexError:
             raise ResourceNotFound('Can not find executable "{0}" in '
-                                   'ROS package "{1}".'.format(exe, pkg))
+                                   'ROS package "{0}".'.format(exe, pkg))
