@@ -337,7 +337,7 @@ def provision_container(config):
         _ROS_KEY,
         _INSTALL.format(container_pkgs),
         'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
-        'git clone https://github.com/IDSCETHZurich/rce.git && '
+        'git clone -b master https://github.com/IDSCETHZurich/rce.git && '
         'cd rce && sudo sh install.sh',
         'echo "source /opt/rce/setup.sh" >> /root/.bashrc',
         'echo "source /opt/rce/setup.sh" >> /etc/profile'
