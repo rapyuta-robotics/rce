@@ -60,20 +60,20 @@
 <h1 class="epydoc">Class Machine</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_core_14" name="uml_class_diagram_for_rce_core_14">
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#__init__" title="Initialize the Machine." alt="" coords="17,39,257,57"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#active" title="The number of active containers in the machine." alt="" coords="17,57,257,76"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#capacity" title="The number of active containers in the machine." alt="" coords="17,76,257,95"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#availability" title="The number of available containers in the machine." alt="" coords="17,95,257,113"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#IP" title="The IP address used for the internal communication of the machine." alt="" coords="17,113,257,132"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#createContainer" title="Create a container." alt="" coords="17,132,257,151"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#registerContainer" title="rce.core.machine.Machine.registerContainer" alt="" coords="17,151,257,169"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#unregisterContainer" title="rce.core.machine.Machine.unregisterContainer" alt="" coords="17,169,257,188"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#listContainers" title="rce.core.machine.Machine.listContainers" alt="" coords="17,188,257,207"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#destroy" title="Method should be called to destroy the machine and will take care of &#160;deleting all circular references." alt="" coords="17,207,257,225"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#destroyContainer" title="Destroy Container proxy" alt="" coords="17,225,257,244"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#__eq__" title="rce.core.machine.Machine.__eq__" alt="" coords="17,244,257,263"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#__ne__" title="rce.core.machine.Machine.__ne__" alt="" coords="17,263,257,281"/>
-<area shape="rect" id="node298" href="rce.core.machine.Machine-class.html#__hash__" title="hash(x)" alt="" coords="17,281,257,300"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__init__" title="Initialize the Machine." alt="" coords="17,39,257,57"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#active" title="The number of active containers in the machine." alt="" coords="17,57,257,76"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#capacity" title="The number of active containers in the machine." alt="" coords="17,76,257,95"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#availability" title="The number of available containers in the machine." alt="" coords="17,95,257,113"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#IP" title="The IP address used for the internal communication of the machine." alt="" coords="17,113,257,132"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#createContainer" title="Create a container." alt="" coords="17,132,257,151"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#registerContainer" title="rce.core.machine.Machine.registerContainer" alt="" coords="17,151,257,169"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#unregisterContainer" title="rce.core.machine.Machine.unregisterContainer" alt="" coords="17,169,257,188"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#listContainers" title="rce.core.machine.Machine.listContainers" alt="" coords="17,188,257,207"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#destroyContainer" title="Destroy Container proxy." alt="" coords="17,207,257,225"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#destroy" title="Method should be called to destroy the machine and will take care of &#160;deleting all circular references." alt="" coords="17,225,257,244"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__eq__" title="rce.core.machine.Machine.__eq__" alt="" coords="17,244,257,263"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__ne__" title="rce.core.machine.Machine.__ne__" alt="" coords="17,263,257,281"/>
+<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__hash__" title="hash(x)" alt="" coords="17,281,257,300"/>
 <area shape="rect" id="node1" href="rce.core.machine.Machine-class.html" title="Representation of a machine in which containers can be created." alt="" coords="5,6,269,306"/>
 </map>
   <img src="uml_class_diagram_for_rce_core_14.gif" alt='' usemap="#uml_class_diagram_for_rce_core_14" ismap="ismap" class="graph-without-title" />
@@ -263,11 +263,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Method should be called to destroy the machine and will take care of 
-      deleting all circular references.</td>
+          <td><span class="summary-sig"><a name="destroyContainer"></a><span class="summary-sig-name">destroyContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteContainer</span>)</span><br />
+      Destroy Container proxy.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroy">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroyContainer">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -281,11 +281,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="destroyContainer"></a><span class="summary-sig-name">destroyContainer</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">remoteContainer</span>)</span><br />
-      Destroy Container proxy</td>
+          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy the machine and will take care of 
+      deleting all circular references.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroyContainer">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroy">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -609,7 +609,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:03 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:19 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

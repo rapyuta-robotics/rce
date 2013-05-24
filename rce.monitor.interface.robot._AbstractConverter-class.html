@@ -61,31 +61,31 @@
 <h1 class="epydoc">Class _AbstractConverter</h1><p class="nomargin-top"><span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#_AbstractConverter">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_moni_18" name="uml_class_diagram_for_rce_moni_18">
-<area shape="rect" id="node481" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
-<area shape="rect" id="node481" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
-<area shape="rect" id="node481" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
-<area shape="rect" id="node481" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
-<area shape="rect" id="node481" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
-<area shape="rect" id="node1" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#UID" title="Unique ID of the interface." alt="" coords="52,351,331,369"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#unregisterProtocol" title="Callback for the protocol to inform the interface that the protocol has &#160;died and should no longer be used." alt="" coords="52,372,331,391"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#remote_connect" title="Connect this interface to another interface using a local protocol." alt="" coords="52,391,331,409"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#remote_disconnect" title="Disconnect this interface from another interface." alt="" coords="52,409,331,428"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#remote_destroy" title="Method should be called to destroy the interface and will take care of &#160;deleting all circular references." alt="" coords="52,428,331,447"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#start" title="This method is used to setup the interface." alt="" coords="52,447,331,465"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#stop" title="This method is used to stop the interface." alt="" coords="52,465,331,484"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#send" title="This method is used to send a message to the endpoint." alt="" coords="52,484,331,503"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#received" title="This method is used to send a received message from the endpoint to the &#160;appropriate protocols." alt="" coords="52,503,331,521"/>
-<area shape="rect" id="node480" href="rce.slave.interface.Interface-class.html#respond" title="This method is used to send a received message from the endpoint to the &#160;specified protocol/interface as a response." alt="" coords="52,521,331,540"/>
-<area shape="rect" id="node2" href="rce.slave.interface.Interface-class.html" title="Abstract base class for an Interface in a slave process." alt="" coords="40,326,341,546"/>
-<area shape="rect" id="node479" href="rce.monitor.interface.robot._AbstractConverter-class.html#__init__" title="Initialize the robot&#45;side Interface." alt="" coords="73,599,309,617"/>
-<area shape="rect" id="node479" href="rce.monitor.interface.robot._AbstractConverter-class.html#tag" title="Interface tag of the converter." alt="" coords="73,617,309,636"/>
-<area shape="rect" id="node3" href="rce.monitor.interface.robot._AbstractConverter-class.html" title="Abstract base class which provides the basics for the robot&#45;side interfaces." alt="" coords="61,566,320,642"/>
-<area shape="rect" id="node482" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
-<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
-<area shape="rect" id="node483" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
-<area shape="rect" id="node483" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
-<area shape="rect" id="node5" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#UID" title="Unique ID of the interface (internal communication)." alt="" coords="52,351,331,369"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#addr" title="Unique ID of the interface (external communication)." alt="" coords="52,369,331,388"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#unregisterProtocol" title="Callback for the protocol to inform the interface that the protocol has &#160;died and should no longer be used." alt="" coords="52,391,331,409"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#remote_connect" title="Connect this interface to another interface using a local protocol." alt="" coords="52,409,331,428"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#remote_disconnect" title="Disconnect this interface from another interface." alt="" coords="52,428,331,447"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#remote_destroy" title="Method should be called to destroy the interface and will take care of &#160;deleting all circular references." alt="" coords="52,447,331,465"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#start" title="This method is used to setup the interface." alt="" coords="52,465,331,484"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#stop" title="This method is used to stop the interface." alt="" coords="52,484,331,503"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#send" title="This method is used to send a message to the endpoint." alt="" coords="52,503,331,521"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#received" title="This method is used to send a received message from the endpoint to the &#160;appropriate protocols." alt="" coords="52,521,331,540"/>
+<area shape="rect" id="node478" href="rce.slave.interface.Interface-class.html#respond" title="This method is used to send a received message from the endpoint to the &#160;specified protocol/interface as a response." alt="" coords="52,540,331,559"/>
+<area shape="rect" id="node1" href="rce.slave.interface.Interface-class.html" title="Abstract base class for an Interface in a slave process." alt="" coords="40,326,341,565"/>
+<area shape="rect" id="node477" href="rce.monitor.interface.robot._AbstractConverter-class.html#__init__" title="Initialize the robot&#45;side Interface." alt="" coords="73,617,309,636"/>
+<area shape="rect" id="node2" href="rce.monitor.interface.robot._AbstractConverter-class.html" title="Abstract base class which provides the basics for the robot&#45;side interfaces." alt="" coords="61,585,320,642"/>
+<area shape="rect" id="node480" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
+<area shape="rect" id="node479" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
+<area shape="rect" id="node479" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
+<area shape="rect" id="node479" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
+<area shape="rect" id="node479" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
+<area shape="rect" id="node479" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
+<area shape="rect" id="node481" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
+<area shape="rect" id="node481" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
 </map>
   <img src="uml_class_diagram_for_rce_moni_18.gif" alt='' usemap="#uml_class_diagram_for_rce_moni_18" ismap="ismap" class="graph-without-title" />
 </center>
@@ -125,23 +125,6 @@
       Initialize the robot-side Interface.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#_AbstractConverter.__init__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.monitor.interface.robot._AbstractConverter-class.html#tag" class="summary-sig-name">tag</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Interface tag of the converter.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#_AbstractConverter.tag">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -270,7 +253,8 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.interface.Interface-class.html">slave.interface.Interface</a></code></b>:
-      <code><a href="rce.slave.interface.Interface-class.html#UID">UID</a></code>
+      <code><a href="rce.slave.interface.Interface-class.html#UID">UID</a></code>,
+      <code><a href="rce.slave.interface.Interface-class.html#addr">addr</a></code>
       </p>
     </td>
   </tr>
@@ -330,29 +314,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="tag"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">tag</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.monitor.interface.robot-pysrc.html#_AbstractConverter.tag">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Interface tag of the converter.</p>
-  <dl class="fields">
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@property</code></li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -380,7 +341,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:06 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:21 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

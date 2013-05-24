@@ -59,31 +59,35 @@
 <h1 class="epydoc">Class EnvironmentClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_envi_2" name="uml_class_diagram_for_rce_envi_2">
-<area shape="rect" id="node373" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
-<area shape="rect" id="node373" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
-<area shape="rect" id="node373" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
-<area shape="rect" id="node373" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
-<area shape="rect" id="node373" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
-<area shape="rect" id="node1" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
-<area shape="rect" id="node372" href="rce.slave.endpoint.Endpoint-class.html#remote_getLoopback" title="Get the loopback protocol." alt="" coords="40,359,344,377"/>
-<area shape="rect" id="node372" href="rce.slave.endpoint.Endpoint-class.html#remote_prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="40,377,344,396"/>
-<area shape="rect" id="node372" href="rce.slave.endpoint.Endpoint-class.html#remote_connect" title="Connect to the endpoint with the given address using the connection &#160;information matching the received ID." alt="" coords="40,396,344,415"/>
-<area shape="rect" id="node372" href="rce.slave.endpoint.Endpoint-class.html#processInit" title="Callback for the RCE Internal Protocol which is called when the protocol &#160;received an init message which has to be processed." alt="" coords="40,415,344,433"/>
-<area shape="rect" id="node372" href="rce.slave.endpoint.Endpoint-class.html#registerProtocol" title="rce.slave.endpoint.Endpoint.registerProtocol" alt="" coords="40,433,344,452"/>
-<area shape="rect" id="node372" href="rce.slave.endpoint.Endpoint-class.html#unregisterProtocol" title="rce.slave.endpoint.Endpoint.unregisterProtocol" alt="" coords="40,452,344,471"/>
-<area shape="rect" id="node2" href="rce.slave.endpoint.Endpoint-class.html" title="Abstract base class for an Endpoint in a slave process." alt="" coords="28,326,356,477"/>
-<area shape="rect" id="node371" href="rce.environment.EnvironmentClient-class.html#__init__" title="Initialize the Environment Client." alt="" coords="51,529,333,548"/>
-<area shape="rect" id="node371" href="rce.environment.EnvironmentClient-class.html#registerEnvironment" title="rce.environment.EnvironmentClient.registerEnvironment" alt="" coords="51,548,333,567"/>
-<area shape="rect" id="node371" href="rce.environment.EnvironmentClient-class.html#unregisterEnvironment" title="rce.environment.EnvironmentClient.unregisterEnvironment" alt="" coords="51,567,333,585"/>
-<area shape="rect" id="node371" href="rce.environment.EnvironmentClient-class.html#remote_createNamespace" title="Create the Environment namespace." alt="" coords="51,585,333,604"/>
-<area shape="rect" id="node371" href="rce.environment.EnvironmentClient-class.html#remote_addUsertoROSProxy" title="Method to add username and key to rosproxy&#45;environment bridge file that &#160;maintains list of users that can call functions of rosproxy." alt="" coords="51,604,333,623"/>
-<area shape="rect" id="node371" href="rce.environment.EnvironmentClient-class.html#terminate" title="Method should be called to destroy the client and will take care of &#160;destroying the Environment as well as deleting all circular references." alt="" coords="51,623,333,641"/>
-<area shape="rect" id="node3" href="rce.environment.EnvironmentClient-class.html" title="Environment client is responsible for the cloud engine components inside a container." alt="" coords="39,497,345,647"/>
-<area shape="rect" id="node374" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
-<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
-<area shape="rect" id="node375" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
-<area shape="rect" id="node375" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
-<area shape="rect" id="node5" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="40,351,344,369"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#loader" title="Reference to ROS components loader." alt="" coords="40,369,344,388"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#registerAvatar" title="Register the PB Avatar received from the master process." alt="" coords="40,391,344,409"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#registerNamespace" title="rce.slave.endpoint.Endpoint.registerNamespace" alt="" coords="40,409,344,428"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#unregisterNamespace" title="rce.slave.endpoint.Endpoint.unregisterNamespace" alt="" coords="40,428,344,447"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#remote_getLoopback" title="Get the loopback protocol." alt="" coords="40,447,344,465"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#remote_prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="40,465,344,484"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#remote_connect" title="Connect to the endpoint with the given address using the connection &#160;information matching the received ID." alt="" coords="40,484,344,503"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#processInit" title="Callback for the RCE Internal Protocol which is called when the protocol &#160;received an init message which has to be processed." alt="" coords="40,503,344,521"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#registerProtocol" title="rce.slave.endpoint.Endpoint.registerProtocol" alt="" coords="40,521,344,540"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#unregisterProtocol" title="rce.slave.endpoint.Endpoint.unregisterProtocol" alt="" coords="40,540,344,559"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#referenceDied" title="Internally used method to inform the Master process that a remote &#160;referenced object has died." alt="" coords="40,559,344,577"/>
+<area shape="rect" id="node370" href="rce.slave.endpoint.Endpoint-class.html#terminate" title="Method should be called to terminate the endpoint before the reactor is &#160;stopped." alt="" coords="40,577,344,596"/>
+<area shape="rect" id="node1" href="rce.slave.endpoint.Endpoint-class.html" title="Abstract base class for an Endpoint in a slave process." alt="" coords="28,326,356,602"/>
+<area shape="rect" id="node369" href="rce.environment.EnvironmentClient-class.html#__init__" title="Initialize the Environment Client." alt="" coords="51,655,333,673"/>
+<area shape="rect" id="node369" href="rce.environment.EnvironmentClient-class.html#createEnvironment" title="Create the Environment namespace." alt="" coords="51,673,333,692"/>
+<area shape="rect" id="node369" href="rce.environment.EnvironmentClient-class.html#remote_addUsertoROSProxy" title="Method to add username and key to rosproxy&#45;environment bridge file that &#160;maintains list of users that can call functions of rosproxy." alt="" coords="51,692,333,711"/>
+<area shape="rect" id="node2" href="rce.environment.EnvironmentClient-class.html" title="Environment client is responsible for the cloud engine components inside a container." alt="" coords="39,622,345,717"/>
+<area shape="rect" id="node372" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="91,135,292,153"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="79,102,303,159"/>
+<area shape="rect" id="node371" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="17,204,365,223"/>
+<area shape="rect" id="node371" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,365,241"/>
+<area shape="rect" id="node371" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,244,365,263"/>
+<area shape="rect" id="node371" href="javascript:void(0);" title="(internal)" alt="" coords="17,263,365,281"/>
+<area shape="rect" id="node371" href="javascript:void(0);" title="A remote message has been received." alt="" coords="17,281,365,300"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="5,179,376,306"/>
+<area shape="rect" id="node373" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="107,39,276,57"/>
+<area shape="rect" id="node373" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="107,57,276,76"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="95,6,287,82"/>
 </map>
   <img src="uml_class_diagram_for_rce_envi_2.gif" alt='' usemap="#uml_class_diagram_for_rce_envi_2" ismap="ismap" class="graph-without-title" />
 </center>
@@ -134,44 +138,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="registerEnvironment"></a><span class="summary-sig-name">registerEnvironment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">environment</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.registerEnvironment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="unregisterEnvironment"></a><span class="summary-sig-name">unregisterEnvironment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">environment</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.unregisterEnvironment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">rce.environment.Environment</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.environment.EnvironmentClient-class.html#remote_createNamespace" class="summary-sig-name">remote_createNamespace</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a name="createEnvironment"></a><span class="summary-sig-name">createEnvironment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">_</span>)</span><br />
       Create the Environment namespace.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.remote_createNamespace">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.createEnvironment">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -199,33 +170,19 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">twisted.internet.defer.Deferred</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.environment.EnvironmentClient-class.html#terminate" class="summary-sig-name">terminate</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Method should be called to destroy the client and will take care of 
-      destroying the Environment as well as deleting all circular 
-      references.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.terminate">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.endpoint.Endpoint-class.html">slave.endpoint.Endpoint</a></code></b>:
       <code><a href="rce.slave.endpoint.Endpoint-class.html#processInit">processInit</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#referenceDied">referenceDied</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#registerAvatar">registerAvatar</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#registerNamespace">registerNamespace</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#registerProtocol">registerProtocol</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_connect">remote_connect</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_getLoopback">remote_getLoopback</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_prepareConnection">remote_prepareConnection</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#terminate">terminate</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#unregisterNamespace">unregisterNamespace</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#unregisterProtocol">unregisterProtocol</a></code>
       </p>
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.endpoint.Endpoint-class.html">slave.endpoint.Endpoint</a></code></b> (private):
@@ -268,6 +225,32 @@
     <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
       <code>__implemented__</code>,
       <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.endpoint.Endpoint-class.html">slave.endpoint.Endpoint</a></code></b>:
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#loader">loader</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#reactor">reactor</a></code>
       </p>
     </td>
   </tr>
@@ -321,30 +304,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="remote_createNamespace"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_createNamespace</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.remote_createNamespace">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Create the Environment namespace.</p>
-  <dl class="fields">
-    <dt>Returns: rce.environment.Environment</dt>
-        <dd>The new Environment namespace instance.</dd>
-    <dt>Overrides:
-        <a href="rce.slave.endpoint.Endpoint-class.html#remote_createNamespace">slave.endpoint.Endpoint.remote_createNamespace</a>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
 <a name="remote_addUsertoROSProxy"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -366,36 +325,9 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>userID</code></strong> (str) - username</li>
+        <li><strong class="pname"><code>userID</code></strong> (str) - Username</li>
         <li><strong class="pname"><code>key</code></strong> (str) - Secret key</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="terminate"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">terminate</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.environment-pysrc.html#EnvironmentClient.terminate">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Method should be called to destroy the client and will take care of 
-  destroying the Environment as well as deleting all circular 
-  references.</p>
-  <dl class="fields">
-    <dt>Returns: twisted.internet.defer.Deferred</dt>
-        <dd>Deferred which fires as soon as the client is ready to stop the 
-          reactor.</dd>
-    <dt>Overrides:
-        <a href="rce.slave.endpoint.Endpoint-class.html#terminate">slave.endpoint.Endpoint.terminate</a>
-    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -426,7 +358,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:05 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:20 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

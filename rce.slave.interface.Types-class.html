@@ -60,14 +60,17 @@
 <h1 class="epydoc">Class Types</h1><p class="nomargin-top"><span class="codelink"><a href="rce.slave.interface-pysrc.html#Types">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_slav_7" name="uml_class_diagram_for_rce_slav_7">
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#SERVICE_CLIENT" title="rce.slave.interface.Types.SERVICE_CLIENT" alt="" coords="17,31,193,49"/>
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#SERVICE_PROVIDER" title="rce.slave.interface.Types.SERVICE_PROVIDER" alt="" coords="17,49,193,68"/>
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#PUBLISHER" title="rce.slave.interface.Types.PUBLISHER" alt="" coords="17,68,193,87"/>
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#SUBSCRIBER" title="rce.slave.interface.Types.SUBSCRIBER" alt="" coords="17,87,193,105"/>
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#encode" title="Encode an Interface type in string form as as an int." alt="" coords="17,108,193,127"/>
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#decode" title="Decode an Interface type in int form as as a string." alt="" coords="17,127,193,145"/>
-<area shape="rect" id="node559" href="rce.slave.interface.Types-class.html#connectable" title="Check if the two Interfaces are connectable." alt="" coords="17,145,193,164"/>
-<area shape="rect" id="node1" href="rce.slave.interface.Types-class.html" title="Available Interface types." alt="" coords="5,6,205,170"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#SERVICE_CLIENT" title="rce.slave.interface.Types.SERVICE_CLIENT" alt="" coords="17,31,193,49"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#SERVICE_PROVIDER" title="rce.slave.interface.Types.SERVICE_PROVIDER" alt="" coords="17,49,193,68"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#PUBLISHER" title="rce.slave.interface.Types.PUBLISHER" alt="" coords="17,68,193,87"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#SUBSCRIBER" title="rce.slave.interface.Types.SUBSCRIBER" alt="" coords="17,87,193,105"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#CONVERTER" title="rce.slave.interface.Types.CONVERTER" alt="" coords="17,105,193,124"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#FORWARDER" title="rce.slave.interface.Types.FORWARDER" alt="" coords="17,124,193,143"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#INTERFACE" title="rce.slave.interface.Types.INTERFACE" alt="" coords="17,143,193,161"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#encode" title="Encode an Interface type in string form as as an int." alt="" coords="17,164,193,183"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#decode" title="Decode an Interface type in int form as as a string." alt="" coords="17,183,193,201"/>
+<area shape="rect" id="node557" href="rce.slave.interface.Types-class.html#connectable" title="Check if the two Interfaces are connectable." alt="" coords="17,201,193,220"/>
+<area shape="rect" id="node1" href="rce.slave.interface.Types-class.html" title="Available Interface types." alt="" coords="5,6,205,226"/>
 </map>
   <img src="uml_class_diagram_for_rce_slav_7.gif" alt='' usemap="#uml_class_diagram_for_rce_slav_7" ismap="ismap" class="graph-without-title" />
 </center>
@@ -231,7 +234,35 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="rce.slave.interface.Types-class.html#_NAMES" class="summary-name" onclick="show_private();">_NAMES</a> = <code title="['ServiceClient', 'Publisher', 'Subscriber', 'ServiceProvider']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">ServiceClient</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Publisher</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Subscriber</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Service</code><code class="variable-ellipsis">...</code></code>
+        <a href="rce.slave.interface.Types-class.html#_PREFIX_NAMES" class="summary-name" onclick="show_private();">_PREFIX_NAMES</a> = <code title="['ServiceClient', 'Publisher', 'Subscriber', 'ServiceProvider']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">ServiceClient</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Publisher</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Subscriber</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="CONVERTER"></a><span class="summary-name">CONVERTER</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="FORWARDER"></a><span class="summary-name">FORWARDER</span> = <code title="1">1</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="INTERFACE"></a><span class="summary-name">INTERFACE</span> = <code title="2">2</code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_SUFFIX_NAMES"></a><span class="summary-name">_SUFFIX_NAMES</span> = <code title="['Converter', 'Forwarder', 'Interface']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">Converter</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Forwarder</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Interface</code><code class="variable-quote">'</code><code class="variable-group">]</code></code>
     </td>
   </tr>
 </table>
@@ -376,12 +407,12 @@
   </td>
 </tr>
 </table>
-<a name="_NAMES"></a>
+<a name="_PREFIX_NAMES"></a>
 <div class="private">
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">_NAMES</h3>
+  <h3 class="epydoc">_PREFIX_NAMES</h3>
   
   <dl class="fields">
   </dl>
@@ -421,7 +452,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:07 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:22 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

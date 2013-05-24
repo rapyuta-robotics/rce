@@ -60,37 +60,40 @@
 <h1 class="epydoc">Class EnvironmentEndpoint</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_core_4" name="uml_class_diagram_for_rce_core_4">
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#connect" title="Tell the endpoint to connect to the given address using the authentication &#160;details matching the given connection ID." alt="" coords="17,228,301,247"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#destroyInterface" title="Method should be called to destroy the interface proxy referenced by the &#160;remote namespace." alt="" coords="17,247,301,265"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#destroyNamespace" title="Method should be called to destroy the namespace proxy referenced by the &#160;remote namespace." alt="" coords="17,265,301,284"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#destroyProtocol" title="Method should be called to destroy the protocol proxy referenced by the &#160;remote namespace." alt="" coords="17,284,301,303"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#getInterfaceConnection" title="Get the connection between an interface and a protocol." alt="" coords="17,303,301,321"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#getLoopback" title="Get the &#39;loopback&#39; protocol, which is a special protocol that is used to &#160;connect two interfaces which are in the same endpoint." alt="" coords="17,321,301,340"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#getUID" title="Get a ID which is unique within the endpoint." alt="" coords="17,340,301,359"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="17,359,301,377"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#registerInterface" title="rce.core.network.Endpoint.registerInterface" alt="" coords="17,377,301,396"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#registerNamespace" title="rce.core.network.Endpoint.registerNamespace" alt="" coords="17,396,301,415"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#registerProtocol" title="rce.core.network.Endpoint.registerProtocol" alt="" coords="17,415,301,433"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#returnUID" title="Return a unique ID such that it could be reused again." alt="" coords="17,433,301,452"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#unregisterInterface" title="rce.core.network.Endpoint.unregisterInterface" alt="" coords="17,452,301,471"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#unregisterNamespace" title="rce.core.network.Endpoint.unregisterNamespace" alt="" coords="17,471,301,489"/>
-<area shape="rect" id="node272" href="rce.core.network.Endpoint-class.html#unregisterProtocol" title="rce.core.network.Endpoint.unregisterProtocol" alt="" coords="17,489,301,508"/>
-<area shape="rect" id="node1" href="rce.core.network.Endpoint-class.html" title="Representation of an endpoint, which is a process which is part of the cloud engine internal communication." alt="" coords="5,195,312,514"/>
-<area shape="rect" id="node271" href="rce.core.environment.EnvironmentEndpoint-class.html#__init__" title="Initialize the Environment Endpoint." alt="" coords="51,567,268,585"/>
-<area shape="rect" id="node271" href="rce.core.environment.EnvironmentEndpoint-class.html#getAddress" title="Get the address of the environment endpoint&#39;s internal communication &#160;server." alt="" coords="51,585,268,604"/>
-<area shape="rect" id="node271" href="rce.core.environment.EnvironmentEndpoint-class.html#createNamespace" title="Create a Environment object in the environment endpoint." alt="" coords="51,604,268,623"/>
-<area shape="rect" id="node271" href="rce.core.environment.EnvironmentEndpoint-class.html#registerConsole" title="rce.core.environment.EnvironmentEndpoint.registerConsole" alt="" coords="51,623,268,641"/>
-<area shape="rect" id="node271" href="rce.core.environment.EnvironmentEndpoint-class.html#unregisterConsole" title="rce.core.environment.EnvironmentEndpoint.unregisterConsole" alt="" coords="51,641,268,660"/>
-<area shape="rect" id="node271" href="rce.core.environment.EnvironmentEndpoint-class.html#destroy" title="Method should be called to destroy the endpoint and will take care of &#160;destroying all objects owned by this Endpoint as well as deleting all &#160;circular references." alt="" coords="51,660,268,679"/>
-<area shape="rect" id="node2" href="rce.core.environment.EnvironmentEndpoint-class.html" title="Representation of an endpoint which is a process that lives inside a container and is part of the cloud engine internal communication." alt="" coords="39,534,279,685"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#callRemote" title="Make a call to the RemoteReference and return the result as a Deferred." alt="" coords="48,39,271,57"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#callback" title="Register the remote reference which provides the necessary methods for this Proxy." alt="" coords="48,57,271,76"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#errback" title="Register a failure object which was received during the creation of the &#160;object in the remote process." alt="" coords="48,76,271,95"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#notifyOnDeath" title="Register a callback which will be called once the remote object is dead, &#160;i.e." alt="" coords="48,95,271,113"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" title="Unregister a callback which would have been called once the remote object &#160;is dead." alt="" coords="48,113,271,132"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#__call__" title="Return a reference to the remote object as soon as the reference is &#160;available." alt="" coords="48,132,271,151"/>
-<area shape="rect" id="node273" href="rce.core.base.Proxy-class.html#destroyExternal" title="Method to compare given remote reference with Proxy&#39;s remote reference and &#160;destroy if they are the same." alt="" coords="48,151,271,169"/>
-<area shape="rect" id="node3" href="rce.core.base.Proxy-class.html" title="The Proxy should be used to represent an object from a slave process in the Master." alt="" coords="36,6,281,175"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#connect" title="Tell the endpoint to connect to the given address using the authentication &#160;details matching the given connection ID." alt="" coords="33,228,317,247"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#destroyInterface" title="Method should be called to destroy the interface proxy referenced by the &#160;remote namespace." alt="" coords="33,247,317,265"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#destroyNamespace" title="Method should be called to destroy the namespace proxy referenced by the &#160;remote namespace." alt="" coords="33,265,317,284"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#destroyProtocol" title="Method should be called to destroy the protocol proxy referenced by the &#160;remote namespace." alt="" coords="33,284,317,303"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#getInterfaceConnection" title="Get the connection between an interface and a protocol." alt="" coords="33,303,317,321"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#getLoopback" title="Get the &#39;loopback&#39; protocol, which is a special protocol that is used to &#160;connect two interfaces which are in the same endpoint." alt="" coords="33,321,317,340"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#getUID" title="Get a ID which is unique within the endpoint." alt="" coords="33,340,317,359"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="33,359,317,377"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#registerInterface" title="rce.core.network.Endpoint.registerInterface" alt="" coords="33,377,317,396"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#registerNamespace" title="rce.core.network.Endpoint.registerNamespace" alt="" coords="33,396,317,415"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#registerProtocol" title="rce.core.network.Endpoint.registerProtocol" alt="" coords="33,415,317,433"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#returnUID" title="Return a unique ID such that it could be reused again." alt="" coords="33,433,317,452"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#unregisterInterface" title="rce.core.network.Endpoint.unregisterInterface" alt="" coords="33,452,317,471"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#unregisterNamespace" title="rce.core.network.Endpoint.unregisterNamespace" alt="" coords="33,471,317,489"/>
+<area shape="rect" id="node269" href="rce.core.network.Endpoint-class.html#unregisterProtocol" title="rce.core.network.Endpoint.unregisterProtocol" alt="" coords="33,489,317,508"/>
+<area shape="rect" id="node1" href="rce.core.network.Endpoint-class.html" title="Representation of an endpoint, which is a process which is part of the cloud engine internal communication." alt="" coords="21,195,328,514"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#__init__" title="Initialize the Environment Endpoint." alt="" coords="17,567,333,585"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#getAddress" title="Get the address of the environment endpoint&#39;s internal communication &#160;server." alt="" coords="17,585,333,604"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#registerConsole" title="rce.core.environment.EnvironmentEndpoint.registerConsole" alt="" coords="17,604,333,623"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#unregisterConsole" title="rce.core.environment.EnvironmentEndpoint.unregisterConsole" alt="" coords="17,623,333,641"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#createNamespace" title="Create a Environment object in the environment endpoint." alt="" coords="17,641,333,660"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#registerRemoteEnvironment" title="Register a Namespace object of the endpoint." alt="" coords="17,660,333,679"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#destroyNode" title="Method should be called to destroy the node proxy referenced by the remote &#160;node namespace." alt="" coords="17,679,333,697"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#destroyParameter" title="Method should be called to destroy the parameter proxy referenced by the &#160;remote parameter namespace." alt="" coords="17,697,333,716"/>
+<area shape="rect" id="node268" href="rce.core.environment.EnvironmentEndpoint-class.html#destroy" title="Method should be called to destroy the endpoint and will take care of &#160;destroying all objects owned by this Endpoint as well as deleting all &#160;circular references." alt="" coords="17,716,333,735"/>
+<area shape="rect" id="node3" href="rce.core.environment.EnvironmentEndpoint-class.html" title="Representation of an endpoint which is a process that lives inside a container and is part of the cloud engine internal communication." alt="" coords="5,534,344,741"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#callRemote" title="Make a call to the RemoteReference and return the result as a Deferred." alt="" coords="64,39,287,57"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#callback" title="Register the remote reference which provides the necessary methods for this Proxy." alt="" coords="64,57,287,76"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#errback" title="Register a failure object which was received during the creation of the &#160;object in the remote process." alt="" coords="64,76,287,95"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#notifyOnDeath" title="Register a callback which will be called once the remote object is dead, &#160;i.e." alt="" coords="64,95,287,113"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" title="Unregister a callback which would have been called once the remote object &#160;is dead." alt="" coords="64,113,287,132"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#__call__" title="Return a reference to the remote object as soon as the reference is &#160;available." alt="" coords="64,132,287,151"/>
+<area shape="rect" id="node270" href="rce.core.base.Proxy-class.html#destroyExternal" title="Method to compare given remote reference with Proxy&#39;s remote reference and &#160;destroy if they are the same." alt="" coords="64,151,287,169"/>
+<area shape="rect" id="node2" href="rce.core.base.Proxy-class.html" title="The Proxy should be used to represent an object from a slave process in the Master." alt="" coords="52,6,297,175"/>
 </map>
   <img src="uml_class_diagram_for_rce_core_4.gif" alt='' usemap="#uml_class_diagram_for_rce_core_4" ismap="ismap" class="graph-without-title" />
 </center>
@@ -155,23 +158,6 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">rce.master.environment.Environment (subclass of rce.core.base.Proxy)</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.core.environment.EnvironmentEndpoint-class.html#createNamespace" class="summary-sig-name">createNamespace</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Create a Environment object in the environment endpoint.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.createNamespace">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -199,6 +185,79 @@
         <span class="summary-sig-arg">key</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.unregisterConsole">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.master.environment.Environment (subclass of rce.core.base.Proxy)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.environment.EnvironmentEndpoint-class.html#createNamespace" class="summary-sig-name">createNamespace</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Create a Environment object in the environment endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.createNamespace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.environment.EnvironmentEndpoint-class.html#registerRemoteEnvironment" class="summary-sig-name">registerRemoteEnvironment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteNamespace</span>)</span><br />
+      Register a Namespace object of the endpoint.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.registerRemoteEnvironment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.environment.EnvironmentEndpoint-class.html#destroyNode" class="summary-sig-name">destroyNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteNode</span>)</span><br />
+      Method should be called to destroy the node proxy referenced by the 
+      remote node namespace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.destroyNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.environment.EnvironmentEndpoint-class.html#destroyParameter" class="summary-sig-name">destroyParameter</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteParam</span>)</span><br />
+      Method should be called to destroy the parameter proxy referenced by 
+      the remote parameter namespace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.destroyParameter">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -393,6 +452,80 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="registerRemoteEnvironment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerRemoteEnvironment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteNamespace</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.registerRemoteEnvironment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register a Namespace object of the endpoint.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteNamespace</code></strong> (twisted.spread.pb.RemoteReference) - Reference to Environment namespace in Environment process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteNode</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.destroyNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the node proxy referenced by the 
+  remote node namespace.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteNode</code></strong> (twisted.spread.pb.RemoteReference) - Reference to Node Namespace in Environment process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyParameter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyParameter</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteParam</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.environment-pysrc.html#EnvironmentEndpoint.destroyParameter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method should be called to destroy the parameter proxy referenced by 
+  the remote parameter namespace.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteParam</code></strong> (twisted.spread.pb.RemoteReference) - Reference to Parameter Namespace in Environment process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="destroy"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -444,7 +577,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:03 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:18 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

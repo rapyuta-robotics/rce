@@ -1,0 +1,13 @@
+*~
+*.pyc
+*.so
+.settings/
+.project
+.pydevproject
+*/.cproject
+rce-*/build/
+rce-*/dist/
+rce-*/*.egg-info/
+.metadata/
+.svn/
+container/

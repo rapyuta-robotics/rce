@@ -191,10 +191,11 @@ rce.util.sysinfo.nt_openfile.path" class="py-name" href="#" onclick="return docl
 <a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"><tt class="py-docstring">                                Use '0.0.0.0' for DHCP.</tt> </tt>
 <a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"><tt class="py-docstring">            @type  ip:          str</tt> </tt>
 <a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt> <tt class="py-op">=</tt> <tt id="link-5" class="py-name" targets="Variable rce.client.connection._Connection.reactor=rce.client.connection._Connection-class.html#reactor,Variable rce.comm.client.RCE.reactor=rce.comm.client.RCE-class.html#reactor,Method rce.container.ContainerClient.reactor()=rce.container.ContainerClient-class.html#reactor,Variable rce.environment.Environment.reactor=rce.environment.Environment-class.html#reactor"><a title="rce.client.connection._Connection.reactor
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt> <tt class="py-op">=</tt> <tt id="link-5" class="py-name" targets="Variable rce.client.connection._Connection.reactor=rce.client.connection._Connection-class.html#reactor,Variable rce.comm.client.RCE.reactor=rce.comm.client.RCE-class.html#reactor,Method rce.container.ContainerClient.reactor()=rce.container.ContainerClient-class.html#reactor,Variable rce.slave.endpoint.Endpoint.reactor=rce.slave.endpoint.Endpoint-class.html#reactor,Variable rce.slave.namespace.Namespace.reactor=rce.slave.namespace.Namespace-class.html#reactor"><a title="rce.client.connection._Connection.reactor
 rce.comm.client.RCE.reactor
 rce.container.ContainerClient.reactor
-rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-5', 'reactor', 'link-5');">reactor</a></tt> </tt>
+rce.slave.endpoint.Endpoint.reactor
+rce.slave.namespace.Namespace.reactor" class="py-name" href="#" onclick="return doclink('link-5', 'reactor', 'link-5');">reactor</a></tt> </tt>
 <a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rootfs</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name" targets="Method rce.container.ContainerClient.rootfs()=rce.container.ContainerClient-class.html#rootfs,Variable rce.util.settings._Settings.rootfs=rce.util.settings._Settings-class.html#rootfs"><a title="rce.container.ContainerClient.rootfs
 rce.util.settings._Settings.rootfs" class="py-name" href="#" onclick="return doclink('link-6', 'rootfs', 'link-6');">rootfs</a></tt> </tt>
 <a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_conf</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name"><a title="rce.container.pjoin" class="py-name" href="#" onclick="return doclink('link-7', 'pjoin', 'link-0');">pjoin</a></tt><tt class="py-op">(</tt><tt class="py-name">conf</tt><tt class="py-op">,</tt> <tt class="py-string">'config'</tt><tt class="py-op">)</tt> </tt>
@@ -282,7 +283,8 @@ rce.util.sysinfo.nt_openfile.path" class="py-name" href="#" onclick="return docl
 <a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">                                   <tt class="py-name">env</tt><tt class="py-op">=</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">environ</tt><tt class="py-op">,</tt> <tt id="link-24" class="py-name"><a title="rce.client.connection._Connection.reactor
 rce.comm.client.RCE.reactor
 rce.container.ContainerClient.reactor
-rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-24', 'reactor', 'link-5');">reactor</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">)</tt> </tt>
+rce.slave.endpoint.Endpoint.reactor
+rce.slave.namespace.Namespace.reactor" class="py-name" href="#" onclick="return doclink('link-24', 'reactor', 'link-5');">reactor</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">)</tt> </tt>
 <a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">            <tt class="py-keyword">def</tt> <tt class="py-def-name">cb</tt><tt class="py-op">(</tt><tt class="py-param">retVal</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">retVal</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
 <a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">                    <tt class="py-name">deferred</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method rce.client.interface._CB_Base.callback()=rce.client.interface._CB_Base-class.html#callback,Method rce.core.base.Proxy.callback()=rce.core.base.Proxy-class.html#callback"><a title="rce.client.interface._CB_Base.callback
@@ -320,7 +322,8 @@ rce.core.base.Proxy.callback" class="py-name" href="#" onclick="return doclink('
 <a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">                                   <tt class="py-name">env</tt><tt class="py-op">=</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">environ</tt><tt class="py-op">,</tt> <tt id="link-33" class="py-name"><a title="rce.client.connection._Connection.reactor
 rce.comm.client.RCE.reactor
 rce.container.ContainerClient.reactor
-rce.environment.Environment.reactor" class="py-name" href="#" onclick="return doclink('link-33', 'reactor', 'link-5');">reactor</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">)</tt> </tt>
+rce.slave.endpoint.Endpoint.reactor
+rce.slave.namespace.Namespace.reactor" class="py-name" href="#" onclick="return doclink('link-33', 'reactor', 'link-5');">reactor</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reactor</tt><tt class="py-op">)</tt> </tt>
 <a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"> </tt>
 <a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">            <tt class="py-keyword">def</tt> <tt class="py-def-name">cb</tt><tt class="py-op">(</tt><tt class="py-param">retVal</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">retVal</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
@@ -408,7 +411,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:09 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:26 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

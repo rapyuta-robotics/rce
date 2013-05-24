@@ -57,96 +57,163 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="rce.slave.namespace-module.html">Module rce.slave.namespace</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
-<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
-<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-core/rce/slave/namespace.py</tt> </tt>
-<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
-<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
-<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
-<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
-<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
-<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
-<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
-<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
-<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
-<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
-<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
-<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
-<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
-<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
-<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
-<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
-<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
-<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
-<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-comment"># twisted specific imports</tt> </tt>
-<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">python</tt> <tt class="py-keyword">import</tt> <tt class="py-name">log</tt> </tt>
-<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">spread</tt><tt class="py-op">.</tt><tt class="py-name">pb</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Referenceable</tt><tt class="py-op">,</tt> \ </tt>
-<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">    <tt class="py-name">DeadReferenceError</tt><tt class="py-op">,</tt> <tt class="py-name">PBConnectionLost</tt> </tt>
-<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"> </tt>
-<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
-<a name="Namespace"></a><div id="Namespace-def"><a name="L39"></a><tt class="py-lineno">39</tt> <a class="py-toggle" href="#" id="Namespace-toggle" onclick="return toggle('Namespace');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html">Namespace</a><tt class="py-op">(</tt><tt class="py-base-class">Referenceable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="Namespace-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Namespace-expanded"><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">    <tt class="py-docstring">""" Abstract base class for a Namespace in a slave process.</tt> </tt>
-<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
-<a name="Namespace.__init__"></a><div id="Namespace.__init__-def"><a name="L42"></a><tt class="py-lineno">42</tt> <a class="py-toggle" href="#" id="Namespace.__init__-toggle" onclick="return toggle('Namespace.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="Namespace.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Namespace.__init__-expanded"><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-docstring">""" Initialize the Namespace.</tt> </tt>
-<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> <tt class="py-op">=</tt> <tt id="link-0" class="py-name" targets="Method rce.client.interface._EventRef.set()=rce.client.interface._EventRef-class.html#set"><a title="rce.client.interface._EventRef.set" class="py-name" href="#" onclick="return doclink('link-0', 'set', 'link-0');">set</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
-<a name="Namespace.registerInterface"></a><div id="Namespace.registerInterface-def"><a name="L47"></a><tt class="py-lineno">47</tt> <a class="py-toggle" href="#" id="Namespace.registerInterface-toggle" onclick="return toggle('Namespace.registerInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#registerInterface">registerInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="Namespace.registerInterface-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Namespace.registerInterface-expanded"><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt id="link-1" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment">#     rce-core/rce/slave/namespace.py</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#     This file is part of the RoboEarth Cloud Engine framework.</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment">#     This file was originally created for RoboEearth</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.roboearth.org/</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment">#     The research leading to these results has received funding from</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment">#     the European Union Seventh Framework Programme FP7/2007-2013 under</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment">#     grant agreement no248942 RoboEarth.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment">#     Copyright 2013 RoboEarth</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#     Licensed under the Apache License, Version 2.0 (the "License");</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment">#     you may not use this file except in compliance with the License.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#     You may obtain a copy of the License at</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment">#     http://www.apache.org/licenses/LICENSE-2.0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment">#     Unless required by applicable law or agreed to in writing, software</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment">#     distributed under the License is distributed on an "AS IS" BASIS,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment">#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment">#     See the License for the specific language governing permissions and</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment">#     limitations under the License.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment">#     \author/s: Dominique Hunziker</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># Python specific imports</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">uuid</tt> <tt class="py-keyword">import</tt> <tt class="py-name">UUID</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-comment"># twisted specific imports</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">spread</tt><tt class="py-op">.</tt><tt class="py-name">pb</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Referenceable</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-0', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-1', 'util', 'link-1');">util</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module rce.comm.error=rce.comm.error-module.html,Module rce.core.error=rce.core.error-module.html,Module rce.util.error=rce.util.error-module.html"><a title="rce.comm.error
+rce.core.error
+rce.util.error" class="py-name" href="#" onclick="return doclink('link-2', 'error', 'link-2');">error</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Class rce.util.error.InternalError=rce.util.error.InternalError-class.html"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-3', 'InternalError', 'link-3');">InternalError</a></tt> </tt>
+<a name="Namespace"></a><div id="Namespace-def"><a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt> <a class="py-toggle" href="#" id="Namespace-toggle" onclick="return toggle('Namespace');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html">Namespace</a><tt class="py-op">(</tt><tt class="py-base-class">Referenceable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Namespace-expanded"><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt class="py-docstring">""" Abstract base class for a Namespace in a slave process.</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="Namespace.__init__"></a><div id="Namespace.__init__-def"><a name="L46"></a><tt class="py-lineno"> 46</tt> <a class="py-toggle" href="#" id="Namespace.__init__-toggle" onclick="return toggle('Namespace.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">endpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.__init__-expanded"><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-docstring">""" Initialize the Namespace.</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name" targets="Variable rce.core.network.Interface.endpoint=rce.core.network.Interface-class.html#endpoint,Module rce.slave.endpoint=rce.slave.endpoint-module.html"><a title="rce.core.network.Interface.endpoint
+rce.slave.endpoint" class="py-name" href="#" onclick="return doclink('link-4', 'endpoint', 'link-4');">endpoint</a></tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt id="link-5" class="py-name"><a title="rce.core.network.Interface.endpoint
+rce.slave.endpoint" class="py-name" href="#" onclick="return doclink('link-5', 'endpoint', 'link-4');">endpoint</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method rce.core.network.Endpoint.registerNamespace()=rce.core.network.Endpoint-class.html#registerNamespace,Method rce.robot.Connection.registerNamespace()=rce.robot.Connection-class.html#registerNamespace,Method rce.slave.endpoint.Endpoint.registerNamespace()=rce.slave.endpoint.Endpoint-class.html#registerNamespace"><a title="rce.core.network.Endpoint.registerNamespace
+rce.robot.Connection.registerNamespace
+rce.slave.endpoint.Endpoint.registerNamespace" class="py-name" href="#" onclick="return doclink('link-6', 'registerNamespace', 'link-6');">registerNamespace</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_map</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+</div><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">property</tt> </tt>
+<a name="Namespace.reactor"></a><div id="Namespace.reactor-def"><a name="L56"></a><tt class="py-lineno"> 56</tt> <a class="py-toggle" href="#" id="Namespace.reactor-toggle" onclick="return toggle('Namespace.reactor');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#reactor">reactor</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.reactor-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.reactor-expanded"><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-docstring">""" Reference to twisted::reactor. """</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Variable rce.client.connection._Connection.reactor=rce.client.connection._Connection-class.html#reactor,Variable rce.comm.client.RCE.reactor=rce.comm.client.RCE-class.html#reactor,Method rce.container.ContainerClient.reactor()=rce.container.ContainerClient-class.html#reactor,Variable rce.slave.endpoint.Endpoint.reactor=rce.slave.endpoint.Endpoint-class.html#reactor,Variable rce.slave.namespace.Namespace.reactor=rce.slave.namespace.Namespace-class.html#reactor"><a title="rce.client.connection._Connection.reactor
+rce.comm.client.RCE.reactor
+rce.container.ContainerClient.reactor
+rce.slave.endpoint.Endpoint.reactor
+rce.slave.namespace.Namespace.reactor" class="py-name" href="#" onclick="return doclink('link-7', 'reactor', 'link-7');">reactor</a></tt> </tt>
+</div><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">property</tt> </tt>
+<a name="Namespace.loader"></a><div id="Namespace.loader-def"><a name="L61"></a><tt class="py-lineno"> 61</tt> <a class="py-toggle" href="#" id="Namespace.loader-toggle" onclick="return toggle('Namespace.loader');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#loader">loader</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.loader-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.loader-expanded"><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-docstring">""" Reference to ROS components loader. """</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Variable rce.client.connection.ROSConnection.loader=rce.client.connection.ROSConnection-class.html#loader,Variable rce.slave.endpoint.Endpoint.loader=rce.slave.endpoint.Endpoint-class.html#loader,Variable rce.slave.namespace.Namespace.loader=rce.slave.namespace.Namespace-class.html#loader,Module rce.util.loader=rce.util.loader-module.html"><a title="rce.client.connection.ROSConnection.loader
+rce.slave.endpoint.Endpoint.loader
+rce.slave.namespace.Namespace.loader
+rce.util.loader" class="py-name" href="#" onclick="return doclink('link-8', 'loader', 'link-8');">loader</a></tt> </tt>
+</div><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"> </tt>
+<a name="Namespace.registerInterface"></a><div id="Namespace.registerInterface-def"><a name="L65"></a><tt class="py-lineno"> 65</tt> <a class="py-toggle" href="#" id="Namespace.registerInterface-toggle" onclick="return toggle('Namespace.registerInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#registerInterface">registerInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.registerInterface-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.registerInterface-expanded"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt id="link-9" class="py-name" targets="Variable rce.slave.interface.Interface.addr=rce.slave.interface.Interface-class.html#addr,Variable rce.util.sysinfo.Process.nt_mmap_ext.addr=rce.util.sysinfo.Process.nt_mmap_ext-class.html#addr"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-9', 'addr', 'link-9');">addr</a></tt> <tt class="py-op">=</tt> <tt id="link-10" class="py-name" targets="Module rce.client.interface=rce.client.interface-module.html,Package rce.monitor.interface=rce.monitor.interface-module.html,Module rce.slave.interface=rce.slave.interface-module.html,Module rce.util.interface=rce.util.interface-module.html"><a title="rce.client.interface
 rce.monitor.interface
 rce.slave.interface
-rce.util.interface" class="py-name" href="#" onclick="return doclink('link-1', 'interface', 'link-1');">interface</a></tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> </tt>
-<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">.</tt><tt class="py-name">add</tt><tt class="py-op">(</tt><tt id="link-2" class="py-name"><a title="rce.client.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-10', 'interface', 'link-10');">interface</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-11', 'addr', 'link-9');">addr</a></tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt id="link-12" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-12', 'addr', 'link-9');">addr</a></tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">[</tt><tt id="link-13" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-13', 'addr', 'link-9');">addr</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="rce.client.interface
 rce.monitor.interface
 rce.slave.interface
-rce.util.interface" class="py-name" href="#" onclick="return doclink('link-2', 'interface', 'link-1');">interface</a></tt><tt class="py-op">)</tt> </tt>
-</div><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"> </tt>
-<a name="Namespace.unregisterInterface"></a><div id="Namespace.unregisterInterface-def"><a name="L51"></a><tt class="py-lineno">51</tt> <a class="py-toggle" href="#" id="Namespace.unregisterInterface-toggle" onclick="return toggle('Namespace.unregisterInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#unregisterInterface">unregisterInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="Namespace.unregisterInterface-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Namespace.unregisterInterface-expanded"><a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt id="link-3" class="py-name"><a title="rce.client.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-14', 'interface', 'link-10');">interface</a></tt> </tt>
+</div><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="Namespace.unregisterInterface"></a><div id="Namespace.unregisterInterface-def"><a name="L71"></a><tt class="py-lineno"> 71</tt> <a class="py-toggle" href="#" id="Namespace.unregisterInterface-toggle" onclick="return toggle('Namespace.unregisterInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#unregisterInterface">unregisterInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">interface</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.unregisterInterface-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.unregisterInterface-expanded"><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt id="link-15" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-15', 'addr', 'link-9');">addr</a></tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="rce.client.interface
 rce.monitor.interface
 rce.slave.interface
-rce.util.interface" class="py-name" href="#" onclick="return doclink('link-3', 'interface', 'link-1');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> </tt>
-<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt id="link-4" class="py-name"><a title="rce.client.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-16', 'interface', 'link-10');">interface</a></tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-17', 'addr', 'link-9');">addr</a></tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt id="link-18" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-18', 'addr', 'link-9');">addr</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-keyword">del</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">[</tt><tt id="link-19" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-19', 'addr', 'link-9');">addr</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Method rce.slave.endpoint.Endpoint.referenceDied()=rce.slave.endpoint.Endpoint-class.html#referenceDied"><a title="rce.slave.endpoint.Endpoint.referenceDied" class="py-name" href="#" onclick="return doclink('link-20', 'referenceDied', 'link-20');">referenceDied</a></tt><tt class="py-op">(</tt><tt class="py-string">'interfaceDied'</tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name"><a title="rce.client.interface
 rce.monitor.interface
 rce.slave.interface
-rce.util.interface" class="py-name" href="#" onclick="return doclink('link-4', 'interface', 'link-1');">interface</a></tt><tt class="py-op">)</tt> </tt>
-</div><a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"> </tt>
-<a name="Namespace.remote_createInterface"></a><div id="Namespace.remote_createInterface-def"><a name="L55"></a><tt class="py-lineno">55</tt> <a class="py-toggle" href="#" id="Namespace.remote_createInterface-toggle" onclick="return toggle('Namespace.remote_createInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#remote_createInterface">remote_createInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kw</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="Namespace.remote_createInterface-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Namespace.remote_createInterface-expanded"><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">        <tt class="py-docstring">""" Remote callable method to create an interface in this namespace.</tt> </tt>
-<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt class="py-docstring">            Method has to be implemented!</tt> </tt>
-<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            New Interface instance.</tt> </tt>
-<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             rce.slave.interface.Interface</tt> </tt>
-<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-string">"Method 'remote_createInterface' has"</tt> </tt>
-<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">                                  <tt class="py-string">'to be implemented.'</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line"> </tt>
-<a name="Namespace.remote_destroy"></a><div id="Namespace.remote_destroy-def"><a name="L66"></a><tt class="py-lineno">66</tt> <a class="py-toggle" href="#" id="Namespace.remote_destroy-toggle" onclick="return toggle('Namespace.remote_destroy');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#remote_destroy">remote_destroy</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="Namespace.remote_destroy-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Namespace.remote_destroy-expanded"><a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method should be called to destroy the namespace and will take care</tt> </tt>
-<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"><tt class="py-docstring">            of destroying all interfaces owned by this namespace as well as</tt> </tt>
-<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line"><tt class="py-docstring">            deleting all circular references.</tt> </tt>
-<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-5" class="py-name"><a title="rce.client.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-21', 'interface', 'link-10');">interface</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"> </tt>
+<a name="Namespace.remote_createInterface"></a><div id="Namespace.remote_createInterface-def"><a name="L78"></a><tt class="py-lineno"> 78</tt> <a class="py-toggle" href="#" id="Namespace.remote_createInterface-toggle" onclick="return toggle('Namespace.remote_createInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#remote_createInterface">remote_createInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">uid</tt><tt class="py-op">,</tt> <tt class="py-param">iType</tt><tt class="py-op">,</tt> <tt class="py-param">msgType</tt><tt class="py-op">,</tt> <tt class="py-param">addr</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.remote_createInterface-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.remote_createInterface-expanded"><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-docstring">""" Create an Interface object in the namespace and therefore in</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-docstring">            the endpoint.</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">            @param uid:         Unique ID which is used to identify the</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">                                interface in the internal communication.</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">            @type  uid:         str</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring">            @param iType:       Type of the interface encoded as an integer.</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">                                Refer to rce.slave.interface.Types for more</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">                                information.</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">            @type  IType:       int</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring">            @param clsName:     Message type/Service type consisting of the</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-docstring">                                package and the name of the message/service,</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">                                i.e. 'std_msgs/Int32'.</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">            @type  clsName:     str</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring">            @param addr:        Unique address which is used to identify the</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">                                interface in the external communication.</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">            @type  addr:        str</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">            @return:            New Interface instance.</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">            @rtype:             rce.slave.interface.Interface</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-name">cls</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_map</tt><tt class="py-op">[</tt><tt class="py-name">iType</tt><tt class="py-op">]</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">KeyError</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-22" class="py-name"><a title="rce.util.error.InternalError" class="py-name" href="#" onclick="return doclink('link-22', 'InternalError', 'link-3');">InternalError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Interface type is not supported by this '</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">                                <tt class="py-string">'namespace.'</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">cls</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">UUID</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">=</tt><tt class="py-name">uid</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">msgType</tt><tt class="py-op">,</tt> <tt id="link-23" class="py-name"><a title="rce.slave.interface.Interface.addr
+rce.util.sysinfo.Process.nt_mmap_ext.addr" class="py-name" href="#" onclick="return doclink('link-23', 'addr', 'link-9');">addr</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="Namespace.remote_destroy"></a><div id="Namespace.remote_destroy-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="Namespace.remote_destroy-toggle" onclick="return toggle('Namespace.remote_destroy');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.slave.namespace.Namespace-class.html#remote_destroy">remote_destroy</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Namespace.remote_destroy-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Namespace.remote_destroy-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method should be called to destroy the namespace and will take care</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">            of destroying all interfaces owned by this namespace as well as</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring">            deleting all circular references.</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-24" class="py-name"><a title="rce.client.interface
 rce.monitor.interface
 rce.slave.interface
-rce.util.interface" class="py-name" href="#" onclick="return doclink('link-5', 'interface', 'link-1');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">.</tt><tt class="py-name">copy</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">            <tt id="link-6" class="py-name"><a title="rce.client.interface
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-24', 'interface', 'link-10');">interface</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">.</tt><tt class="py-name">values</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt id="link-25" class="py-name"><a title="rce.client.interface
 rce.monitor.interface
 rce.slave.interface
-rce.util.interface" class="py-name" href="#" onclick="return doclink('link-6', 'interface', 'link-1');">interface</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method rce.container.RCEContainer.remote_destroy()=rce.container.RCEContainer-class.html#remote_destroy,Method rce.environment.Environment.remote_destroy()=rce.environment.Environment-class.html#remote_destroy,Method rce.monitor.node.Node.remote_destroy()=rce.monitor.node.Node-class.html#remote_destroy,Method rce.monitor.parameter.Parameter.remote_destroy()=rce.monitor.parameter.Parameter-class.html#remote_destroy,Method rce.robot.Robot.remote_destroy()=rce.robot.Robot-class.html#remote_destroy,Method rce.slave.interface.Interface.remote_destroy()=rce.slave.interface.Interface-class.html#remote_destroy,Method rce.slave.namespace.Namespace.remote_destroy()=rce.slave.namespace.Namespace-class.html#remote_destroy,Method rce.slave.protocol.RCEInternalProtocol.remote_destroy()=rce.slave.protocol.RCEInternalProtocol-class.html#remote_destroy,Method rce.slave.protocol._Protocol.remote_destroy()=rce.slave.protocol._Protocol-class.html#remote_destroy"><a title="rce.container.RCEContainer.remote_destroy
+rce.util.interface" class="py-name" href="#" onclick="return doclink('link-25', 'interface', 'link-10');">interface</a></tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method rce.container.RCEContainer.remote_destroy()=rce.container.RCEContainer-class.html#remote_destroy,Method rce.environment.Environment.remote_destroy()=rce.environment.Environment-class.html#remote_destroy,Method rce.monitor.node.Node.remote_destroy()=rce.monitor.node.Node-class.html#remote_destroy,Method rce.monitor.parameter.Parameter.remote_destroy()=rce.monitor.parameter.Parameter-class.html#remote_destroy,Method rce.robot.Robot.remote_destroy()=rce.robot.Robot-class.html#remote_destroy,Method rce.slave.interface.Interface.remote_destroy()=rce.slave.interface.Interface-class.html#remote_destroy,Method rce.slave.namespace.Namespace.remote_destroy()=rce.slave.namespace.Namespace-class.html#remote_destroy,Method rce.slave.protocol.RCEInternalProtocol.remote_destroy()=rce.slave.protocol.RCEInternalProtocol-class.html#remote_destroy,Method rce.slave.protocol._Protocol.remote_destroy()=rce.slave.protocol._Protocol-class.html#remote_destroy"><a title="rce.container.RCEContainer.remote_destroy
 rce.environment.Environment.remote_destroy
 rce.monitor.node.Node.remote_destroy
 rce.monitor.parameter.Parameter.remote_destroy
@@ -154,20 +221,15 @@ rce.robot.Robot.remote_destroy
 rce.slave.interface.Interface.remote_destroy
 rce.slave.namespace.Namespace.remote_destroy
 rce.slave.protocol.RCEInternalProtocol.remote_destroy
-rce.slave.protocol._Protocol.remote_destroy" class="py-name" href="#" onclick="return doclink('link-7', 'remote_destroy', 'link-7');">remote_destroy</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"> </tt>
-<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt> </tt>
-<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line"> </tt>
-<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_client</tt><tt class="py-op">.</tt><tt class="py-name">_avatar</tt><tt class="py-op">:</tt> </tt>
-<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">            <tt class="py-keyword">def</tt> <tt class="py-def-name">eb</tt><tt class="py-op">(</tt><tt class="py-param">failure</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">failure</tt><tt class="py-op">.</tt><tt class="py-name">check</tt><tt class="py-op">(</tt><tt class="py-name">PBConnectionLost</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">                    <tt class="py-name">log</tt><tt class="py-op">.</tt><tt class="py-name">err</tt><tt class="py-op">(</tt><tt class="py-name">failure</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line"> </tt>
-<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
-<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_client</tt><tt class="py-op">.</tt><tt class="py-name">_avatar</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method rce.core.base.Proxy.callRemote()=rce.core.base.Proxy-class.html#callRemote"><a title="rce.core.base.Proxy.callRemote" class="py-name" href="#" onclick="return doclink('link-8', 'callRemote', 'link-8');">callRemote</a></tt><tt class="py-op">(</tt><tt class="py-string">'namespaceDied'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">addErrback</tt><tt class="py-op">(</tt><tt class="py-name">eb</tt><tt class="py-op">)</tt> </tt>
-<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-op">(</tt><tt class="py-name">DeadReferenceError</tt><tt class="py-op">,</tt> <tt class="py-name">PBConnectionLost</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">                <tt class="py-keyword">pass</tt> </tt>
-</div></div><a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+rce.slave.protocol._Protocol.remote_destroy" class="py-name" href="#" onclick="return doclink('link-26', 'remote_destroy', 'link-26');">remote_destroy</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_interfaces</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">:</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method rce.core.network.Endpoint.unregisterNamespace()=rce.core.network.Endpoint-class.html#unregisterNamespace,Method rce.slave.endpoint.Endpoint.unregisterNamespace()=rce.slave.endpoint.Endpoint-class.html#unregisterNamespace"><a title="rce.core.network.Endpoint.unregisterNamespace
+rce.slave.endpoint.Endpoint.unregisterNamespace" class="py-name" href="#" onclick="return doclink('link-27', 'unregisterNamespace', 'link-27');">unregisterNamespace</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_endpoint</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div></div><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -200,7 +262,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:10 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:26 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

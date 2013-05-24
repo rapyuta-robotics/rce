@@ -59,38 +59,42 @@
 <h1 class="epydoc">Class RobotClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.robot-pysrc.html#RobotClient">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_robo_4" name="uml_class_diagram_for_rce_robo_4">
-<area shape="rect" id="node520" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="105,204,453,223"/>
-<area shape="rect" id="node520" href="javascript:void(0);" title="hash(x)" alt="" coords="105,223,453,241"/>
-<area shape="rect" id="node520" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="105,244,453,263"/>
-<area shape="rect" id="node520" href="javascript:void(0);" title="(internal)" alt="" coords="105,263,453,281"/>
-<area shape="rect" id="node520" href="javascript:void(0);" title="A remote message has been received." alt="" coords="105,281,453,300"/>
-<area shape="rect" id="node1" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="93,179,464,306"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#remote_createNamespace" title="Remote callable method to create a namespace in this endpoint." alt="" coords="128,359,432,377"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#remote_getLoopback" title="Get the loopback protocol." alt="" coords="128,377,432,396"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#remote_prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="128,396,432,415"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#remote_connect" title="Connect to the endpoint with the given address using the connection &#160;information matching the received ID." alt="" coords="128,415,432,433"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#processInit" title="Callback for the RCE Internal Protocol which is called when the protocol &#160;received an init message which has to be processed." alt="" coords="128,433,432,452"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#registerProtocol" title="rce.slave.endpoint.Endpoint.registerProtocol" alt="" coords="128,452,432,471"/>
-<area shape="rect" id="node519" href="rce.slave.endpoint.Endpoint-class.html#unregisterProtocol" title="rce.slave.endpoint.Endpoint.unregisterProtocol" alt="" coords="128,471,432,489"/>
-<area shape="rect" id="node2" href="rce.slave.endpoint.Endpoint-class.html" title="Abstract base class for an Endpoint in a slave process." alt="" coords="116,326,444,495"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#CONNECT_TIMEOUT" title="rce.robot.RobotClient.CONNECT_TIMEOUT" alt="" coords="17,540,541,559"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#RECONNECT_TIMEOUT" title="rce.robot.RobotClient.RECONNECT_TIMEOUT" alt="" coords="17,559,541,577"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#__init__" title="Initialize the Robot Client." alt="" coords="17,580,541,599"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#converter" title="Reference to the message converter used by the Converter interfaces." alt="" coords="17,599,541,617"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#loader" title="Reference to ROS components loader." alt="" coords="17,617,541,636"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#registerConnection" title="rce.robot.RobotClient.registerConnection" alt="" coords="17,636,541,655"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#unregisterConnection" title="rce.robot.RobotClient.unregisterConnection" alt="" coords="17,655,541,673"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#login" title="Callback for Robot connection to login and authenticate." alt="" coords="17,673,541,692"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#registerWebsocketProtocol" title="Register the client protocol with a Connection object." alt="" coords="17,692,541,711"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#unregisterWebsocketProtocol" title="Unregister the client protocol from a Connection object." alt="" coords="17,711,541,729"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#remote_getWebsocketAddress" title="Get the address of the WebSocket server running in this process." alt="" coords="17,729,541,748"/>
-<area shape="rect" id="node518" href="rce.robot.RobotClient-class.html#terminate" title="Method should be called to terminate the client before the reactor is &#160;stopped." alt="" coords="17,748,541,767"/>
-<area shape="rect" id="node3" href="rce.robot.RobotClient-class.html" title="Realm for the connections to the robots." alt="" coords="5,515,552,773"/>
-<area shape="rect" id="node521" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="179,135,380,153"/>
-<area shape="rect" id="node4" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="167,102,391,159"/>
-<area shape="rect" id="node522" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="195,39,364,57"/>
-<area shape="rect" id="node522" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="195,57,364,76"/>
-<area shape="rect" id="node5" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="183,6,375,82"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="128,351,432,369"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#loader" title="Reference to ROS components loader." alt="" coords="128,369,432,388"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#registerAvatar" title="Register the PB Avatar received from the master process." alt="" coords="128,391,432,409"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#registerNamespace" title="rce.slave.endpoint.Endpoint.registerNamespace" alt="" coords="128,409,432,428"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#unregisterNamespace" title="rce.slave.endpoint.Endpoint.unregisterNamespace" alt="" coords="128,428,432,447"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#remote_getLoopback" title="Get the loopback protocol." alt="" coords="128,447,432,465"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#remote_prepareConnection" title="Prepare the endpoint for the connection attempt by adding the necessary &#160;connection information to the remote process." alt="" coords="128,465,432,484"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#remote_connect" title="Connect to the endpoint with the given address using the connection &#160;information matching the received ID." alt="" coords="128,484,432,503"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#processInit" title="Callback for the RCE Internal Protocol which is called when the protocol &#160;received an init message which has to be processed." alt="" coords="128,503,432,521"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#registerProtocol" title="rce.slave.endpoint.Endpoint.registerProtocol" alt="" coords="128,521,432,540"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#unregisterProtocol" title="rce.slave.endpoint.Endpoint.unregisterProtocol" alt="" coords="128,540,432,559"/>
+<area shape="rect" id="node517" href="rce.slave.endpoint.Endpoint-class.html#referenceDied" title="Internally used method to inform the Master process that a remote &#160;referenced object has died." alt="" coords="128,559,432,577"/>
+<area shape="rect" id="node1" href="rce.slave.endpoint.Endpoint-class.html" title="Abstract base class for an Endpoint in a slave process." alt="" coords="116,326,444,583"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#CONNECT_TIMEOUT" title="rce.robot.RobotClient.CONNECT_TIMEOUT" alt="" coords="17,628,541,647"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#RECONNECT_TIMEOUT" title="rce.robot.RobotClient.RECONNECT_TIMEOUT" alt="" coords="17,647,541,665"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#__init__" title="Initialize the Robot Client." alt="" coords="17,668,541,687"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#converter" title="Reference to the message converter used by the Converter interfaces." alt="" coords="17,687,541,705"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#registerConnection" title="rce.robot.RobotClient.registerConnection" alt="" coords="17,705,541,724"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#unregisterConnection" title="rce.robot.RobotClient.unregisterConnection" alt="" coords="17,724,541,743"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#login" title="Callback for Robot connection to login and authenticate." alt="" coords="17,743,541,761"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#registerWebsocketProtocol" title="Register the client protocol with a Connection object." alt="" coords="17,761,541,780"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#unregisterWebsocketProtocol" title="Unregister the client protocol from a Connection object." alt="" coords="17,780,541,799"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#remote_getWebsocketAddress" title="Get the address of the WebSocket server running in this process." alt="" coords="17,799,541,817"/>
+<area shape="rect" id="node516" href="rce.robot.RobotClient-class.html#terminate" title="Method should be called to terminate the client before the reactor is &#160;stopped." alt="" coords="17,817,541,836"/>
+<area shape="rect" id="node2" href="rce.robot.RobotClient-class.html" title="Realm for the connections to the robots." alt="" coords="5,603,552,842"/>
+<area shape="rect" id="node519" href="javascript:void(0);" title="Return an ID which uniquely represents this object for this process." alt="" coords="179,135,380,153"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="An object that can be passed remotely." alt="" coords="167,102,391,159"/>
+<area shape="rect" id="node518" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable.__implemented__" alt="" coords="105,204,453,223"/>
+<area shape="rect" id="node518" href="javascript:void(0);" title="hash(x)" alt="" coords="105,223,453,241"/>
+<area shape="rect" id="node518" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="105,244,453,263"/>
+<area shape="rect" id="node518" href="javascript:void(0);" title="(internal)" alt="" coords="105,263,453,281"/>
+<area shape="rect" id="node518" href="javascript:void(0);" title="A remote message has been received." alt="" coords="105,281,453,300"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="twisted.spread.flavors.Referenceable" alt="" coords="93,179,464,306"/>
+<area shape="rect" id="node520" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="195,39,364,57"/>
+<area shape="rect" id="node520" href="javascript:void(0);" title="twisted.spread.jelly.Jellyable.getStateFor" alt="" coords="195,57,364,76"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="Inherit from me to Jelly yourself directly with the `getStateFor&#39; convenience method." alt="" coords="183,6,375,82"/>
 </map>
   <img src="uml_class_diagram_for_rce_robo_4.gif" alt='' usemap="#uml_class_diagram_for_rce_robo_4" ismap="ismap" class="graph-without-title" />
 </center>
@@ -151,23 +155,6 @@
       Reference to the message converter used by the Converter interfaces.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.robot-pysrc.html#RobotClient.converter">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.robot.RobotClient-class.html#loader" class="summary-sig-name">loader</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Reference to ROS components loader.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.robot-pysrc.html#RobotClient.loader">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -367,11 +354,14 @@
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.endpoint.Endpoint-class.html">slave.endpoint.Endpoint</a></code></b>:
       <code><a href="rce.slave.endpoint.Endpoint-class.html#processInit">processInit</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#referenceDied">referenceDied</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#registerAvatar">registerAvatar</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#registerNamespace">registerNamespace</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#registerProtocol">registerProtocol</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_connect">remote_connect</a></code>,
-      <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_createNamespace">remote_createNamespace</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_getLoopback">remote_getLoopback</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#remote_prepareConnection">remote_prepareConnection</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#unregisterNamespace">unregisterNamespace</a></code>,
       <code><a href="rce.slave.endpoint.Endpoint-class.html#unregisterProtocol">unregisterProtocol</a></code>
       </p>
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.endpoint.Endpoint-class.html">slave.endpoint.Endpoint</a></code></b> (private):
@@ -428,6 +418,32 @@
     <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.flavors.Referenceable</code></b>:
       <code>__implemented__</code>,
       <code>perspective</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.slave.endpoint.Endpoint-class.html">slave.endpoint.Endpoint</a></code></b>:
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#loader">loader</a></code>,
+      <code><a href="rce.slave.endpoint.Endpoint-class.html#reactor">reactor</a></code>
       </p>
     </td>
   </tr>
@@ -513,29 +529,6 @@
   
   <p>Reference to the message converter used by the Converter 
   interfaces.</p>
-  <dl class="fields">
-    <dt>Decorators:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code>@property</code></li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="loader"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">loader</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.robot-pysrc.html#RobotClient.loader">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Reference to ROS components loader.</p>
   <dl class="fields">
     <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
@@ -788,7 +781,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:06 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:22 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

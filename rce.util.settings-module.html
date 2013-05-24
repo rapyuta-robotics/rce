@@ -74,6 +74,15 @@
     </table>
   </td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="rce.util.settings.NoValidSettings-class.html" class="summary-name">NoValidSettings</a><br />
+      Exception is raised in case there is no valid configuration found 
+        for the cloud engine.
+    </td>
+  </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -114,10 +123,28 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="rce.util.settings-module.html#getSettings" class="summary-sig-name">getSettings</a>()</span><br />
+          <td><span class="summary-sig"><a href="rce.util.settings-module.html#getSettings" class="summary-sig-name">getSettings</a>(<span class="summary-sig-arg">throw</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">checks</span>=<span class="summary-sig-default">True</span>)</span><br />
       Get the cloud engine settings.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.util.settings-pysrc.html#getSettings">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.settings-module.html#_getSettings" class="summary-sig-name" onclick="show_private();">_getSettings</a>(<span class="summary-sig-arg">checks</span>)</span><br />
+      Get the settings for the cloud engine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.settings-pysrc.html#_getSettings">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -200,8 +227,8 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_settings"></a><span class="summary-name">_settings</span> = <code title="None">None</code><br />
-      hash(x)
+        <a href="rce.util.settings-module.html#_settings" class="summary-name" onclick="show_private();">_settings</a> = <code title="NoValidSettings(&quot;The network device 'lxcbr0' does not exist on your sy\
+stem check your configuration.&quot;,)">NoValidSettings(&quot;The network device 'lxcbr0' does <code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -244,7 +271,8 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSettings</span>()</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSettings</span>(<span class="sig-arg">throw</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">checks</span>=<span class="sig-default">True</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.util.settings-pysrc.html#getSettings">source&nbsp;code</a></span>&nbsp;
@@ -253,6 +281,25 @@
   
   <p>Get the cloud engine settings. The configuration file is parsed only 
   once and cached for later.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="_getSettings"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_getSettings</span>(<span class="sig-arg">checks</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.settings-pysrc.html#_getSettings">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the settings for the cloud engine. Does the heavy lifting.</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -343,6 +390,44 @@ Based on:
 </td></tr></table>
 </div>
 <br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_settings"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_settings</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+NoValidSettings(&quot;The network device 'lxcbr0' does not exist on your sy<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+stem check your configuration.&quot;,)
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -369,7 +454,7 @@ Based on:
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:53:59 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:14 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

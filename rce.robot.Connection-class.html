@@ -59,20 +59,20 @@
 <h1 class="epydoc">Class Connection</h1><p class="nomargin-top"><span class="codelink"><a href="rce.robot-pysrc.html#Connection">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_robo" name="uml_class_diagram_for_rce_robo">
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#__init__" title="Initialize the representation of a connection to a robot client." alt="" coords="17,39,381,57"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#userID" title="User ID of the user owing this connection." alt="" coords="17,57,381,76"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#robotID" title="Robot ID used to identify the connected robot." alt="" coords="17,76,381,95"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#destroy" title="# TODO: Add doc" alt="" coords="17,95,381,113"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#registerAvatar" title="Register User Avatar." alt="" coords="17,113,381,132"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#registerView" title="# TODO: Add doc" alt="" coords="17,132,381,151"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#registerNamespace" title="# TODO: Add doc" alt="" coords="17,151,381,169"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#registerProtocol" title="Register the client protocol." alt="" coords="17,169,381,188"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#unregisterProtocol" title="Unregister the client protocol." alt="" coords="17,188,381,207"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#reportError" title="rce.robot.Connection.reportError" alt="" coords="17,207,381,225"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#sendMessage" title="rce.robot.Connection.sendMessage" alt="" coords="17,225,381,244"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#createContainer" title="rce.robot.Connection.createContainer" alt="" coords="17,244,381,263"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#destroyContainer" title="rce.robot.Connection.destroyContainer" alt="" coords="17,263,381,281"/>
-<area shape="rect" id="node509" href="rce.robot.Connection-class.html#processReceivedMessage" title="rce.robot.Connection.processReceivedMessage" alt="" coords="17,300,381,319"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#__init__" title="Initialize the representation of a connection to a robot client." alt="" coords="17,39,381,57"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#userID" title="User ID of the user owing this connection." alt="" coords="17,57,381,76"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#robotID" title="Robot ID used to identify the connected robot." alt="" coords="17,76,381,95"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#destroy" title="# TODO: Add doc" alt="" coords="17,95,381,113"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#registerAvatar" title="Register User Avatar." alt="" coords="17,113,381,132"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#registerView" title="# TODO: Add doc" alt="" coords="17,132,381,151"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#registerNamespace" title="# TODO: Add doc" alt="" coords="17,151,381,169"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#registerProtocol" title="Register the client protocol." alt="" coords="17,169,381,188"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#unregisterProtocol" title="Unregister the client protocol." alt="" coords="17,188,381,207"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#reportError" title="rce.robot.Connection.reportError" alt="" coords="17,207,381,225"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#sendMessage" title="rce.robot.Connection.sendMessage" alt="" coords="17,225,381,244"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#createContainer" title="rce.robot.Connection.createContainer" alt="" coords="17,244,381,263"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#destroyContainer" title="rce.robot.Connection.destroyContainer" alt="" coords="17,263,381,281"/>
+<area shape="rect" id="node507" href="rce.robot.Connection-class.html#processReceivedMessage" title="rce.robot.Connection.processReceivedMessage" alt="" coords="17,300,381,319"/>
 <area shape="rect" id="node1" href="rce.robot.Connection-class.html" title="Representation of a connection to a robot client." alt="" coords="5,6,392,325"/>
 </map>
   <img src="uml_class_diagram_for_rce_robo.gif" alt='' usemap="#uml_class_diagram_for_rce_robo" ismap="ismap" class="graph-without-title" />
@@ -175,7 +175,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="registerAvatar"></a><span class="summary-sig-name">registerAvatar</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="rce.robot.Connection-class.html#registerAvatar" class="summary-sig-name">registerAvatar</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">avatar</span>)</span><br />
       Register User Avatar.</td>
           <td align="right" valign="top">
@@ -587,6 +587,7 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>client</code></strong> (rce.robot.RobotClient) - Client which is responsible for managing the Robot process.</li>
         <li><strong class="pname"><code>userID</code></strong> (str) - User ID of the robot owner</li>
         <li><strong class="pname"><code>robotID</code></strong> (str) - Unique ID which is used to identify the robot.</li>
     </ul></dd>
@@ -639,6 +640,27 @@
     <dd><ul class="nomargin-top">
         <li><code>@property</code></li>
     </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registerAvatar"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerAvatar</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">avatar</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.robot-pysrc.html#Connection.registerAvatar">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register User Avatar.</p>
+  <p># TODO: Add description</p>
+  <dl class="fields">
   </dl>
 </td></tr></table>
 </div>
@@ -717,7 +739,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:06 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:22 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -60,25 +60,25 @@
 <h1 class="epydoc">Class Proxy</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.base-pysrc.html#Proxy">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_core" name="uml_class_diagram_for_rce_core">
-<area shape="rect" id="node1" href="rce.core.container.Container-class.html" title="Representation of an LXC container." alt="" coords="5,233,155,271"/>
-<area shape="rect" id="node2" href="rce.core.network.Namespace-class.html" title="Representation of a namespace, which is part of the cloud engine internal communication." alt="" coords="184,233,341,271"/>
-<area shape="rect" id="node6" href="rce.core.environment.Environment-class.html" title="Representation of a namespace which has a ROS environment assigned and is part of the cloud engine internal communication." alt="" coords="171,291,355,330"/>
-<area shape="rect" id="node3" href="rce.core.environment.Node-class.html" title="Representation of a node (ROS process) inside a ROS environment." alt="" coords="371,233,512,271"/>
-<area shape="rect" id="node4" href="rce.core.network.Endpoint-class.html" title="Representation of an endpoint, which is a process which is part of the cloud engine internal communication." alt="" coords="541,233,677,271"/>
-<area shape="rect" id="node5" href="rce.core.environment.EnvironmentEndpoint-class.html" title="Representation of an endpoint which is a process that lives inside a container and is part of the cloud engine internal communication." alt="" coords="492,291,727,330"/>
-<area shape="rect" id="node7" href="rce.core.environment.Parameter-class.html" title="Representation of a parameter inside a ROS environment." alt="" coords="707,233,877,271"/>
-<area shape="rect" id="node8" href="rce.core.network.Protocol-class.html" title="Representation of a protocol, which is part of the cloud engine internal communication." alt="" coords="907,233,1040,271"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#__init__" title="Initialize the Proxy." alt="" coords="497,39,720,57"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#callRemote" title="Make a call to the RemoteReference and return the result as a Deferred." alt="" coords="497,57,720,76"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#callback" title="Register the remote reference which provides the necessary methods for this Proxy." alt="" coords="497,76,720,95"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#errback" title="Register a failure object which was received during the creation of the &#160;object in the remote process." alt="" coords="497,95,720,113"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#notifyOnDeath" title="Register a callback which will be called once the remote object is dead, &#160;i.e." alt="" coords="497,113,720,132"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" title="Unregister a callback which would have been called once the remote object &#160;is dead." alt="" coords="497,132,720,151"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#__call__" title="Return a reference to the remote object as soon as the reference is &#160;available." alt="" coords="497,151,720,169"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#destroy" title="Method should be called to destroy the Proxy as well as the remote object." alt="" coords="497,169,720,188"/>
-<area shape="rect" id="node256" href="rce.core.base.Proxy-class.html#destroyExternal" title="Method to compare given remote reference with Proxy&#39;s remote reference and &#160;destroy if they are the same." alt="" coords="497,188,720,207"/>
-<area shape="rect" id="node9" href="rce.core.base.Proxy-class.html" title="The Proxy should be used to represent an object from a slave process in the Master." alt="" coords="485,6,731,213"/>
-<area shape="rect" id="node10" href="rce.core.network.Interface-class.html" title="Representation of an interface, which is part of the cloud engine internal communication." alt="" coords="1069,233,1205,271"/>
+<area shape="rect" id="node1" href="rce.core.environment.EnvironmentEndpoint-class.html" title="Representation of an endpoint which is a process that lives inside a container and is part of the cloud engine internal communication." alt="" coords="871,291,1105,330"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#__init__" title="Initialize the Proxy." alt="" coords="533,39,756,57"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#callRemote" title="Make a call to the RemoteReference and return the result as a Deferred." alt="" coords="533,57,756,76"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#callback" title="Register the remote reference which provides the necessary methods for this Proxy." alt="" coords="533,76,756,95"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#errback" title="Register a failure object which was received during the creation of the &#160;object in the remote process." alt="" coords="533,95,756,113"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#notifyOnDeath" title="Register a callback which will be called once the remote object is dead, &#160;i.e." alt="" coords="533,113,756,132"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#dontNotifyOnDeath" title="Unregister a callback which would have been called once the remote object &#160;is dead." alt="" coords="533,132,756,151"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#__call__" title="Return a reference to the remote object as soon as the reference is &#160;available." alt="" coords="533,151,756,169"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#destroy" title="Method should be called to destroy the Proxy as well as the remote object." alt="" coords="533,169,756,188"/>
+<area shape="rect" id="node253" href="rce.core.base.Proxy-class.html#destroyExternal" title="Method to compare given remote reference with Proxy&#39;s remote reference and &#160;destroy if they are the same." alt="" coords="533,188,756,207"/>
+<area shape="rect" id="node2" href="rce.core.base.Proxy-class.html" title="The Proxy should be used to represent an object from a slave process in the Master." alt="" coords="521,6,767,213"/>
+<area shape="rect" id="node3" href="rce.core.network.Namespace-class.html" title="Representation of a namespace, which is part of the cloud engine internal communication." alt="" coords="19,233,176,271"/>
+<area shape="rect" id="node4" href="rce.core.environment.Parameter-class.html" title="Representation of a parameter inside a ROS environment." alt="" coords="205,233,376,271"/>
+<area shape="rect" id="node5" href="rce.core.network.Interface-class.html" title="Representation of an interface, which is part of the cloud engine internal communication." alt="" coords="405,233,541,271"/>
+<area shape="rect" id="node6" href="rce.core.container.Container-class.html" title="Representation of an LXC container." alt="" coords="571,233,720,271"/>
+<area shape="rect" id="node8" href="rce.core.environment.Node-class.html" title="Representation of a node (ROS process) inside a ROS environment." alt="" coords="749,233,891,271"/>
+<area shape="rect" id="node9" href="rce.core.network.Endpoint-class.html" title="Representation of an endpoint, which is a process which is part of the cloud engine internal communication." alt="" coords="920,233,1056,271"/>
+<area shape="rect" id="node10" href="rce.core.network.Protocol-class.html" title="Representation of a protocol, which is part of the cloud engine internal communication." alt="" coords="1085,233,1219,271"/>
+<area shape="rect" id="node7" href="rce.core.environment.Environment-class.html" title="Representation of a namespace which has a ROS environment assigned and is part of the cloud engine internal communication." alt="" coords="5,291,189,330"/>
 </map>
   <img src="uml_class_diagram_for_rce_core.gif" alt='' usemap="#uml_class_diagram_for_rce_core" ismap="ismap" class="graph-without-title" />
 </center>
@@ -653,7 +653,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:02 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:18 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

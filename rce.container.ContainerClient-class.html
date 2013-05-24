@@ -59,21 +59,21 @@
 <h1 class="epydoc">Class ContainerClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_cont" name="uml_class_diagram_for_rce_cont">
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#__init__" title="Initialize the Container Client." alt="" coords="17,39,885,57"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="17,57,885,76"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#internalIP" title="IP address of this process in the internal network." alt="" coords="17,76,885,95"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#masterPort" title="Port of the master process used for internal communications." alt="" coords="17,95,885,113"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#envPort" title="Port where the environment process running inside the container is &#160;listening for new connections." alt="" coords="17,113,885,132"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#rosproxyPort" title="Port where the ROS proxy running inside the container is listening for new &#160;connections." alt="" coords="17,132,885,151"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#rootfs" title="Host filesystem path of container filesystem root directory." alt="" coords="17,151,885,169"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#confDir" title="Filesystem path of configuration directory." alt="" coords="17,169,885,188"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#dataDir" title="Filesystem path of temporary data directory." alt="" coords="17,188,885,207"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#pkgDirIter" title="Iterator over all file system paths of package directories." alt="" coords="17,207,885,225"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#masterIP" title="IP address of master process." alt="" coords="17,225,885,244"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#prerouting" title="Reference to iptables&#39; chain PREROUTING of the table NAT." alt="" coords="17,244,885,263"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#output" title="Reference to iptables&#39; chain OUTPUT of the table NAT." alt="" coords="17,263,885,281"/>
-<area shape="rect" id="node254" href="rce.container.ContainerClient-class.html#terminate" title="Method should be called to terminate all running containers before the &#160;reactor is stopped." alt="" coords="17,300,885,319"/>
-<area shape="rect" id="node1" href="rce.container.ContainerClient-class.html" title="Container client is responsible for the creation and destruction of containers in a machine." alt="" coords="5,6,896,325"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#__init__" title="Initialize the Container Client." alt="" coords="17,39,931,57"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="17,57,931,76"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#internalIP" title="IP address of this process in the internal network." alt="" coords="17,76,931,95"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#masterPort" title="Port of the master process used for internal communications." alt="" coords="17,95,931,113"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#envPort" title="Port where the environment process running inside the container is &#160;listening for new connections." alt="" coords="17,113,931,132"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#rosproxyPort" title="Port where the ROS proxy running inside the container is listening for new &#160;connections." alt="" coords="17,132,931,151"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#rootfs" title="Host filesystem path of container filesystem root directory." alt="" coords="17,151,931,169"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#confDir" title="Filesystem path of configuration directory." alt="" coords="17,169,931,188"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#dataDir" title="Filesystem path of temporary data directory." alt="" coords="17,188,931,207"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#pkgDirIter" title="Iterator over all file system paths of package directories." alt="" coords="17,207,931,225"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#rosRel" title="Container filesytem ROS release in this deployment instance of the cloud &#160;engine" alt="" coords="17,225,931,244"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#masterIP" title="IP address of master process." alt="" coords="17,244,931,263"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#masterPassword" title="SHA 256 Digested Master Password." alt="" coords="17,263,931,281"/>
+<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#terminate" title="Method should be called to terminate all running containers before the &#160;reactor is stopped." alt="" coords="17,300,931,319"/>
+<area shape="rect" id="node1" href="rce.container.ContainerClient-class.html" title="Container client is responsible for the creation and destruction of containers in a machine." alt="" coords="5,6,941,325"/>
 </map>
   <img src="uml_class_diagram_for_rce_cont.gif" alt='' usemap="#uml_class_diagram_for_rce_cont" ismap="ismap" class="graph-without-title" />
 </center>
@@ -119,7 +119,8 @@
         <span class="summary-sig-arg">rootfsDir</span>,
         <span class="summary-sig-arg">confDir</span>,
         <span class="summary-sig-arg">dataDir</span>,
-        <span class="summary-sig-arg">pkgDir</span>)</span><br />
+        <span class="summary-sig-arg">pkgDir</span>,
+        <span class="summary-sig-arg">rosRel</span>)</span><br />
       Initialize the Container Client.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.__init__">source&nbsp;code</a></span>
@@ -291,10 +292,62 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#rosRel" class="summary-sig-name">rosRel</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Container filesytem ROS release in this deployment instance of the 
+      cloud engine</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rosRel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#masterIP" class="summary-sig-name">masterIP</a>(<span class="summary-sig-arg">self</span>)</span><br />
       IP address of master process.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterIP">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#masterPassword" class="summary-sig-name">masterPassword</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      SHA 256 Digested Master Password.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterPassword">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#infraPassword" class="summary-sig-name">infraPassword</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      SHA 256 Digested Infra Password.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.infraPassword">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -517,7 +570,8 @@
         <span class="sig-arg">rootfsDir</span>,
         <span class="sig-arg">confDir</span>,
         <span class="sig-arg">dataDir</span>,
-        <span class="sig-arg">pkgDir</span>)</span>
+        <span class="sig-arg">pkgDir</span>,
+        <span class="sig-arg">rosRel</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -555,6 +609,8 @@
           machine and the path to the directory to which the host directory
           will be bound in the container filesystem (without the @param 
           rootfsDir).</li>
+        <li><strong class="pname"><code>rosRel</code></strong> (str) - Container filesytem ROS release in this deployment instance of 
+          the cloud engine</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -768,6 +824,30 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="rosRel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rosRel</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rosRel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Container filesytem ROS release in this deployment instance of the 
+  cloud engine</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="masterIP"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -783,6 +863,52 @@
   </tr></table>
   
   <p>IP address of master process.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="masterPassword"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">masterPassword</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.masterPassword">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>SHA 256 Digested Master Password.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="infraPassword"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">infraPassword</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.infraPassword">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>SHA 256 Digested Infra Password.</p>
   <dl class="fields">
     <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
@@ -936,7 +1062,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:02 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:18 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

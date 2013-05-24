@@ -60,18 +60,19 @@
 <h1 class="epydoc">Class EndpointAvatar</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.network-pysrc.html#EndpointAvatar">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_core_20" name="uml_class_diagram_for_rce_core_20">
-<area shape="rect" id="node313" href="javascript:void(0);" title="twisted.spread.pb.Avatar.__implemented__" alt="" coords="17,31,392,49"/>
-<area shape="rect" id="node313" href="javascript:void(0);" title="This method is called when a network message is received." alt="" coords="17,52,392,71"/>
-<area shape="rect" id="node313" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="17,71,392,89"/>
-<area shape="rect" id="node313" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,89,392,108"/>
+<area shape="rect" id="node310" href="javascript:void(0);" title="twisted.spread.pb.Avatar.__implemented__" alt="" coords="17,31,392,49"/>
+<area shape="rect" id="node310" href="javascript:void(0);" title="This method is called when a network message is received." alt="" coords="17,52,392,71"/>
+<area shape="rect" id="node310" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="17,71,392,89"/>
+<area shape="rect" id="node310" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="17,89,392,108"/>
 <area shape="rect" id="node1" href="javascript:void(0);" title="A default IPerspective implementor." alt="" coords="5,6,403,114"/>
-<area shape="rect" id="node312" href="rce.core.network.EndpointAvatar-class.html#__init__" title="Initialize the Endpoint avatar." alt="" coords="44,167,367,185"/>
-<area shape="rect" id="node312" href="rce.core.network.EndpointAvatar-class.html#logout" title="Callback which should be called upon disconnection of the Endpoint." alt="" coords="44,185,367,204"/>
-<area shape="rect" id="node312" href="rce.core.network.EndpointAvatar-class.html#perspective_interfaceDied" title="Notify that a remote interface died." alt="" coords="44,204,367,223"/>
-<area shape="rect" id="node312" href="rce.core.network.EndpointAvatar-class.html#perspective_namespaceDied" title="Notify that a remote namespace died." alt="" coords="44,223,367,241"/>
-<area shape="rect" id="node312" href="rce.core.network.EndpointAvatar-class.html#perspective_protocolDied" title="Notify that a remote protocol died." alt="" coords="44,241,367,260"/>
-<area shape="rect" id="node3" href="rce.core.network.EndpointAvatar-class.html" title="Avatar for internal PB connection from an Endpoint." alt="" coords="32,134,379,266"/>
-<area shape="rect" id="node2" href="rce.core.environment.EnvironmentEndpointAvatar-class.html" title="Avatar for internal PB connection from an Environment Endpoint." alt="" coords="69,286,341,325"/>
+<area shape="rect" id="node309" href="rce.core.network.EndpointAvatar-class.html#__init__" title="Initialize the Endpoint avatar." alt="" coords="40,167,371,185"/>
+<area shape="rect" id="node309" href="rce.core.network.EndpointAvatar-class.html#logout" title="Callback which should be called upon disconnection of the Endpoint." alt="" coords="40,185,371,204"/>
+<area shape="rect" id="node309" href="rce.core.network.EndpointAvatar-class.html#perspective_interfaceDied" title="Notify that a remote interface died." alt="" coords="40,204,371,223"/>
+<area shape="rect" id="node309" href="rce.core.network.EndpointAvatar-class.html#perspective_namespaceDied" title="Notify that a remote namespace died." alt="" coords="40,223,371,241"/>
+<area shape="rect" id="node309" href="rce.core.network.EndpointAvatar-class.html#perspective_protocolDied" title="Notify that a remote protocol died." alt="" coords="40,241,371,260"/>
+<area shape="rect" id="node309" href="rce.core.network.EndpointAvatar-class.html#perspective_setupNamespace" title="Register a namespace with the Master process." alt="" coords="40,260,371,279"/>
+<area shape="rect" id="node2" href="rce.core.network.EndpointAvatar-class.html" title="Avatar for internal PB connection from an Endpoint." alt="" coords="28,134,383,285"/>
+<area shape="rect" id="node3" href="rce.core.environment.EnvironmentEndpointAvatar-class.html" title="Avatar for internal PB connection from an Environment Endpoint." alt="" coords="69,305,341,343"/>
 </map>
   <img src="uml_class_diagram_for_rce_core_20.gif" alt='' usemap="#uml_class_diagram_for_rce_core_20" ismap="ismap" class="graph-without-title" />
 </center>
@@ -186,6 +187,24 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.network.EndpointAvatar-class.html#perspective_setupNamespace" class="summary-sig-name">perspective_setupNamespace</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remoteNamespace</span>)</span><br />
+      Register a namespace with the Master process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.network-pysrc.html#EndpointAvatar.perspective_setupNamespace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.spread.pb.Avatar</code></b>:
@@ -285,7 +304,7 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>remoteInterface</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Interface in the Robot process.</li>
+        <li><strong class="pname"><code>remoteInterface</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Interface in the slave process.</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -309,7 +328,7 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>remoteNamespace</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Namespace in the Robot process.</li>
+        <li><strong class="pname"><code>remoteNamespace</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Namespace in the slave process.</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -333,7 +352,31 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>remoteProtocol</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Protocol in the Robot process.</li>
+        <li><strong class="pname"><code>remoteProtocol</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Protocol in the slave process.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="perspective_setupNamespace"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">perspective_setupNamespace</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remoteNamespace</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.network-pysrc.html#EndpointAvatar.perspective_setupNamespace">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register a namespace with the Master process.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remoteNamespace</code></strong> (twisted.spread.pb.RemoteReference) - Reference to the Namesapce in the slave process.</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -365,7 +408,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue May 14 15:54:03 2013
+    Generated by Epydoc 3.0.1 on Fri May 24 11:31:19 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
