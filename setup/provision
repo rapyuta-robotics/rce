@@ -186,7 +186,7 @@ def _get_host_ubuntu_release():
 def _get_container_rootfs():
     """ Ask for path to the container root directory.
     """
-    path = raw_input('Enter the root directory to store the RoboEarth '
+    path = raw_input('Enter the root directory to store the Rapyuta '
                      'Container Filesystem [{0}]: '.format(_CONTAINER_DEFAULT))
     path = path.strip()
 
@@ -343,7 +343,7 @@ def provision_container(config):
         'echo "source /opt/rce/setup.sh" >> /etc/profile'
     ]
     if config.container_ros_release > 'fuerte':
-        cmds.append('source .bashrc && rosdep init && rosdep update')
+        cmds.append('cd /root && source .bashrc && rosdep init && rosdep update')
     if config.dev_mode:
         cmds.append('echo "root:admin" | chpasswd')
     else:
