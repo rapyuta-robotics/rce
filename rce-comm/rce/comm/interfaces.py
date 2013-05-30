@@ -37,7 +37,7 @@ from zope.interface import Interface
 class IMasterRealm(Interface):
     """ Interface which the Master realm has to implement.
     """
-    def requestURL(userID): #@NoSelf
+    def requestURL(userID):  # @NoSelf
         """ Callback for Robot resource to retrieve the location of the Robot
             process to which a WebSocket connection should be established.
 
@@ -56,7 +56,7 @@ class IMasterRealm(Interface):
 class IRobotRealm(Interface):
     """ Interface which the Robot realm has to implement.
     """
-    def login(userID, robotID, password): #@NoSelf
+    def login(userID, robotID, password):  # @NoSelf
         """ Callback for Robot connection to login and authenticate.
 
             @param userID:      User ID under which the robot is logging in.
@@ -76,7 +76,7 @@ class IRobotRealm(Interface):
             @rtype:             twisted.internet.defer.Deferred
         """
 
-    def registerWebsocketProtocol(connection, protocol): #@NoSelf
+    def registerWebsocketProtocol(connection, protocol):  # @NoSelf
         """ Register the client protocol with a Connection object.
 
             @param connection:  Connection where the protocol should be
@@ -87,7 +87,7 @@ class IRobotRealm(Interface):
             @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
 
-    def unregisterWebsocketProtocol(connection, protocol): #@NoSelf
+    def unregisterWebsocketProtocol(connection, protocol):  # @NoSelf
         """ Unregister the client protocol from a Connection object.
 
             @param connection:  Connection where the protocol should be
@@ -102,7 +102,7 @@ class IRobotRealm(Interface):
 class IServersideProtocol(Interface):
     """ Interface which the Protocol has to implement on the server side.
     """
-    def sendDataMessage(iTag, clsName, msgID, msg): #@NoSelf
+    def sendDataMessage(iTag, clsName, msgID, msg):  # @NoSelf
         """ Send a data message to the robot client.
 
             @param iTag:        Tag which is used to identify the interface to
@@ -126,14 +126,14 @@ class IServersideProtocol(Interface):
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
 
-    def sendErrorMessage(msg): #@NoSelf
+    def sendErrorMessage(msg):  # @NoSelf
         """ Send an error message to the robot client.
 
             @param msg:         Error message which should be sent.
             @type  msg:         str
         """
 
-    def dropConnection(): #@NoSelf
+    def dropConnection():  # @NoSelf
         """ Request that the protocol drops the connection to the client.
         """
 
@@ -141,15 +141,30 @@ class IServersideProtocol(Interface):
 class IRobot(Interface):
     """ Interface which the Robot Avatar has to implement.
     """
-    def createContainer(tag): #@NoSelf
+    def createContainer(tag, group, size, cpu, memory, bandwidth):  # @NoSelf
         """ Create a new Container object.
 
             @param tag:         Tag which is used to identify the container
                                 in subsequent requests.
             @type  tag:         str
+            
+            @param group:       Group of containers it belongs to , for native networking
+            @type  group:       str
+            
+            @param size:        The container instance size
+            @type  size:        int
+            
+            @param cpu:         CPU Allocation
+            @type  cpu:         int
+            
+            @param memory:      Memory Allocation
+            @type  memory:      int
+            
+            @param bandwidth:   Bandwidth allocation
+            @type  bandwidth:   int
         """
 
-    def destroyContainer(tag): #@NoSelf
+    def destroyContainer(tag):  # @NoSelf
         """ Destroy a Container object.
 
             @param tag:         Tag which is used to identify the container
@@ -157,7 +172,7 @@ class IRobot(Interface):
             @type  tag:         str
         """
 
-    def addNode(cTag, nTag, pkg, exe, args='', name='', namespace=''): #@NoSelf
+    def addNode(cTag, nTag, pkg, exe, args='', name='', namespace=''):  # @NoSelf
         """ Add a node to a container / ROS environment.
 
             @param cTag:        Tag which is used to identify the container /
@@ -192,7 +207,7 @@ class IRobot(Interface):
             @type  namespace:   str
         """
 
-    def removeNode(cTag, nTag): #@NoSelf
+    def removeNode(cTag, nTag):  # @NoSelf
         """ Remove a node from a container / ROS environment.
 
             @param cTag:        Tag which is used to identify the container /
@@ -205,7 +220,7 @@ class IRobot(Interface):
             @type  nTag:        str
         """
 
-    def addInterface(eTag, iTag, iType, clsName, addr=''): #@NoSelf
+    def addInterface(eTag, iTag, iType, clsName, addr=''):  # @NoSelf
         """ Add an interface to an endpoint, i.e. a ROS environment or a
             Robot object.
 
@@ -238,7 +253,7 @@ class IRobot(Interface):
             @type  addr:        str
         """
 
-    def removeInterface(eTag, iTag): #@NoSelf
+    def removeInterface(eTag, iTag):  # @NoSelf
         """ Remove an interface from an endpoint, i.e. a ROS environment or a
             Robot object.
 
@@ -252,7 +267,7 @@ class IRobot(Interface):
             @type  iTag:        str
         """
 
-    def addParameter(cTag, name, value): #@NoSelf
+    def addParameter(cTag, name, value):  # @NoSelf
         """ Add a parameter to a container / ROS environment.
 
             @param cTag:        Tag which is used to identify the container /
@@ -271,7 +286,7 @@ class IRobot(Interface):
             @type  value:       str, int, float, bool, list
         """
 
-    def removeParameter(cTag, name): #@NoSelf
+    def removeParameter(cTag, name):  # @NoSelf
         """ Remove a parameter from a container / ROS environment.
 
             @param cTag:        Tag which is used to identify the container /
@@ -283,7 +298,7 @@ class IRobot(Interface):
             @type  name:        str
         """
 
-    def addConnection(tagA, tagB): #@NoSelf
+    def addConnection(tagA, tagB):  # @NoSelf
         """ Create a connection between two interfaces.
 
             @param tagX:        Tag which is used to identify the interface
@@ -295,7 +310,7 @@ class IRobot(Interface):
             @type  tagX:        str
         """
 
-    def removeConnection(tagA, tagB): #@NoSelf
+    def removeConnection(tagA, tagB):  # @NoSelf
         """ Destroy a connection between two interfaces.
 
             @param tagX:        Tag which is used to identify the interface
@@ -312,7 +327,7 @@ class IMessageReceiver(Interface):
     """ Interface which declares the necessary callback for the communication
         client/server.
     """
-    def processReceivedMessage(iTag, clsName, msgID, msg): #@NoSelf
+    def processReceivedMessage(iTag, clsName, msgID, msg):  # @NoSelf
         """ Process a data message which has been received from the other side.
 
             @param iTag:        Tag which is used to identify the interface to

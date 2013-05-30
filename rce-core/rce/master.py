@@ -192,17 +192,32 @@ class RoboEarthCloudEngine(object):
 
         return location.getWebsocketAddress()
 
-    def createContainer(self, userID):
+    def createContainer(self, userID, group, size, cpu, memory, bandwidth):
         """ Callback for User instance to create a new Container object in a
             container process.
 
             @param userID:        UserID of the user who created the container.
             @type  userID:        str
+            
+            @param group:         Group of containers it belongs to , for native networking
+            @type  group:         str
+            
+            @param size:          The container instance size
+            @type  size:          int
+            
+            @param cpu:           CPU Allocation
+            @type  cpu:           int
+            
+            @param memory:        Memory Allocation
+            @type  memory:        int
+            
+            @param bandwidth:     Bandwidth allocation
+            @type  bandwidth:     int
 
-            @return:            New Namespace and Container instance.
-            @rtype:             (rce.core.environment.Environment,
+            @return:              New Namespace and Container instance.
+            @rtype:              (rce.core.environment.Environment,
                                  rce.core.container.Container)
-                                (subclasses of rce.core.base.Proxy)
+                                 (subclasses of rce.core.base.Proxy)
         """
         while 1:
             uid = uuid4().hex
@@ -211,7 +226,8 @@ class RoboEarthCloudEngine(object):
                 break
 
         try:
-            container = self._balancer.createContainer(uid, userID)
+            container = self._balancer.createContainer(uid, userID, group,
+                                                       size, cpu, memory, bandwidth)
         except ContainerProcessError:
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')

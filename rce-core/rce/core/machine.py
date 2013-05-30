@@ -163,7 +163,7 @@ class LoadBalancer(object):
         else:
             raise ContainerProcessError('There is no free container process.')
 
-    def createContainer(self, uid, userID):
+    def createContainer(self, uid, userID, group, size, cpu, memory, bandwidth):
         """ Select an appropriate machine and create a container.
 
             @param uid:         Unique ID which is used to identify the
@@ -173,11 +173,28 @@ class LoadBalancer(object):
 
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
+            
+            @param group:       Group of containers it belongs to , for native networking
+            @type  group:       str
+            
+            @param size:        The container instance size
+            @type  size:        int
+            
+            @param cpu:         CPU Allocation
+            @type  cpu:         int
+            
+            @param memory:      Memory Allocation
+            @type  memory:      int
+            
+            @param bandwidth:   Bandwidth allocation
+            @type  bandwidth:   int
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
-        return self._getNextMachine(userID).createContainer(uid, userID)
+        # TODO :get next machine has to get some attributes for smarter load balancing and distribution
+        return self._getNextMachine(userID).createContainer(uid, userID,
+                                     group, size, cpu, memory, bandwidth)
 
     def cleanUp(self):
         """ Method should be called to destroy all machines.
@@ -246,6 +263,21 @@ class Machine(object):
 
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
+            
+            @param group:       Group of containers it belongs to , for native networking
+            @type  group:       str
+            
+            @param size:        The container instance size
+            @type  size:        int
+            
+            @param cpu:         CPU Allocation
+            @type  cpu:         int
+            
+            @param memory:      Memory Allocation
+            @type  memory:      int
+            
+            @param bandwidth:   Bandwidth allocation
+            @type  bandwidth:   int
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
@@ -255,7 +287,9 @@ class Machine(object):
                                     'capacity.')
 
         container = Container(self, userID)
-        self._ref.callRemote('createContainer', uid).chainDeferred(container)
+        # TODO : Proxy object could store more data on the container attributes
+        self._ref.callRemote('createContainer', uid, group, size, cpu,
+                             memory, bandwidth).chainDeferred(container)
         return container
 
     def registerContainer(self, container):

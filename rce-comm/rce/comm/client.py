@@ -347,15 +347,35 @@ class RCE(object):
         self._sendMessage(types.DATA_MESSAGE, {'iTag':dest, 'type':msgType,
                                                'msgID':msgID, 'msg':msg})
 
-    def createContainer(self, cTag):
+    def createContainer(self, cTag, cGroup='', size=0, cpu=0, memory=0, bandwidth=0):
         """ Create a container.
 
             @param cTag:        Unique tag which will be used to identify the
                                 container to create.
             @type  cTag:        str
+            
+            @param cGroup:      The container group that needs to be networked
+            @type  cGroup:      str
+            
+            @param size:        The container instance size
+            @type  size:        int
+            
+            @param cpu:         CPU Allocation
+            @type  cpu:         int
+            
+            @param memory:      Memory Allocation
+            @type  memory:      int
+            
+            @param bandwidth:   Bandwidth allocation
+            @type  bandwidth:   int
         """
         print("Request creation of container '{0}'.".format(cTag))
-        self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag})
+        self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag,
+                                                   'containerGroup':cGroup,
+                                                   'containerSize':size,
+                                                   'containerCpu':cpu,
+                                                   'containerMem':memory,
+                                                   'containerBW':bandwidth})
 
     def destroyContainer(self, cTag):
         """ Destroy a container.

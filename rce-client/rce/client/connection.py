@@ -195,11 +195,11 @@ class _Connection(object):
 
     sendMessage.__doc__ = RCE.sendMessage.__doc__ #@UndefinedVariable
 
-    def createContainer(self, cTag):
+    def createContainer(self, cTag, cGroup='', size=0, cpu=0, memory=0, bandwidth=0):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
 
-        self._rce.createContainer(cTag)
+        self._rce.createContainer(cTag, cGroup, size, cpu, memory, bandwidth)
 
     createContainer.__doc__ = RCE.createContainer.__doc__ #@UndefinedVariable
 
