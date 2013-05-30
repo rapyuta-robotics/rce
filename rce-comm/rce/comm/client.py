@@ -347,15 +347,15 @@ class RCE(object):
         self._sendMessage(types.DATA_MESSAGE, {'iTag':dest, 'type':msgType,
                                                'msgID':msgID, 'msg':msg})
 
-    def createContainer(self, cTag, cGroup='', size=0, cpu=0, memory=0, bandwidth=0):
+    def createContainer(self, cTag, group='', size=0, cpu=0, memory=0, bandwidth=0):
         """ Create a container.
 
             @param cTag:        Unique tag which will be used to identify the
                                 container to create.
             @type  cTag:        str
             
-            @param cGroup:      The container group that needs to be networked
-            @type  cGroup:      str
+            @param group:      The container group that needs to be networked
+            @type  group:      str
             
             @param size:        The container instance size
             @type  size:        int
