@@ -371,7 +371,7 @@ class RCE(object):
         """
         print("Request creation of container '{0}'.".format(cTag))
         self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag,
-                                                   'containerGroup':cGroup,
+                                                   'containerGroup':group,
                                                    'containerSize':size,
                                                    'containerCpu':cpu,
                                                    'containerMem':memory,
