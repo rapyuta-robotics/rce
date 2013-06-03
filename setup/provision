@@ -60,7 +60,7 @@ _ROS_KEY = 'curl http://packages.ros.org/ros.key | sudo apt-key add -'
 _INSTALL = 'sudo apt-get update && sudo apt-get -y install {0}'
 _CONTAINER = ('sudo bash container.bash --baserel={base} --path={path} '
               '--rosrel={ros}')
-_CONTAINER_CLEAN = 'sudo bash setup/container.bash --baserel={base} --clean'
+_CONTAINER_CLEAN = 'sudo bash container.bash --baserel={base} --clean'
 _CLEAN = 'sudo rm -rf {0}'
 
 
