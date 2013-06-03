@@ -50,7 +50,11 @@ except ImportError:
     exit(1)
 
 # ROS specific imports
-import sensor_msgs.msg
+try:
+    import sensor_msgs.msg
+except ImportError:
+    print " Could not find the required ROS 'sensor_msgs' Library, make sure it is installed and the ROS Environment is setup."
+    exit(1)
 
 # zope specific imports
 from zope.interface import implements

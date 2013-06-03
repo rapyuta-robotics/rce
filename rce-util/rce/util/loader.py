@@ -69,9 +69,12 @@ import os
 import sys
 
 # ROS specific imports
-import rospkg
-import roslib.packages
-
+try:
+    import rospkg
+    import roslib.packages
+except ImportError:
+    print " Could not find the ROS Python Libraries , make sure they are installed and the ROS Environment is setup."
+    exit(1)
 
 class ResourceNotFound(Exception):
     """ Exception is raised by the Loader when a resource can not be found.

@@ -48,9 +48,13 @@ except ImportError:
         return isinstance(obj, StringIO)
 
 # ROS specific imports
-from genmsg.names import package_resource_name
-from genpy.message import Message
-from rospy.rostime import Duration, Time
+try:
+    from genmsg.names import package_resource_name
+    from genpy.message import Message
+    from rospy.rostime import Duration, Time
+except ImportError:
+    print " Could not find the ROS Python Libraries , make sure they are installed and the ROS Environment is setup."
+    exit(1)
 
 # zope specific imports
 from zope.interface import implements
