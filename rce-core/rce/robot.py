@@ -308,7 +308,8 @@ class RobotView(object):
         """
         self._connection.reportError(failure.getErrorMessage())
 
-    def createContainer(self, tag, group):
+    def createContainer(self, tag, group='' , size=0, cpu=0,
+                        memory=0, bandwidth=0):
         try:
             d = self._view.callRemote('createContainer', tag, group, size,
                                       cpu, memory, bandwidth)
