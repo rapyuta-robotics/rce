@@ -253,7 +253,7 @@ class Machine(object):
         """
         return self._ip
 
-    def createContainer(self, uid, userID):
+    def createContainer(self, uid, userID, group, size, cpu, memory, bandwidth):
         """ Create a container.
 
             @param uid:         Unique ID which is used to identify the
