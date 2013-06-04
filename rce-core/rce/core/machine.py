@@ -174,8 +174,8 @@ class LoadBalancer(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
             
-            @param group:       Group of containers it belongs to , for native networking
-            @type  group:       str
+            @param group:       Group of  with group name and ip for native networking
+            @type  group:       dict
             
             @param size:        The container instance size
             @type  size:        int
@@ -231,6 +231,7 @@ class Machine(object):
 
         self._containers = set()
         self._users = Counter()
+        self._network_groups = Counter()
 
     @property
     def active(self):
@@ -264,8 +265,8 @@ class Machine(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
             
-            @param group:       Group of containers it belongs to , for native networking
-            @type  group:       str
+            @param group:       Group of  with group name and ip for native networking
+            @type  group:       dict
             
             @param size:        The container instance size
             @type  size:        int
@@ -285,8 +286,13 @@ class Machine(object):
         if len(self._containers) >= self._maxNr:
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
-
-        container = Container(self, userID)
+        if group:
+            container = Container(self, userID,
+                                  group.get('unique_name'),
+                                  group.get('ip'),
+                                  size, cpu, memory, bandwidth)
+        else:
+            container = Container(self, userID, size, cpu, memory, bandwidth)
         # TODO : Proxy object could store more data on the container attributes
         self._ref.callRemote('createContainer', uid, group, size, cpu,
                              memory, bandwidth).chainDeferred(container)
@@ -296,11 +302,15 @@ class Machine(object):
         assert container not in self._containers
         self._containers.add(container)
         self._users[container._userID] += 1
+        if container._group_name:
+            self._network_groups[container._group_name] += 1
 
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
         self._users[container._userID] -= 1
+        if container._group_name:
+            self._network_groups[container._group_name] -= 1
 
     def listContainers(self):
         return self._containers

@@ -56,6 +56,8 @@ lxc.network.name = eth0
 lxc.network.link = lxcbr0
 lxc.network.ipv4 = {ip}
 
+{network_group}
+
 lxc.cgroup.devices.deny = a
 # /dev/null and zero
 lxc.cgroup.devices.allow = c 1:3 rwm
@@ -90,6 +92,27 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 #lxc.cap.drop = sys_time
 """
 
+_NETWORK_GROUP = """
+lxc.network.type=veth
+lxc.network.script.up={ovsup}
+lxc.network.script.down={ovsdown}
+lxc.network.ipv4= {group_ip}
+lxc.network.flags=down
+"""
+
+_GROUP_NETWORK_UP = """
+#!/bin/bash
+
+ifconfig \$5 0.0.0.0 up
+ovs-vsctl add-port br-{group} \$5
+"""
+
+_GROUP_NETWORK_DOWN = """
+#!/bin/bash
+
+ifconfig \$5 0.0.0.0 down
+ovs-vsctl del-port br-{group} \$5
+"""
 
 _FSTAB_BASE = """
 proc    {proc}    proc    nodev,noexec,nosuid    0 0
@@ -109,7 +132,7 @@ class ContainerError(Exception):
 class Container(object):
     """ Class representing a single container.
     """
-    def __init__(self, reactor, rootfs, conf, hostname, ip):
+    def __init__(self, reactor, rootfs, conf, hostname, ip, group):
         """ Initialize the Container.
 
             @param reactor:     Reference to the twisted::reactor
@@ -129,6 +152,9 @@ class Container(object):
             @param ip:          IP address which the container should use.
                                 Use '0.0.0.0' for DHCP.
             @type  ip:          str
+            
+            @param group:       Properties of the group with ip and group name
+            @type  group:       dict
         """
         self._reactor = reactor
         self._rootfs = rootfs
@@ -136,6 +162,27 @@ class Container(object):
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
         self._ip = ip
+        if group:
+            self._group_name = group['unique_name']
+            self._group_ip = group['ip']
+            self._ovsup = pjoin(conf, 'ovsup')
+            self._ovsdown = pjoin(conf, 'ovsup')
+
+            self._network_group = _NETWORK_GROUP.format(ovsup=self._ovsup,
+                                 ovsdown=self._ovsdown, group_ip=self._group_ip)
+
+
+            if os.path.exists(ovsup):
+                raise ValueError('There is already a ovs upstart file in the container '
+                                 "configuration directory '{0}'.".format(conf))
+
+            if os.path.exists(ovsup):
+                raise ValueError('There is already a ovs down file in the container '
+                                 "configuration directory '{0}'.".format(conf))
+
+        else:
+            self._network_group = '#No network group'
+            self._group_name = None
 
         if not os.path.isabs(conf):
             raise ValueError('Container configuration directory is not an '
@@ -178,7 +225,8 @@ class Container(object):
         """
         with open(self._conf, 'w') as f:
             f.write(_CONFIG.format(hostname=self._hostname, fs=self._rootfs,
-                                   fstab=self._fstab, ip=self._ip))
+                                   fstab=self._fstab, ip=self._ip,
+                                   network_group=self._network_group))
 
         with open(self._fstab, 'w') as f:
             f.write(_FSTAB_BASE.format(
@@ -186,6 +234,12 @@ class Container(object):
                 devpts=pjoin(self._rootfs, 'dev/pts'),
                 sysfs=pjoin(self._rootfs, 'sys')))
             f.writelines(self._fstabExt)
+
+        if self._group_name:
+            with open(self._ovsup, 'w') as f:
+                f.write(_GROUP_NETWORK_UP.format(group=self._group_name))
+            with open(self._ovsdown, 'w') as f:
+                f.write(_GROUP_NETWORK_DOWN.format(group=self._group_name))
 
     def start(self, name):
         """ Start the container.

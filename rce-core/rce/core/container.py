@@ -41,7 +41,8 @@ from rce.core.base import Proxy
 class Container(Proxy):
     """ Representation of an LXC container.
     """
-    def __init__(self, machine, userID):
+    def __init__(self, machine, userID, group_name=None, group_ip=None,
+                 size=0, cpu=0, memory=0, bandwidth=0):
         """ Initialize the Container.
 
             @param machine:     Machine in which the container was created.
@@ -49,10 +50,25 @@ class Container(Proxy):
 
             @param userID:      ID of the user who created the container.
             @type  userID:      str
+            
+            @param group_name:   The name of the special networking group it belongs to
+            @type  group_name:   str
+            
+            @param group_ip:   The IP in the special networking group it belongs to
+            @type  group_ip:   str
+            
         """
         super(Container, self).__init__()
         self._userID = userID
         self._machine = machine
+        self._group_name = group_name
+        self._group_ip = group_ip
+        self._size = size
+        self._cpu = cpu
+        self._memory = memory
+        self._bandwidth = bandwidth
+
+        # Register machine can then use these details for decisions, TODO
         machine.registerContainer(self)
 
         self._pending = set()

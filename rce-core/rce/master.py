@@ -33,6 +33,8 @@
 # Python specific imports
 import sys
 from uuid import uuid4
+from random import randint
+from collections import defaultdict
 
 # zope specific imports
 from zope.interface import implements
@@ -112,6 +114,7 @@ class RoboEarthCloudEngine(object):
 
         self._users = {}
         self._pendingContainer = {}
+        self._network_groups = defaultdict(set)
 
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns Avatar for slave processes of the cloud engine.
@@ -226,7 +229,22 @@ class RoboEarthCloudEngine(object):
                 break
 
         try:
-            container = self._balancer.createContainer(uid, userID, group,
+            if group:
+                groupdict = {'unique_name':group}
+                network_group = self._network_groups[userID + group]
+                if len(network_group) > 254:
+                    raise InternalError('Max limit on subnet reached')
+                while 1 :
+                    candidate = '192.168.1' + str(randint(2, 254))
+                    if candidate not in network_group:
+                        network_group.add(candidate)
+                        groupdict['ip'] = candidate
+                        break
+            else:
+                groupdict = ''
+
+
+            container = self._balancer.createContainer(uid, userID, groupdict,
                                                        size, cpu, memory, bandwidth)
         except ContainerProcessError:
             # TODO: What should we do here?

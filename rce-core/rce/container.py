@@ -159,8 +159,8 @@ class RCEContainer(Referenceable):
                                 process to login to the Master.
             @type  uid:         str
             
-            @param group:       Group of containers it belongs to , for native networking
-            @type  group:       str
+            @param group:       Group of  with group name and ip for native networking
+            @type  group:       dict
             
             @param size:        The container instance size
             @type  size:        int
@@ -183,11 +183,14 @@ class RCEContainer(Referenceable):
         self._terminating = None
 
         # Additional container parameters to use
-        self._group = group
+
         self._size = size
         self._cpu_limit = cpu
         self._memory_limit = memory
         self._bandwidth_limit = bandwidth
+
+        # Group networking fields
+        self._group = group
 
         # Create the directories for the container
         self._confDir = pjoin(client.confDir, self._name)
@@ -226,13 +229,15 @@ class RCEContainer(Referenceable):
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
+
         # Construct password
         passwd = encodeAES(cipher(self._client.masterPassword),
                            salter(uid, self._client.infraPassword))
 
         # Create the container
         self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name, ip)
+                                    self._confDir, self._name, ip,
+                                    self._group)
 
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -596,8 +601,8 @@ class ContainerClient(Referenceable):
                                 process.
             @type  uid:         str
             
-            @param group:       Group of containers it belongs to , for native networking
-            @type  group:       str
+            @param group:       Group of  with group name and ip for native networking
+            @type  group:       dict
             
             @param size:        The container instance size
             @type  size:        int
