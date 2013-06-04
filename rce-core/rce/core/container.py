@@ -51,11 +51,23 @@ class Container(Proxy):
             @param userID:      ID of the user who created the container.
             @type  userID:      str
             
-            @param group_name:   The name of the special networking group it belongs to
-            @type  group_name:   str
+            @param group_name:  The name of the special networking group it belongs to
+            @type  group_name:  str
             
-            @param group_ip:   The IP in the special networking group it belongs to
-            @type  group_ip:   str
+            @param group_ip:    The IP in the special networking group it belongs to
+            @type  group_ip:    str
+            
+            @param size:        The container instance size
+            @type  size:        int
+            
+            @param cpu:         CPU Allocation
+            @type  cpu:         int
+            
+            @param memory:      Memory Allocation
+            @type  memory:      int
+            
+            @param bandwidth:   Bandwidth allocation
+            @type  bandwidth:   int
             
         """
         super(Container, self).__init__()
