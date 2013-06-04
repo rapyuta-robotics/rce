@@ -230,18 +230,19 @@ class RoboEarthCloudEngine(object):
 
         try:
             if group:
-                groupdict = {'unique_name':group}
-                network_group = self._network_groups[userID + group]
+                groupdict = {'unique_name':userID + group}
+                # Todo figure a better unique name
+                network_group = self._network_groups[(userID, group)]
                 if len(network_group) > 254:
                     raise InternalError('Max limit on subnet reached')
                 while 1 :
-                    candidate = '192.168.1' + str(randint(2, 254))
+                    candidate = '192.168.1.' + str(randint(2, 254))
                     if candidate not in network_group:
                         network_group.add(candidate)
                         groupdict['ip'] = candidate
                         break
             else:
-                groupdict = ''
+                groupdict = {}
 
 
             container = self._balancer.createContainer(uid, userID, groupdict,
