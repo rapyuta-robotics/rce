@@ -72,10 +72,12 @@ _BASE_PREP = ('curl python-setuptools python-dev')
 
 # Packages which are installed in the host filesystem
 _HOST_PKGS = ('lxc debootstrap python-openssl python-imaging '
-              'ros-{ros}-ros-comm ros-{ros}-common-msgs')
+              'ros-{ros}-ros-comm ros-{ros}-common-msgs linux-headers-virtual '
+               'openvswitch-datapath-source openvswitch-datapath-dkms '
+               'openvswitch-common openvswitch-switch openvswitch-brcompat')
 
 # Packages which are installed in the container filesystem
-_CONTAINER_PKGS = ('git-core ros-{ros}-ros-comm ros-{ros}-common-msgs')
+_CONTAINER_PKGS = ('git-core ros-{ros}-ros-comm ros-{ros}-common-msgs ')
 
 # Mapping of supported ROS releases and supported Ubuntu releases
 _SUPPORT_VERSIONS = {'precise' : ['fuerte', 'groovy', 'hydro'],
@@ -317,7 +319,11 @@ def provision_container(config):
     cmds = (_INSTALL.format(_BASE_PREP),
             _ROS_SRC.format(base=_get_host_ubuntu_release()),
             _ROS_KEY,
-            _INSTALL.format(host_pkgs))
+            _INSTALL.format(host_pkgs),
+            # Temprory hack as OVS dkms does not function as promissed
+            'sudo apt-get -y install --reinstall '
+            'openvswitch-datapath-dkms || true',
+            'sudo /etc/init.d/openvswitch-switch start')
 
     for cmd in cmds:
         check_call(cmd, shell=True)
