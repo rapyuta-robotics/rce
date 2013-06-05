@@ -41,7 +41,7 @@ from rce.core.base import Proxy
 class Container(Proxy):
     """ Representation of an LXC container.
     """
-    def __init__(self, machine, userID, data):
+    def __init__(self, machine, userID, data={}):
         """ Initialize the Container.
 
             @param machine:     Machine in which the container was created.

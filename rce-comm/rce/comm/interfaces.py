@@ -141,7 +141,7 @@ class IServersideProtocol(Interface):
 class IRobot(Interface):
     """ Interface which the Robot Avatar has to implement.
     """
-    def createContainer(tag, data):  # @NoSelf
+    def createContainer(tag, data={}):  # @NoSelf
         """ Create a new Container object.
 
             @param tag:         Tag which is used to identify the container

@@ -49,7 +49,7 @@ class ControlView(Viewable):
     """ View implementing all control actions which a user can perform to
         interact with the cloud engine.
     """
-    def view_createContainer(self, user, tag, data):
+    def view_createContainer(self, user, tag, data={}):
         """ Create a new Container object.
 
             @param user:        User for which the container will be created.
