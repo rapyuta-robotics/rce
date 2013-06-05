@@ -33,7 +33,7 @@
 # Python specific imports
 from collections import Counter
 
-#twisted specific imports
+# twisted specific imports
 from twisted.spread.pb import Avatar
 
 # rce specific imports
@@ -163,7 +163,7 @@ class LoadBalancer(object):
         else:
             raise ContainerProcessError('There is no free container process.')
 
-    def createContainer(self, uid, userID, group, size, cpu, memory, bandwidth):
+    def createContainer(self, uid, userID, data):
         """ Select an appropriate machine and create a container.
 
             @param uid:         Unique ID which is used to identify the
@@ -174,27 +174,14 @@ class LoadBalancer(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
             
-            @param group:       Group of  with group name and ip for native networking
-            @type  group:       dict
-            
-            @param size:        The container instance size
-            @type  size:        int
-            
-            @param cpu:         CPU Allocation
-            @type  cpu:         int
-            
-            @param memory:      Memory Allocation
-            @type  memory:      int
-            
-            @param bandwidth:   Bandwidth allocation
-            @type  bandwidth:   int
+            @param data:        More data about the container
+            @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
         # TODO :get next machine has to get some attributes for smarter load balancing and distribution
-        return self._getNextMachine(userID).createContainer(uid, userID,
-                                     group, size, cpu, memory, bandwidth)
+        return self._getNextMachine(userID).createContainer(uid, userID, data)
 
     def cleanUp(self):
         """ Method should be called to destroy all machines.
@@ -254,7 +241,7 @@ class Machine(object):
         """
         return self._ip
 
-    def createContainer(self, uid, userID, group, size, cpu, memory, bandwidth):
+    def createContainer(self, uid, userID, data):
         """ Create a container.
 
             @param uid:         Unique ID which is used to identify the
@@ -265,20 +252,8 @@ class Machine(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
             
-            @param group:       Group of  with group name and ip for native networking
-            @type  group:       dict
-            
-            @param size:        The container instance size
-            @type  size:        int
-            
-            @param cpu:         CPU Allocation
-            @type  cpu:         int
-            
-            @param memory:      Memory Allocation
-            @type  memory:      int
-            
-            @param bandwidth:   Bandwidth allocation
-            @type  bandwidth:   int
+            @param data:        Extra Information about the container
+            @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
@@ -286,16 +261,9 @@ class Machine(object):
         if len(self._containers) >= self._maxNr:
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
-        if group:
-            container = Container(self, userID,
-                                  group.get('unique_name'),
-                                  group.get('ip'),
-                                  size, cpu, memory, bandwidth)
-        else:
-            container = Container(self, userID, size, cpu, memory, bandwidth)
-        # TODO : Proxy object could store more data on the container attributes
-        self._ref.callRemote('createContainer', uid, group, size, cpu,
-                             memory, bandwidth).chainDeferred(container)
+        container = Container(self, userID, data)
+
+        self._ref.callRemote('createContainer', uid, data).chainDeferred(container)
         return container
 
     def registerContainer(self, container):

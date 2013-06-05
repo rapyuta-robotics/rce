@@ -49,8 +49,7 @@ class ControlView(Viewable):
     """ View implementing all control actions which a user can perform to
         interact with the cloud engine.
     """
-    def view_createContainer(self, user, tag, group='', size=0, cpu=0,
-                             memory=0, bandwidth=0):
+    def view_createContainer(self, user, tag, data):
         """ Create a new Container object.
 
             @param user:        User for which the container will be created.
@@ -60,20 +59,8 @@ class ControlView(Viewable):
                                 in subsequent requests.
             @type  tag:         str
             
-            @param group:       Group of containers it belongs to , for native networking
-            @type  group:       str
-            
-            @param size:        The container instance size
-            @type  size:        int
-            
-            @param cpu:         CPU Allocation
-            @type  cpu:         int
-            
-            @param memory:      Memory Allocation
-            @type  memory:      int
-            
-            @param bandwidth:   Bandwidth allocation
-            @type  bandwidth:   int
+            @param data:        Extra data about the container
+            @param data:        dict
         """
         try:
             validateName(tag)
@@ -85,7 +72,7 @@ class ControlView(Viewable):
                                  'or robot.')
 
         namespace, remote_container = user.realm.createContainer(
-                                        user.userID, group, size, cpu, memory, bandwidth)
+                                        user.userID, data)
         container = Container(namespace, remote_container)
         user.containers[tag] = container
         container.notifyOnDeath(user.containerDied)

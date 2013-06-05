@@ -145,7 +145,7 @@ iface eth0 inet static
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
     """
-    def __init__(self, client, nr, uid, group , size, cpu, memory, bandwidth):
+    def __init__(self, client, nr, uid, data):
         """ Initialize the deployment container.
 
             @param client:      Container client which is responsible for
@@ -160,20 +160,8 @@ class RCEContainer(Referenceable):
                                 process to login to the Master.
             @type  uid:         str
             
-            @param group:       Group of  with group name and ip for native networking
-            @type  group:       dict
-            
-            @param size:        The container instance size
-            @type  size:        int
-            
-            @param cpu:         CPU Allocation
-            @type  cpu:         int
-            
-            @param memory:      Memory Allocation
-            @type  memory:      int
-            
-            @param bandwidth:   Bandwidth allocation
-            @type  bandwidth:   int
+            @param data:        Extra data about the container
+            @type  data:        dict
         """
         # Store the references
         self._client = client
@@ -185,13 +173,14 @@ class RCEContainer(Referenceable):
 
         # Additional container parameters to use
 
-        self._size = size
-        self._cpu_limit = cpu
-        self._memory_limit = memory
-        self._bandwidth_limit = bandwidth
+        self._size = data.get('size', 0)
+        self._cpu_limit = data.get('cpu', 0)
+        self._memory_limit = data.get('memory', 0)
+        self._bandwidth_limit = data.get('bandwidth', 0)
 
         # Group networking fields
-        self._group = group
+        self._group = data.get('group', '')
+        self._groupIp = data.get('groupIp', '')
 
         # Create the directories for the container
         self._confDir = pjoin(client.confDir, self._name)
@@ -595,7 +584,7 @@ class ContainerClient(Referenceable):
         """
         return self._networkConf
 
-    def remote_createContainer(self, uid, group, size, cpu, memory, bandwidth):
+    def remote_createContainer(self, uid, data):
         """ Create a new Container.
 
             @param uid:         Unique ID which the environment process inside
@@ -603,20 +592,8 @@ class ContainerClient(Referenceable):
                                 process.
             @type  uid:         str
             
-            @param group:       Group of  with group name and ip for native networking
-            @type  group:       dict
-            
-            @param size:        The container instance size
-            @type  size:        int
-            
-            @param cpu:         CPU Allocation
-            @type  cpu:         int
-            
-            @param memory:      Memory Allocation
-            @type  memory:      int
-            
-            @param bandwidth:   Bandwidth allocation
-            @type  bandwidth:   int
+            @param data:        Extra data about the container
+            @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.container.RCEContainer
@@ -626,7 +603,7 @@ class ContainerClient(Referenceable):
         except KeyError:
             raise MaxNumberExceeded('Can not manage any additional container.')
 
-        container = RCEContainer(self, nr, uid, group, size, cpu, memory, bandwidth)
+        container = RCEContainer(self, nr, uid, data)
         return container.start().addCallback(lambda _: container)
 
     def registerContainer(self, container):

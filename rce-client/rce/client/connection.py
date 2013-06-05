@@ -207,7 +207,7 @@ class _Connection(object):
         if groupIp :
             if not _IP_V4_REGEX.match(groupIp):
                 raise Exception('Invalid IPv4 address')
-        self._rce.createContainer(cTag, group, size, cpu, memory, bandwidth)
+        self._rce.createContainer(cTag, group, groupIp, size, cpu, memory, bandwidth)
 
     createContainer.__doc__ = RCE.createContainer.__doc__  # @UndefinedVariable
 

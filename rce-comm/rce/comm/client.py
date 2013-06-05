@@ -347,7 +347,7 @@ class RCE(object):
         self._sendMessage(types.DATA_MESSAGE, {'iTag':dest, 'type':msgType,
                                                'msgID':msgID, 'msg':msg})
 
-    def createContainer(self, cTag, group='', size=0, cpu=0, memory=0, bandwidth=0):
+    def createContainer(self, cTag, group='', groupIp='', size=0, cpu=0, memory=0, bandwidth=0):
         """ Create a container.
 
             @param cTag:        Unique tag which will be used to identify the
@@ -356,6 +356,9 @@ class RCE(object):
             
             @param group:       The container group that needs to be networked
             @type  group:       str
+            
+            @param groupIp:     The container group static ipv4 address
+            @type  groupIp:     str
             
             @param size:        The container instance size
             @type  size:        int
@@ -370,12 +373,22 @@ class RCE(object):
             @type  bandwidth:   int
         """
         print("Request creation of container '{0}'.".format(cTag))
+        data = {}
+        if group:
+            data['group'] = group
+        if groupIp:
+            data['groupIp'] = groupIp
+        if size:
+            data['size'] = size
+        if cpu:
+            data['cpu'] = cpu
+        if memory:
+            data['memory'] = memory
+        if bandwidth:
+            data['bandwidth'] = bandwidth
+
         self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag,
-                                                   'containerGroup':group,
-                                                   'containerSize':size,
-                                                   'containerCpu':cpu,
-                                                   'containerMem':memory,
-                                                   'containerBW':bandwidth})
+                                                   'containerData':data})
 
     def destroyContainer(self, cTag):
         """ Destroy a container.

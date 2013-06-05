@@ -189,12 +189,11 @@ class Connection(object):
 
     # Forwarding to View
 
-    def createContainer(self, tag, group='', size=0, cpu=0,
-                         memory=0, bandwidth=0):
+    def createContainer(self, tag, data={}):
         if not self._view:
             raise ForwardingError('Reference of the view is missing.')
 
-        self._view.createContainer(tag, group, size, cpu, memory, bandwidth)
+        self._view.createContainer(tag, data)
 
     createContainer.__doc__ = IRobot.get('createContainer').getDoc()
 

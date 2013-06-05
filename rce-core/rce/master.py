@@ -195,27 +195,15 @@ class RoboEarthCloudEngine(object):
 
         return location.getWebsocketAddress()
 
-    def createContainer(self, userID, group, size, cpu, memory, bandwidth):
+    def createContainer(self, userID, data):
         """ Callback for User instance to create a new Container object in a
             container process.
 
             @param userID:        UserID of the user who created the container.
             @type  userID:        str
             
-            @param group:         Group of containers it belongs to , for native networking
-            @type  group:         str
-            
-            @param size:          The container instance size
-            @type  size:          int
-            
-            @param cpu:           CPU Allocation
-            @type  cpu:           int
-            
-            @param memory:        Memory Allocation
-            @type  memory:        int
-            
-            @param bandwidth:     Bandwidth allocation
-            @type  bandwidth:     int
+            @param data:          Extra Data about the container
+            @param data:          dict
 
             @return:              New Namespace and Container instance.
             @rtype:              (rce.core.environment.Environment,
@@ -229,25 +217,25 @@ class RoboEarthCloudEngine(object):
                 break
 
         try:
-            if group:
-                unique_name = str(hash(' '.join((userId, group))))
-                groupdict = {'unique_name':unique_name}
-                # Todo figure a better unique name
-                network_group = self._network_groups[(userID, group)]
-                if len(network_group) > 254:
-                    raise InternalError('Max limit on subnet reached')
-                while 1 :
-                    candidate = '192.168.1.' + str(randint(2, 254))
-                    if candidate not in network_group:
-                        network_group.add(candidate)
-                        groupdict['ip'] = candidate
-                        break
-            else:
-                groupdict = {}
+            group_name = data.get('group')
+            groupIp = data.get('groupIp')
+            if group_name:
+                group_name = str(hash(' '.join((userId, group_name))))
+                data['group'] = group_name
+                network_group = self._network_groups[group_name]
+                if groupIp:
+                    network_group.add(groupIp)
+                else:
+                    if len(network_group) > 254:
+                        raise InternalError('Max limit on subnet reached')
+                    while 1 :
+                        candidate = '192.168.1.' + str(randint(2, 254))
+                        if candidate not in network_group:
+                            network_group.add(candidate)
+                            data['groupIp'] = candidate
+                            break
 
-
-            container = self._balancer.createContainer(uid, userID, groupdict,
-                                                       size, cpu, memory, bandwidth)
+            container = self._balancer.createContainer(uid, userID, data)
         except ContainerProcessError:
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')

@@ -96,7 +96,7 @@ _NETWORK_GROUP = """
 lxc.network.type=veth
 lxc.network.script.up={ovsup}
 lxc.network.script.down={ovsdown}
-lxc.network.ipv4= {group_ip}
+lxc.network.ipv4= {groupIp}
 lxc.network.flags=down
 """
 
@@ -132,7 +132,7 @@ class ContainerError(Exception):
 class Container(object):
     """ Class representing a single container.
     """
-    def __init__(self, reactor, rootfs, conf, hostname, ip, group):
+    def __init__(self, reactor, rootfs, conf, hostname, ip, data):
         """ Initialize the Container.
 
             @param reactor:     Reference to the twisted::reactor
@@ -153,8 +153,8 @@ class Container(object):
                                 Use '0.0.0.0' for DHCP.
             @type  ip:          str
             
-            @param group:       Properties of the group with ip and group name
-            @type  group:       dict
+            @param data:        Extra properties about the container
+            @type  data:        dict
         """
         self._reactor = reactor
         self._rootfs = rootfs
@@ -162,14 +162,14 @@ class Container(object):
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
         self._ip = ip
-        if group:
-            self._group_name = group['unique_name']
-            self._group_ip = group['ip']
+        self._group_name = data.get('group', None)
+        if self._group_name:
+            self._groupIp = data.get('groupIp')
             self._ovsup = pjoin(conf, 'ovsup')
             self._ovsdown = pjoin(conf, 'ovsup')
 
             self._network_group = _NETWORK_GROUP.format(ovsup=self._ovsup,
-                                 ovsdown=self._ovsdown, group_ip=self._group_ip)
+                                 ovsdown=self._ovsdown, groupIp=self._groupIp)
 
 
             if os.path.exists(ovsup):
@@ -182,7 +182,6 @@ class Container(object):
 
         else:
             self._network_group = '#No network group'
-            self._group_name = None
 
         if not os.path.isabs(conf):
             raise ValueError('Container configuration directory is not an '

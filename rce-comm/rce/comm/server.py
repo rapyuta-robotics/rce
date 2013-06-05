@@ -281,11 +281,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """
         try:
             self._avatar.createContainer(data['containerTag'],
-                                         data.get('containerGroup', ''),
-                                         data.get('containerSize', 0),
-                                         data.get('conatinerCpu', 0),
-                                         data.get('containerMem', 0),
-                                         data.get('containerBW', 0))
+                                         data.get('containerData', {}))
         except KeyError as e:
             raise InvalidRequest("Can not process 'CreateContainer' request. "
                                  'Missing key: {0}'.format(e))
