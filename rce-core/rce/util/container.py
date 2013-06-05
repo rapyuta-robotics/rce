@@ -95,7 +95,7 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 _NETWORK_GROUP = """
 lxc.network.type=veth
 lxc.network.script.up={ovsup}
-lxc.network.script.down={ovsdown}
+#lxc.network.script.down={ovsdown}
 lxc.network.ipv4= {groupIp}
 lxc.network.flags=down
 """
@@ -166,17 +166,17 @@ class Container(object):
         if self._group:
             self._groupIp = data.get('groupIp')
             self._ovsup = pjoin(conf, 'ovsup')
-            self._ovsdown = pjoin(conf, 'ovsup')
+            self._ovsdown = pjoin(conf, 'ovsdown')
 
             self._network_group = _NETWORK_GROUP.format(ovsup=self._ovsup,
                                  ovsdown=self._ovsdown, groupIp=self._groupIp)
 
 
-            if os.path.exists(ovsup):
+            if os.path.exists(self._ovsup):
                 raise ValueError('There is already a ovs upstart file in the container '
                                  "configuration directory '{0}'.".format(conf))
 
-            if os.path.exists(ovsup):
+            if os.path.exists(self._ovsdown):
                 raise ValueError('There is already a ovs down file in the container '
                                  "configuration directory '{0}'.".format(conf))
 
