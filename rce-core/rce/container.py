@@ -60,6 +60,9 @@ from rce.core.error import MaxNumberExceeded
 # from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
+class OVSError(Exception):
+    """Error class for OVS script faliures"""
+    
 
 _UPSTART_COMM = """
 # description
@@ -614,29 +617,51 @@ class ContainerClient(Referenceable):
         bridge = 'br-{group}'.format(groupname)
         if groupname not in self._ovs_bridges.iterkeys():
             self._ovs_bridges[groupname] = set()
+            deferred = Deferred()
             try:
                 dfrd = getProcessValue('/usr/bin/ovs-vsctl',
                                        ('add-br', bridge),
                                        env=os.environ, reactor=self._reactor)
-                dfrd.addCallback(lambda retval: retval)
-                return dfrd
-            except e:
-                raise
+                def cb(retVal):
+                    if retVal == 0:
+                        deferred.callback('Bridge successfully setup.')
+                    else:
+                        e = OVSError('Bridge could not be setup: '
+                                     'Received exit code {0} from '
+                                     'ovs-vsctl.'.format(retVal))
+                        deferred.errback(Failure(e))
+                dfrd.addCallback(cb)
+            except OSError:
+                e = OVSError('Bridge br-{group} could not be started'.format(groupname))
+                deferred.errback(Failure(e))
+            return deferred
+                
+        
 
     def remote_checkBridge(self, groupname):
         return groupname in self._ovs_bridges.iterkeys()
 
     def remote_destroyBridge(self, groupname):
         bridge = 'br-{group}'.format(groupname)
+        deferred = Deferred()
         try:
             del self._ovs_bridges[groupname]
             dfrd = getProcessValue('/usr/bin/ovs-vsctl',
                                        ('del-br', bridge),
                                        env=os.environ, reactor=self._reactor)
-            dfrd.addCallback(lambda retval: retval)
-            return dfrd
+            def cb(retVal):
+                if retVal == 0:
+                    deferred.callback('Bridge successfully destroyed.')
+                else:
+                    e = OVSError('Bridge could not be removed: '
+                                'Received exit code {0} from '
+                                'ovs-vsctl.'.format(retVal))
+                    deferred.errback(Failure(e))
+            dfrd.addCallback(cb)
         except KeyError:
-            raise InternalError('Bridge br-{group} is not present'.format(groupname))
+            e = OVSError('Bridge br-{group} is not present'.format(groupname))
+            deferred.errback(Failure(e))
+        return deferred
 
 
     def remote_createTunnel(self, groupname, targetIp):
@@ -651,10 +676,19 @@ class ContainerClient(Referenceable):
                                        ('add-port', bridge, port, '--', 'set',
                                          'interface', port, 'type=gre', remote),
                                        env=os.environ, reactor=self._reactor)
-                dfrd.addCallback(lambda retval: retval)
-                return dfrd
+                def cb(retVal):
+                    if retVal == 0:
+                        deferred.callback('Tunnel successfully setup.')
+                    else:
+                        e = OVSError('Bridge could not be created: '
+                                     'Received exit code {0} from '
+                                     'ovs-vsctl.'.format(retVal))
+                        deferred.errback(Failure(e))
+            dfrd.addCallback(cb)
         except KeyError:
-            raise InternalError('Bridge br-{group} is not present'.format(groupname))
+            e = OVSError('Bridge br-{group} is not present'.format(groupname))
+            deferred.errback(Failure(e))
+        return deferred
 
     def unregisterContainer(self, container):
         assert container in self._containers
