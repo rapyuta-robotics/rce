@@ -198,7 +198,8 @@ class _Connection(object):
     def createContainer(self, cTag, group='', size=0, cpu=0, memory=0, bandwidth=0):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
-
+        # ensure all whitespace around group is stripped
+        group = group.strip(' ')
         self._rce.createContainer(cTag, group, size, cpu, memory, bandwidth)
 
     createContainer.__doc__ = RCE.createContainer.__doc__ #@UndefinedVariable
