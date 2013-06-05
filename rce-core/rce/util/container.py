@@ -162,8 +162,8 @@ class Container(object):
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
         self._ip = ip
-        self._group_name = data.get('group', None)
-        if self._group_name:
+        self._group = data.get('group', None)
+        if self._group:
             self._groupIp = data.get('groupIp')
             self._ovsup = pjoin(conf, 'ovsup')
             self._ovsdown = pjoin(conf, 'ovsup')
@@ -234,11 +234,11 @@ class Container(object):
                 sysfs=pjoin(self._rootfs, 'sys')))
             f.writelines(self._fstabExt)
 
-        if self._group_name:
+        if self._group:
             with open(self._ovsup, 'w') as f:
-                f.write(_GROUP_NETWORK_UP.format(group=self._group_name))
+                f.write(_GROUP_NETWORK_UP.format(group=self._group))
             with open(self._ovsdown, 'w') as f:
-                f.write(_GROUP_NETWORK_DOWN.format(group=self._group_name))
+                f.write(_GROUP_NETWORK_DOWN.format(group=self._group))
 
     def start(self, name):
         """ Start the container.
