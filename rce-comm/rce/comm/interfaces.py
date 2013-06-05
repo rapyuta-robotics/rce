@@ -141,15 +141,30 @@ class IServersideProtocol(Interface):
 class IRobot(Interface):
     """ Interface which the Robot Avatar has to implement.
     """
-    def createContainer(tag, data={}):  # @NoSelf
+    def createContainer(tag, group='', groupIp='', size=0, cpu=0, memory=0, bandwidth=0):  # @NoSelf
         """ Create a new Container object.
 
             @param tag:         Tag which is used to identify the container
                                 in subsequent requests.
             @type  tag:         str
             
-            @param data:        Extra data about the container
-            @type  data:        dict
+            @param group:       The container group that needs to be networked
+            @type  group:       str
+            
+            @param groupIp:     The container group static ipv4 address
+            @type  groupIp:     str
+            
+            @param size:        The container instance size
+            @type  size:        int
+            
+            @param cpu:         CPU Allocation
+            @type  cpu:         int
+            
+            @param memory:      Memory Allocation
+            @type  memory:      int
+            
+            @param bandwidth:   Bandwidth allocation
+            @type  bandwidth:   int
         """
 
     def destroyContainer(tag):  # @NoSelf
