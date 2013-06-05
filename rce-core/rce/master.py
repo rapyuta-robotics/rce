@@ -230,7 +230,8 @@ class RoboEarthCloudEngine(object):
 
         try:
             if group:
-                groupdict = {'unique_name':userID + group}
+                unique_name = str(hash(' '.join((userId, group))))
+                groupdict = {'unique_name':unique_name}
                 # Todo figure a better unique name
                 network_group = self._network_groups[(userID, group)]
                 if len(network_group) > 254:
