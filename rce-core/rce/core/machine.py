@@ -270,15 +270,15 @@ class Machine(object):
         assert container not in self._containers
         self._containers.add(container)
         self._users[container._userID] += 1
-        if container._group_name:
-            self._network_groups[container._group_name] += 1
+        if container._group:
+            self._network_groups[container._group] += 1
 
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
         self._users[container._userID] -= 1
-        if container._group_name:
-            self._network_groups[container._group_name] -= 1
+        if container._group:
+            self._network_groups[container._group] -= 1
 
     def listContainers(self):
         return self._containers
