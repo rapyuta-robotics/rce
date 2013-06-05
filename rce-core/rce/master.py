@@ -220,7 +220,7 @@ class RoboEarthCloudEngine(object):
             group_name = data.get('group')
             groupIp = data.get('groupIp')
             if group_name:
-                group_name = str(hash(' '.join((userId, group_name))))
+                group_name = str(hash(' '.join((userID, group_name))))
                 data['group'] = group_name
                 network_group = self._network_groups[group_name]
                 if groupIp:
