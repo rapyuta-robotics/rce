@@ -96,8 +96,8 @@ _NETWORK_GROUP = """
 lxc.network.type=veth
 lxc.network.script.up={ovsup}
 #lxc.network.script.down={ovsdown}
-lxc.network.ipv4= {groupIp}
-lxc.network.flags=down
+lxc.network.ipv4={groupIp}
+lxc.network.flags=up
 """
 
 _GROUP_NETWORK_UP = """
