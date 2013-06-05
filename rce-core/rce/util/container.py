@@ -106,15 +106,15 @@ lxc.network.flags=up
 _GROUP_NETWORK_UP = """
 #!/bin/bash
 
-ifconfig \$5 0.0.0.0 up
-ovs-vsctl add-port br-{group} \$5
+ifconfig $5 0.0.0.0 up
+ovs-vsctl add-port br-{group} $5
 """
 
 _GROUP_NETWORK_DOWN = """
 #!/bin/bash
 
-ifconfig \$5 0.0.0.0 down
-ovs-vsctl del-port br-{group} \$5
+ifconfig $5 0.0.0.0 down
+ovs-vsctl del-port br-{group} $5
 """
 
 _FSTAB_BASE = """
