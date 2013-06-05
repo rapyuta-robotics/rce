@@ -87,16 +87,17 @@ _DEFAULT_GROUPS = ('user',)
 # Used Regex patterns
 _RE = r'(\w+)\s([0-9a-fA-F]{64})\s(\d{' + str(_MODE_LENGTH) + '})\s([\w:]+)$'
 _PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
+_SPACE_RE = re.compile(' ')
 
 # Used doc strings
 _PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
                   'contain at least one uppercase, lowercase, digit, and '
-                  'special character.')
+                  'special character. No whitespace allowed.')
 _FIRST_RUN_MSG = ('It appears this is your first run or your credentials '
                   'database has changed or is incomplete. You must set the '
                   'passwords for the Admin and Admin-Infrastructure accounts.')
 _NEW_PASS_PROMPT = ('\nNote: The password must be between 4-20 characters long '
-                    'and contain at least one'
+                    'and contain no whitespace and at least one'
                     '\n\t* lowercase,'
                     '\n\t* uppercase,'
                     '\n\t* digit'
@@ -168,7 +169,8 @@ class RCECredChecker(object):
         while True:
             passwd = raw_input(msg_pw).strip()
             if passwd == raw_input(msg_cf).strip():
-                if self.pass_validator(passwd):
+                if self.pass_validator(passwd) and \
+                not _WHITESPACE_RE.search(passwd):
                     return passwd
                 else:
                     print('Password does not contain appropriate characters.')
@@ -356,6 +358,8 @@ class RCECredChecker(object):
             @return:            Result of Operation
             @rtype:             bool
         """
+        if _WHITESPACE_RE.search(username):
+            raise CredentialError('Given username contains whitespace')
         if not (self.pass_validator(password) or provision):
             raise CredentialError(_PASSWORD_FAIL)
 
