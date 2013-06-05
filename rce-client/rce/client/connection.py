@@ -203,7 +203,7 @@ class _Connection(object):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
         # ensure all whitespace around group is stripped
-        group = group.strip(' ')
+        group = group.strip()
         if groupIp :
             if not _IP_V4_REGEX.match(groupIp):
                 raise Exception('Invalid IPv4 address')
