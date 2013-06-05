@@ -34,6 +34,7 @@
 import os
 import sys
 import shutil
+import subprocess
 
 pjoin = os.path.join
 
@@ -486,6 +487,7 @@ class ContainerClient(Referenceable):
         # Network configuration
         self._network = bridgeIP[:bridgeIP.rfind('.')]
         self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
+        self._ovs_bridges = {}
 
         # Common iptables references
         nat = iptc.Table(iptc.Table.NAT)
@@ -630,6 +632,43 @@ class ContainerClient(Referenceable):
     def registerContainer(self, container):
         assert container not in self._containers
         self._containers.add(container)
+
+    def remote_createBridge(self, groupname):
+        command = 'ovs-vsctl add-br br-{group}'
+        if groupname not in self._ovs_bridges.iterkeys():
+            self._ovs_bridges[groupname] = set()
+            try:
+                return subprocess.call(command.format(group=groupname), shell=True)
+            except CalledProcessError:
+                raise InternalError('Something went wrong while creating the bridge')
+
+    def remote_checkBridge(self, groupname):
+        return groupname in self._ovs_bridges.iterkeys()
+
+    def remote_destroyBridge(self, groupname):
+        command = 'ovs-vsctl del-br br-{group}'
+        try:
+            del self._ovs_bridges[groupname]
+            return subprocess.call(command.format(group=groupname), shell=True)
+        except KeyError:
+            raise InternalError('Bridge br-{group} is not present'.format(groupname))
+        except CalledProcessError:
+            raise InternalError('Something went wrong while destroying the bridge ')
+
+    def remote_createTunnel(self, groupname, targetIp):
+        command = ('ovs-vsctl add-port br-{group} gre-{hashIp} '
+                   '-- set interface gre0 type=gre options:remote_ip={ip}')
+        hash_ip = hash(targetIp)
+        try:
+            
+            if hash_ip not in self._ovs_bridges[groupname]:
+                self._ovs_bridges[groupname].add(hash_ip)
+                return subprocess.check_call(command.format(goup=groupname,
+                                hashIp = hash_ip,ip=targetIp), shell=True)
+        except KeyError:
+            raise InternalError('Bridge br-{group} is not present'.format(groupname))
+        except CalledProcessError:
+            raise InternalError('Something went wrong while creating the tunnel ')
 
     def unregisterContainer(self, container):
         assert container in self._containers
