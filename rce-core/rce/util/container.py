@@ -32,6 +32,7 @@
 
 # Python specific imports
 import os
+import stat
 
 pjoin = os.path.join
 
@@ -41,6 +42,7 @@ from twisted.python.failure import Failure
 from twisted.internet.defer import Deferred
 from twisted.internet.utils import getProcessValue
 
+_EXECMODE = stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 
 _CONFIG = """
 lxc.utsname = {hostname}
@@ -95,6 +97,7 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 _NETWORK_GROUP = """
 lxc.network.type=veth
 lxc.network.script.up={ovsup}
+# Disable Ovs down ,as not supported on 12.04, can be added later
 #lxc.network.script.down={ovsdown}
 lxc.network.ipv4={groupIp}
 lxc.network.flags=up
@@ -237,8 +240,10 @@ class Container(object):
         if self._group:
             with open(self._ovsup, 'w') as f:
                 f.write(_GROUP_NETWORK_UP.format(group=self._group))
+            os.chmod(self._ovsup, _EXECMODE)
             with open(self._ovsdown, 'w') as f:
                 f.write(_GROUP_NETWORK_DOWN.format(group=self._group))
+            os.chmod(self._ovsdown, _EXECMODE)
 
     def start(self, name):
         """ Start the container.
