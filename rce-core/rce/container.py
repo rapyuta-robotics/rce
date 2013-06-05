@@ -230,7 +230,7 @@ class RCEContainer(Referenceable):
         # Create the container
         self._container = Container(client.reactor, client.rootfs,
                                     self._confDir, self._name, ip,
-                                    self._group)
+                                    data)
 
         # TODO: SSL stuff
 #        if self._USE_SSL:
