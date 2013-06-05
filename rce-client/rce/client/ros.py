@@ -101,7 +101,7 @@ class Environment(object):
                                            parameter['name'])
 
             for container in self._containers:
-                self._conn.destroyContainer(**container)
+                self._conn.destroyContainer(container.get('cTag'))
         except ConnectionError:
             pass
 
