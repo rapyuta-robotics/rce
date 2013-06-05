@@ -354,8 +354,8 @@ class RCE(object):
                                 container to create.
             @type  cTag:        str
             
-            @param group:      The container group that needs to be networked
-            @type  group:      str
+            @param group:       The container group that needs to be networked
+            @type  group:       str
             
             @param size:        The container instance size
             @type  size:        int

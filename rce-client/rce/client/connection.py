@@ -32,6 +32,7 @@
 
 # Python specific imports
 import weakref
+import re
 
 # zope specific imports
 from zope.interface import implements
@@ -47,6 +48,9 @@ if HAS_ROS:
     from rce.client.interface import ROSPublisher, ROSSubscriber, \
         ROSServiceClient, ROSServiceProvider
     from rce.util.loader import Loader
+
+_IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
+                              '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
 
 
 class _Connection(object):
@@ -123,9 +127,9 @@ class _Connection(object):
 
         self._rce = None
 
-    ###
-    ### Callback Interface objects
-    ###
+    # ##
+    # ## Callback Interface objects
+    # ##
 
     def registerInterface(self, iTag, iface, unique):
         """ Callback for Interface.
@@ -167,9 +171,9 @@ class _Connection(object):
         if not interfaces:
             del self._interfaces[iTag]
 
-    ###
-    ### Callback Client Protocol
-    ###
+    # ##
+    # ## Callback Client Protocol
+    # ##
 
     def processReceivedMessage(self, iTag, clsName, msgID, msg):
         try:
@@ -183,9 +187,9 @@ class _Connection(object):
     processReceivedMessage.__doc__ = \
         IMessageReceiver.get('processReceivedMessage').getDoc()
 
-    ###
-    ### Forwarding
-    ###
+    # ##
+    # ## Forwarding
+    # ##
 
     def sendMessage(self, dest, msgType, msg, msgID):
         if not self._rce:
@@ -193,16 +197,19 @@ class _Connection(object):
 
         self._rce.sendMessage(dest, msgType, msg, msgID)
 
-    sendMessage.__doc__ = RCE.sendMessage.__doc__ #@UndefinedVariable
+    sendMessage.__doc__ = RCE.sendMessage.__doc__  # @UndefinedVariable
 
-    def createContainer(self, cTag, group='', size=0, cpu=0, memory=0, bandwidth=0):
+    def createContainer(self, cTag, group='', groupIp='', size=0, cpu=0, memory=0, bandwidth=0):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
         # ensure all whitespace around group is stripped
         group = group.strip(' ')
+        if groupIp :
+            if not _IP_V4_REGEX.match(groupIp):
+                raise Exception('Invalid IPv4 address')
         self._rce.createContainer(cTag, group, size, cpu, memory, bandwidth)
 
-    createContainer.__doc__ = RCE.createContainer.__doc__ #@UndefinedVariable
+    createContainer.__doc__ = RCE.createContainer.__doc__  # @UndefinedVariable
 
     def destroyContainer(self, cTag):
         if not self._rce:
@@ -210,7 +217,7 @@ class _Connection(object):
 
         self._rce.destroyContainer(cTag)
 
-    destroyContainer.__doc__ = RCE.destroyContainer.__doc__ #@UndefinedVariable
+    destroyContainer.__doc__ = RCE.destroyContainer.__doc__  # @UndefinedVariable
 
     def addNode(self, cTag, nTag, pkg, exe, args='', name='', namespace=''):
         if not self._rce:
@@ -218,7 +225,7 @@ class _Connection(object):
 
         self._rce.addNode(cTag, nTag, pkg, exe, args, name, namespace)
 
-    addNode.__doc__ = RCE.addNode.__doc__ #@UndefinedVariable
+    addNode.__doc__ = RCE.addNode.__doc__  # @UndefinedVariable
 
     def removeNode(self, cTag, nTag):
         if not self._rce:
@@ -226,7 +233,7 @@ class _Connection(object):
 
         self._rce.removeNode(cTag, nTag)
 
-    removeNode.__doc__ = RCE.removeNode.__doc__ #@UndefinedVariable
+    removeNode.__doc__ = RCE.removeNode.__doc__  # @UndefinedVariable
 
     def addParameter(self, cTag, name, value):
         if not self._rce:
@@ -234,7 +241,7 @@ class _Connection(object):
 
         self._rce.addParameter(cTag, name, value)
 
-    addParameter.__doc__ = RCE.addParameter.__doc__ #@UndefinedVariable
+    addParameter.__doc__ = RCE.addParameter.__doc__  # @UndefinedVariable
 
     def removeParameter(self, cTag, name):
         if not self._rce:
@@ -242,7 +249,7 @@ class _Connection(object):
 
         self._rce.removeParameter(cTag, name)
 
-    removeParameter.__doc__ = RCE.removeParameter.__doc__ #@UndefinedVariable
+    removeParameter.__doc__ = RCE.removeParameter.__doc__  # @UndefinedVariable
 
     def addInterface(self, eTag, iTag, iType, iCls, addr=''):
         if not self._rce:
@@ -251,7 +258,7 @@ class _Connection(object):
         iType = self.INTERFACE_MAP.get(iType, iType)
         self._rce.addInterface(eTag, iTag, iType, iCls, addr)
 
-    addInterface.__doc__ = RCE.addInterface.__doc__ #@UndefinedVariable
+    addInterface.__doc__ = RCE.addInterface.__doc__  # @UndefinedVariable
 
     def removeInterface(self, eTag, iTag):
         if not self._rce:
@@ -259,7 +266,7 @@ class _Connection(object):
 
         self._rce.removeInterface(eTag, iTag)
 
-    removeInterface.__doc__ = RCE.removeInterface.__doc__ #@UndefinedVariable
+    removeInterface.__doc__ = RCE.removeInterface.__doc__  # @UndefinedVariable
 
     def addConnection(self, tagA, tagB):
         if not self._rce:
@@ -267,7 +274,7 @@ class _Connection(object):
 
         self._rce.addConnection(tagA, tagB)
 
-    addConnection.__doc__ = RCE.addConnection.__doc__ #@UndefinedVariable
+    addConnection.__doc__ = RCE.addConnection.__doc__  # @UndefinedVariable
 
     def removeConnection(self, tagA, tagB):
         if not self._rce:
@@ -275,7 +282,7 @@ class _Connection(object):
 
         self._rce.removeConnection(tagA, tagB)
 
-    removeConnection.__doc__ = RCE.removeConnection.__doc__ #@UndefinedVariable
+    removeConnection.__doc__ = RCE.removeConnection.__doc__  # @UndefinedVariable
 
 
 class Connection(_Connection):
