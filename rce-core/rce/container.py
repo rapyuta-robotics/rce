@@ -34,7 +34,6 @@
 import os
 import sys
 import shutil
-import subprocess
 
 pjoin = os.path.join
 
@@ -47,6 +46,7 @@ except ImportError:
 
 # twisted specific imports
 from twisted.python import log
+from twisted.internet.utils import getProcessValue
 from twisted.internet.defer import  DeferredList, succeed
 from twisted.spread.pb import Referenceable, PBClientFactory, \
     DeadReferenceError, PBConnectionLost
@@ -611,41 +611,50 @@ class ContainerClient(Referenceable):
         self._containers.add(container)
 
     def remote_createBridge(self, groupname):
-        command = 'ovs-vsctl add-br br-{group}'
+        bridge = 'br-{group}'.format(groupname)
         if groupname not in self._ovs_bridges.iterkeys():
             self._ovs_bridges[groupname] = set()
             try:
-                return subprocess.call(command.format(group=groupname), shell=True)
-            except CalledProcessError:
-                raise InternalError('Something went wrong while creating the bridge')
+                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
+                                       ('add-br', bridge),
+                                       env=os.environ, reactor=self._reactor)
+                dfrd.addCallback(lambda retval: retval)
+                return dfrd
+            except e:
+                raise
 
     def remote_checkBridge(self, groupname):
         return groupname in self._ovs_bridges.iterkeys()
 
     def remote_destroyBridge(self, groupname):
-        command = 'ovs-vsctl del-br br-{group}'
+        bridge = 'br-{group}'.format(groupname)
         try:
             del self._ovs_bridges[groupname]
-            return subprocess.call(command.format(group=groupname), shell=True)
+            dfrd = getProcessValue('/usr/bin/ovs-vsctl',
+                                       ('del-br', bridge),
+                                       env=os.environ, reactor=self._reactor)
+            dfrd.addCallback(lambda retval: retval)
+            return dfrd
         except KeyError:
             raise InternalError('Bridge br-{group} is not present'.format(groupname))
-        except CalledProcessError:
-            raise InternalError('Something went wrong while destroying the bridge ')
+
 
     def remote_createTunnel(self, groupname, targetIp):
-        command = ('ovs-vsctl add-port br-{group} gre-{hashIp} '
-                   '-- set interface gre0 type=gre options:remote_ip={ip}')
+        bridge = 'br-{0}'.format(groupname)
         hash_ip = hash(targetIp)
+        port = 'gre-{0}'.format(hash_ip)
+        remote = 'options:remote_ip={0}'.format(targetIp)
         try:
-            
             if hash_ip not in self._ovs_bridges[groupname]:
                 self._ovs_bridges[groupname].add(hash_ip)
-                return subprocess.check_call(command.format(goup=groupname,
-                                hashIp = hash_ip,ip=targetIp), shell=True)
+                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
+                                       ('add-port', bridge, port, '--', 'set',
+                                         'interface', port, 'type=gre', remote),
+                                       env=os.environ, reactor=self._reactor)
+                dfrd.addCallback(lambda retval: retval)
+                return dfrd
         except KeyError:
             raise InternalError('Bridge br-{group} is not present'.format(groupname))
-        except CalledProcessError:
-            raise InternalError('Something went wrong while creating the tunnel ')
 
     def unregisterContainer(self, container):
         assert container in self._containers
