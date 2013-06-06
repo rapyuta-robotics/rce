@@ -117,6 +117,7 @@ class Node(Referenceable, ArgumentMixin):
 
         self._reactor = owner.reactor
         self._call = None
+        self._protocol = None
 
         # Find and validate executable
         cmd = [self._loader.findNode(pkg, exe)] # raises ResourceNotFound

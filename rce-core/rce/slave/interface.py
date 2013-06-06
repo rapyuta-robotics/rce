@@ -35,8 +35,7 @@ from uuid import UUID
 
 # twisted specific imports
 from twisted.python import log
-from twisted.spread.pb import Referenceable, \
-    Error, DeadReferenceError, PBConnectionLost
+from twisted.spread.pb import Referenceable, Error
 
 # rce specific imports
 from rce.util.error import InternalError

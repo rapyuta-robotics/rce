@@ -85,7 +85,6 @@ class _CB_Base(_Base):
     def __init__(self, conn, iTag, clsName):
         """ Initialize the Interface.
         """
-        self._subscribed = False
         conn.registerInterface(iTag, self, self._UNIQUE)
         self._subscribed = True
 
@@ -94,7 +93,7 @@ class _CB_Base(_Base):
     def _unsubscribe(self):
         """ Internally used method to unsubscribe the Interface.
         """
-        if self._subscribed:
+        if hasattr(self, '_subscribed') and self._subscribed:
             self._conn.unregisterInterface(self._iTag, self)
             self._subscribed = False
 
