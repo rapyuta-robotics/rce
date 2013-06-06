@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     rce-client/ros.py
+#     rce-client/rce/client/ros.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #
@@ -34,14 +34,20 @@
 try:
     import rospy
 except ImportError:
-    print('Can not find ROS components.')
+    print('Can not import ROS Python client.')
     exit(1)
 
 # twisted specific imports
 from twisted.internet.defer import Deferred
 
 # rce specific imports
+from rce.util.ros import decorator_has_connection
 from rce.client.connection import ConnectionError, ROSConnection
+
+
+# Patch the method 'rospy.topics._TopicImpl.has_connection'
+rospy.topics._TopicImpl.has_connection = \
+    decorator_has_connection(rospy.topics._TopicImpl.has_connection)
 
 
 _MAP = {'ServiceClientConverter'   : 'serviceProvider',

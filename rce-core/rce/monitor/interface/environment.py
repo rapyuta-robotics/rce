@@ -44,7 +44,13 @@ from twisted.internet.threads import deferToThreadPool
 
 # rce specific imports
 from rce.util.error import InternalError
+from rce.util.ros import decorator_has_connection
 from rce.slave.interface import Interface, InvalidResoureName
+
+
+# Patch the method 'rospy.topics._TopicImpl.has_connection'
+rospy.topics._TopicImpl.has_connection = \
+    decorator_has_connection(rospy.topics._TopicImpl.has_connection)
 
 
 class _ROSInterfaceBase(Interface):
