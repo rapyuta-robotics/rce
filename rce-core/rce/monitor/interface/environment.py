@@ -87,7 +87,7 @@ class ServiceClientInterface(_ROSInterfaceBase):
     """ Class which is used as a Service-Client Interface.
     """
     def __init__(self, owner, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, ('SC', addr))
 
         try:
             pkg, name = package_resource_name(clsName)
@@ -111,8 +111,8 @@ class ServiceClientInterface(_ROSInterfaceBase):
         rosMsg = rospy.AnyMsg()
         rosMsg._buff = msg
 
-        rospy.wait_for_service(self._addr, timeout=5)
-        serviceFunc = rospy.ServiceProxy(self._addr, self._srvCls)
+        rospy.wait_for_service(self._addr[1], timeout=5)
+        serviceFunc = rospy.ServiceProxy(self._addr[1], self._srvCls)
         return serviceFunc(rosMsg)
 
     def _respond(self, resp, msgID, protocol, remoteID):
@@ -131,7 +131,7 @@ class ServiceProviderInterface(_ROSInterfaceBase):
     """ Class which is used as a Service-Provider Interface.
     """
     def __init__(self, owner, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, ('SP', addr))
 
         try:
             pkg, name = package_resource_name(clsName)
@@ -159,7 +159,7 @@ class ServiceProviderInterface(_ROSInterfaceBase):
     remote_connect.__doc__ = _ROSInterfaceBase.remote_connect.__doc__
 
     def _start(self):
-        self._service = rospy.Service(self._addr, self._srvCls, self._callback)
+        self._service = rospy.Service(self._addr[1], self._srvCls, self._callback)
 
     def _stop(self):
         self._service.shutdown()
@@ -217,7 +217,7 @@ class PublisherInterface(_ROSInterfaceBase):
     """ Class which is used as a Publisher Interface.
     """
     def __init__(self, owner, uid, clsName, addr):
-        _ROSInterfaceBase.__init__(self, owner, uid, clsName, addr)
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, ('TP', addr))
 
         try:
             pkg, name = package_resource_name(clsName)
@@ -232,7 +232,8 @@ class PublisherInterface(_ROSInterfaceBase):
     def _start(self):
         # TODO: Is 'latch=True' really necessary?
         #       Should this be configurable?
-        self._publisher = rospy.Publisher(self._addr, self._msgCls, latch=True)
+        self._publisher = rospy.Publisher(self._addr[1], self._msgCls,
+                                          latch=True)
 
     def _stop(self):
         self._publisher.unregister()
@@ -253,8 +254,11 @@ class PublisherInterface(_ROSInterfaceBase):
 class SubscriberInterface(_ROSInterfaceBase):
     """ Class which is used as a Subscriber Interface.
     """
+    def __init__(self, owner, uid, clsName, addr):
+        _ROSInterfaceBase.__init__(self, owner, uid, clsName, ('TS', addr))
+
     def _start(self):
-        self._subscriber = rospy.Subscriber(self._addr, rospy.AnyMsg,
+        self._subscriber = rospy.Subscriber(self._addr[1], rospy.AnyMsg,
                                             self._callback)
 
     def _stop(self):
