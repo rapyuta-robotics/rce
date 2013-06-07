@@ -239,6 +239,7 @@ class Machine(object):
         self._containers = set()
         self._users = Counter()
         self._network_groups = Counter()
+        self._ovs_bridges = {}
 
     @property
     def active(self):
@@ -285,6 +286,54 @@ class Machine(object):
 
         self._ref.callRemote('createContainer', uid, data).chainDeferred(container)
         return container
+
+    def createBridge(self, groupname):
+        """ Create a new ovs Bridge
+
+            @param groupname:       Unique name of the network group
+            @type  groupname:       str
+        """
+        if groupname not in self._ovs_bridges.iterkeys():
+            self._ovs_bridges[groupname] = set()
+            return self._ref.callRemote('createBridge', groupname)
+
+    def destroyBridge(self, groupname):
+        """ Destroy a new ovs Bridge
+
+            @param groupname:        Unique name of the network group
+            @type  groupname:        str
+        """
+        if groupname not in self._ovs_bridges.iterkeys():
+            del self._ovs_bridges[groupname]
+            return self._ref.callRemote('destroyBridge', groupname)
+
+    def createTunnel(self, groupname, targetIp):
+        """ Destroy a new ovs Bridge
+
+            @param groupname:        Unique name of the network group
+            @type  groupname:        str
+
+            @param targetIp:         Target ip for the gre Tunnel
+            @type  targetIp:         str
+        """
+        hash_ip = hash(targetIp)
+        if hash_ip not in self._ovs_bridges[groupname]:
+                self._ovs_bridges[groupname].add(hash_ip)
+                return self._ref.callRemote('createTunnel', groupname, targetIp)
+
+    def destroyTunnel(self, groupname, targetIp):
+        """ Destroy a new ovs Bridge
+
+            @param groupname:        Unique name of the network group
+            @type  groupname:        str
+
+            @param targetIp:         Target ip for the gre Tunnel
+            @type  targetIp:         str
+        """
+        hash_ip = hash(targetIp)
+        if hash_ip not in self._ovs_bridges[groupname]:
+                self._ovs_bridges[groupname].remove(hash_ip)
+                return self._ref.callRemote('destroyTunnel', groupname, targetIp)
 
     def registerContainer(self, container):
         assert container not in self._containers

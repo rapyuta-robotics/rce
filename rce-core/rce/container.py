@@ -640,7 +640,7 @@ class ContainerClient(Referenceable):
                         deferred.errback(Failure(e))
                 dfrd.addCallback(cb)
             except OSError:
-                e = OVSError('Bridge br-{group} could not be started'.format(groupname))
+                e = OVSError('Bridge {0} could not be started'.format(bridge))
                 deferred.errback(Failure(e))
             return deferred
 
@@ -656,21 +656,22 @@ class ContainerClient(Referenceable):
         bridge = 'br-{group}'.format(groupname)
         deferred = Deferred()
         try:
-            del self._ovs_bridges[groupname]
-            dfrd = getProcessValue('/usr/bin/ovs-vsctl',
-                                       ('del-br', bridge),
-                                       env=os.environ, reactor=self._reactor)
-            def cb(retVal):
-                if retVal == 0:
-                    deferred.callback('Bridge successfully destroyed.')
-                else:
-                    e = OVSError('Bridge could not be removed: '
-                                'Received exit code {0} from '
-                                'ovs-vsctl.'.format(retVal))
-                    deferred.errback(Failure(e))
-            dfrd.addCallback(cb)
+            if groupname not in self._ovs_bridges.iterkeys():
+                del self._ovs_bridges[groupname]
+                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
+                                           ('del-br', bridge),
+                                           env=os.environ, reactor=self._reactor)
+                def cb(retVal):
+                    if retVal == 0:
+                        deferred.callback('Bridge successfully destroyed.')
+                    else:
+                        e = OVSError('Bridge could not be removed: '
+                                    'Received exit code {0} from '
+                                    'ovs-vsctl.'.format(retVal))
+                        deferred.errback(Failure(e))
+                dfrd.addCallback(cb)
         except KeyError:
-            e = OVSError('Bridge br-{group} is not present'.format(groupname))
+            e = OVSError('Bridge {0} is not present'.format(bridge))
             deferred.errback(Failure(e))
         return deferred
 
@@ -693,7 +694,7 @@ class ContainerClient(Referenceable):
         remote = 'options:remote_ip={0}'.format(targetIp)
         try:
             if hash_ip not in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].add(hash_ip)
+                self._ovs_bridges[groupname].remove(hash_ip)
                 dfrd = getProcessValue('/usr/bin/ovs-vsctl',
                                        ('add-port', bridge, port, '--', 'set',
                                          'interface', port, 'type=gre', remote),
@@ -702,13 +703,48 @@ class ContainerClient(Referenceable):
                     if retVal == 0:
                         deferred.callback('Tunnel successfully setup.')
                     else:
-                        e = OVSError('Bridge could not be created: '
+                        e = OVSError('Tunnel could not be created: '
                                      'Received exit code {0} from '
                                      'ovs-vsctl.'.format(retVal))
                         deferred.errback(Failure(e))
             dfrd.addCallback(cb)
         except KeyError:
-            e = OVSError('Bridge br-{group} is not present'.format(groupname))
+            e = OVSError('Bridge {0} is not present'.format(bridge))
+            deferred.errback(Failure(e))
+        return deferred
+
+    def remote_destroyTunnel(self, groupname, targetIp):
+        """ Destroy a new ovs Bridge
+
+            @param groupname:        Unique name of the network group
+            @type  groupname:        str
+
+            @param targetIp:         Target ip for the gre Tunnel
+            @type  targetIp:         str
+
+            @return:                Exit status of command
+            @rtype:                 deferred
+        """
+        bridge = 'br-{0}'.format(groupname)
+        hash_ip = hash(targetIp)
+        port = 'gre-{0}'.format(hash_ip)
+        try:
+            if hash_ip not in self._ovs_bridges[groupname]:
+                self._ovs_bridges[groupname].add(hash_ip)
+                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
+                                       ('del-port', port,),
+                                       env=os.environ, reactor=self._reactor)
+                def cb(retVal):
+                    if retVal == 0:
+                        deferred.callback('Tunnel successfully deleted.')
+                    else:
+                        e = OVSError('Tunnel could not be destroyed: '
+                                     'Received exit code {0} from '
+                                     'ovs-vsctl.'.format(retVal))
+                        deferred.errback(Failure(e))
+            dfrd.addCallback(cb)
+        except KeyError:
+            e = OVSError('Bridge {0} is not present'.format(bridge))
             deferred.errback(Failure(e))
         return deferred
 
