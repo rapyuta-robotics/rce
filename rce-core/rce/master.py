@@ -34,7 +34,6 @@
 import sys
 from uuid import uuid4
 from random import randint
-from collections import defaultdict
 
 # zope specific imports
 from zope.interface import implements
@@ -114,7 +113,6 @@ class RoboEarthCloudEngine(object):
 
         self._users = {}
         self._pendingContainer = {}
-        self._network_groups = defaultdict(set)
 
     def requestAvatar(self, avatarId, mind, *interfaces):
         """ Returns Avatar for slave processes of the cloud engine.
@@ -201,7 +199,7 @@ class RoboEarthCloudEngine(object):
 
             @param userID:        UserID of the user who created the container.
             @type  userID:        str
-            
+
             @param data:          Extra Data about the container
             @param data:          dict
 
@@ -217,24 +215,6 @@ class RoboEarthCloudEngine(object):
                 break
 
         try:
-            group_name = data.get('group')
-            groupIp = data.get('groupIp')
-            if group_name:
-                group_name = str(hash(' '.join((userID, group_name))))
-                data['group'] = group_name
-                network_group = self._network_groups[group_name]
-                if groupIp:
-                    network_group.add(groupIp)
-                else:
-                    if len(network_group) > 254:
-                        raise InternalError('Max limit on subnet reached')
-                    while 1 :
-                        candidate = '192.168.1.' + str(randint(2, 254))
-                        if candidate not in network_group:
-                            network_group.add(candidate)
-                            data['groupIp'] = candidate
-                            break
-
             container = self._balancer.createContainer(uid, userID, data)
         except ContainerProcessError:
             # TODO: What should we do here?

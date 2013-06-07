@@ -31,7 +31,7 @@
 #
 
 # Python specific imports
-from collections import Counter
+from collections import Counter, defaultdict
 
 # twisted specific imports
 from twisted.spread.pb import Avatar
@@ -105,7 +105,7 @@ class LoadBalancer(object):
             @type  root:        rce.master.RoboEarthCloudEngine
         """
         self._root = root
-
+        self._network_groups = defaultdict(set)
         self._machines = set()
 
     def createMachine(self, ref, maxNr):
@@ -173,14 +173,30 @@ class LoadBalancer(object):
 
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
-            
+
             @param data:        More data about the container
             @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
-        # TODO :get next machine has to get some attributes for smarter load balancing and distribution
+        group_name = data.get('group')
+        groupIp = data.get('groupIp')
+        if group_name:
+            group_name = str(hash(' '.join((userID, group_name))))
+            data['group'] = group_name
+            network_group = self._network_groups[group_name]
+            if groupIp:
+                network_group.add(groupIp)
+            else:
+                if len(network_group) > 254:
+                    raise InternalError('Max limit on subnet reached')
+                while 1 :
+                    candidate = '192.168.1.' + str(randint(2, 254))
+                    if candidate not in network_group:
+                        network_group.add(candidate)
+                        data['groupIp'] = candidate
+                        break
         return self._getNextMachine(userID).createContainer(uid, userID, data)
 
     def cleanUp(self):
@@ -251,7 +267,7 @@ class Machine(object):
 
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
-            
+
             @param data:        Extra Information about the container
             @type  data:        dict
 
