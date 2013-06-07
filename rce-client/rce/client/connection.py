@@ -49,8 +49,9 @@ if HAS_ROS:
         ROSServiceClient, ROSServiceProvider
     from rce.util.loader import Loader
 
+
 _IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
-                              '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
+                          '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
 
 
 class _Connection(object):
@@ -127,9 +128,7 @@ class _Connection(object):
 
         self._rce = None
 
-    # ##
-    # ## Callback Interface objects
-    # ##
+    # Callback Interface objects
 
     def registerInterface(self, iTag, iface, unique):
         """ Callback for Interface.
@@ -171,9 +170,7 @@ class _Connection(object):
         if not interfaces:
             del self._interfaces[iTag]
 
-    # ##
-    # ## Callback Client Protocol
-    # ##
+    # Callback Client Protocol
 
     def processReceivedMessage(self, iTag, clsName, msgID, msg):
         try:
@@ -187,9 +184,7 @@ class _Connection(object):
     processReceivedMessage.__doc__ = \
         IMessageReceiver.get('processReceivedMessage').getDoc()
 
-    # ##
-    # ## Forwarding
-    # ##
+    # Forwarding
 
     def sendMessage(self, dest, msgType, msg, msgID):
         if not self._rce:
@@ -199,15 +194,19 @@ class _Connection(object):
 
     sendMessage.__doc__ = RCE.sendMessage.__doc__  # @UndefinedVariable
 
-    def createContainer(self, cTag, group='', groupIp='', size=0, cpu=0, memory=0, bandwidth=0):
+    def createContainer(self, cTag, group='', groupIp='', size=0, cpu=0,
+                        memory=0, bandwidth=0):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
-        # ensure all whitespace around group is stripped
+
+        # ensure all whitespace characters around group are stripped
         group = group.strip()
-        if groupIp :
-            if not _IP_V4_REGEX.match(groupIp):
-                raise Exception('Invalid IPv4 address')
-        self._rce.createContainer(cTag, group, groupIp, size, cpu, memory, bandwidth)
+
+        if groupIp and not _IP_V4_REGEX.match(groupIp):
+            raise ValueError('Invalid IPv4 address')
+
+        self._rce.createContainer(cTag, group, groupIp, size, cpu, memory,
+                                  bandwidth)
 
     createContainer.__doc__ = RCE.createContainer.__doc__  # @UndefinedVariable
 

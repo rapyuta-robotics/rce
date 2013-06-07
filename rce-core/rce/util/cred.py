@@ -49,6 +49,9 @@ from twisted.cred import error
 from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
+# rce specific imports
+from rce.util.name import validateName, IllegalName
+
 
 # AES Encryptors strength depends on input password length, ensure it with
 # appropriate hash
@@ -87,7 +90,6 @@ _DEFAULT_GROUPS = ('user',)
 # Used Regex patterns
 _RE = r'(\w+)\s([0-9a-fA-F]{64})\s(\d{' + str(_MODE_LENGTH) + '})\s([\w:]+)$'
 _PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
-_SPACE_RE = re.compile(' ')
 
 # Used doc strings
 _PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
@@ -169,8 +171,7 @@ class RCECredChecker(object):
         while True:
             passwd = raw_input(msg_pw).strip()
             if passwd == raw_input(msg_cf).strip():
-                if self.pass_validator(passwd) and \
-                not _WHITESPACE_RE.search(passwd):
+                if ' ' not in passwd and self.pass_validator(passwd):
                     return passwd
                 else:
                     print('Password does not contain appropriate characters.')
@@ -358,8 +359,11 @@ class RCECredChecker(object):
             @return:            Result of Operation
             @rtype:             bool
         """
-        if _WHITESPACE_RE.search(username):
-            raise CredentialError('Given username contains whitespace')
+        try:
+            validateName(username)
+        except IllegalName as e:
+            raise CredentialError(str(e))
+
         if not (self.pass_validator(password) or provision):
             raise CredentialError(_PASSWORD_FAIL)
 

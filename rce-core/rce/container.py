@@ -40,7 +40,7 @@ pjoin = os.path.join
 try:
     import iptc
 except ImportError:
-    print('python-iptables could not be imported.')
+    print("Can not import the package 'python-iptables'.")
     print('    see: http://github.com/ldx/python-iptables')
     exit(1)
 

@@ -73,7 +73,8 @@ try:
     import rospkg
     import roslib.packages
 except ImportError:
-    print " Could not find the ROS Python Libraries , make sure they are installed and the ROS Environment is setup."
+    print('Can not import ROS Python libraries.')
+    print('Make sure they are installed and the ROS Environment is setup.')
     exit(1)
 
 class ResourceNotFound(Exception):

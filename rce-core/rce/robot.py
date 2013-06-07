@@ -564,7 +564,7 @@ class RobotClient(Endpoint):
             @type  extIP:       str
 
             @param extPort:     Port where the server for the external
-                                communication is listening for websocket
+                                communication is listening for WebSocket
                                 connections.
             @type  extPort:     int
 

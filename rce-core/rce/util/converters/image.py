@@ -46,14 +46,15 @@ except ImportError:
 try:
     import Image
 except ImportError:
-    print('Requires Python Image Library.')
+    print('Can not import Python Image Library.')
     exit(1)
 
 # ROS specific imports
 try:
     import sensor_msgs.msg
 except ImportError:
-    print " Could not find the required ROS 'sensor_msgs' Library, make sure it is installed and the ROS Environment is setup."
+    print("Can not import the required ROS Python library 'sensor_msgs'.")
+    print('Make sure they are installed and the ROS Environment is setup.')
     exit(1)
 
 # zope specific imports

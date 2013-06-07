@@ -53,8 +53,7 @@ def validateName(name):
         @param name:    Name which should be checked.
         @type  name:    str
 
-        @return:        True if the name is legal.
-        @rtype:         bool
+        @raise:         IllegalName, if the name is not valid.
     """
     if not name:
         raise IllegalName('Name can not be an empty string.')
