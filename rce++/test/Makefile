@@ -1,11 +1,11 @@
 # Configuration
-PREFIX=/home/dominique/usr
+PREFIX=$(HOME)/usr
 
 CC=g++
 CFLAGS=-c -Wall
 LDFLAGS=-L$(PREFIX)/lib
 INCLUDES=-I../include -I$(PREFIX)/include
-LIBS=-lcurl -lwebsocketpp -lboost_system -lboost_date_time -lboost_regex -lboost_random -lboost_thread
+LIBS=-lcurl -lboost_system -lboost_regex -lboost_random -lboost_thread
 
 all: test
 

@@ -31,65 +31,67 @@
 
 #include <iostream>
 #include <boost/bind.hpp>
+
 #include "rce/client.hxx"
 
 class StringMsg
 {
-	public:
-		StringMsg(const std::string &data) :
-				_data(data)
-		{
-		}
+public:
+	StringMsg(const std::string &data) :
+			_data(data)
+	{
+	}
 
-		StringMsg(const rce::Client::Value &serialized)
-		{
-			if (serialized.type() != json_spirit::obj_type)
-				throw std::runtime_error("Received message has invalid type.");
+	StringMsg(const rce::Client::Value &serialized)
+	{
+		if (serialized.type() != json_spirit::obj_type)
+			throw std::runtime_error("Received message has invalid type.");
 
-			rce::Client::Object msg = serialized.get_obj();
+		rce::Client::Object msg = serialized.get_obj();
 
-			rce::Client::Value data = json_spirit::find_value<
-					rce::Client::Object, rce::Client::String>(msg, "data");
+		rce::Client::Value data = json_spirit::find_value<rce::Client::Object,
+				rce::Client::String>(msg, "data");
 
-			if (data.type() != json_spirit::str_type)
-				throw std::runtime_error(
-						"Field 'data' of received message has invalid type.");
+		if (data.type() != json_spirit::str_type)
+			throw std::runtime_error(
+					"Field 'data' of received message has invalid type.");
 
-			_data = data.get_str();
-		}
+		_data = data.get_str();
+	}
 
-		const rce::Client::Value asJSON()
-		{
-			rce::Client::Object msg;
-			rce::Client::Config::add(msg, "data", "Hello World!");
-			return rce::Client::Value(msg);
-		}
+	const rce::Client::Value asJSON()
+	{
+		rce::Client::Object msg;
+		rce::Client::Config::add(msg, "data", "Hello World!");
+		return rce::Client::Value(msg);
+	}
 
-		const std::string getMessage()
-		{
-			return _data;
-		}
+	const std::string getMessage()
+	{
+		return _data;
+	}
 
-	private:
-		std::string _data;
+private:
+	std::string _data;
 };
 
 class Manager
 {
-	public:
-		Manager(const std::string url, const std::string userID,
-				const std::string robotID);
+public:
+	Manager(const std::string url, const std::string userID,
+			const std::string robotID);
 
-		void connectCB(rce::ClientPtr client);
-		void msgCB(const rce::Client::Value &msg);
+	void connectCB(rce::ClientPtr client);
+	void msgCB(const rce::Client::Value &msg);
 
-		void loop();
+	void loop();
 
-	private:
-		const std::string _robotID;
+private:
+	const std::string _robotID;
 
-		rce::PublisherPtr _p;
-		rce::SubscriberPtr _s;
+	rce::ClientPtr _client;
+	rce::PublisherPtr _p;
+	rce::SubscriberPtr _s;
 };
 
 Manager::Manager(const std::string url, const std::string userID,
@@ -98,11 +100,12 @@ Manager::Manager(const std::string url, const std::string userID,
 {
 	std::cout << "Version: " << CLIENT_VERSION << std::endl;
 	std::cout << "Create client..." << std::endl;
-	// TODO: For now the userID is also used as password
-	rce::Client client(userID, userID, robotID);
+
+	// Password of test user is equal to the user name
+	_client = boost::make_shared<rce::Client>(userID, userID, robotID);
 
 	std::cout << "Connect to Cloud..." << std::endl;
-	client.connect(url,
+	_client->connect(url,
 			rce::ConnectCallback(boost::bind(&Manager::connectCB, this, _1)));
 }
 
@@ -124,8 +127,8 @@ void Manager::connectCB(rce::ClientPtr client)
 	client->addConnection(CONTAINER_ID, REQ, _robotID, REQ);
 	client->addConnection(CONTAINER_ID, RESP, _robotID, RESP);
 
-	_p = client->publisher(REQ, MSG_TYPE);
-	_s = client->subscriber(RESP, MSG_TYPE,
+	_p = client->createPublisher(REQ, MSG_TYPE);
+	_s = client->createSubscriber(RESP, MSG_TYPE,
 			rce::MsgCallback(boost::bind(&Manager::msgCB, this, _1)));
 
 	loop();
@@ -160,6 +163,7 @@ int main(int argc, char **argv)
 	url << "http://" << argv[1] << ":9000/";
 
 	Manager(url.str(), "testUser", "testRobotCpp");
+
 	std::cout << "leaving main..." << std::endl;
 	return 0;
 }

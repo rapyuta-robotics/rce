@@ -204,9 +204,9 @@ namespace json_spirit
         typedef typename Config_type::Array_type Array_type;
         typedef typename String_type::value_type Char_type;
 
-        Semantic_actions( Value_type& value, std::vector< std::pair< String_type, Binary_type* > > &binaries )
+        Semantic_actions( Value_type& value, std::vector< std::pair< String_type, Binary_type > > &binaries )
         :   value_( value )
-        ,   binaries_( binaries )
+        ,   binaries_( &binaries )
         ,   current_p_( 0 )
         ,   isBinary_( false )
         {
@@ -262,7 +262,7 @@ namespace json_spirit
         		String_type name = value.get_str();
         		Binary_type binary = Binary_type();
 
-        		binaries_.push_back( std::pair< String_type, Binary_type* >( name, &binary ) );
+        		binaries_->push_back( std::pair< String_type, Binary_type >( name, binary ) );
         		isBinary_ = false;
 
         		value = Value_type(binary);
@@ -376,7 +376,7 @@ namespace json_spirit
         }
 
         Value_type& value_;             // this is the object or array that is being created
-        std::vector< std::pair< String_type, Binary_type* > > &binaries_;
+        std::vector< std::pair< String_type, Binary_type > > *binaries_;
         Value_type* current_p_;         // the child object or array that is currently being constructed
 
         std::vector< Value_type* > stack_;   // previous child objects and arrays
@@ -550,7 +550,7 @@ namespace json_spirit
 
     template< class Iter_type, class Value_type >
     Iter_type read_range_or_throw( Iter_type begin, Iter_type end, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         Semantic_actions< Value_type, Iter_type > semantic_actions( value, binaries );
      
@@ -570,7 +570,7 @@ namespace json_spirit
 
     template< class Iter_type, class Value_type >
     void add_posn_iter_and_read_range_or_throw( Iter_type begin, Iter_type end, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         typedef spirit_namespace::position_iterator< Iter_type > Posn_iter_t;
 
@@ -582,7 +582,7 @@ namespace json_spirit
 
     template< class Iter_type, class Value_type >
     bool read_range( Iter_type& begin, Iter_type end, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         try
         {
@@ -598,14 +598,14 @@ namespace json_spirit
 
     template< class String_type, class Value_type >
     void read_string_or_throw( const String_type& s, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         add_posn_iter_and_read_range_or_throw( s.begin(), s.end(), value, binaries );
     }
 
     template< class String_type, class Value_type >
     bool read_string( const String_type& s, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         typename String_type::const_iterator begin = s.begin();
 
@@ -633,7 +633,7 @@ namespace json_spirit
 
     template< class Istream_type, class Value_type >
     bool read_stream( Istream_type& is, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         Multi_pass_iters< Istream_type > mp_iters( is );
 
@@ -642,7 +642,7 @@ namespace json_spirit
 
     template< class Istream_type, class Value_type >
     void read_stream_or_throw( Istream_type& is, Value_type& value,
-    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type* > > &binaries )
+    		std::vector< std::pair< typename Value_type::Config_type::String_type, typename Value_type::Config_type::Binary_type > > &binaries )
     {
         const Multi_pass_iters< Istream_type > mp_iters( is );
 

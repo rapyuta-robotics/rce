@@ -1,48 +1,54 @@
-rce++ is a header only client with dependencies on binary boost libraries.
+rce++ is a header only client with dependencies on Boost, websocketpp, curl, and
+openssl.
 
-Dependencies:
-    websocketpp - http://github.com/zaphoyd/websocketpp
-    
-    Requires:
-      - boost library 1.xx
-        
-        - successfully compiled and linked with 1.52
-        - default boost library 1.46 of ubuntu 12.04 is insufficient
-	
-      - curl library
-      
-          sudo apt-get install libcurl4-openssl-dev
+Dependencies
+============
 
-Necessary libaries to link against:
-    LDLIBS=-lwebsocketpp -lboost_system -lboost_date_time -lboost_regex -lboost_random -lboost_thread
+    Boost:
+        http://www.boost.org/
 
-Test the client:
+    websocketpp:
+        http://github.com/zaphoyd/websocketpp
+
+        Requires:
+          - Boost
+
+            - successfully compiled and linked with 1.52
+            - default boost library 1.46 of ubuntu 12.04 is insufficient
+
+    curl & openssl:
+        sudo apt-get install libcurl4-openssl-dev
+
+Necessary libaries to link against
+==================================
+
+    LDLIBS=-lboost_system -lboost_regex -lboost_random -lboost_thread
+
+Test the client
+===============
+
     To the test rce++ client:
-      1. Build the test application (configure Makefile appropiately)
-      
+      1. Build the test application (configure Makefile as necessary)
+
            cd test
            make
-      
-      2. Use the ROS client (pyrce/ros.py) to setup the container for
+
+      2. Use the ROS client (rce-ros) to setup the container for
          the rce++ test (ROS client needs a working ROS environment).
-         
-           cd ../pyrce
-           ./ros.py ../test/ros.cfg
-      
+
+           rce-ros ../../test/debug.cfg
+
       3. Run the test application
-      
-           cd ../rce++/test
-           ./test [IP addres of cloud engine]
-         
-         You should send and receive "Hello World!" messages which can
+
+           ./test [IP address of cloud engine]
+
+         The test should send and receive "Hello World!" messages which can
          be checked using the command
-         
+
            rostopic echo /stringEchoReq
-         
+
          to check what is sent and the command
-         
+
            rostopic echo /stringEchoResp
-         
+
          to check was is received from the cloud engine.
-      
-      
