@@ -336,7 +336,10 @@ class _ForwarderBase(_AbstractConverter):
         if not _checkIsStringIO(msg):
             raise ConversionError('Sent message is not a binary message.')
 
-        self._receive(zlib.decompress(msg.getvalue()), msgID)
+        if self._GZIP_LVL:
+            self._receive(zlib.decompress(msg.getvalue()), msgID)
+        else:
+            self._receive(msg.getvalue(), msgID)
 
     def _send(self, msg, msgID, protocol, remoteID):
         """ Wrap and deflate a ROS message in a JSON encoded message.
@@ -355,8 +358,11 @@ class _ForwarderBase(_AbstractConverter):
                                 message.
             @type  remoteID:    uuid.UUID
         """
-        self._sendToClient(StringIO(zlib.compress(msg, self._GZIP_LVL)),
-                           msgID, protocol, remoteID)
+        if self._GZIP_LVL:
+            self._sendToClient(StringIO(zlib.compress(msg, self._GZIP_LVL)),
+                               msgID, protocol, remoteID)
+        else:
+            self._sendToClient(StringIO(msg), msgID, protocol, remoteID)
 
 
 class ServiceClientForwarder(_ForwarderBase):
