@@ -140,13 +140,17 @@ class LoadBalancer(object):
 
         machine.destroy()
 
-    def _getNextMachine(self, userID):
+    def _getNextMachine(self, userID, data):
         """ Internally used method to retrieve the machine where the next
             container should be created.
 
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
+
+            @param data:        Extra data about the container.
+            @type  data:        dict
         """
+        # TODO :Make this smarter with all the rich data now available
         candidates = [machine for machine in self._machines
                       if machine._users[userID]]
         try:
@@ -197,7 +201,7 @@ class LoadBalancer(object):
                         network_group.add(candidate)
                         data['groupIp'] = candidate
                         break
-        return self._getNextMachine(userID).createContainer(uid, userID, data)
+        return self._getNextMachine(userID, data).createContainer(uid, userID, data)
 
     def cleanUp(self):
         """ Method should be called to destroy all machines.
