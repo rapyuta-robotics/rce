@@ -62,7 +62,7 @@ from rce.core.error import MaxNumberExceeded
 
 class OVSError(Exception):
     """Error class for OVS script faliures"""
-    
+
 
 _UPSTART_COMM = """
 # description
@@ -162,7 +162,7 @@ class RCEContainer(Referenceable):
             @param uid:         Unique ID which is used by the environment
                                 process to login to the Master.
             @type  uid:         str
-            
+
             @param data:        Extra data about the container
             @type  data:        dict
         """
@@ -445,8 +445,8 @@ class ContainerClient(Referenceable):
                                   host directory will be bound in the container
                                   filesystem (without the @param rootfsDir).
             @type  pkgDir:        [(str, str)]
-            
-            @param rosRel:       Container filesytem ROS release in this 
+
+            @param rosRel:       Container filesytem ROS release in this
                                  deployment instance of the cloud engine
             @type  rosRel:       str
         """
@@ -537,7 +537,7 @@ class ContainerClient(Referenceable):
 
     @property
     def rosRel(self):
-        """ Container filesytem ROS release in this 
+        """ Container filesytem ROS release in this
             deployment instance of the cloud engine
         """
         return self._rosRel
@@ -594,7 +594,7 @@ class ContainerClient(Referenceable):
                                 the container needs to login to the Master
                                 process.
             @type  uid:         str
-            
+
             @param data:        Extra data about the container
             @type  data:        dict
 
@@ -614,6 +614,14 @@ class ContainerClient(Referenceable):
         self._containers.add(container)
 
     def remote_createBridge(self, groupname):
+        """ Create a new ovs Bridge
+
+            @param groupname:       Unique name of the network group
+            @type  groupname:       str
+
+            @return:                Exit status of command
+            @rtype:                 deferred
+        """
         bridge = 'br-{group}'.format(groupname)
         if groupname not in self._ovs_bridges.iterkeys():
             self._ovs_bridges[groupname] = set()
@@ -635,13 +643,16 @@ class ContainerClient(Referenceable):
                 e = OVSError('Bridge br-{group} could not be started'.format(groupname))
                 deferred.errback(Failure(e))
             return deferred
-                
-        
-
-    def remote_checkBridge(self, groupname):
-        return groupname in self._ovs_bridges.iterkeys()
 
     def remote_destroyBridge(self, groupname):
+        """ Destroy a new ovs Bridge
+
+            @param groupname:        Unique name of the network group
+            @type  groupname:        str
+
+            @return:                Exit status of command
+            @rtype:                 deferred
+        """
         bridge = 'br-{group}'.format(groupname)
         deferred = Deferred()
         try:
@@ -665,6 +676,17 @@ class ContainerClient(Referenceable):
 
 
     def remote_createTunnel(self, groupname, targetIp):
+        """ Destroy a new ovs Bridge
+
+            @param groupname:        Unique name of the network group
+            @type  groupname:        str
+
+            @param targetIp:         Target ip for the gre Tunnel
+            @type  targetIp:         str
+
+            @return:                Exit status of command
+            @rtype:                 deferred
+        """
         bridge = 'br-{0}'.format(groupname)
         hash_ip = hash(targetIp)
         port = 'gre-{0}'.format(hash_ip)
