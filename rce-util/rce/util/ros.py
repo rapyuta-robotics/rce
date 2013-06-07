@@ -35,7 +35,7 @@ from functools import wraps
 
 # ROS specific imports
 try:
-    from rospy.names import get_name
+    from rospy.core import get_node_uri
 except ImportError:
     print('Can not import ROS Python client.')
     exit(1)
@@ -49,9 +49,9 @@ def decorator_has_connection(f):
     """
     @wraps(f)
     def wrapper(self, endpoint_id):
-        if endpoint_id == get_name():
+        if endpoint_id == get_node_uri():
             return True
         
-        return self.f(endpoint_id)
+        return f(self, endpoint_id)
     
     return wrapper
