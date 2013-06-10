@@ -257,7 +257,7 @@ class Machine(object):
         return self._maxNr - len(self._containers)
 
     @property
-    def ovsBrdiges(self):
+    def ovsBridges(self):
         """ The number of available containers in the machine. """
         return self._ovs_bridges.keys()
 
