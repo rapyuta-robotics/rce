@@ -257,6 +257,11 @@ class Machine(object):
         return self._maxNr - len(self._containers)
 
     @property
+    def ovsBrdiges(self):
+        """ The number of available containers in the machine. """
+        return self._ovs_bridges.keys()
+
+    @property
     def IP(self):
         """ The IP address used for the internal communication of the machine.
         """
