@@ -622,7 +622,7 @@ class ContainerClient(Referenceable):
             @return:                Exit status of command
             @rtype:                 deferred
         """
-        bridge = 'br-{group}'.format(groupname)
+        bridge = 'br-{0}'.format(groupname)
         if groupname not in self._ovs_bridges.iterkeys():
             self._ovs_bridges[groupname] = set()
             deferred = Deferred()
@@ -653,7 +653,7 @@ class ContainerClient(Referenceable):
             @return:                Exit status of command
             @rtype:                 deferred
         """
-        bridge = 'br-{group}'.format(groupname)
+        bridge = 'br-{0}'.format(groupname)
         deferred = Deferred()
         try:
             if groupname not in self._ovs_bridges.iterkeys():
