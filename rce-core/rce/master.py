@@ -33,7 +33,6 @@
 # Python specific imports
 import sys
 from uuid import uuid4
-from random import randint
 
 # zope specific imports
 from zope.interface import implements

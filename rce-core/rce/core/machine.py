@@ -32,6 +32,8 @@
 
 # Python specific imports
 from collections import Counter, defaultdict
+from random import randint
+
 
 # twisted specific imports
 from twisted.spread.pb import Avatar
@@ -238,7 +240,6 @@ class Machine(object):
 
         self._containers = set()
         self._users = Counter()
-        self._network_groups = Counter()
         self._ovs_bridges = {}
 
     @property
