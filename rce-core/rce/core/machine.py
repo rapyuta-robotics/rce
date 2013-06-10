@@ -314,7 +314,7 @@ class Machine(object):
             @param groupname:        Unique name of the network group
             @type  groupname:        str
         """
-        if groupname not in self._ovs_bridges.iterkeys():
+        if groupname in self._ovs_bridges.iterkeys():
             del self._ovs_bridges[groupname]
             return self._ref.callRemote('destroyBridge', groupname)
 
@@ -342,7 +342,7 @@ class Machine(object):
             @type  targetIp:         str
         """
         hash_ip = hash(targetIp)
-        if hash_ip not in self._ovs_bridges[groupname]:
+        if hash_ip in self._ovs_bridges[groupname]:
                 self._ovs_bridges[groupname].remove(hash_ip)
                 return self._ref.callRemote('destroyTunnel', groupname, targetIp)
 
