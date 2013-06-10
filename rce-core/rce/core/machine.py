@@ -283,6 +283,11 @@ class Machine(object):
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
         container = Container(self, userID, data)
+        groupname = data.get('group')
+        if groupname:
+            self.createBridge(groupname)
+            self._ovs_bridges[groupname].add(":".join([
+                                'local', data.get('groupIp')]))
 
         self._ref.callRemote('createContainer', uid, data).chainDeferred(container)
         return container
@@ -339,15 +344,16 @@ class Machine(object):
         assert container not in self._containers
         self._containers.add(container)
         self._users[container._userID] += 1
-        if container._group:
-            self._network_groups[container._group] += 1
 
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
         self._users[container._userID] -= 1
         if container._group:
-            self._network_groups[container._group] -= 1
+            self._ovs_bridges[container._group].remove(":".join([
+                                'local', container._groupIp]))
+            if not self._ovs_bridges[container._group]:
+                self.destroyBridge(container._group)
 
     def listContainers(self):
         return self._containers
