@@ -82,6 +82,7 @@ script
 
     # start environment node
     {chown_cmd}
+    {ifconf_cmd}
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
 end script
 """
@@ -154,7 +155,6 @@ iface eth0 inet static
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
 
-{{ovs_net}}
 """
 
 
@@ -197,6 +197,10 @@ class RCEContainer(Referenceable):
         # Group networking fields
         self._group = data.get('group', '')
         self._groupIp = data.get('groupIp', '')
+        if self._group:
+            ifconf_cmd = 'ifconfig eth1 netmask 255.255.255.0 broadcast 192.168.1.255'
+        else :
+            ifconf_cmd = "#no ovs"
 
         # Create the directories for the container
         self._confDir = pjoin(client.confDir, self._name)
@@ -280,7 +284,8 @@ class RCEContainer(Referenceable):
                                          masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
                                          uid=uid, passwd=passwd,
-                                         chown_cmd=chown_cmd))
+                                         chown_cmd=chown_cmd,
+                                         ifconf_cmd=ifconf_cmd))
 
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
@@ -290,12 +295,11 @@ class RCEContainer(Referenceable):
 
         # Setup network
         # if ovs is present
-        ovs_net = _OVS_INTERFACE_MIXIN.format(groupIp=self._groupIp) \
-                                        if self._groupIp else '#no ovs'
+        # ovs_net = _OVS_INTERFACE_MIXIN.format(groupIp=self._groupIp) \
+        #                                if self._groupIp else '#no ovs'
         # write interface file
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
-            f.write(client.getNetworkConfigTemplate().format(ip=ip,
-                                                             ovs_net=ovs_net))
+            f.write(client.getNetworkConfigTemplate().format(ip=ip))
 
     def start(self):
         """ Method which starts the container.
