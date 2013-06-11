@@ -130,6 +130,16 @@ script
 end script
 """
 
+_OVS_INTERFACE_MIXIN = """
+auto eth1
+iface eth1 inet static
+    address {groupIp}
+    netmask 255.255.255.0
+    network 192.168.1.0
+    broadcast 192.168.1.255
+    gateway 0.0.0.0
+"""
+
 
 _NETWORK_INTERFACES = """
 auto lo
@@ -143,6 +153,8 @@ iface eth0 inet static
     broadcast {network}.255
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
+
+{{ovs_net}}
 """
 
 
@@ -277,8 +289,13 @@ class RCEContainer(Referenceable):
 #            f.write(_UPSTART_LAUNCHER)
 
         # Setup network
+        # if ovs is present
+        ovs_net = _OVS_INTERFACE_MIXIN.format(self._groupIp) \
+        if self._groupIp else '#no ovs'
+        # write interface file
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
-            f.write(client.getNetworkConfigTemplate().format(ip=ip))
+            f.write(client.getNetworkConfigTemplate().format(ip=ip,
+                                                             ovs_net=ovs_net))
 
     def start(self):
         """ Method which starts the container.
