@@ -299,11 +299,6 @@ class Machine(object):
         return self._maxNr - len(self._containers)
 
     @property
-    def ovsBridges(self):
-        """ The number of available containers in the machine. """
-        return self._ovs_bridges.keys()
-
-    @property
     def IP(self):
         """ The IP address used for the internal communication of the machine.
         """
@@ -343,7 +338,7 @@ class Machine(object):
             @param groupname:       Unique name of the network group
             @type  groupname:       str
         """
-        if groupname not in self._ovs_bridges.iterkeys():
+        if groupname not in self._ovs_bridge.iterkeys():
             self._ovs_bridge[groupname] = {'locals':set(), 'extern':set()}
             return self._ref.callRemote('createBridge', groupname)
 
@@ -353,12 +348,12 @@ class Machine(object):
             @param groupname:        Unique name of the network group
             @type  groupname:        str
         """
-        if groupname in self._ovs_bridges.iterkeys():
-            del self._ovs_bridges[groupname]
+        if groupname in self._ovs_bridge.iterkeys():
+            del self._ovs_bridge[groupname]
             return self._ref.callRemote('destroyBridge', groupname)
 
     def check_bridge(self, groupname):
-        return groupname in self._ovs_bridges.iterkeys()
+        return groupname in self._ovs_bridge.iterkeys()
 
     def createTunnel(self, groupname, targetIp):
         """ Destroy a new GRE Tunnel
@@ -382,7 +377,7 @@ class Machine(object):
             @param targetIp:         Target ip for the gre Tunnel
             @type  targetIp:         str
         """
-        if targetIp in self._ovs_bridges[groupname]:
+        if targetIp in self._ovs_bridge[groupname]:
                 self._ovs_bridge[groupname]['extern'].remove(targetIp)
                 return self._ref.callRemote('destroyTunnel', groupname, targetIp)
 
@@ -399,11 +394,11 @@ class Machine(object):
         self._containers.remove(container)
         self._users[container._userID] -= 1
         if container._group:
-            self._ovs_bridges[container._group]['locals'].remove(
+            self._ovs_bridge[container._group]['locals'].remove(
                                                 container._groupIp)
             self._balancer._network_group_ip.remove(container._groupIp)
 
-            if not self._ovs_bridges[container._group]['locals']:
+            if not self._ovs_bridge[container._group]['locals']:
                 self._balancer.network_group_remove_node(
                                      container._group, self)
                 del self._ovs_bridge[group]
