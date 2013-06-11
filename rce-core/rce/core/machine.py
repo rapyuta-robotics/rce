@@ -31,7 +31,7 @@
 #
 
 # Python specific imports
-from collections import Counter, defaultdict, namedtuple
+from collections import Counter, defaultdict
 from random import randint
 
 
