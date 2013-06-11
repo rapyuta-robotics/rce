@@ -290,8 +290,8 @@ class RCEContainer(Referenceable):
 
         # Setup network
         # if ovs is present
-        ovs_net = _OVS_INTERFACE_MIXIN.format(self._groupIp) \
-        if self._groupIp else '#no ovs'
+        ovs_net = _OVS_INTERFACE_MIXIN.format(groupIp=self._groupIp) \
+                                        if self._groupIp else '#no ovs'
         # write interface file
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
             f.write(client.getNetworkConfigTemplate().format(ip=ip,
