@@ -171,10 +171,11 @@ class LoadBalancer(object):
             raise ContainerProcessError('There is no free container process.')
 
     def network_group_add_node(self, group, machine):
-        if machine not in self._network_group_node[group]:
-            for target in self._network_group_node[group]:
+        network_group = self._network_group_node[group]
+        if machine not in network_group:
+            for target in network_group:
                 self.build_tunnel(group, machine, target)
-                self._network_group_node[group].add(machine)
+            network_group[group].add(machine)
 
 
     def network_group_remove_node(self, group, machine):
