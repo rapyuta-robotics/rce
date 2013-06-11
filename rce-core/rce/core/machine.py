@@ -31,7 +31,7 @@
 #
 
 # Python specific imports
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, namedtuple
 from random import randint
 
 
@@ -107,7 +107,8 @@ class LoadBalancer(object):
             @type  root:        rce.master.RoboEarthCloudEngine
         """
         self._root = root
-        self._network_groups = defaultdict(set)
+        self._network_group_ip = defaultdict(set)
+        self._network_group_node = defaultdict(set)
         self._machines = set()
 
     def createMachine(self, ref, maxNr):
@@ -125,7 +126,7 @@ class LoadBalancer(object):
             @return:            New Machine instance.
             @rtype:             rce.core.machine.Machine
         """
-        machine = Machine(ref, maxNr, self._root)
+        machine = Machine(ref, maxNr, self._root, self)
         self._machines.add(machine)
         return machine
 
@@ -165,9 +166,45 @@ class LoadBalancer(object):
                                             'process.')
 
         if machine.availability:
+            group = data.get('group')
+            if group :
+                self.network_group_add_node(group, machine)
             return machine
         else:
             raise ContainerProcessError('There is no free container process.')
+
+    def network_group_add_node(self, group, machine):
+        for target in self._network_group_node[group]:
+            self._build_tunnel(group, machine, target)
+        self._network_group_node[group].add(machine)
+
+
+    def network_group_remove_node(self, group, machine):
+        self._network_group_node[group].remove(machine)
+        for target in self._network_group_node[group]:
+            target.destroyTunnel(group, machine.IP)
+
+
+    def build_tunnel(self, groupname, machineA, machineB):
+        """Internal call used to create a GRE Tunnel between two hosts
+        (physical machines or instances)
+
+            @param groupname:      Unique group name to be linked up
+            @type  groupname:      str
+
+            @param machineA:       The Physical Machine object
+            @type  machineA:       rce.core.machine.Machine
+
+            @param machineB:       The Physical Machine object
+            @type  machineB:       rce.core.machine.Machine
+        """
+        if machineA.check_bridge(groupname) and \
+        machineB.check_bridge(groupname):
+            machineA.createTunnel(groupname, machineB.IP)
+            machineB.createTunnel(groupname, machineA.IP)
+        else:
+            raise InternalError('Tunnel nodes are invalid')
+
 
     def createContainer(self, uid, userID, data):
         """ Select an appropriate machine and create a container.
@@ -191,7 +228,7 @@ class LoadBalancer(object):
         if group_name:
             group_name = str(hash(' '.join((userID, group_name))))
             data['group'] = group_name
-            network_group = self._network_groups[group_name]
+            network_group = self._network_group_ip[group_name]
             if groupIp:
                 network_group.add(groupIp)
             else:
@@ -218,7 +255,7 @@ class Machine(object):
     """ Representation of a machine in which containers can be created. It
         keeps track of all the containers running in the machine.
     """
-    def __init__(self, ref, maxNr, root):
+    def __init__(self, ref, maxNr, root, balancer):
         """ Initialize the Machine.
 
             @param ref:         Remote reference to the ContainerClient in the
@@ -231,16 +268,20 @@ class Machine(object):
 
             @param root:        Reference to top level of data structure.
             @type  root:        rce.master.RoboEarthCloudEngine
+
+            @param balancer:    Reference to top level of data structure.
+            @type  balancer:    rce.core.machine.LoadBalancer
         """
         self._ref = ref
         self._maxNr = maxNr
 
         ip = ref.broker.transport.getPeer().host
         self._ip = root.getInternalIP() if isLocalhost(ip) else ip
+        self._balancer = balancer
 
         self._containers = set()
         self._users = Counter()
-        self._ovs_bridges = {}
+        self._ovs_bridge = {}
 
     @property
     def active(self):
@@ -292,9 +333,7 @@ class Machine(object):
         groupname = data.get('group')
         if groupname:
             self.createBridge(groupname)
-            self._ovs_bridges[groupname].add(":".join([
-                                'local', data.get('groupIp')]))
-
+            self._ovs_bridge[groupname]['locals'].add(data.get('groupIp'))
         self._ref.callRemote('createContainer', uid, data).chainDeferred(container)
         return container
 
@@ -305,7 +344,7 @@ class Machine(object):
             @type  groupname:       str
         """
         if groupname not in self._ovs_bridges.iterkeys():
-            self._ovs_bridges[groupname] = set()
+            self._ovs_bridge[groupname] = {'locals':set(), 'extern':set()}
             return self._ref.callRemote('createBridge', groupname)
 
     def destroyBridge(self, groupname):
@@ -318,6 +357,9 @@ class Machine(object):
             del self._ovs_bridges[groupname]
             return self._ref.callRemote('destroyBridge', groupname)
 
+    def check_bridge(self, groupname):
+        return groupname in self._ovs_bridges.iterkeys()
+
     def createTunnel(self, groupname, targetIp):
         """ Destroy a new GRE Tunnel
 
@@ -327,8 +369,8 @@ class Machine(object):
             @param targetIp:         Target ip for the gre Tunnel
             @type  targetIp:         str
         """
-        if targetIp not in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].add(targetIp)
+        if targetIp not in self._ovs_bridge[groupname]['extern']:
+                self._ovs_bridge[groupname]['extern'].add(targetIp)
                 return self._ref.callRemote('createTunnel', groupname, targetIp)
 
     def destroyTunnel(self, groupname, targetIp):
@@ -341,23 +383,32 @@ class Machine(object):
             @type  targetIp:         str
         """
         if targetIp in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].remove(targetIp)
+                self._ovs_bridge[groupname]['extern'].remove(targetIp)
                 return self._ref.callRemote('destroyTunnel', groupname, targetIp)
 
     def registerContainer(self, container):
         assert container not in self._containers
         self._containers.add(container)
         self._users[container._userID] += 1
+        if container._group:
+            self._balancer.network_group_add_node(
+                                     container._group, self)
 
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
         self._users[container._userID] -= 1
         if container._group:
-            self._ovs_bridges[container._group].remove(":".join([
-                                'local', container._groupIp]))
-            if not self._ovs_bridges[container._group]:
-                self.destroyBridge(container._group)
+            self._ovs_bridges[container._group]['locals'].remove(
+                                                container._groupIp)
+            self._balancer._network_group_ip.remove(container._groupIp)
+
+            if not self._ovs_bridges[container._group]['locals']:
+                self._balancer.network_group_remove_node(
+                                     container._group, self)
+                del self._ovs_bridge[group]
+                self.destroyBridge(group)
+
 
     def listContainers(self):
         return self._containers
