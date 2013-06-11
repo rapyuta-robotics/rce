@@ -376,7 +376,7 @@ class Machine(object):
             @param targetIp:         Target ip for the gre Tunnel
             @type  targetIp:         str
         """
-        if targetIp in self._ovs_bridge[groupname]:
+        if targetIp in self._ovs_bridge[groupname]['extern']:
                 self._ovs_bridge[groupname]['extern'].remove(targetIp)
                 return self._ref.callRemote('destroyTunnel', groupname, targetIp)
 
