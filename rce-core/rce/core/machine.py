@@ -166,9 +166,6 @@ class LoadBalancer(object):
                                             'process.')
 
         if machine.availability:
-            group = data.get('group')
-            if group :
-                self.network_group_add_node(group, machine)
             return machine
         else:
             raise ContainerProcessError('There is no free container process.')
