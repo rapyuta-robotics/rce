@@ -131,17 +131,6 @@ script
 end script
 """
 
-_OVS_INTERFACE_MIXIN = """
-auto eth1
-iface eth1 inet static
-    address {groupIp}
-    netmask 255.255.255.0
-    network 192.168.1.0
-    broadcast 192.168.1.255
-    gateway 0.0.0.0
-"""
-
-
 _NETWORK_INTERFACES = """
 auto lo
 iface lo inet loopback
@@ -294,10 +283,6 @@ class RCEContainer(Referenceable):
 #            f.write(_UPSTART_LAUNCHER)
 
         # Setup network
-        # if ovs is present
-        # ovs_net = _OVS_INTERFACE_MIXIN.format(groupIp=self._groupIp) \
-        #                                if self._groupIp else '#no ovs'
-        # write interface file
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
             f.write(client.getNetworkConfigTemplate().format(ip=ip))
 
@@ -678,7 +663,7 @@ class ContainerClient(Referenceable):
         bridge = 'br-{0}'.format(groupname)
         deferred = Deferred()
         try:
-            if groupname not in self._ovs_bridges.iterkeys():
+            if groupname in self._ovs_bridges.iterkeys():
                 del self._ovs_bridges[groupname]
                 dfrd = getProcessValue('/usr/bin/ovs-vsctl',
                                            ('del-br', bridge),
@@ -711,12 +696,12 @@ class ContainerClient(Referenceable):
             @rtype:                 deferred
         """
         bridge = 'br-{0}'.format(groupname)
-        hash_ip = hash(targetIp)
+        hash_ip = str(abs(hash(targetIp)))[:8]
         port = 'gre-{0}'.format(hash_ip)
         remote = 'options:remote_ip={0}'.format(targetIp)
         try:
             if hash_ip not in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].remove(hash_ip)
+                self._ovs_bridges[groupname].add(hash_ip)
                 dfrd = getProcessValue('/usr/bin/ovs-vsctl',
                                        ('add-port', bridge, port, '--', 'set',
                                          'interface', port, 'type=gre', remote),
@@ -748,11 +733,11 @@ class ContainerClient(Referenceable):
             @rtype:                 deferred
         """
         bridge = 'br-{0}'.format(groupname)
-        hash_ip = hash(targetIp)
+        hash_ip = str(abs(hash(targetIp)))[:8]
         port = 'gre-{0}'.format(hash_ip)
         try:
-            if hash_ip not in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].add(hash_ip)
+            if hash_ip in self._ovs_bridges[groupname]:
+                self._ovs_bridges[groupname].remove(hash_ip)
                 dfrd = getProcessValue('/usr/bin/ovs-vsctl',
                                        ('del-port', port,),
                                        env=os.environ, reactor=self._reactor)
