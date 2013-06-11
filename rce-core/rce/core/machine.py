@@ -225,7 +225,7 @@ class LoadBalancer(object):
         group_name = data.get('group')
         groupIp = data.get('groupIp')
         if group_name:
-            group_name = str(hash(' '.join((userID, group_name))))
+            group_name = str(abs(hash(' '.join((userID, group_name)))))[:8]
             data['group'] = group_name
             network_group = self._network_group_ip[group_name]
             if groupIp:
