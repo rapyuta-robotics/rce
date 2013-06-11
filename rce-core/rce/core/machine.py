@@ -393,9 +393,10 @@ class Machine(object):
         self._containers.remove(container)
         self._users[container._userID] -= 1
         if container._group:
-            self._ovs_bridge[container._group]['locals'].remove(
-                                                container._groupIp)
-            self._balancer._network_group_ip.remove(container._groupIp)
+            self._ovs_bridge[container._group
+                             ]['locals'].remove(container._groupIp)
+            self._balancer._network_group_ip[container._group
+                                    ].remove(container._groupIp)
 
             if not self._ovs_bridge[container._group]['locals']:
                 self._balancer.network_group_remove_node(

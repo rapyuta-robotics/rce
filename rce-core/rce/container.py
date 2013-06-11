@@ -46,6 +46,7 @@ except ImportError:
 
 # twisted specific imports
 from twisted.python import log
+from twisted.python.failure import Failure
 from twisted.internet.utils import getProcessValue
 from twisted.internet.defer import  DeferredList, succeed, Deferred
 from twisted.spread.pb import Referenceable, PBClientFactory, \
