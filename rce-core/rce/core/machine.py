@@ -175,7 +175,7 @@ class LoadBalancer(object):
         if machine not in network_group:
             for target in network_group:
                 self.build_tunnel(group, machine, target)
-            network_group[group].add(machine)
+            network_group.add(machine)
 
 
     def network_group_remove_node(self, group, machine):
