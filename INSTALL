@@ -83,6 +83,12 @@ Install and Platform Notes
         Unless specialized lxc setups are carried out, this would be lxcbr0.
 
 
+Prerequisites
+=============
+
+    sudo apt-get install git-core python-dev python-setuptools
+
+
 Installation
 ============
 
