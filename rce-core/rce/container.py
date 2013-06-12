@@ -627,8 +627,8 @@ class ContainerClient(Referenceable):
         """
         if groupname not in self._ovs_bridges:
             self._ovs_bridges[groupname] = set()
-            return execute(('/usr/bin/ovs-vsctl', 'add-br',
-                            'br-{0}'.format(groupname)),
+            return execute(('/usr/bin/ovs-vsctl', '--', '--may-exist',
+                            'add-br', 'br-{0}'.format(groupname)),
                            env=os.environ, reactor=self._reactor)
 
     def remote_destroyBridge(self, groupname):
