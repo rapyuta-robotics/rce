@@ -401,7 +401,6 @@ class Machine(object):
             if not self._ovs_bridge[container._group]['locals']:
                 self._balancer.network_group_remove_node(
                                      container._group, self)
-                del self._ovs_bridge[container._group]
                 self.destroyBridge(container._group)
 
 
