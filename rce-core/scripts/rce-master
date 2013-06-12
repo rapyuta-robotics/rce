@@ -40,10 +40,13 @@ from rce.util.settings import getSettings
 settings = getSettings()
 
 if __name__ == '__main__':
+    print("\nConnection Details:\n")
+    print("Internal IP Address: {0}".format(settings.internal_IP))
+    print("Global IP Address:   {0}\n".format(settings.external_IP))
+
     # Credentials checkers used in the cloud engine
     extCred = RCECredChecker(settings.pw_file)
     intCred = RCEInternalChecker(extCred)
 
     main(reactor, intCred, extCred, settings.internal_port, settings.http_port,
-         settings.internal_IP, settings.comm_port, settings.external_port,
-         settings.external_IP)
+         settings.comm_port, settings.external_port)

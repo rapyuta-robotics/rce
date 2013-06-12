@@ -34,12 +34,12 @@
 from collections import Counter, defaultdict
 from random import randint
 
-
 # twisted specific imports
 from twisted.spread.pb import Avatar
 
 # rce specific imports
 from rce.util.error import InternalError
+from rce.util.settings import getSettings
 from rce.util.network import isLocalhost
 from rce.core.error import MaxNumberExceeded
 from rce.core.container import Container
@@ -100,13 +100,9 @@ class LoadBalancer(object):
 
         There should only one instance running in the Master process.
     """
-    def __init__(self, root):
+    def __init__(self):
         """ Initialize the Load Balancer.
-
-            @param root:        Reference to top level of data structure.
-            @type  root:        rce.master.RoboEarthCloudEngine
         """
-        self._root = root
         self._network_group_lookup = {}
         self._network_group_ip = defaultdict(set)
         self._network_group_node = defaultdict(set)
@@ -127,7 +123,7 @@ class LoadBalancer(object):
             @return:            New Machine instance.
             @rtype:             rce.core.machine.Machine
         """
-        machine = Machine(ref, maxNr, self._root, self)
+        machine = Machine(ref, maxNr, self)
         self._machines.add(machine)
         return machine
 
@@ -154,7 +150,7 @@ class LoadBalancer(object):
             @param data:        Extra data about the container.
             @type  data:        dict
         """
-        # TODO :Make this smarter with all the rich data now available
+        # TODO: Make this smarter with all the rich data now available
         candidates = [machine for machine in self._machines
                       if machine._users[userID]]
         try:
@@ -259,7 +255,7 @@ class Machine(object):
     """ Representation of a machine in which containers can be created. It
         keeps track of all the containers running in the machine.
     """
-    def __init__(self, ref, maxNr, root, balancer):
+    def __init__(self, ref, maxNr, balancer):
         """ Initialize the Machine.
 
             @param ref:         Remote reference to the ContainerClient in the
@@ -270,9 +266,6 @@ class Machine(object):
                                 allowed in the machine.
             @type  maxNr:       int
 
-            @param root:        Reference to top level of data structure.
-            @type  root:        rce.master.RoboEarthCloudEngine
-
             @param balancer:    Reference to top level of data structure.
             @type  balancer:    rce.core.machine.LoadBalancer
         """
@@ -280,7 +273,7 @@ class Machine(object):
         self._maxNr = maxNr
 
         ip = ref.broker.transport.getPeer().host
-        self._ip = root.getInternalIP() if isLocalhost(ip) else ip
+        self._ip = getSettings().internal_IP if isLocalhost(ip) else ip
         self._balancer = balancer
 
         self._containers = set()

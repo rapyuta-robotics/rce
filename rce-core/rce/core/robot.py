@@ -34,6 +34,7 @@
 from twisted.internet.address import IPv4Address
 
 # rce specific imports
+from rce.util.settings import getSettings
 from rce.util.network import isLocalhost
 from rce.core.error import InvalidRequest
 from rce.core.network import Endpoint, Namespace, EndpointAvatar
@@ -68,7 +69,7 @@ class RobotEndpoint(Endpoint):
         for WebSocket connections from robots and is part of the cloud engine
         internal communication.
     """
-    def __init__(self, network, distributor, root, port):
+    def __init__(self, network, distributor, port):
         """ Initialize the Environment Endpoint.
 
             @param network:     Network to which the endpoint belongs.
@@ -77,10 +78,7 @@ class RobotEndpoint(Endpoint):
             @param distributor: Distributor which is responsible for assigning
                                 new robot WebSocket connections to robot
                                 endpoints.
-            @type  container:   rce.core.robot.Distributor
-
-            @param root:        Reference to top level of data structure.
-            @type  root:        rce.master.RoboEarthCloudEngine
+            @type  distributor: rce.core.robot.Distributor
 
             @param port:        Port where the robot process is listening for
                                 connections to other endpoints.
@@ -91,7 +89,6 @@ class RobotEndpoint(Endpoint):
         self._distributor = distributor
         distributor.registerRobotProcess(self)
 
-        self._root = root
         self._port = port
 
     @property
@@ -112,7 +109,7 @@ class RobotEndpoint(Endpoint):
         """
         def cb(remote):
             ip = remote.broker.transport.getPeer().host
-            ip = self._root.getInternalIP() if isLocalhost(ip) else ip
+            ip = getSettings().internal_IP if isLocalhost(ip) else ip
             return IPv4Address('TCP', ip, self._port)
 
         return self().addCallback(cb)
