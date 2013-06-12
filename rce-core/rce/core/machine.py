@@ -152,20 +152,17 @@ class LoadBalancer(object):
         """
         # TODO: Make this smarter with all the rich data now available
         candidates = [machine for machine in self._machines
-                      if machine._users[userID]]
+                      if machine._users[userID]] or self._machines
+
         try:
             machine = max(candidates, key=lambda m: m.availability)
         except ValueError:
-            try:
-                machine = max(self._machines, key=lambda m: m.availability)
-            except ValueError:
-                raise ContainerProcessError('There is no free container '
-                                            'process.')
+            raise ContainerProcessError('No container process registered.')
 
-        if machine.availability:
-            return machine
-        else:
+        if not machine.availability:
             raise ContainerProcessError('There is no free container process.')
+
+        return machine
 
     def network_group_add_node(self, group, machine):
         network_group = self._network_group_node[group]
