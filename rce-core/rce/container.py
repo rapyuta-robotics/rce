@@ -165,7 +165,6 @@ class RCEContainer(Referenceable):
         """
         # Store the references
         self._client = client
-        client.registerContainer(self)
 
         self._nr = nr
         self._name = 'C{0}'.format(nr)
@@ -180,6 +179,8 @@ class RCEContainer(Referenceable):
         # Group networking fields
         self._group = data.get('group', '')
         self._groupIp = data.get('groupIp', '')
+
+        client.registerContainer(self)
 
         if self._group:
             ifconf_cmd = ('ifconfig eth1 netmask 255.255.255.0 '
