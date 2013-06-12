@@ -151,18 +151,18 @@ class LoadBalancer(object):
             @type  data:        dict
         """
         # TODO: Make this smarter with all the rich data now available
-        candidates = [machine for machine in self._machines
-                      if machine._users[userID]] or self._machines
-
-        try:
-            machine = max(candidates, key=lambda m: m.availability)
-        except ValueError:
-            raise ContainerProcessError('No container process registered.')
-
-        if not machine.availability:
-            raise ContainerProcessError('There is no free container process.')
-
-        return machine
+        machines = [machine for machine in self._machines
+                      if machine.availability > 0]
+        if not machines:
+            # TODO : Someone could insert IAAS HOOKS here to automatically fill this void
+            raise ContainerProcessError('You seem to have run out of capacity add more nodes')
+        else:
+            candidates = [candidate for candidate in machines
+                      if machine._user[userID]]
+            if candidates:
+                return max(candidates, key=lambda m: m.availability)
+            else:
+                return max(machines, key=lambda m: m.availability)
 
     def network_group_add_node(self, group, machine):
         network_group = self._network_group_node[group]
