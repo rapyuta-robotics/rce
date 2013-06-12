@@ -107,6 +107,7 @@ class LoadBalancer(object):
             @type  root:        rce.master.RoboEarthCloudEngine
         """
         self._root = root
+        self._network_group_lookup = {}
         self._network_group_ip = defaultdict(set)
         self._network_group_node = defaultdict(set)
         self._machines = set()
@@ -177,12 +178,10 @@ class LoadBalancer(object):
                 self.build_tunnel(group, machine, target)
             network_group.add(machine)
 
-
     def network_group_remove_node(self, group, machine):
         self._network_group_node[group].remove(machine)
         for target in self._network_group_node[group]:
             target.destroyTunnel(group, machine.IP)
-
 
     def build_tunnel(self, groupname, machineA, machineB):
         """Internal call used to create a GRE Tunnel between two hosts
@@ -225,9 +224,16 @@ class LoadBalancer(object):
         group_name = data.get('group')
         groupIp = data.get('groupIp')
         if group_name:
-            group_name = str(abs(hash(' '.join((userID, group_name)))))[:8]
-            data['group'] = group_name
-            network_group = self._network_group_ip[group_name]
+            group_key = str(abs(hash(' '.join((userID, group_name)))))[:8]
+            # Check for extremely rare cases of key collision
+            group = self._network_group_lookup.get(group_key)
+            if group:
+                if group != (userID, group_name):
+                    raise InternalError('User Group Key collision detected')
+            else:
+                self._network_group_lookup[group_key] = (userID, group_name)
+            data['group'] = group_key
+            network_group = self._network_group_ip[group_key]
             if groupIp:
                 network_group.add(groupIp)
             else:
