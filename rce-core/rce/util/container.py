@@ -98,7 +98,7 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 _NETWORK_GROUP = """
 lxc.network.type=veth
 lxc.network.script.up={ovsup}
-# Disable Ovs down ,as not supported on 12.04, can be added later
+# Disable Ovs down, as not supported on 12.04, can be added later
 #lxc.network.script.down={ovsdown}
 lxc.network.ipv4={groupIp}
 lxc.network.flags=up
@@ -161,25 +161,6 @@ class Container(object):
         self._hostname = hostname
         self._ip = ip
         self._group = data.get('group', None)
-        if self._group:
-            self._groupIp = data.get('groupIp')
-            self._ovsup = pjoin(conf, 'ovsup')
-            self._ovsdown = pjoin(conf, 'ovsdown')
-
-            self._network_group = _NETWORK_GROUP.format(ovsup=self._ovsup,
-                                 ovsdown=self._ovsdown, groupIp=self._groupIp)
-
-
-            if os.path.exists(self._ovsup):
-                raise ValueError('There is already a ovs upstart file in the container '
-                                 "configuration directory '{0}'.".format(conf))
-
-            if os.path.exists(self._ovsdown):
-                raise ValueError('There is already a ovs down file in the container '
-                                 "configuration directory '{0}'.".format(conf))
-
-        else:
-            self._network_group = '#No network group'
 
         if not os.path.isabs(conf):
             raise ValueError('Container configuration directory is not an '
@@ -188,6 +169,28 @@ class Container(object):
         if not os.path.isdir(conf):
             raise ValueError('Container Configuration directory does not '
                              'exist: {0}'.format(conf))
+
+        if self._group:
+            self._groupIp = data.get('groupIp')
+            self._ovsup = pjoin(conf, 'ovsup')
+            self._ovsdown = pjoin(conf, 'ovsdown')
+
+            self._network_group = _NETWORK_GROUP.format(ovsup=self._ovsup,
+                                                        ovsdown=self._ovsdown,
+                                                        groupIp=self._groupIp)
+
+            if os.path.exists(self._ovsup):
+                raise ValueError('There is already a ovs start-up script in '
+                                 'the container configuration directory '
+                                 "'{0}'.".format(conf))
+
+            if os.path.exists(self._ovsdown):
+                raise ValueError('There is already a ovs tear-down script in '
+                                 'the container configuration directory '
+                                 "'{0}'.".format(conf))
+
+        else:
+            self._network_group = '#No network group'
 
         if os.path.exists(self._conf):
             raise ValueError('There is already a config file in the container '
@@ -217,7 +220,7 @@ class Container(object):
                                                  fsDir=pjoin(self._rootfs, fs),
                                                  ro=',ro' if ro else ''))
 
-    def _setup(self):
+    def _setupFiles(self):
         """ Setup necessary files.
         """
         with open(self._conf, 'w') as f:
@@ -226,10 +229,9 @@ class Container(object):
                                    network_group=self._network_group))
 
         with open(self._fstab, 'w') as f:
-            f.write(_FSTAB_BASE.format(
-                proc=pjoin(self._rootfs, 'proc'),
-                devpts=pjoin(self._rootfs, 'dev/pts'),
-                sysfs=pjoin(self._rootfs, 'sys')))
+            f.write(_FSTAB_BASE.format(proc=pjoin(self._rootfs, 'proc'),
+                                       devpts=pjoin(self._rootfs, 'dev/pts'),
+                                       sysfs=pjoin(self._rootfs, 'sys')))
             f.writelines(self._fstabExt)
 
         if self._group:
@@ -251,7 +253,7 @@ class Container(object):
                             error message.
             @rtype:         twisted.internet.defer.Deferred
         """
-        self._setup()
+        self._setupFiles()
 
         log.msg("Start container '{0}'".format(name))
         return execute(('/usr/bin/lxc-start', '-n', name, '-f', self._conf,

@@ -211,6 +211,7 @@ class RCEContainer(Referenceable):
         os.mkdir(rosDir)
 
         if self._client.rosRel > 'fuerte':
+            # TODO: Switch to user 'ros' when the launcher is used again
             user_rosdep = os.path.join(rceDir, '.ros/rosdep')
             root_rosdep = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
             shutil.copytree(root_rosdep, user_rosdep)
@@ -251,7 +252,7 @@ class RCEContainer(Referenceable):
         self._container.extendFstab(rceDir, 'opt/rce/data', False)
         self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
                                     'etc/init/rceComm.conf', True)
-        # TODO: For the moment there is no upstart launcher.
+        # TODO: For the moment there is no upstart script for the launcher.
 #        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
 #                                    'etc/init/rceLauncher.conf', True)
         self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
@@ -274,7 +275,7 @@ class RCEContainer(Referenceable):
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
 
-        # TODO: For the moment there is no upstart launcher.
+        # TODO: For the moment there is no upstart script for the launcher.
 #        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
 #            f.write(_UPSTART_LAUNCHER)
 
