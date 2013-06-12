@@ -321,11 +321,11 @@ class Machine(object):
         if len(self._containers) >= self._maxNr:
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
-        container = Container(self, userID, data)
         groupname = data.get('group')
         if groupname:
             self.createBridge(groupname)
             self._ovs_bridge[groupname]['locals'].add(data.get('groupIp'))
+        container = Container(self, userID, data)
         self._ref.callRemote('createContainer', uid, data).chainDeferred(container)
         return container
 
