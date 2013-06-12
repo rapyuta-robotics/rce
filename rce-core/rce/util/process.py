@@ -44,7 +44,7 @@ class _ProcessProtocol(ProcessProtocol):
     """ Protocol used to retrieve the exit code of a child process.
     """
     def __init__(self, cmd, deferred):
-        self.cmd
+        self.cmd = cmd
         self.deferred = deferred
 
     def processEnded(self, reason):
