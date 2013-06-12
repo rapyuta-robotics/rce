@@ -677,8 +677,8 @@ class ContainerClient(Referenceable):
                                     'ovs-vsctl.'.format(retVal))
                         deferred.errback(Failure(e))
                 dfrd.addCallback(cb)
-        except KeyError:
-            e = OVSError('Bridge {0} is not present'.format(bridge))
+        except OSError:
+            e = OVSError('Bridge {0} could not be destroyed'.format(bridge))
             deferred.errback(Failure(e))
         return deferred
 
@@ -715,8 +715,8 @@ class ContainerClient(Referenceable):
                                      'ovs-vsctl.'.format(retVal))
                         deferred.errback(Failure(e))
             dfrd.addCallback(cb)
-        except KeyError:
-            e = OVSError('Bridge {0} is not present'.format(bridge))
+        except OSError:
+            e = OVSError('Tunnel could not be created')
             deferred.errback(Failure(e))
         return deferred
 
