@@ -184,8 +184,8 @@ class LoadBalancer(object):
             target.destroyTunnel(group, machine.IP)
 
     def build_tunnel(self, groupname, machineA, machineB):
-        """Internal call used to create a GRE Tunnel between two hosts
-        (physical machines or instances)
+        """ Internal call used to create a GRE Tunnel between two hosts
+            (physical machines or instances)
 
             @param groupname:      Unique group name to be linked up
             @type  groupname:      str
@@ -196,13 +196,12 @@ class LoadBalancer(object):
             @param machineB:       The Physical Machine object
             @type  machineB:       rce.core.machine.Machine
         """
-        if machineA.check_bridge(groupname) and \
-        machineB.check_bridge(groupname):
+        if (machineA.check_bridge(groupname) and
+            machineB.check_bridge(groupname)):
             machineA.createTunnel(groupname, machineB.IP)
             machineB.createTunnel(groupname, machineA.IP)
         else:
             raise InternalError('Tunnel nodes are invalid')
-
 
     def createContainer(self, uid, userID, data):
         """ Select an appropriate machine and create a container.
@@ -343,7 +342,7 @@ class Machine(object):
             @param groupname:       Unique name of the network group
             @type  groupname:       str
         """
-        if groupname not in self._ovs_bridge.iterkeys():
+        if groupname not in self._ovs_bridge:
             self._ovs_bridge[groupname] = {'locals':set(), 'extern':set()}
             return self._ref.callRemote('createBridge', groupname)
 
@@ -353,12 +352,12 @@ class Machine(object):
             @param groupname:        Unique name of the network group
             @type  groupname:        str
         """
-        if groupname in self._ovs_bridge.iterkeys():
+        if groupname in self._ovs_bridge:
             del self._ovs_bridge[groupname]
             return self._ref.callRemote('destroyBridge', groupname)
 
     def check_bridge(self, groupname):
-        return groupname in self._ovs_bridge.iterkeys()
+        return groupname in self._ovs_bridge
 
     def createTunnel(self, groupname, targetIp):
         """ Destroy a new GRE Tunnel
@@ -391,8 +390,7 @@ class Machine(object):
         self._containers.add(container)
         self._users[container._userID] += 1
         if container._group:
-            self._balancer.network_group_add_node(
-                                     container._group, self)
+            self._balancer.network_group_add_node(container._group, self)
 
     def unregisterContainer(self, container):
         assert container in self._containers
@@ -405,8 +403,7 @@ class Machine(object):
                                     ].remove(container._groupIp)
 
             if not self._ovs_bridge[container._group]['locals']:
-                self._balancer.network_group_remove_node(
-                                     container._group, self)
+                self._balancer.network_group_remove_node(container._group, self)
                 self.destroyBridge(container._group)
 
 

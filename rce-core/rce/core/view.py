@@ -58,7 +58,7 @@ class ControlView(Viewable):
             @param tag:         Tag which is used to identify the container
                                 in subsequent requests.
             @type  tag:         str
-            
+
             @param data:        Extra data about the container
             @param data:        dict
         """
@@ -71,8 +71,8 @@ class ControlView(Viewable):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
 
-        namespace, remote_container = user.realm.createContainer(
-                                        user.userID, data)
+        namespace, remote_container = user.realm.createContainer(user.userID,
+                                                                 data)
         container = Container(namespace, remote_container)
         user.containers[tag] = container
         container.notifyOnDeath(user.containerDied)

@@ -196,14 +196,14 @@ class RoboEarthCloudEngine(object):
         """ Callback for User instance to create a new Container object in a
             container process.
 
-            @param userID:        UserID of the user who created the container.
-            @type  userID:        str
+            @param userID:      UserID of the user who created the container.
+            @type  userID:      str
 
-            @param data:          Extra Data about the container
-            @param data:          dict
+            @param data:        Extra Data about the container
+            @param data:        dict
 
-            @return:              New Namespace and Container instance.
-            @rtype:              (rce.core.environment.Environment,
+            @return:            New Namespace and Container instance.
+            @rtype:             (rce.core.environment.Environment,
                                  rce.core.container.Container)
                                  (subclasses of rce.core.base.Proxy)
         """

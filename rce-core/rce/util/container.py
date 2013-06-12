@@ -38,9 +38,10 @@ pjoin = os.path.join
 
 # twisted specific imports
 from twisted.python import log
-from twisted.python.failure import Failure
-from twisted.internet.defer import Deferred
-from twisted.internet.utils import getProcessValue
+
+# rce specific imports
+from rce.util.process import execute
+
 
 _EXECMODE = stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 
@@ -123,13 +124,7 @@ devpts    {devpts}    devpts    defaults    0 0
 sysfs    {sysfs}    sysfs    defaults    0 0
 """
 
-
 _FSTAB_BIND = '{srcDir}    {fsDir}    none    bind{ro}    0 0\n'
-
-
-class ContainerError(Exception):
-    """ Exception is raised when a LXC command fails.
-    """
 
 
 class Container(object):
@@ -155,7 +150,7 @@ class Container(object):
             @param ip:          IP address which the container should use.
                                 Use '0.0.0.0' for DHCP.
             @type  ip:          str
-            
+
             @param data:        Extra properties about the container
             @type  data:        dict
         """
@@ -259,28 +254,9 @@ class Container(object):
         self._setup()
 
         log.msg("Start container '{0}'".format(name))
-        deferred = Deferred()
-
-        try:
-            dfrd = getProcessValue('/usr/bin/lxc-start',
-                                   ('-n', name, '-f', self._conf, '-d'),
-                                   env=os.environ, reactor=self._reactor)
-            def cb(retVal):
-                if retVal == 0:
-                    deferred.callback('Container successfully started.')
-                else:
-                    e = ContainerError('Container could not be started: '
-                                       'Received exit code {0} from '
-                                       'lxc-start.'.format(retVal))
-                    deferred.errback(Failure(e))
-
-            dfrd.addCallback(cb)
-        except OSError:
-            e = ContainerError('Insufficient system resources to start a new '
-                               'process.')
-            deferred.errback(Failure(e))
-
-        return deferred
+        return execute(('/usr/bin/lxc-start', '-n', name, '-f', self._conf,
+                        '-d'),
+                       env=os.environ, reactor=self._reactor)
 
     def stop(self, name):
         """ Stop the container.
@@ -294,28 +270,8 @@ class Container(object):
             @type  command:     twisted.internet.defer.Deferred
         """
         log.msg("Stop container '{0}'".format(name))
-        deferred = Deferred()
-
-        try:
-            dfrd = getProcessValue('/usr/bin/lxc-stop', ('-n', name),
-                                   env=os.environ, reactor=self._reactor)
-
-            def cb(retVal):
-                if retVal == 0:
-                    deferred.callback('Container successfully stopped.')
-                else:
-                    e = ContainerError('Container could not be stopped: '
-                                       'Received exit code {0} from '
-                                       'lxc-stop.'.format(retVal))
-                    deferred.errback(Failure(e))
-
-            dfrd.addCallback(cb)
-        except OSError:
-            e = ContainerError('Insufficient system resources to stop a '
-                               'process.')
-            deferred.errback(Failure(e))
-
-        return deferred
+        return execute(('/usr/bin/lxc-stop', '-n', name),
+                       env=os.environ, reactor=self._reactor)
 
 #    def execute(self, name, command):
 #        """ Execute a command inside the container.

@@ -46,9 +46,7 @@ except ImportError:
 
 # twisted specific imports
 from twisted.python import log
-from twisted.python.failure import Failure
-from twisted.internet.utils import getProcessValue
-from twisted.internet.defer import  DeferredList, succeed, Deferred
+from twisted.internet.defer import  DeferredList, succeed
 from twisted.spread.pb import Referenceable, PBClientFactory, \
     DeadReferenceError, PBConnectionLost
 
@@ -57,12 +55,10 @@ from rce.util.error import InternalError
 from rce.util.container import Container
 from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
+from rce.util.process import execute
 from rce.core.error import MaxNumberExceeded
 # from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
-
-class OVSError(Exception):
-    """Error class for OVS script faliures"""
 
 
 _UPSTART_COMM = """
@@ -79,10 +75,10 @@ kill timeout 5
 script
     # setup environment
     . /opt/rce/setup.sh
-
-    # start environment node
     {chown_cmd}
     {ifconf_cmd}
+
+    # start environment node
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
 end script
 """
@@ -103,7 +99,7 @@ script
     # setup environment
     . /opt/rce/setup.sh
 
-    #start rosapi node
+    # start rosapi node
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-rosproxy {proxyPort}
 end script
 """
@@ -143,7 +139,6 @@ iface eth0 inet static
     broadcast {network}.255
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
-
 """
 
 
@@ -177,7 +172,6 @@ class RCEContainer(Referenceable):
         self._terminating = None
 
         # Additional container parameters to use
-
         self._size = data.get('size', 0)
         self._cpu_limit = data.get('cpu', 0)
         self._memory_limit = data.get('memory', 0)
@@ -186,9 +180,11 @@ class RCEContainer(Referenceable):
         # Group networking fields
         self._group = data.get('group', '')
         self._groupIp = data.get('groupIp', '')
+
         if self._group:
-            ifconf_cmd = 'ifconfig eth1 netmask 255.255.255.0 broadcast 192.168.1.255'
-        else :
+            ifconf_cmd = ('ifconfig eth1 netmask 255.255.255.0 '
+                          'broadcast 192.168.1.255')
+        else:
             ifconf_cmd = "#no ovs"
 
         # Create the directories for the container
@@ -219,7 +215,7 @@ class RCEContainer(Referenceable):
             shutil.copytree(root_rosdep, user_rosdep)
             chown_cmd = 'chown -R rce:rce /opt/rce/data/.ros'
         else:
-            chown_cmd = '#'
+            chown_cmd = '#no chown'
 
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
@@ -228,15 +224,13 @@ class RCEContainer(Referenceable):
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
-
         # Construct password
         passwd = encodeAES(cipher(self._client.masterPassword),
                            salter(uid, self._client.infraPassword))
 
         # Create the container
         self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name, ip,
-                                    data)
+                                    self._confDir, self._name, ip, data)
 
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -278,6 +272,7 @@ class RCEContainer(Referenceable):
 
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
+
         # TODO: For the moment there is no upstart launcher.
 #        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
 #            f.write(_UPSTART_LAUNCHER)
@@ -627,133 +622,74 @@ class ContainerClient(Referenceable):
             @type  groupname:       str
 
             @return:                Exit status of command
-            @rtype:                 deferred
+            @rtype:                 twisted.internet.defer.Deferred
         """
-        bridge = 'br-{0}'.format(groupname)
-        if groupname not in self._ovs_bridges.iterkeys():
+        if groupname not in self._ovs_bridges:
             self._ovs_bridges[groupname] = set()
-            deferred = Deferred()
-            try:
-                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
-                                       ('add-br', bridge),
-                                       env=os.environ, reactor=self._reactor)
-                def cb(retVal):
-                    if retVal == 0:
-                        deferred.callback('Bridge successfully setup.')
-                    else:
-                        e = OVSError('Bridge could not be setup: '
-                                     'Received exit code {0} from '
-                                     'ovs-vsctl.'.format(retVal))
-                        deferred.errback(Failure(e))
-                dfrd.addCallback(cb)
-            except OSError:
-                e = OVSError('Bridge {0} could not be started'.format(bridge))
-                deferred.errback(Failure(e))
-            return deferred
+            return execute(('/usr/bin/ovs-vsctl', 'add-br',
+                            'br-{0}'.format(groupname)),
+                           env=os.environ, reactor=self._reactor)
 
     def remote_destroyBridge(self, groupname):
-        """ Destroy a new ovs Bridge
+        """ Destroy a ovs Bridge
 
-            @param groupname:        Unique name of the network group
-            @type  groupname:        str
+            @param groupname:       Unique name of the network group
+            @type  groupname:       str
 
             @return:                Exit status of command
-            @rtype:                 deferred
+            @rtype:                 twisted.internet.defer.Deferred
         """
-        bridge = 'br-{0}'.format(groupname)
-        deferred = Deferred()
-        try:
-            if groupname in self._ovs_bridges.iterkeys():
-                del self._ovs_bridges[groupname]
-                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
-                                           ('del-br', bridge),
-                                           env=os.environ, reactor=self._reactor)
-                def cb(retVal):
-                    if retVal == 0:
-                        deferred.callback('Bridge successfully destroyed.')
-                    else:
-                        e = OVSError('Bridge could not be removed: '
-                                    'Received exit code {0} from '
-                                    'ovs-vsctl.'.format(retVal))
-                        deferred.errback(Failure(e))
-                dfrd.addCallback(cb)
-        except OSError:
-            e = OVSError('Bridge {0} could not be destroyed'.format(bridge))
-            deferred.errback(Failure(e))
-        return deferred
+        if groupname in self._ovs_bridges:
+            del self._ovs_bridges[groupname]
+            return execute(('/usr/bin/ovs-vsctl', 'del-br',
+                            'br-{0}'.format(groupname)),
+                           env=os.environ, reactor=self._reactor)
 
 
     def remote_createTunnel(self, groupname, targetIp):
         """ Destroy a new ovs Bridge
 
-            @param groupname:        Unique name of the network group
-            @type  groupname:        str
+            @param groupname:       Unique name of the network group
+            @type  groupname:       str
 
-            @param targetIp:         Target ip for the gre Tunnel
-            @type  targetIp:         str
+            @param targetIp:        Target ip for the gre Tunnel
+            @type  targetIp:        str
 
             @return:                Exit status of command
-            @rtype:                 deferred
+            @rtype:                 twisted.internet.defer.Deferred
         """
-        bridge = 'br-{0}'.format(groupname)
         hash_ip = str(abs(hash(targetIp)))[:8]
-        port = 'gre-{0}'.format(hash_ip)
-        remote = 'options:remote_ip={0}'.format(targetIp)
-        try:
-            if hash_ip not in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].add(hash_ip)
-                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
-                                       ('add-port', bridge, port, '--', 'set',
-                                         'interface', port, 'type=gre', remote),
-                                       env=os.environ, reactor=self._reactor)
-                def cb(retVal):
-                    if retVal == 0:
-                        deferred.callback('Tunnel successfully setup.')
-                    else:
-                        e = OVSError('Tunnel could not be created: '
-                                     'Received exit code {0} from '
-                                     'ovs-vsctl.'.format(retVal))
-                        deferred.errback(Failure(e))
-            dfrd.addCallback(cb)
-        except OSError:
-            e = OVSError('Tunnel could not be created')
-            deferred.errback(Failure(e))
-        return deferred
+
+        if hash_ip not in self._ovs_bridges[groupname]:
+            self._ovs_bridges[groupname].add(hash_ip)
+
+            bridge = 'br-{0}'.format(groupname)
+            port = 'gre-{0}'.format(hash_ip)
+            remote = 'options:remote_ip={0}'.format(targetIp)
+
+            return execute(('/usr/bin/ovs-vsctl', 'add-port', bridge, port,
+                            '--', 'set', 'interface', port, 'type=gre', remote),
+                           env=os.environ, reactor=self._reactor)
 
     def remote_destroyTunnel(self, groupname, targetIp):
         """ Destroy a new ovs Bridge
 
-            @param groupname:        Unique name of the network group
-            @type  groupname:        str
+            @param groupname:       Unique name of the network group
+            @type  groupname:       str
 
-            @param targetIp:         Target ip for the gre Tunnel
-            @type  targetIp:         str
+            @param targetIp:        Target ip for the gre Tunnel
+            @type  targetIp:        str
 
             @return:                Exit status of command
-            @rtype:                 deferred
+            @rtype:                 twisted.internet.defer.Deferred
         """
-        bridge = 'br-{0}'.format(groupname)
         hash_ip = str(abs(hash(targetIp)))[:8]
-        port = 'gre-{0}'.format(hash_ip)
-        try:
-            if hash_ip in self._ovs_bridges[groupname]:
-                self._ovs_bridges[groupname].remove(hash_ip)
-                dfrd = getProcessValue('/usr/bin/ovs-vsctl',
-                                       ('del-port', port,),
-                                       env=os.environ, reactor=self._reactor)
-                def cb(retVal):
-                    if retVal == 0:
-                        deferred.callback('Tunnel successfully deleted.')
-                    else:
-                        e = OVSError('Tunnel could not be destroyed: '
-                                     'Received exit code {0} from '
-                                     'ovs-vsctl.'.format(retVal))
-                        deferred.errback(Failure(e))
-            dfrd.addCallback(cb)
-        except KeyError:
-            e = OVSError('Bridge {0} is not present'.format(bridge))
-            deferred.errback(Failure(e))
-        return deferred
+
+        if hash_ip in self._ovs_bridges[groupname]:
+            self._ovs_bridges[groupname].remove(hash_ip)
+            return execute(('/usr/bin/ovs-vsctl', 'del-port',
+                            'gre-{0}'.format(hash_ip)),
+                           env=os.environ, reactor=self._reactor)
 
     def unregisterContainer(self, container):
         assert container in self._containers

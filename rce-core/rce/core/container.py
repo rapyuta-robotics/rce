@@ -49,9 +49,9 @@ class Container(Proxy):
 
             @param userID:      ID of the user who created the container.
             @type  userID:      str
-            
+
             @param data:        Extra data about the container
-            @type  data:        dict            
+            @type  data:        dict
         """
         super(Container, self).__init__()
         self._userID = userID
