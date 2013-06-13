@@ -107,6 +107,7 @@ class LoadBalancer(object):
         self._network_group_ip = defaultdict(set)
         self._network_group_node = defaultdict(set)
         self._machines = set()
+        self._iaas_hook = None
 
     def createMachine(self, ref, data):
         """ Create a new Machine object, which can be used to create new
@@ -159,7 +160,8 @@ class LoadBalancer(object):
 
         # TODO the above uses block assumptions , implement fine grain control at bottom
         if not machines:
-            # TODO : Someone could insert IAAS HOOKS here to automatically fill this void
+            if self._iaas_hook:
+                self._iaas_hook.spin_up()  # count, type, special_request
             raise ContainerProcessError('You seem to have run out of capacity add more nodes')
         else:
             candidates = [candidate for candidate in machines
@@ -244,6 +246,17 @@ class LoadBalancer(object):
                         break
         return self._getNextMachine(userID, data).createContainer(uid, userID, data)
 
+    def register_iaas_hook(self, hook):
+        """ Register an IAAS Hook object.
+        """
+        self._iaas_hook = hook
+
+    def unregister_iaas_hook(self):
+        """ Method should be called to destroy all machines.
+        """
+        self._iaas_hook.disconnect()
+        self._iaas_hook = None
+
     def cleanUp(self):
         """ Method should be called to destroy all machines.
         """
@@ -251,6 +264,7 @@ class LoadBalancer(object):
             self.destroyMachine(machine)
 
         assert len(self._machines) == 0
+        self.unregister_iaas_hook()
 
 
 class Machine(object):
@@ -495,3 +509,33 @@ class MachineAvatar(Avatar):
         """ Callback which should be called upon disconnection of the Machine
         """
         self._balancer.destroyMachine(self._machine)
+
+# TODO : This needs some work on specification
+class IaasHook(object):
+    def __init__(self, balancer):
+        """Base class to implement IASS Hooks for using a
+           public cloud platform auto provisioning
+
+            @param balancer:        The RCE LoadBalancer
+            @param targetIP         rce.core.machine.LoadBalancer
+        """
+        balancer.register_iaas_hook(self)
+
+    def disconnect(self):
+        """ Method called when shutting down the engine to relieve the hook"""
+        raise Exception("To be implemented by the user")
+
+    def spin_up(self, count=1, type=None, special_request=None):
+        """ Call to spin up more instances
+
+            @param balancer:        Number of instances to be spun up.
+            @param targetIP         int
+
+            @param balancer:        Type (generally size) of instance requested
+            @param targetIP         TDB by implementation
+
+            @param balancer:        Special request (gpu, cluster,hadoop)
+            @param targetIP         TDB by implementation
+        """
+        raise Exception("To be implemented by the user")
+
