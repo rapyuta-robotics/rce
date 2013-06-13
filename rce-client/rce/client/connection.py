@@ -195,7 +195,7 @@ class _Connection(object):
     sendMessage.__doc__ = RCE.sendMessage.__doc__  # @UndefinedVariable
 
     def createContainer(self, cTag, group='', groupIp='', size=1, cpu=0,
-                        memory=0, bandwidth=0):
+                        memory=0, bandwidth=0, special_features=[]):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
 
@@ -206,7 +206,7 @@ class _Connection(object):
             raise ValueError('Invalid IPv4 address')
 
         self._rce.createContainer(cTag, group, groupIp, size, cpu, memory,
-                                  bandwidth)
+                                  bandwidth, special_features)
 
     createContainer.__doc__ = RCE.createContainer.__doc__  # @UndefinedVariable
 

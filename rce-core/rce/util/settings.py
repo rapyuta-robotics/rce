@@ -199,6 +199,7 @@ class _Settings(object):
         self._cpu = None
         self._memory = None
         self._bandwidth = None
+        self._special_properties = None
         self._rootfs = None
         self._conf_dir = None
         self._data_dir = None
@@ -338,6 +339,12 @@ class _Settings(object):
         return self._bandwidth
 
     @property
+    def special_properties(self):
+        """ Maximum number of containers which can run in the machine.
+        """
+        return self._special_properties
+
+    @property
     def rootfs(self):
         """ Path to the root directory of the container filesystem.
         """
@@ -419,6 +426,10 @@ class _Settings(object):
         settings._rootfs = parser.get('machine', 'rootfs')
         settings._conf_dir = parser.get('machine', 'conf_dir')
         settings._data_dir = parser.get('machine', 'data_dir')
+        # Figure out the special properties
+        special_properties = parser.get('machine', 'special_properties')
+        settings._special_properties = [i.strip() for i in
+                                        special_properties.strip('[]').split(',')]
 
         # ROS packages
         settings._packages = []

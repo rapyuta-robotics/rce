@@ -175,6 +175,7 @@ class RCEContainer(Referenceable):
         self._cpu_limit = data.get('cpu', 0)
         self._memory_limit = data.get('memory', 0)
         self._bandwidth_limit = data.get('bandwidth', 0)
+        self._special_features = data.get('special_features', [])
 
         # Group networking fields
         self._group = data.get('group', '')
@@ -494,6 +495,7 @@ class ContainerClient(Referenceable):
         self._cpu = data.get('cpu')
         self._memeory = data.get('memory')
         self._bandwidth = data.get('bandwidth')
+        self._special_features = data.get('special_features')
 
         # Common iptables references
         nat = iptc.Table(iptc.Table.NAT)

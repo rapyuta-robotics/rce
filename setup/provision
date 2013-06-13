@@ -256,7 +256,8 @@ def provision_config(config, config_file, deploy_type):
             'size':10,
             'cpu':0,
             'memory':0,
-            'bandwidth':0
+            'bandwidth':0,
+            'special_features':'',
             'rootfs':os.path.join(root_path, 'rootfs'),
             'conf_dir':os.path.join(root_path, 'config'),
             'data_dir':os.path.join(root_path, 'data')

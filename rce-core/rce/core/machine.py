@@ -154,11 +154,13 @@ class LoadBalancer(object):
         cpu = data.get('cpu', 0)
         memory = data.get('memory', 0)
         bandwidth = data.get('bandwidth', 0)
+        special_features = data.get('special_features', [])
 
         machines = [machine for machine in self._machines
                       if machine.availability >= size]
 
         # TODO the above uses block assumptions , implement fine grain control at bottom
+        # Like check memory data , use filters to get machines with special features like gpu, avxii, mmx sse
         if not machines:
             if self._iaas_hook:
                 self._iaas_hook.spin_up()  # count, type, special_request
@@ -290,6 +292,7 @@ class Machine(object):
         self._cpu = data.get('cpu')
         self._memeory = data.get('memory')
         self._bandwidth = data.get('bandwidth')
+        self._special_features = data.get('special_features')
 
         ip = ref.broker.transport.getPeer().host
         self._ip = getSettings().internal_IP if isLocalhost(ip) else ip
@@ -323,6 +326,11 @@ class Machine(object):
     def bandwidth(self):
         """ Machine Bandwidth Info. """
         return self._bandwidth
+
+    @property
+    def special_features(self):
+        """ Machine Special Features Info. """
+        return self._special_features
 
     @property
     def availability(self):

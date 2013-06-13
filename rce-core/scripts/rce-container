@@ -71,11 +71,14 @@ def _get_argparse():
     parser.add_argument('--size', type=int,
                         help='Total Size of Machine ', default=settings.size)
     parser.add_argument('--cpu', type=int,
-                        help='Total Size of Machine ', default=settings.cpu)
+                        help='Total CPU of Machine ', default=settings.cpu)
 	parser.add_argument('--memory', type=int,
-                        help='Total Size of Machine ', default=settings.memory)
+                        help='Total Memory of Machine ', default=settings.memory)
     parser.add_argument('--bandwidth', type=int,
-                        help='Total Size of Machine ', default=settings.bandwidth)
+                        help='Total Bandwidth of Machine ', default=settings.bandwidth)
+    parser.add_argument('--special_features', type=str,
+                        help="Special features of Machine eg input : 'avxi,gpu,ssev3'",
+                        default=settings.bandwidth)
 
     return parser
 
@@ -92,8 +95,10 @@ if __name__ == '__main__':
                                 sha256(args.infraPassword).hexdigest())
         passwd = sha256(args.masterPassword).hexdigest()
     
+    special_features = args.special_features.strip("' ").split(',')
     data = {'size':args.size, 'cpu':args.cpu,
-    		'memory':args.memory, 'bandwidth':args.bandwidth}
+    		'memory':args.memory, 'bandwidth':args.bandwidth
+    		'special_features':special_features}
 
     main(reactor, cred, args.masterIP, passwd, cred.password,
          settings.internal_port, settings.internal_IP, settings.container_IP,

@@ -61,6 +61,7 @@ class Container(Proxy):
         self._cpu_limit = data.get('cpu', 0)
         self._memory_limit = data.get('memory', 0)
         self._bandwidth_limit = data.get('bandwidth', 0)
+        self._special_features = data.get('special_features', [])
 
         # Group networking fields
         self._group = data.get('group', '')
@@ -91,6 +92,11 @@ class Container(Proxy):
     def bandwidth(self):
         """ The number of active containers in the machine. """
         return self._bandwidth_limit
+
+    @property
+    def special_features(self):
+        """ The number of active containers in the machine. """
+        return self._special_features
 
     def getAddress(self):
         """ Get the address which should be used to connect to the environment

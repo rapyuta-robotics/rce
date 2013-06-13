@@ -354,30 +354,33 @@ class RCE(object):
                                                'msgID':msgID, 'msg':msg})
 
     def createContainer(self, cTag, group='', groupIp='', size=1, cpu=0,
-                        memory=0, bandwidth=0):
+                        memory=0, bandwidth=0, special_features=[]):
         """ Create a container.
 
-            @param cTag:        Unique tag which will be used to identify the
-                                container to create.
-            @type  cTag:        str
+            @param cTag:                Unique tag which will be used to identify the
+                                        container to create.
+            @type  cTag:                str
 
-            @param group:       The container group that needs to be networked
-            @type  group:       str
+            @param group:               The container group that needs to be networked
+            @type  group:               str
 
-            @param groupIp:     The container group static ipv4 address
-            @type  groupIp:     str
+            @param groupIp:             The container group static ipv4 address
+            @type  groupIp:             str
 
-            @param size:        The container instance size
-            @type  size:        int
+            @param size:                The container instance size
+            @type  size:                int
 
-            @param cpu:         CPU Allocation
-            @type  cpu:         int
+            @param cpu:                 CPU Allocation
+            @type  cpu:                 int
 
-            @param memory:      Memory Allocation
-            @type  memory:      int
+            @param memory:              Memory Allocation
+            @type  memory:              int
 
-            @param bandwidth:   Bandwidth allocation
-            @type  bandwidth:   int
+            @param bandwidth:           Bandwidth allocation
+            @type  bandwidth:           int
+
+            @param special_features:    Special features required eg gpu, hadoop
+            @type special_features:     list eg ['gpu','hadoop','avxii']
         """
         print("Request creation of container '{0}'.".format(cTag))
         data = {}
@@ -399,6 +402,9 @@ class RCE(object):
 
         if bandwidth:
             data['bandwidth'] = bandwidth
+
+        if special_features:
+            data['special_features'] = special_features
 
         container = {'containerTag':cTag}
 
