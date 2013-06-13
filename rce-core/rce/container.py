@@ -744,7 +744,7 @@ class ContainerClient(Referenceable):
 
 def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
          internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, pkgDir, maxNr, rosRel):
+         dataDir, pkgDir, data, rosRel):
     log.startLogging(sys.stdout)
 
     def _err(reason):
@@ -759,7 +759,7 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
                              rosproxyPort, rootfsDir, confDir, dataDir, pkgDir,
                              rosRel)
 
-    d = factory.login(cred, (client, maxNr))
+    d = factory.login(cred, (client, data))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
 

@@ -108,7 +108,7 @@ class LoadBalancer(object):
         self._network_group_node = defaultdict(set)
         self._machines = set()
 
-    def createMachine(self, ref, maxNr):
+    def createMachine(self, ref, data):
         """ Create a new Machine object, which can be used to create new
             containers.
 
@@ -116,14 +116,13 @@ class LoadBalancer(object):
                                 container process.
             @type  ref:         twisted.spread.pb.RemoteReference
 
-            @param maxNr:       The maximum number of container which are
-                                allowed in the machine.
-            @type  maxNr:       int
+            @param data:        Data about the machine
+            @type  data:        dict
 
             @return:            New Machine instance.
             @rtype:             rce.core.machine.Machine
         """
-        machine = Machine(ref, maxNr, self)
+        machine = Machine(ref, data, self)
         self._machines.add(machine)
         return machine
 
@@ -252,22 +251,21 @@ class Machine(object):
     """ Representation of a machine in which containers can be created. It
         keeps track of all the containers running in the machine.
     """
-    def __init__(self, ref, maxNr, balancer):
+    def __init__(self, ref, data, balancer):
         """ Initialize the Machine.
 
             @param ref:         Remote reference to the ContainerClient in the
                                 container process.
             @type  ref:         twisted.spread.pb.RemoteReference
 
-            @param maxNr:       The maximum number of container which are
-                                allowed in the machine.
-            @type  maxNr:       int
+            @param data:        Data about the machine
+            @type  data:        dict
 
             @param balancer:    Reference to top level of data structure.
             @type  balancer:    rce.core.machine.LoadBalancer
         """
         self._ref = ref
-        self._maxNr = maxNr
+        self._size = data.get('size')
 
         ip = ref.broker.transport.getPeer().host
         self._ip = getSettings().internal_IP if isLocalhost(ip) else ip
@@ -285,12 +283,12 @@ class Machine(object):
     @property
     def capacity(self):
         """ The number of active containers in the machine. """
-        return self._maxNr
+        return self._size
 
     @property
     def availability(self):
         """ The number of available containers in the machine. """
-        return self._maxNr - len(self._containers)
+        return self._size - len(self._containers)
 
     @property
     def IP(self):
@@ -315,7 +313,7 @@ class Machine(object):
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
-        if len(self._containers) >= self._maxNr:
+        if len(self._containers) >= self._size:
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
         groupname = data.get('group')

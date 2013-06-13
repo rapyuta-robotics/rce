@@ -195,7 +195,10 @@ class _Settings(object):
         self._converters = None
 
         # Machine
-        self._max_container = None
+        self._size = None
+        self._cpu = None
+        self._memory = None
+        self._bandwidth = None
         self._rootfs = None
         self._conf_dir = None
         self._data_dir = None
@@ -311,10 +314,28 @@ class _Settings(object):
         return self._converters
 
     @property
-    def max_container(self):
+    def size(self):
         """ Maximum number of containers which can run in the machine.
         """
-        return self._max_container
+        return self._size
+
+    @property
+    def cpu(self):
+        """ Maximum number of containers which can run in the machine.
+        """
+        return self._cpu
+
+    @property
+    def memory(self):
+        """ Maximum number of containers which can run in the machine.
+        """
+        return self._memory
+
+    @property
+    def bandwidth(self):
+        """ Maximum number of containers which can run in the machine.
+        """
+        return self._bandwidth
 
     @property
     def rootfs(self):
@@ -391,7 +412,10 @@ class _Settings(object):
         settings._converters = tuple(c for _, c in parser.items('converters'))
 
         # Machine
-        settings._max_container = parser.getint('machine', 'max_container')
+        settings._size = parser.getint('machine', 'size')
+        settings._cpu = parser.getint('machine', 'cpu')
+        settings._memory = parser.getint('machine', 'memory')
+        settings._bandwidth = parser.getint('machine', 'bandwidth')
         settings._rootfs = parser.get('machine', 'rootfs')
         settings._conf_dir = parser.get('machine', 'conf_dir')
         settings._data_dir = parser.get('machine', 'data_dir')
