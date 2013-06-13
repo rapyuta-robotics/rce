@@ -661,12 +661,13 @@ class ContainerClient(Referenceable):
             @rtype:                 twisted.internet.defer.Deferred
         """
         hash_ip = str(abs(hash(targetIp)))[:8]
+        bridgename = str(int(haship) ^ int(groupname))
 
         if hash_ip not in self._ovs_bridges[groupname]:
             self._ovs_bridges[groupname].add(hash_ip)
 
             bridge = 'br-{0}'.format(groupname)
-            port = 'gre-{0}'.format(hash_ip)
+            port = 'gre-{0}'.format(bridgename)
             remote = 'options:remote_ip={0}'.format(targetIp)
 
             return execute(('/usr/bin/ovs-vsctl', 'add-port', bridge, port,
@@ -686,11 +687,12 @@ class ContainerClient(Referenceable):
             @rtype:                 twisted.internet.defer.Deferred
         """
         hash_ip = str(abs(hash(targetIp)))[:8]
+        bridgename = str(int(haship) ^ int(groupname))
 
         if hash_ip in self._ovs_bridges[groupname]:
             self._ovs_bridges[groupname].remove(hash_ip)
             return execute(('/usr/bin/ovs-vsctl', 'del-port',
-                            'gre-{0}'.format(hash_ip)),
+                            'gre-{0}'.format(bridgename)),
                            env=os.environ, reactor=self._reactor)
 
     def unregisterContainer(self, container):
