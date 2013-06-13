@@ -149,9 +149,15 @@ class LoadBalancer(object):
             @param data:        Extra data about the container.
             @type  data:        dict
         """
-        # TODO: Make this smarter with all the rich data now available
+        size = data.get('size', 1)
+        cpu = data.get('cpu', 0)
+        memory = data.get('memory', 0)
+        bandwidth = data.get('bandwidth', 0)
+
         machines = [machine for machine in self._machines
-                      if machine.availability > 0]
+                      if machine.availability >= size]
+
+        # TODO the above uses block assumptions , implement fine grain control at bottom
         if not machines:
             # TODO : Someone could insert IAAS HOOKS here to automatically fill this void
             raise ContainerProcessError('You seem to have run out of capacity add more nodes')
