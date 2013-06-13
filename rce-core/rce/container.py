@@ -450,9 +450,12 @@ class ContainerClient(Referenceable):
                                   filesystem (without the @param rootfsDir).
             @type  pkgDir:        [(str, str)]
 
-            @param rosRel:       Container filesytem ROS release in this
-                                 deployment instance of the cloud engine
-            @type  rosRel:       str
+            @param rosRel:        Container filesytem ROS release in this
+                                  deployment instance of the cloud engine
+            @type  rosRel:        str
+
+            @param data:          More data about the machine
+            @type data:           dict
         """
         self._reactor = reactor
         self._internalIP = intIP
@@ -485,10 +488,45 @@ class ContainerClient(Referenceable):
         self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
         self._ovs_bridges = {}
 
+        # Physical parameters of machine
+        # TODO : Is a human settings at this time, rce.util.sysinfo should fill this role soon
+        self._size = data.get('size')
+        self._cpu = data.get('cpu')
+        self._memeory = data.get('memory')
+        self._bandwidth = data.get('bandwidth')
+
         # Common iptables references
         nat = iptc.Table(iptc.Table.NAT)
         self._prerouting = iptc.Chain(nat, 'PREROUTING')
         self._output = iptc.Chain(nat, 'OUTPUT')
+
+    def remote_getSysinfo(self, request):
+        """ Get realtime  Sysinfo data from machine.
+
+            @param request:       data desired
+            @type  request:       tbd #TODO
+        """
+        response_table = {  # TODO : replace these calls with call to
+        'size':self._size,  # rce.util.sysinfo
+        'cpu':self._cpu,
+        'memory': self._memeory,
+        'bandwidth': self._bandwidth,
+        # 'keyword': some value or function to provide the data
+        }
+        return response_table[request]
+
+    def remote_setSysinfo(self, request, value):
+        """ Set some system parameter to the machine.
+
+            @param request:       data desired
+            @type  request:       tbd #TODO
+
+            @param value:          data value
+            @type  value:          tbd #TODO
+        """
+        raise InternalError('Not Implemented yet.')
+
+
 
     @property
     def reactor(self):
@@ -757,7 +795,7 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
                              infraPasswd, internalIP, bridgeIP, envPort,
                              rosproxyPort, rootfsDir, confDir, dataDir, pkgDir,
-                             rosRel)
+                             rosRel, data)
 
     d = factory.login(cred, (client, data))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))

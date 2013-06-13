@@ -265,7 +265,11 @@ class Machine(object):
             @type  balancer:    rce.core.machine.LoadBalancer
         """
         self._ref = ref
+
         self._size = data.get('size')
+        self._cpu = data.get('cpu')
+        self._memeory = data.get('memory')
+        self._bandwidth = data.get('bandwidth')
 
         ip = ref.broker.transport.getPeer().host
         self._ip = getSettings().internal_IP if isLocalhost(ip) else ip
@@ -281,14 +285,29 @@ class Machine(object):
         return len(self._containers)
 
     @property
-    def capacity(self):
-        """ The number of active containers in the machine. """
+    def size(self):
+        """ Machine Capacity """
         return self._size
 
     @property
+    def cpu(self):
+        """Machine CPU Info. """
+        return self._cpu
+
+    @property
+    def memory(self):
+        """ Machine Memory Info. """
+        return self._memory
+
+    @property
+    def bandwidth(self):
+        """ Machine Bandwidth Info. """
+        return self._bandwidth
+
+    @property
     def availability(self):
-        """ The number of available containers in the machine. """
-        return self._size - len(self._containers)
+        """Machine Availability """
+        return self._size - sum(container.size for container in self._containers)
 
     @property
     def IP(self):
@@ -372,6 +391,25 @@ class Machine(object):
         if targetIp in self._ovs_bridge[groupname]['extern']:
                 self._ovs_bridge[groupname]['extern'].remove(targetIp)
                 return self._ref.callRemote('destroyTunnel', groupname, targetIp)
+
+    def get_sysinfo(self, request):
+        """ Get realtime  Sysinfo data from machine.
+
+            @param request:       data desired
+            @type  request:       tbd #TODO
+        """
+        return self._ref.callRemote('getSysinfo')
+
+    def set_sysinfo(self, request, value):
+        """ Set some system parameter to the machine.
+
+            @param request:       data desired
+            @type  request:       tbd #TODO
+
+            @param value:          data value
+            @type  value:          tbd #TODO
+        """
+        return self._ref.callRemote('setSysinfo', value)
 
     def registerContainer(self, container):
         assert container not in self._containers

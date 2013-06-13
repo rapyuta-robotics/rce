@@ -482,7 +482,7 @@ class AdminMonitorView(Viewable):
         try:
             machine = (machine for machine in user.realm._balancer._machines
                        if machineIP == machine.IP).next()
-            return {'active':machine.active, 'capacity':machine.capacity}
+            return {'active':machine.active, 'size':machine.size}
         except StopIteration:
             raise InvalidRequest('No such machine.')
 

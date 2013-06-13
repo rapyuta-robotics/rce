@@ -72,6 +72,26 @@ class Container(Proxy):
         self._pending = set()
         self._address = None
 
+    @property
+    def size(self):
+        """ The number of active containers in the machine. """
+        return self._size
+
+    @property
+    def cpu(self):
+        """ The number of active containers in the machine. """
+        return self._cpu_limit
+
+    @property
+    def memory(self):
+        """ The number of active containers in the machine. """
+        return self._memory_limit
+
+    @property
+    def bandwidth(self):
+        """ The number of active containers in the machine. """
+        return self._bandwidth_limit
+
     def getAddress(self):
         """ Get the address which should be used to connect to the environment
             process for the cloud engine internal communication. The method
