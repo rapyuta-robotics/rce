@@ -661,7 +661,7 @@ class ContainerClient(Referenceable):
             @rtype:                 twisted.internet.defer.Deferred
         """
         hash_ip = str(abs(hash(targetIp)))[:8]
-        bridgename = str(int(haship) ^ int(groupname))
+        bridgename = str(int(hash_ip) ^ int(groupname))
 
         if hash_ip not in self._ovs_bridges[groupname]:
             self._ovs_bridges[groupname].add(hash_ip)
@@ -687,7 +687,7 @@ class ContainerClient(Referenceable):
             @rtype:                 twisted.internet.defer.Deferred
         """
         hash_ip = str(abs(hash(targetIp)))[:8]
-        bridgename = str(int(haship) ^ int(groupname))
+        bridgename = str(int(hash_ip) ^ int(groupname))
 
         if hash_ip in self._ovs_bridges[groupname]:
             self._ovs_bridges[groupname].remove(hash_ip)
