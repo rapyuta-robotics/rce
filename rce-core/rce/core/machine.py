@@ -158,7 +158,7 @@ class LoadBalancer(object):
             raise ContainerProcessError('You seem to have run out of capacity add more nodes')
         else:
             candidates = [candidate for candidate in machines
-                      if machine._user[userID]]
+                      if machine._users[userID]]
             if candidates:
                 return max(candidates, key=lambda m: m.availability)
             else:
