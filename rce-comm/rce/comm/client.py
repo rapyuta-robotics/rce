@@ -353,7 +353,7 @@ class RCE(object):
         self._sendMessage(types.DATA_MESSAGE, {'iTag':dest, 'type':msgType,
                                                'msgID':msgID, 'msg':msg})
 
-    def createContainer(self, cTag, group='', groupIp='', size=0, cpu=0,
+    def createContainer(self, cTag, group='', groupIp='', size=1, cpu=0,
                         memory=0, bandwidth=0):
         """ Create a container.
 

@@ -171,7 +171,7 @@ class RCEContainer(Referenceable):
         self._terminating = None
 
         # Additional container parameters to use
-        self._size = data.get('size', 0)
+        self._size = data.get('size', 1)
         self._cpu_limit = data.get('cpu', 0)
         self._memory_limit = data.get('memory', 0)
         self._bandwidth_limit = data.get('bandwidth', 0)

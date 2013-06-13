@@ -194,7 +194,7 @@ class _Connection(object):
 
     sendMessage.__doc__ = RCE.sendMessage.__doc__  # @UndefinedVariable
 
-    def createContainer(self, cTag, group='', groupIp='', size=0, cpu=0,
+    def createContainer(self, cTag, group='', groupIp='', size=1, cpu=0,
                         memory=0, bandwidth=0):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
