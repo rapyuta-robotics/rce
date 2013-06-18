@@ -199,7 +199,7 @@ class _Settings(object):
         self._cpu = None
         self._memory = None
         self._bandwidth = None
-        self._special_properties = None
+        self._special_features = None
         self._rootfs = None
         self._conf_dir = None
         self._data_dir = None
@@ -322,27 +322,27 @@ class _Settings(object):
 
     @property
     def cpu(self):
-        """ Maximum number of containers which can run in the machine.
+        """ Parameter to define cpu attributes/capacity
         """
         return self._cpu
 
     @property
     def memory(self):
-        """ Maximum number of containers which can run in the machine.
+        """ Parameter to define memory attributes/capacity
         """
         return self._memory
 
     @property
     def bandwidth(self):
-        """ Maximum number of containers which can run in the machine.
+        """ Parameter to define bandwidth attributes/capacity
         """
         return self._bandwidth
 
     @property
-    def special_properties(self):
-        """ Maximum number of containers which can run in the machine.
+    def special_features(self):
+        """ Parameter to define specia attributes like avx,gpu,hadoop etc
         """
-        return self._special_properties
+        return self._special_features
 
     @property
     def rootfs(self):
@@ -426,10 +426,10 @@ class _Settings(object):
         settings._rootfs = parser.get('machine', 'rootfs')
         settings._conf_dir = parser.get('machine', 'conf_dir')
         settings._data_dir = parser.get('machine', 'data_dir')
-        # Figure out the special properties
-        special_properties = parser.get('machine', 'special_properties')
-        settings._special_properties = [i.strip() for i in
-                                        special_properties.strip('[]').split(',')]
+        # Figure out the special features
+        special_features = parser.get('machine', 'special_features')
+        settings._special_features = [i.strip() for i in
+                                        special_features.strip('[]').split(',')]
 
         # ROS packages
         settings._packages = []
