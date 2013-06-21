@@ -70,7 +70,7 @@ _CLEAN = 'sudo rm -rf {0}'
 # Packages necessary to run the provision script
 _BASE_PREP = 'curl python-setuptools python-dev'
 
-# Packages which are installed in the host filesystem
+# Packages which are installed in the host filesystem TODO : headers is transitional
 _HOST_PKGS = ('lxc debootstrap python-openssl python-imaging '
               'ros-{ros}-ros-comm ros-{ros}-common-msgs linux-headers-virtual '
               'openvswitch-datapath-source openvswitch-datapath-dkms '
