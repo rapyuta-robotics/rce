@@ -439,7 +439,8 @@ if __name__ == '__main__':
         try:
             candidates = os.listdir('/opt/ros')
             if candidates and config.host_ros_release not in candidates:
-                config.host_ros_release = max(candidates)
+                if max(candidates) in _SUPPORT_VERSIONS[_get_host_ubuntu_release()]:
+                    config.host_ros_release = max(candidates)
         except OSError:
             pass
 
