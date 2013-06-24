@@ -94,10 +94,10 @@ if __name__ == '__main__':
         cred = UsernamePassword('container',
                                 sha256(args.infraPassword).hexdigest())
         passwd = sha256(args.masterPassword).hexdigest()
-    
+
     special_features = args.special_features.strip("' ").split(',')
     data = {'size':args.size, 'cpu':args.cpu,
-    		'memory':args.memory, 'bandwidth':args.bandwidth
+    		'memory':args.memory, 'bandwidth':args.bandwidth,
     		'special_features':special_features}
 
     main(reactor, cred, args.masterIP, passwd, cred.password,
