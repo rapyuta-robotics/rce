@@ -256,8 +256,9 @@ class LoadBalancer(object):
     def unregister_iaas_hook(self):
         """ Method should be called to destroy all machines.
         """
-        self._iaas_hook.disconnect()
-        self._iaas_hook = None
+        if self._iaas_hook:
+            self._iaas_hook.disconnect()
+            self._iaas_hook = None
 
     def cleanUp(self):
         """ Method should be called to destroy all machines.
