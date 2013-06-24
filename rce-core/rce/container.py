@@ -390,7 +390,7 @@ class ContainerClient(Referenceable):
     """
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
                  intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-                 dataDir, pkgDir, rosRel):
+                 dataDir, pkgDir, rosRel, data):
         """ Initialize the Container Client.
 
             @param reactor:       Reference to the twisted reactor.

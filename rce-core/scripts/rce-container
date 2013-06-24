@@ -78,7 +78,7 @@ def _get_argparse():
                         help='Total Bandwidth of Machine ', default=settings.bandwidth)
     parser.add_argument('--special_features', type=str,
                         help="Special features of Machine eg input : 'avxi,gpu,ssev3'",
-                        default=settings.bandwidth)
+                        default=settings.special_features)
 
     return parser
 
@@ -95,7 +95,11 @@ if __name__ == '__main__':
                                 sha256(args.infraPassword).hexdigest())
         passwd = sha256(args.masterPassword).hexdigest()
 
-    special_features = args.special_features.strip("' ").split(',')
+    if type(args.special_features) == list:
+        special_features = args.special_features
+    else:
+        special_features = args.special_features.strip("' ").split(',')
+
     data = {'size':args.size, 'cpu':args.cpu,
     		'memory':args.memory, 'bandwidth':args.bandwidth,
     		'special_features':special_features}
