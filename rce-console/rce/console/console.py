@@ -206,6 +206,8 @@ class ContainerStartOptions(CustomOptions):
     """
     optParameters = (
         ("name", "n", None , "Container Name"),
+        ("group", "g", None, "Container Group"),
+        ("groupIp", "a", None , "COntainer Group IPv4 address"),
         ("size", "s", None , "Container Size"),
         ("cpu", "c", None , "CPU Options"),
         ("memory", "m", None , "memory options"),
@@ -599,6 +601,10 @@ class ConsoleClient(HistoricRecvLine):
             if cmd == 'start':
                 if (opts['name']):
                     data = {}
+                    if opts.get('group'):
+                        data['group'] = opts['group']
+                    if opts.get('groupIp'):
+                        data['groupIp'] = opts['groupIp']
                     if opts.get('size'):
                         data['size'] = opts['size']
                     if opts.get('bandwidth'):
