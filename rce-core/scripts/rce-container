@@ -72,7 +72,7 @@ def _get_argparse():
                         help='Total Size of Machine ', default=settings.size)
     parser.add_argument('--cpu', type=int,
                         help='Total CPU of Machine ', default=settings.cpu)
-	parser.add_argument('--memory', type=int,
+    parser.add_argument('--memory', type=int,
                         help='Total Memory of Machine ', default=settings.memory)
     parser.add_argument('--bandwidth', type=int,
                         help='Total Bandwidth of Machine ', default=settings.bandwidth)
