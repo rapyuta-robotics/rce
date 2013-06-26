@@ -207,9 +207,9 @@ class ContainerStartOptions(CustomOptions):
     optParameters = (
         ("name", "n", None , "Container Name"),
         ("group", "g", None, "Container Group"),
-        ("groupIp", "a", None , "COntainer Group IPv4 address"),
+        ("groupIp", "a", None , "Container Group IPv4 address"),
         ("size", "s", None , "Container Size"),
-        ("cpu", "c", None , "CPU Options"),
+        ("cpu", "c", None , "CPU options"),
         ("memory", "m", None , "memory options"),
         ("bandwidth", "b", None , "Bandwidth options"),
         ("specialopts", "o", None , "Special features options"),
@@ -231,7 +231,7 @@ class ContainerOptions(CustomOptions):
     )
 
     subCommands = (
-    ("start", None, ContainerStartOptions, "Start a Container"),
+        ("start", None, ContainerStartOptions, "Start a Container"),
     )
 
 
@@ -422,7 +422,7 @@ class ConsoleClient(HistoricRecvLine):
         HistoricRecvLine.connectionMade(self)
         self._factory = PBClientFactory()
 
-        reactor.connectTCP(self._masterIP, self._console_port, self._factory)  # @UndefinedVariable
+        reactor.connectTCP(self._masterIP, self._console_port, self._factory)  #@UndefinedVariable
         self.terminal.write("Username: ")
 
     def lineReceived(self, line):
@@ -434,7 +434,7 @@ class ConsoleClient(HistoricRecvLine):
         """
         def _cbError(why, msg):
             err(why, msg)
-            reactor.stop()  # @UndefinedVariable
+            reactor.stop()  #@UndefinedVariable
 
         def _cbConnectionSuccess(view):
             self._user = view
@@ -612,8 +612,9 @@ class ConsoleClient(HistoricRecvLine):
                     if opts.get('memory'):
                         data['memory'] = opts['memory']
                     if opts.get('specialopts'):
-                        data['specialopts'] = opts['specialopts']
-                    self.callToUser('createContainer', 'robot', opts['name'], data)
+                        data['specialFeatures'] = opts['specialopts']
+                    self.callToUser('createContainer', 'robot', opts['name'],
+                                    data)
 
             elif config['stop']:
                 self.callToUser('destroyContainer', 'robot', config['stop'])
@@ -809,7 +810,7 @@ def runWithProtocol(klass, masterIP, port):
     try:
         p = ServerProtocol(klass, masterIP, port)
         stdio.StandardIO(p)
-        reactor.run()  # @UndefinedVariable
+        reactor.run()  #@UndefinedVariable
     finally:
         termios.tcsetattr(fd, termios.TCSANOW, oldSettings)
         os.write(fd, "\r\x1bc\r")

@@ -340,7 +340,7 @@ class _Settings(object):
 
     @property
     def special_features(self):
-        """ Parameter to define specia attributes like avx,gpu,hadoop etc
+        """ Parameter to define special attributes like avx,gpu,hadoop etc
         """
         return self._special_features
 
@@ -429,7 +429,7 @@ class _Settings(object):
         # Figure out the special features
         special_features = parser.get('machine', 'special_features')
         settings._special_features = [i.strip() for i in
-                                        special_features.strip('[]').split(',')]
+                                      special_features.strip('[]').split(',')]
 
         # ROS packages
         settings._packages = []

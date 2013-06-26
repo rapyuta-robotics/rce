@@ -181,7 +181,8 @@ class RoboEarthCloudEngine(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
 
-            @param data:        Extra Data about the container
+            @param data:        Extra data which is used to configure the
+                                container.
             @param data:        dict
 
             @return:            New Namespace and Container instance.

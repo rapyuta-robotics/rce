@@ -77,7 +77,7 @@ def _get_argparse():
     parser.add_argument('--bandwidth', type=int,
                         help='Total Bandwidth of Machine ', default=settings.bandwidth)
     parser.add_argument('--special_features', type=str,
-                        help="Special features of Machine eg input : 'avxi,gpu,ssev3'",
+                        help="Special features of Machine input, e.g. 'avxi,gpu,ssev3'",
                         default=settings.special_features)
 
     return parser
@@ -95,17 +95,17 @@ if __name__ == '__main__':
                                 sha256(args.infraPassword).hexdigest())
         passwd = sha256(args.masterPassword).hexdigest()
 
-    if type(args.special_features) == list:
-        special_features = args.special_features
+    if isinstance(args.special_features, list):
+        specialFeatures = args.special_features
     else:
-        special_features = args.special_features.strip("' ").split(',')
+        specialFeatures = args.special_features.strip("' ").split(',')
 
     data = {'size':args.size, 'cpu':args.cpu,
-    		'memory':args.memory, 'bandwidth':args.bandwidth,
-    		'special_features':special_features}
+            'memory':args.memory, 'bandwidth':args.bandwidth,
+            'specialFeatures':specialFeatures}
 
     main(reactor, cred, args.masterIP, passwd, cred.password,
          settings.internal_port, settings.internal_IP, settings.container_IP,
          settings.comm_port, settings.ros_proxy_port, settings.rootfs,
          settings.conf_dir, settings.data_dir, settings.packages,
-         data, settings.container_ros_release)
+         settings.container_ros_release, data)

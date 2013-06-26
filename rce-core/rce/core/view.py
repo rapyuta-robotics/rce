@@ -59,8 +59,8 @@ class ControlView(Viewable):
                                 in subsequent requests.
             @type  tag:         str
 
-            @param data:        Extra data about the container
-            @param data:        dict
+            @param data:        Extra data used to configure the container.
+            @type  data:        dict
         """
         try:
             validateName(tag)

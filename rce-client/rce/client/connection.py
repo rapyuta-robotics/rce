@@ -192,23 +192,23 @@ class _Connection(object):
 
         self._rce.sendMessage(dest, msgType, msg, msgID)
 
-    sendMessage.__doc__ = RCE.sendMessage.__doc__  # @UndefinedVariable
+    sendMessage.__doc__ = RCE.sendMessage.__doc__  #@UndefinedVariable
 
     def createContainer(self, cTag, group='', groupIp='', size=1, cpu=0,
-                        memory=0, bandwidth=0, special_features=[]):
+                        memory=0, bandwidth=0, specialFeatures=[]):
         if not self._rce:
             raise ConnectionError('No connection to RCE.')
 
         # ensure all whitespace characters around group are stripped
         group = group.strip()
 
-        if groupIp and not _IP_V4_REGEX.match(groupIp):
+        if not _IP_V4_REGEX.match(groupIp):
             raise ValueError('Invalid IPv4 address')
 
         self._rce.createContainer(cTag, group, groupIp, size, cpu, memory,
-                                  bandwidth, special_features)
+                                  bandwidth, specialFeatures)
 
-    createContainer.__doc__ = RCE.createContainer.__doc__  # @UndefinedVariable
+    createContainer.__doc__ = RCE.createContainer.__doc__  #@UndefinedVariable
 
     def destroyContainer(self, cTag):
         if not self._rce:
@@ -216,7 +216,7 @@ class _Connection(object):
 
         self._rce.destroyContainer(cTag)
 
-    destroyContainer.__doc__ = RCE.destroyContainer.__doc__  # @UndefinedVariable
+    destroyContainer.__doc__ = RCE.destroyContainer.__doc__  #@UndefinedVariable
 
     def addNode(self, cTag, nTag, pkg, exe, args='', name='', namespace=''):
         if not self._rce:
@@ -224,7 +224,7 @@ class _Connection(object):
 
         self._rce.addNode(cTag, nTag, pkg, exe, args, name, namespace)
 
-    addNode.__doc__ = RCE.addNode.__doc__  # @UndefinedVariable
+    addNode.__doc__ = RCE.addNode.__doc__  #@UndefinedVariable
 
     def removeNode(self, cTag, nTag):
         if not self._rce:
@@ -232,7 +232,7 @@ class _Connection(object):
 
         self._rce.removeNode(cTag, nTag)
 
-    removeNode.__doc__ = RCE.removeNode.__doc__  # @UndefinedVariable
+    removeNode.__doc__ = RCE.removeNode.__doc__  #@UndefinedVariable
 
     def addParameter(self, cTag, name, value):
         if not self._rce:
@@ -240,7 +240,7 @@ class _Connection(object):
 
         self._rce.addParameter(cTag, name, value)
 
-    addParameter.__doc__ = RCE.addParameter.__doc__  # @UndefinedVariable
+    addParameter.__doc__ = RCE.addParameter.__doc__  #@UndefinedVariable
 
     def removeParameter(self, cTag, name):
         if not self._rce:
@@ -248,7 +248,7 @@ class _Connection(object):
 
         self._rce.removeParameter(cTag, name)
 
-    removeParameter.__doc__ = RCE.removeParameter.__doc__  # @UndefinedVariable
+    removeParameter.__doc__ = RCE.removeParameter.__doc__  #@UndefinedVariable
 
     def addInterface(self, eTag, iTag, iType, iCls, addr=''):
         if not self._rce:
@@ -257,7 +257,7 @@ class _Connection(object):
         iType = self.INTERFACE_MAP.get(iType, iType)
         self._rce.addInterface(eTag, iTag, iType, iCls, addr)
 
-    addInterface.__doc__ = RCE.addInterface.__doc__  # @UndefinedVariable
+    addInterface.__doc__ = RCE.addInterface.__doc__  #@UndefinedVariable
 
     def removeInterface(self, eTag, iTag):
         if not self._rce:
@@ -265,7 +265,7 @@ class _Connection(object):
 
         self._rce.removeInterface(eTag, iTag)
 
-    removeInterface.__doc__ = RCE.removeInterface.__doc__  # @UndefinedVariable
+    removeInterface.__doc__ = RCE.removeInterface.__doc__  #@UndefinedVariable
 
     def addConnection(self, tagA, tagB):
         if not self._rce:
@@ -273,7 +273,7 @@ class _Connection(object):
 
         self._rce.addConnection(tagA, tagB)
 
-    addConnection.__doc__ = RCE.addConnection.__doc__  # @UndefinedVariable
+    addConnection.__doc__ = RCE.addConnection.__doc__  #@UndefinedVariable
 
     def removeConnection(self, tagA, tagB):
         if not self._rce:
@@ -281,7 +281,7 @@ class _Connection(object):
 
         self._rce.removeConnection(tagA, tagB)
 
-    removeConnection.__doc__ = RCE.removeConnection.__doc__  # @UndefinedVariable
+    removeConnection.__doc__ = RCE.removeConnection.__doc__  #@UndefinedVariable
 
 
 class Connection(_Connection):

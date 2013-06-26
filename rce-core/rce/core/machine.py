@@ -103,11 +103,11 @@ class LoadBalancer(object):
     def __init__(self):
         """ Initialize the Load Balancer.
         """
-        self._network_group_lookup = {}
-        self._network_group_ip = defaultdict(set)
-        self._network_group_node = defaultdict(set)
+        self._networkGroupLookup = {}
+        self._networkGroupIP = defaultdict(set)
+        self._networkGroupNode = defaultdict(set)
         self._machines = set()
-        self._iaas_hook = None
+        self._iaas = None
 
     def createMachine(self, ref, data):
         """ Create a new Machine object, which can be used to create new
@@ -147,59 +147,71 @@ class LoadBalancer(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
 
-            @param data:        Extra data about the container.
+            @param data:        Extra data used to configure the container.
             @type  data:        dict
         """
         size = data.get('size', 1)
-        cpu = data.get('cpu', 0)
-        memory = data.get('memory', 0)
-        bandwidth = data.get('bandwidth', 0)
-        special_features = data.get('special_features', [])
+        # TODO: At the moment not used
+#        cpu = data.get('cpu', 0)
+#        memory = data.get('memory', 0)
+#        bandwidth = data.get('bandwidth', 0)
+#        specialFeatures = data.get('specialFeatures', [])
 
         machines = [machine for machine in self._machines
-                      if machine.availability >= size]
+                    if machine.availability >= size]
 
-        # TODO the above uses block assumptions , implement fine grain control at bottom
-        # Like check memory data , use filters to get machines with special features like gpu, avxii, mmx sse
+        # TODO: The above uses block assumptions, implement fine grain control
+        #       at bottom. Like check memory data, use filters to get machines
+        #       with special features like gpu, avxii, mmx sse
         if not machines:
-            if self._iaas_hook:
-                self._iaas_hook.spin_up()  # count, type, special_request
-            raise ContainerProcessError('You seem to have run out of capacity add more nodes')
+#            if self._iaas:
+#                self._iaas.spin_up()  # count, type, special_request
+#                # TODO: Need to get the current list of machines here!
+#                        However, spin up of a new instance has most certainly a
+#                        delay; therefore, probably a Deferred has to be used...
+#            else:
+                raise ContainerProcessError('You seem to have run out of '
+                                            'capacity. Add more nodes.')
+
+        candidates = [machine for machine in machines if machine._users[userID]]
+
+        if candidates:
+            return max(candidates, key=lambda m: m.availability)
         else:
-            candidates = [candidate for candidate in machines
-                      if machine._users[userID]]
-            if candidates:
-                return max(candidates, key=lambda m: m.availability)
-            else:
-                return max(machines, key=lambda m: m.availability)
+            return max(machines, key=lambda m: m.availability)
 
-    def network_group_add_node(self, group, machine):
-        network_group = self._network_group_node[group]
-        if machine not in network_group:
-            for target in network_group:
-                self.build_tunnel(group, machine, target)
-            network_group.add(machine)
+    def networkGroupAddNode(self, group, machine):
+        """ # TODO: Add doc
+        """
+        networkGroup = self._networkGroupNode[group]
+        if machine not in networkGroup:
+            for target in networkGroup:
+                self.buildTunnel(group, machine, target)
+            networkGroup.add(machine)
 
-    def network_group_remove_node(self, group, machine):
-        self._network_group_node[group].remove(machine)
-        for target in self._network_group_node[group]:
+    def networkGroupRemoveNode(self, group, machine):
+        """ # TODO: Add doc
+        """
+        self._networkGroupNode[group].remove(machine)
+        for target in self._networkGroupNode[group]:
             target.destroyTunnel(group, machine.IP)
 
-    def build_tunnel(self, groupname, machineA, machineB):
+    def buildTunnel(self, groupname, machineA, machineB):
         """ Internal call used to create a GRE Tunnel between two hosts
             (physical machines or instances)
 
-            @param groupname:      Unique group name to be linked up
-            @type  groupname:      str
+            @param groupname:   Unique group name for which the tunnel has
+                                to be built.
+            @type  groupname:   str
 
-            @param machineA:       The Physical Machine object
-            @type  machineA:       rce.core.machine.Machine
+            @param machineA:    The Physical Machine object.
+            @type  machineA:    rce.core.machine.Machine
 
-            @param machineB:       The Physical Machine object
-            @type  machineB:       rce.core.machine.Machine
+            @param machineB:    The Physical Machine object.
+            @type  machineB:    rce.core.machine.Machine
         """
-        if (machineA.check_bridge(groupname) and
-            machineB.check_bridge(groupname)):
+        if (machineA.checkBridge(groupname) and
+            machineB.checkBridge(groupname)):
             machineA.createTunnel(groupname, machineB.IP)
             machineB.createTunnel(groupname, machineA.IP)
         else:
@@ -216,49 +228,49 @@ class LoadBalancer(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
 
-            @param data:        More data about the container
+            @param data:        Extra data used to configure the container.
             @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
-        group_name = data.get('group')
+        groupName = data.get('group')
         groupIp = data.get('groupIp')
-        if group_name:
-            group_key = str(abs(hash(' '.join((userID, group_name)))))[:8]
+        if groupName:
+            key = str(abs(hash(' '.join((userID, groupName)))))[:8]
             # Check for extremely rare cases of key collision
-            group = self._network_group_lookup.get(group_key)
+            group = self._networkGroupLookup.get(key)
             if group:
-                if group != (userID, group_name):
+                if group != (userID, groupName):
                     raise InternalError('User Group Key collision detected')
             else:
-                self._network_group_lookup[group_key] = (userID, group_name)
-            data['group'] = group_key
-            network_group = self._network_group_ip[group_key]
+                self._networkGroupLookup[key] = (userID, groupName)
+            data['group'] = key
+            networkGroup = self._networkGroupIP[key]
             if groupIp:
-                network_group.add(groupIp)
+                networkGroup.add(groupIp)
             else:
-                if len(network_group) > 254:
+                if len(networkGroup) > 254:
                     raise InternalError('Max limit on subnet reached')
                 while 1 :
                     candidate = '192.168.1.' + str(randint(2, 254))
-                    if candidate not in network_group:
-                        network_group.add(candidate)
+                    if candidate not in networkGroup:
+                        networkGroup.add(candidate)
                         data['groupIp'] = candidate
                         break
         return self._getNextMachine(userID, data).createContainer(uid, userID, data)
 
-    def register_iaas_hook(self, hook):
+    def registerIAASHook(self, hook):
         """ Register an IAAS Hook object.
         """
-        self._iaas_hook = hook
+        self._iaas = hook
 
-    def unregister_iaas_hook(self):
+    def unregisterIAASHook(self):
         """ Method should be called to destroy all machines.
         """
-        if self._iaas_hook:
-            self._iaas_hook.disconnect()
-            self._iaas_hook = None
+        if self._iaas:
+            self._iaas.disconnect()
+            self._iaas = None
 
     def cleanUp(self):
         """ Method should be called to destroy all machines.
@@ -267,7 +279,8 @@ class LoadBalancer(object):
             self.destroyMachine(machine)
 
         assert len(self._machines) == 0
-        self.unregister_iaas_hook()
+
+        self.unregisterIAASHook()
 
 
 class Machine(object):
@@ -281,10 +294,11 @@ class Machine(object):
                                 container process.
             @type  ref:         twisted.spread.pb.RemoteReference
 
-            @param data:        Data about the machine
+            @param data:        Data about the machine.
             @type  data:        dict
 
-            @param balancer:    Reference to top level of data structure.
+            @param balancer:    Reference to the load balancer which is
+                                responsible for this machine.
             @type  balancer:    rce.core.machine.LoadBalancer
         """
         self._ref = ref
@@ -293,7 +307,7 @@ class Machine(object):
         self._cpu = data.get('cpu')
         self._memeory = data.get('memory')
         self._bandwidth = data.get('bandwidth')
-        self._special_features = data.get('special_features')
+        self._specialFeatures = data.get('specialFeatures')
 
         ip = ref.broker.transport.getPeer().host
         self._ip = getSettings().internal_IP if isLocalhost(ip) else ip
@@ -301,7 +315,7 @@ class Machine(object):
 
         self._containers = set()
         self._users = Counter()
-        self._ovs_bridge = {}
+        self._ovsBridge = {}
 
     @property
     def active(self):
@@ -329,14 +343,14 @@ class Machine(object):
         return self._bandwidth
 
     @property
-    def special_features(self):
+    def specialFeatures(self):
         """ Machine Special Features Info. """
-        return self._special_features
+        return self._specialFeatures
 
     @property
     def availability(self):
         """Machine Availability """
-        return self._size - sum(container.size for container in self._containers)
+        return self._size - sum(c.size for c in self._containers)
 
     @property
     def IP(self):
@@ -355,114 +369,117 @@ class Machine(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
 
-            @param data:        Extra Information about the container
+            @param data:        Extra data used to configure the container.
             @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
-        if len(self._containers) >= self._size:
+        if self.availability < data.get('size', 1):
             raise MaxNumberExceeded('You have run out of your container '
                                     'capacity.')
         groupname = data.get('group')
         if groupname:
             self.createBridge(groupname)
-            self._ovs_bridge[groupname]['locals'].add(data.get('groupIp'))
+            self._ovsBridge[groupname]['locals'].add(data.get('groupIp'))
         container = Container(self, userID, data)
         self._ref.callRemote('createContainer', uid, data).chainDeferred(container)
         return container
 
     def createBridge(self, groupname):
-        """ Create a new OVS Bridge
+        """ Create a new OVS Bridge.
 
-            @param groupname:       Unique name of the network group
+            @param groupname:       Unique name of the network group.
             @type  groupname:       str
         """
-        if groupname not in self._ovs_bridge:
-            self._ovs_bridge[groupname] = {'locals':set(), 'extern':set()}
+        if groupname not in self._ovsBridge:
+            self._ovsBridge[groupname] = {'locals':set(), 'extern':set()}
             return self._ref.callRemote('createBridge', groupname)
 
     def destroyBridge(self, groupname):
-        """ Destroy the OVS Bridge
+        """ Destroy a OVS Bridge.
 
-            @param groupname:        Unique name of the network group
-            @type  groupname:        str
+            @param groupname:       Unique name of the network group.
+            @type  groupname:       str
         """
-        if groupname in self._ovs_bridge:
-            del self._ovs_bridge[groupname]
+        if groupname in self._ovsBridge:
+            del self._ovsBridge[groupname]
             return self._ref.callRemote('destroyBridge', groupname)
 
-    def check_bridge(self, groupname):
-        return groupname in self._ovs_bridge
-
-    def createTunnel(self, groupname, targetIp):
-        """ Destroy a new GRE Tunnel
-
-            @param groupname:        Unique name of the network group
-            @type  groupname:        str
-
-            @param targetIp:         Target ip for the gre Tunnel
-            @type  targetIp:         str
+    def checkBridge(self, groupname):
+        """ # TODO: Add doc
         """
-        if targetIp not in self._ovs_bridge[groupname]['extern']:
-                self._ovs_bridge[groupname]['extern'].add(targetIp)
-                return self._ref.callRemote('createTunnel', groupname, targetIp)
+        return groupname in self._ovsBridge
 
-    def destroyTunnel(self, groupname, targetIp):
-        """ Destroy the GRE Tunnel
+    def createTunnel(self, groupname, targetIP):
+        """ Create a new GRE Tunnel.
 
-            @param groupname:        Unique name of the network group
-            @type  groupname:        str
+            @param groupname:       Unique name of the network group.
+            @type  groupname:       str
 
-            @param targetIp:         Target ip for the gre Tunnel
-            @type  targetIp:         str
+            @param targetIP:        Target IP for the GRE Tunnel.
+            @type  targetIP:        str
         """
-        if targetIp in self._ovs_bridge[groupname]['extern']:
-                self._ovs_bridge[groupname]['extern'].remove(targetIp)
-                return self._ref.callRemote('destroyTunnel', groupname, targetIp)
+        if targetIP not in self._ovsBridge[groupname]['extern']:
+            self._ovsBridge[groupname]['extern'].add(targetIP)
+            return self._ref.callRemote('createTunnel', groupname, targetIP)
 
-    def get_sysinfo(self, request):
-        """ Get realtime  Sysinfo data from machine.
+    def destroyTunnel(self, groupname, targetIP):
+        """ Destroy a GRE Tunnel
 
-            @param request:       data desired
-            @type  request:       tbd #TODO
+            @param groupname:       Unique name of the network group.
+            @type  groupname:       str
+
+            @param targetIP:        Target IP for the GRE Tunnel.
+            @type  targetIP:        str
+        """
+        if targetIP in self._ovsBridge[groupname]['extern']:
+            self._ovsBridge[groupname]['extern'].remove(targetIP)
+            return self._ref.callRemote('destroyTunnel', groupname, targetIP)
+
+    def getSysinfo(self, request):
+        """ Get realtime Sysinfo data from machine.
+
+            @param request:     data desired
+            @type  request:     # TODO: Add type
         """
         return self._ref.callRemote('getSysinfo')
 
-    def set_sysinfo(self, request, value):
+    def setSysinfo(self, request, value):
         """ Set some system parameter to the machine.
 
-            @param request:       data desired
-            @type  request:       tbd #TODO
+            @param request:     data desired
+            @type  request:     # TODO: Add type
 
-            @param value:          data value
-            @type  value:          tbd #TODO
+            @param value:       data value
+            @type  value:       # TODO: Add type
         """
         return self._ref.callRemote('setSysinfo', value)
 
     def registerContainer(self, container):
         assert container not in self._containers
         self._containers.add(container)
-        self._users[container._userID] += 1
-        if container._group:
-            self._balancer.network_group_add_node(container._group, self)
+        self._users[container.userID] += 1
+        if container.group:
+            self._balancer.networkGroupAddNode(container.group, self)
 
     def unregisterContainer(self, container):
         assert container in self._containers
         self._containers.remove(container)
-        self._users[container._userID] -= 1
-        if container._group:
-            self._ovs_bridge[container._group
-                             ]['locals'].remove(container._groupIp)
-            self._balancer._network_group_ip[container._group
-                                    ].remove(container._groupIp)
+        self._users[container.userID] -= 1
+        if container.group:
+            self._ovsBridge[container.group
+                             ]['locals'].remove(container.groupIP)
+            self._balancer._networkGroupIP[container.group
+                                    ].remove(container.groupIP)
 
-            if not self._ovs_bridge[container._group]['locals']:
-                self._balancer.network_group_remove_node(container._group, self)
-                self.destroyBridge(container._group)
-
+            if not self._ovsBridge[container.group]['locals']:
+                self._balancer.networkGroupRemoveNode(container.group, self)
+                self.destroyBridge(container.group)
 
     def listContainers(self):
+        """ # TODO: Add doc
+        """
         return self._containers
 
     def destroyContainer(self, remoteContainer):
@@ -519,32 +536,43 @@ class MachineAvatar(Avatar):
         """
         self._balancer.destroyMachine(self._machine)
 
-# TODO : This needs some work on specification
+
+# TODO: This needs some work on specification:
+#        - define interface
+#        - create a class for each IAAS type implementing interface
 class IaasHook(object):
+    """ # TODO: Add doc
+    """
     def __init__(self, balancer):
         """Base class to implement IASS Hooks for using a
            public cloud platform auto provisioning
 
-            @param balancer:        The RCE LoadBalancer
-            @param targetIP         rce.core.machine.LoadBalancer
+            @param balancer:    The RCE LoadBalancer
+            @type  balancer:    rce.core.machine.LoadBalancer
         """
-        balancer.register_iaas_hook(self)
+        balancer.registerIAASHook(self)
 
     def disconnect(self):
-        """ Method called when shutting down the engine to relieve the hook"""
-        raise Exception("To be implemented by the user")
-
-    def spin_up(self, count=1, type=None, special_request=None):
-        """ Call to spin up more instances
-
-            @param balancer:        Number of instances to be spun up.
-            @param targetIP         int
-
-            @param balancer:        Type (generally size) of instance requested
-            @param targetIP         TDB by implementation
-
-            @param balancer:        Special request (gpu, cluster,hadoop)
-            @param targetIP         TDB by implementation
+        """ Method called when shutting down the engine to relieve the hook.
         """
-        raise Exception("To be implemented by the user")
+        # TODO: Should destroy all instances which have been started dynamically
+        raise NotImplementedError
 
+    def spin_up(self, count=1, type=None, specialRequest=None):
+        """ Call to spin up more instances.
+
+            @param count:           Number of instances to be spun up.
+            @type  count:           int
+
+            @param type:            Type (generally size) of instance requested
+            @type  type:            TDB by implementation
+
+            @param specialRequest:  Special request (gpu, cluster, hadoop)
+            @type  specialRequest:  TDB by implementation
+        """
+        raise NotImplementedError
+
+    def spin_down(self):
+        """ # TODO: ???
+        """
+        raise NotImplementedError

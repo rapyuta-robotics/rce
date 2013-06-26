@@ -75,8 +75,8 @@ kill timeout 5
 script
     # setup environment
     . /opt/rce/setup.sh
-    {chown_cmd}
-    {ifconf_cmd}
+    {chownCmd}
+    {ifconfCmd}
 
     # start environment node
     start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
@@ -160,7 +160,7 @@ class RCEContainer(Referenceable):
                                 process to login to the Master.
             @type  uid:         str
 
-            @param data:        Extra data about the container
+            @param data:        Extra data used to configure the container.
             @type  data:        dict
         """
         # Store the references
@@ -170,24 +170,25 @@ class RCEContainer(Referenceable):
         self._name = 'C{0}'.format(nr)
         self._terminating = None
 
-        # Additional container parameters to use
-        self._size = data.get('size', 1)
-        self._cpu_limit = data.get('cpu', 0)
-        self._memory_limit = data.get('memory', 0)
-        self._bandwidth_limit = data.get('bandwidth', 0)
-        self._special_features = data.get('special_features', [])
-
-        # Group networking fields
-        self._group = data.get('group', '')
-        self._groupIp = data.get('groupIp', '')
+        # TODO: At the moment not used
+#        # Additional container parameters to use
+#        self._size = data.get('size', 1)
+#        self._cpu = data.get('cpu', 0)
+#        self._memory = data.get('memory', 0)
+#        self._bandwidth = data.get('bandwidth', 0)
+#        self._specialFeatures = data.get('specialFeatures', [])
+#
+#        # Group networking fields
+#        self._group = data.get('group', '')
+#        self._groupIp = data.get('groupIp', '')
 
         client.registerContainer(self)
 
-        if self._group:
-            ifconf_cmd = ('ifconfig eth1 netmask 255.255.255.0 '
-                          'broadcast 192.168.1.255')
+        if data.get('group'):
+            ifconfCmd = ('ifconfig eth1 netmask 255.255.255.0 '
+                         'broadcast 192.168.1.255')
         else:
-            ifconf_cmd = "#no ovs"
+            ifconfCmd = "#no ovs"
 
         # Create the directories for the container
         self._confDir = pjoin(client.confDir, self._name)
@@ -213,12 +214,12 @@ class RCEContainer(Referenceable):
 
         if self._client.rosRel > 'fuerte':
             # TODO: Switch to user 'ros' when the launcher is used again
-            user_rosdep = os.path.join(rceDir, '.ros/rosdep')
-            root_rosdep = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
-            shutil.copytree(root_rosdep, user_rosdep)
-            chown_cmd = 'chown -R rce:rce /opt/rce/data/.ros'
+            rosdepUser = os.path.join(rceDir, '.ros/rosdep')
+            rosdepRoot = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
+            shutil.copytree(rosdepRoot, rosdepUser)
+            chownCmd = 'chown -R rce:rce /opt/rce/data/.ros'
         else:
-            chown_cmd = '#no chown'
+            chownCmd = '#no chown'
 
         # Create network variables
         ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
@@ -270,8 +271,8 @@ class RCEContainer(Referenceable):
                                          masterPort=self._client.masterPort,
                                          internalPort=self._client.envPort,
                                          uid=uid, passwd=passwd,
-                                         chown_cmd=chown_cmd,
-                                         ifconf_cmd=ifconf_cmd))
+                                         chownCmd=chownCmd,
+                                         ifconfCmd=ifconfCmd))
 
         with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
             f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
@@ -455,8 +456,8 @@ class ContainerClient(Referenceable):
                                   deployment instance of the cloud engine
             @type  rosRel:        str
 
-            @param data:          More data about the machine
-            @type data:           dict
+            @param data:          More data about the machine.
+            @type  data:          dict
         """
         self._reactor = reactor
         self._internalIP = intIP
@@ -487,15 +488,16 @@ class ContainerClient(Referenceable):
         # Network configuration
         self._network = bridgeIP[:bridgeIP.rfind('.')]
         self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
-        self._ovs_bridges = {}
+        self._ovsBridges = {}
 
         # Physical parameters of machine
-        # TODO : Is a human settings at this time, rce.util.sysinfo should fill this role soon
+        # TODO: Is a human settings at this time,
+        #       rce.util.sysinfo should fill this role soon
         self._size = data.get('size')
         self._cpu = data.get('cpu')
         self._memeory = data.get('memory')
         self._bandwidth = data.get('bandwidth')
-        self._special_features = data.get('special_features')
+        self._specialFeatures = data.get('special_features')
 
         # Common iptables references
         nat = iptc.Table(iptc.Table.NAT)
@@ -503,32 +505,35 @@ class ContainerClient(Referenceable):
         self._output = iptc.Chain(nat, 'OUTPUT')
 
     def remote_getSysinfo(self, request):
-        """ Get realtime  Sysinfo data from machine.
+        """ Get realtime Sysinfo data from machine.
 
-            @param request:       data desired
-            @type  request:       tbd #TODO
+            @param request:     data desired
+            @type  request:     # TODO: Add type
+
+            @return:            # TODO: What?
+            @rtype:             # TODO: Add type
         """
-        response_table = {  # TODO : replace these calls with call to
-        'size':self._size,  # rce.util.sysinfo
-        'cpu':self._cpu,
-        'memory': self._memeory,
-        'bandwidth': self._bandwidth,
-        # 'keyword': some value or function to provide the data
+        # TODO : replace these calls with call to rce.util.sysinfo
+        response_table = {
+            'size':self._size,
+            'cpu':self._cpu,
+            'memory': self._memeory,
+            'bandwidth': self._bandwidth,
+            # 'keyword': some value or function to provide the data
         }
+
         return response_table[request]
 
     def remote_setSysinfo(self, request, value):
         """ Set some system parameter to the machine.
 
-            @param request:       data desired
-            @type  request:       tbd #TODO
+            @param request:     data desired
+            @type  request:     # TODO: Add type
 
-            @param value:          data value
-            @type  value:          tbd #TODO
+            @param value:       data value
+            @type  value:       # TODO: Add type
         """
-        raise InternalError('Not Implemented yet.')
-
-
+        raise NotImplementedError
 
     @property
     def reactor(self):
@@ -581,8 +586,8 @@ class ContainerClient(Referenceable):
 
     @property
     def rosRel(self):
-        """ Container filesytem ROS release in this
-            deployment instance of the cloud engine
+        """ Container filesytem ROS release in this deployment instance of the
+            cloud engine.
         """
         return self._rosRel
 
@@ -639,7 +644,8 @@ class ContainerClient(Referenceable):
                                 process.
             @type  uid:         str
 
-            @param data:        Extra data about the container
+            @param data:        Extra data which is used to configure the
+                                container.
             @type  data:        dict
 
             @return:            New Container instance.
@@ -658,82 +664,81 @@ class ContainerClient(Referenceable):
         self._containers.add(container)
 
     def remote_createBridge(self, groupname):
-        """ Create a new ovs Bridge
+        """ Create a new OVS Bridge.
 
-            @param groupname:       Unique name of the network group
+            @param groupname:       Unique name of the network group.
             @type  groupname:       str
 
-            @return:                Exit status of command
+            @return:                Exit status of command.
             @rtype:                 twisted.internet.defer.Deferred
         """
-        if groupname not in self._ovs_bridges:
-            self._ovs_bridges[groupname] = set()
+        if groupname not in self._ovsBridges:
+            self._ovsBridges[groupname] = set()
             return execute(('/usr/bin/ovs-vsctl', '--', '--may-exist',
                             'add-br', 'br-{0}'.format(groupname)),
-                           env=os.environ, reactor=self._reactor)
+                           reactor=self._reactor)
 
     def remote_destroyBridge(self, groupname):
-        """ Destroy a ovs Bridge
+        """ Destroy a OVS Bridge.
 
-            @param groupname:       Unique name of the network group
+            @param groupname:       Unique name of the network group.
             @type  groupname:       str
 
-            @return:                Exit status of command
+            @return:                Exit status of command.
             @rtype:                 twisted.internet.defer.Deferred
         """
-        if groupname in self._ovs_bridges:
-            del self._ovs_bridges[groupname]
+        if groupname in self._ovsBridges:
+            del self._ovsBridges[groupname]
             return execute(('/usr/bin/ovs-vsctl', 'del-br',
-                            'br-{0}'.format(groupname)),
-                           env=os.environ, reactor=self._reactor)
+                            'br-{0}'.format(groupname)), reactor=self._reactor)
 
 
-    def remote_createTunnel(self, groupname, targetIp):
-        """ Destroy a new ovs Bridge
+    def remote_createTunnel(self, groupname, targetIP):
+        """ Create a new GRE Tunnel.
 
-            @param groupname:       Unique name of the network group
+            @param groupname:       Unique name of the network group.
             @type  groupname:       str
 
-            @param targetIp:        Target ip for the gre Tunnel
-            @type  targetIp:        str
+            @param targetIP:        Target IP for the GRE Tunnel.
+            @type  targetIP:        str
 
-            @return:                Exit status of command
+            @return:                Exit status of command.
             @rtype:                 twisted.internet.defer.Deferred
         """
-        hash_ip = str(abs(hash(targetIp)))[:8]
-        bridgename = str(int(hash_ip) ^ int(groupname))
+        hashIP = str(abs(hash(targetIP)))[:8]
+        bridgename = str(int(hashIP) ^ int(groupname))
 
-        if hash_ip not in self._ovs_bridges[groupname]:
-            self._ovs_bridges[groupname].add(hash_ip)
+        if hashIP not in self._ovsBridges[groupname]:
+            self._ovsBridges[groupname].add(hashIP)
 
             bridge = 'br-{0}'.format(groupname)
             port = 'gre-{0}'.format(bridgename)
-            remote = 'options:remote_ip={0}'.format(targetIp)
+            remote = 'options:remote_ip={0}'.format(targetIP)
 
             return execute(('/usr/bin/ovs-vsctl', 'add-port', bridge, port,
                             '--', 'set', 'interface', port, 'type=gre', remote),
-                           env=os.environ, reactor=self._reactor)
+                           reactor=self._reactor)
 
-    def remote_destroyTunnel(self, groupname, targetIp):
-        """ Destroy a new ovs Bridge
+    def remote_destroyTunnel(self, groupname, targetIP):
+        """ Destroy a GRE Tunnel.
 
-            @param groupname:       Unique name of the network group
+            @param groupname:       Unique name of the network group.
             @type  groupname:       str
 
-            @param targetIp:        Target ip for the gre Tunnel
-            @type  targetIp:        str
+            @param targetIP:        Target IP for the GRE Tunnel.
+            @type  targetIP:        str
 
-            @return:                Exit status of command
+            @return:                Exit status of command.
             @rtype:                 twisted.internet.defer.Deferred
         """
-        hash_ip = str(abs(hash(targetIp)))[:8]
-        bridgename = str(int(hash_ip) ^ int(groupname))
+        hashIP = str(abs(hash(targetIP)))[:8]
+        bridgename = str(int(hashIP) ^ int(groupname))
 
-        if hash_ip in self._ovs_bridges[groupname]:
-            self._ovs_bridges[groupname].remove(hash_ip)
+        if hashIP in self._ovsBridges[groupname]:
+            self._ovsBridges[groupname].remove(hashIP)
             return execute(('/usr/bin/ovs-vsctl', 'del-port',
                             'gre-{0}'.format(bridgename)),
-                           env=os.environ, reactor=self._reactor)
+                           reactor=self._reactor)
 
     def unregisterContainer(self, container):
         assert container in self._containers
@@ -784,7 +789,7 @@ class ContainerClient(Referenceable):
 
 def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
          internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, pkgDir, data, rosRel):
+         dataDir, pkgDir, rosRel, data):
     log.startLogging(sys.stdout)
 
     def _err(reason):

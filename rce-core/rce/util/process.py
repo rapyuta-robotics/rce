@@ -36,7 +36,7 @@ from twisted.internet.protocol import ProcessProtocol
 
 
 class ExecutionError(Exception):
-    """
+    """ Exception is raised in case the command could not be executed.
     """
 
 
@@ -44,6 +44,16 @@ class _ProcessProtocol(ProcessProtocol):
     """ Protocol used to retrieve the exit code of a child process.
     """
     def __init__(self, cmd, deferred):
+        """ Initialize the ProcessProtocol which is used in the function
+            'execute'.
+
+            @param cmd:         Command which has been executed.
+            @type  cmd:         str
+
+            @param deferred:    Deferred which will be used to report the
+                                return value of the command.
+            @type  deferred:    twisted.internet.defer.Deferred
+        """
         self.cmd = cmd
         self.deferred = deferred
 
@@ -61,8 +71,30 @@ class _ProcessProtocol(ProcessProtocol):
             self.deferred.errback(Failure(e))
 
 
-def execute(cmd, env={}, path=None, reactor=None):
-    """
+def execute(cmd, env=None, path=None, reactor=None):
+    """ Execute a command using twisted's Process Protocol and returns a
+        Deferred firing when the command as terminated.
+
+        @param cmd:         Command which should be executed. It has to be a
+                            tuple containing the executable as first argument
+                            and all additional arguments which will be passed
+                            to the executable.
+        @type  cmd:         tuple
+
+        @param env:         Can be used to use custom environment variables to
+                            execute the command. If argument is omitted the
+                            environment of os.environ is used.
+        @type  env:         dict
+
+        @param path:        Path which will be used as working directory to
+                            execute the command. If argument is omitted the
+                            current directory is used.
+        @type  path:        str
+
+        @param reactor:     Reference to twisted's reactor. If argument is
+                            omitted the standard twisted reactor is imported and
+                            used.
+        @type  reactor:     twisted::reactor
     """
     deferred = Deferred()
     protocol = _ProcessProtocol(' '.join(cmd), deferred)

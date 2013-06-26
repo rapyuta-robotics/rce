@@ -59,7 +59,7 @@ lxc.network.name = eth0
 lxc.network.link = lxcbr0
 lxc.network.ipv4 = {ip}
 
-{network_group}
+{networkGroup}
 
 lxc.cgroup.devices.deny = a
 # /dev/null and zero
@@ -151,7 +151,7 @@ class Container(object):
                                 Use '0.0.0.0' for DHCP.
             @type  ip:          str
 
-            @param data:        Extra properties about the container
+            @param data:        Extra data used to configure the container.
             @type  data:        dict
         """
         self._reactor = reactor
@@ -175,9 +175,9 @@ class Container(object):
             self._ovsup = pjoin(conf, 'ovsup')
             self._ovsdown = pjoin(conf, 'ovsdown')
 
-            self._network_group = _NETWORK_GROUP.format(ovsup=self._ovsup,
-                                                        ovsdown=self._ovsdown,
-                                                        groupIp=self._groupIp)
+            self._networkGroup = _NETWORK_GROUP.format(ovsup=self._ovsup,
+                                                       ovsdown=self._ovsdown,
+                                                       groupIp=self._groupIp)
 
             if os.path.exists(self._ovsup):
                 raise ValueError('There is already a ovs start-up script in '
@@ -190,7 +190,7 @@ class Container(object):
                                  "'{0}'.".format(conf))
 
         else:
-            self._network_group = '#No network group'
+            self._networkGroup = '#No network group'
 
         if os.path.exists(self._conf):
             raise ValueError('There is already a config file in the container '
@@ -226,7 +226,7 @@ class Container(object):
         with open(self._conf, 'w') as f:
             f.write(_CONFIG.format(hostname=self._hostname, fs=self._rootfs,
                                    fstab=self._fstab, ip=self._ip,
-                                   network_group=self._network_group))
+                                   networkGroup=self._networkGroup))
 
         with open(self._fstab, 'w') as f:
             f.write(_FSTAB_BASE.format(proc=pjoin(self._rootfs, 'proc'),
@@ -257,8 +257,7 @@ class Container(object):
 
         log.msg("Start container '{0}'".format(name))
         return execute(('/usr/bin/lxc-start', '-n', name, '-f', self._conf,
-                        '-d'),
-                       env=os.environ, reactor=self._reactor)
+                        '-d'), reactor=self._reactor)
 
     def stop(self, name):
         """ Stop the container.
@@ -272,8 +271,7 @@ class Container(object):
             @type  command:     twisted.internet.defer.Deferred
         """
         log.msg("Stop container '{0}'".format(name))
-        return execute(('/usr/bin/lxc-stop', '-n', name),
-                       env=os.environ, reactor=self._reactor)
+        return execute(('/usr/bin/lxc-stop', '-n', name), reactor=self._reactor)
 
 #    def execute(self, name, command):
 #        """ Execute a command inside the container.

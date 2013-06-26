@@ -50,22 +50,23 @@ class Container(Proxy):
             @param userID:      ID of the user who created the container.
             @type  userID:      str
 
-            @param data:        Extra data about the container
+            @param data:        Extra data used to configure the container.
             @type  data:        dict
         """
         super(Container, self).__init__()
+
         self._userID = userID
         self._machine = machine
 
-        self._size = data.get('size', 0)
-        self._cpu_limit = data.get('cpu', 0)
-        self._memory_limit = data.get('memory', 0)
-        self._bandwidth_limit = data.get('bandwidth', 0)
-        self._special_features = data.get('special_features', [])
+        self._size = data.get('size', 1)
+        self._cpu = data.get('cpu', 0)
+        self._memory = data.get('memory', 0)
+        self._bandwidth = data.get('bandwidth', 0)
+        self._specialFeatures = data.get('specialFeatures', [])
 
         # Group networking fields
         self._group = data.get('group', '')
-        self._groupIp = data.get('groupIp', '')
+        self._groupIP = data.get('groupIp', '')
 
         # Register machine can then use these details for decisions, TODO
         machine.registerContainer(self)
@@ -81,22 +82,37 @@ class Container(Proxy):
     @property
     def cpu(self):
         """ The number of active containers in the machine. """
-        return self._cpu_limit
+        return self._cpu
 
     @property
     def memory(self):
         """ The number of active containers in the machine. """
-        return self._memory_limit
+        return self._memory
 
     @property
     def bandwidth(self):
         """ The number of active containers in the machine. """
-        return self._bandwidth_limit
+        return self._bandwidth
 
     @property
-    def special_features(self):
+    def specialFeatures(self):
         """ The number of active containers in the machine. """
-        return self._special_features
+        return self._specialFeatures
+
+    @property
+    def userID(self):
+        """ # TODO: Add doc """
+        return self._userID
+
+    @property
+    def group(self):
+        """ # TODO: Add doc """
+        return self._group
+
+    @property
+    def groupIP(self):
+        """ # TODO: Add doc """
+        return self._groupIP
 
     def getAddress(self):
         """ Get the address which should be used to connect to the environment

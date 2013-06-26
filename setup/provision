@@ -70,7 +70,8 @@ _CLEAN = 'sudo rm -rf {0}'
 # Packages necessary to run the provision script
 _BASE_PREP = 'curl python-setuptools python-dev'
 
-# Packages which are installed in the host filesystem TODO : headers is transitional
+# Packages which are installed in the host filesystem
+# TODO: package 'linux-headers-virtual' is transitional
 _HOST_PKGS = ('lxc debootstrap python-openssl python-imaging '
               'ros-{ros}-ros-comm ros-{ros}-common-msgs linux-headers-virtual '
               'openvswitch-datapath-source openvswitch-datapath-dkms '
@@ -324,7 +325,7 @@ def provision_container(config):
             _ROS_SRC.format(base=_get_host_ubuntu_release()),
             _ROS_KEY,
             _INSTALL.format(host_pkgs),
-            # Temprory hack as OVS dkms does not function as promissed
+            # Temprory hack as OVS dkms does not function as promised
             'sudo apt-get -y install --reinstall '
             'openvswitch-datapath-dkms || true',
             'sudo /etc/init.d/openvswitch-switch start')
