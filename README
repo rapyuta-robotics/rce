@@ -9,17 +9,17 @@ Content of git respository
     (Tested with ROS fuerte & groovy)
 
 - rce-comm:
-	The files common to rce-client, rce-core and rce-client.
+    The files common to rce-client, rce-core and rce-client.
 
 - rce-core:
     The core files of the RoboEarth Cloud Engine.
     (Tested with ROS fuerte & groovy)
 
 - rce-console:
-	A console client for monitoring the Cloud Engine.
+    A console client for monitoring the Cloud Engine.
 
 - rce-util:
-	Utility package of RoboEarth Cloud Engine.
+    Utility package of RoboEarth Cloud Engine.
 
 - rce++:
     C++ client for the RoboEarth Cloud Engine.
