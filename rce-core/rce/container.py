@@ -170,21 +170,18 @@ class RCEContainer(Referenceable):
         self._name = 'C{0}'.format(nr)
         self._terminating = None
 
-        # TODO: At the moment not used
-#        # Additional container parameters to use
+        # Additional container parameters to use
+        # TODO: At the moment not used; currently data also does not contain
+        #       these information
 #        self._size = data.get('size', 1)
 #        self._cpu = data.get('cpu', 0)
 #        self._memory = data.get('memory', 0)
 #        self._bandwidth = data.get('bandwidth', 0)
 #        self._specialFeatures = data.get('specialFeatures', [])
-#
-#        # Group networking fields
-#        self._group = data.get('group', '')
-#        self._groupIp = data.get('groupIp', '')
 
         client.registerContainer(self)
 
-        if data.get('group'):
+        if data.get('name'):
             ifconfCmd = ('ifconfig eth1 netmask 255.255.255.0 '
                          'broadcast 192.168.1.255')
         else:

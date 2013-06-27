@@ -160,7 +160,7 @@ class Container(object):
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
         self._ip = ip
-        self._group = data.get('group', None)
+        self._group = data.get('name', None)
 
         if not os.path.isabs(conf):
             raise ValueError('Container configuration directory is not an '
@@ -171,7 +171,7 @@ class Container(object):
                              'exist: {0}'.format(conf))
 
         if self._group:
-            self._groupIp = data.get('groupIp')
+            self._groupIp = data['ip']
             self._ovsup = pjoin(conf, 'ovsup')
             self._ovsdown = pjoin(conf, 'ovsdown')
 
