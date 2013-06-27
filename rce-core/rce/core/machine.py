@@ -169,7 +169,7 @@ class LoadBalancer(object):
                         break
 
                 self._uid.add(uid)
-                group = NetworkGroup(self, uid)
+                group = NetworkGroup(self, key, uid)
                 self._groups[key] = group
         else:
             # There is no group, i.e. 'special' group required
@@ -258,11 +258,11 @@ class LoadBalancer(object):
             self._iaas.disconnect()
             self._iaas = None
 
-    def freeGroup(self, group, uid):
+    def freeGroup(self, key, uid):
         """ # TODO: Add doc
         """
         self._uid.remove(uid)
-        del self._groups[group]
+        del self._groups[key]
 
     def cleanUp(self):
         """ Method should be called to destroy all machines.
@@ -526,10 +526,11 @@ class NetworkGroup(object):
     # TODO: Should the IP address be configurable?
     _NETWORK_ADDR = '192.168.1'
 
-    def __init__(self, manager, uid):
+    def __init__(self, manager, key, uid):
         """ # TODO: Add doc
         """
         self._manager = manager
+        self._key = key
         self._uid = uid
         self._ips = set(xrange(2, 255))
         self._containers = set()
@@ -612,5 +613,5 @@ class NetworkGroup(object):
     def destroy(self):
         """ # TODO: Add doc
         """
-        self._manager.freeGroup(self, self._uid)
+        self._manager.freeGroup(self._key, self._uid)
         self._manager = None

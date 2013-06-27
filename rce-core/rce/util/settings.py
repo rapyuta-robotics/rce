@@ -178,6 +178,7 @@ class _Settings(object):
         self._container_ubuntu = None
 
         # Network
+        self._container_if = None
         self._external_ip = None
         self._internal_ip = None
         self._container_ip = None
@@ -240,6 +241,12 @@ class _Settings(object):
         """ Ubuntu release used inside the container..
         """
         return self._container_ubuntu
+
+    @property
+    def container_interface(self):
+        """ Name of the container network interface.
+        """
+        return self._container_if
 
     @property
     def external_IP(self):
@@ -402,6 +409,7 @@ class _Settings(object):
                                                 'container_ubuntu_release')
 
         # Network
+        settings._container_if = parser.get('network', 'container_if')
         settings._external_ip = parser.getIP('network', 'external_if')
         settings._internal_ip = parser.getIP('network', 'internal_if')
         settings._container_ip = parser.getIP('network', 'container_if')

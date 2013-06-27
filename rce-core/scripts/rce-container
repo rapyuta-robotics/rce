@@ -104,8 +104,8 @@ if __name__ == '__main__':
             'memory':args.memory, 'bandwidth':args.bandwidth,
             'specialFeatures':specialFeatures}
 
-    main(reactor, cred, args.masterIP, passwd, cred.password,
-         settings.internal_port, settings.internal_IP, settings.container_IP,
-         settings.comm_port, settings.ros_proxy_port, settings.rootfs,
-         settings.conf_dir, settings.data_dir, settings.packages,
-         settings.container_ros_release, data)
+    main(reactor, cred, args.masterIP, settings.internal_port, passwd,
+         cred.password, settings.container_interface, settings.internal_IP,
+         settings.container_IP, settings.comm_port, settings.ros_proxy_port,
+         settings.rootfs, settings.conf_dir, settings.data_dir,
+         settings.packages, settings.container_ros_release, data)

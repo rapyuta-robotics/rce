@@ -33,6 +33,7 @@
 # Python specific imports
 import os
 import sys
+import stat
 import shutil
 from random import choice
 from string import letters
@@ -110,6 +111,7 @@ script
 end script
 """
 
+
 # TODO: Modify name of executable
 _UPSTART_LAUNCHER = """
 # description
@@ -133,6 +135,7 @@ script
 end script
 """
 
+
 _NETWORK_INTERFACES = """
 auto lo
 iface lo inet loopback
@@ -145,6 +148,14 @@ iface eth0 inet static
     broadcast {network}.255
     gateway {network}.1
     dns-nameservers {network}.1 127.0.0.1
+"""
+
+
+_GROUP_NETWORK = """
+#!/bin/bash
+
+ifconfig $5 0.0.0.0 {if_op}
+ovs-vsctl {ovs_op}-port br-{name} $5
 """
 
 
@@ -169,6 +180,9 @@ class RCEContainer(Referenceable):
             @param data:        Extra data used to configure the container.
             @type  data:        dict
         """
+        # TODO: __init__ throws ValueError in which case the config and data
+        #       directories are not removed!
+
         # Store the references
         self._client = client
 
@@ -231,42 +245,18 @@ class RCEContainer(Referenceable):
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
+        brname = data.get('name')
+        brip = data.get('ip')
+
+        if brname and brip:
+            ovsup = pjoin(self._confDir, 'ovsup')
+            # TODO: OVS down: Not supported on 12.04, can be added later
+            #ovsdown = pjoin(self._confDir, 'ovsdown')
+            ovsdown = None
+
         # Construct password
         passwd = encodeAES(cipher(self._client.masterPassword),
                            salter(uid, self._client.infraPassword))
-
-        # Create the container
-        self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name, ip, data)
-
-        # TODO: SSL stuff
-#        if self._USE_SSL:
-#            # Create a new certificate and key for environment node
-#            caCertPath = pjoin(self._SSL_DIR, 'Container.cert')
-#            caCert = loadCertFile(caCertPath)
-#            caKey = loadKeyFile(pjoin(self._SSL_DIR, 'container/env.key'))
-#            (cert, key) = createKeyCertPair(commID, caCert, caKey)
-#
-#            # Copy/save file to data directory
-#            shutil.copyfile(caCertPath, os.path.join(rceDir, 'ca.pem'))
-#            writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
-#            writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
-
-        # Add additional lines to fstab file of container
-        self._container.extendFstab(rosDir, 'home/ros', False)
-        self._container.extendFstab(rceDir, 'opt/rce/data', False)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
-                                    'etc/init/rceComm.conf', True)
-        # TODO: For the moment there is no upstart script for the launcher.
-#        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
-#                                    'etc/init/rceLauncher.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
-                                    'etc/init/rceRosapi.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
-                                    'etc/network/interfaces', True)
-
-        for srcPath, destPath in client.pkgDirIter:
-            self._container.extendFstab(srcPath, destPath, True)
 
         # Create upstart scripts
         with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
@@ -287,6 +277,62 @@ class RCEContainer(Referenceable):
         # Setup network
         with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
             f.write(client.getNetworkConfigTemplate().format(ip=ip))
+
+        # Create up/down script for virtual network interface if necessary
+        if ovsup:
+            with open(ovsup, 'w') as f:
+                f.write(_GROUP_NETWORK.format(if_op='up', ovs_op='add',
+                                              name=brname))
+
+            os.chmod(ovsup, stat.S_IRWXU)
+
+        if ovsdown:
+            with open(ovsdown, 'w') as f:
+                f.write(_GROUP_NETWORK.format(if_op='down', ovs_op='del',
+                                              name=brname))
+
+            os.chmod(ovsdown, stat.S_IRWXU)
+
+        # Create the container
+        self._container = Container(client.reactor, client.rootfs,
+                                    self._confDir, self._name)
+
+        # TODO: SSL stuff
+#        if self._USE_SSL:
+#            # Create a new certificate and key for environment node
+#            caCertPath = pjoin(self._SSL_DIR, 'Container.cert')
+#            caCert = loadCertFile(caCertPath)
+#            caKey = loadKeyFile(pjoin(self._SSL_DIR, 'container/env.key'))
+#            (cert, key) = createKeyCertPair(commID, caCert, caKey)
+#
+#            # Copy/save file to data directory
+#            shutil.copyfile(caCertPath, os.path.join(rceDir, 'ca.pem'))
+#            writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
+#            writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
+
+        # Add lxc bridge
+        self._container.addNetworkInterface('eth0', self._client.bridgeIF, ip)
+
+        # Add the virtual network bridge if necessary
+        if brname and brip:
+            self._container.addNetworkInterface('eth1', None, brip, ovsup,
+                                                ovsdown)
+
+        # Add additional lines to fstab file of container
+        self._container.extendFstab(rosDir, 'home/ros', False)
+        self._container.extendFstab(rceDir, 'opt/rce/data', False)
+        self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
+                                    'etc/init/rceComm.conf', True)
+        # TODO: For the moment there is no upstart script for the launcher.
+#        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
+#                                    'etc/init/rceLauncher.conf', True)
+        self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
+                                    'etc/init/rceRosapi.conf', True)
+        self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
+                                    'etc/network/interfaces', True)
+
+        for srcPath, destPath in client.pkgDirIter:
+            self._container.extendFstab(srcPath, destPath, True)
 
     def start(self):
         """ Method which starts the container.
@@ -395,74 +441,79 @@ class ContainerClient(Referenceable):
     _UID_LEN = 8
 
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
-                 intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-                 dataDir, pkgDir, rosRel, data):
+                 bridgeIF, intIP, bridgeIP, envPort, rosproxyPort, rootfsDir,
+                 confDir, dataDir, pkgDir, rosRel, data):
         """ Initialize the Container Client.
 
-            @param reactor:       Reference to the twisted reactor.
-            @type  reactor:       twisted::reactor
+            @param reactor:         Reference to the twisted reactor.
+            @type  reactor:         twisted::reactor
 
-            @param masterIP:      IP address of the Master process.
-            @type  masterIP:      str
+            @param masterIP:        IP address of the Master process.
+            @type  masterIP:        str
 
-            @param masterPort:    Port of the Master process used for internal
-                                  communications.
-            @type  masterPort:    int
+            @param masterPort:      Port of the Master process used for internal
+                                    communications.
+            @type  masterPort:      int
 
-            @param masterPasswd:  SHA 256 Digested Master Password.
-            @type  masterPasswd:  str
+            @param masterPasswd:    SHA 256 Digested Master Password.
+            @type  masterPasswd:    str
 
-            @param infraPasswd:   SHA 256 Digested Infra Password.
-            @type  infraPasswd:   str
+            @param infraPasswd:     SHA 256 Digested Infra Password.
+            @type  infraPasswd:     str
 
-            @param intIP:         IP address of the network interface used for
-                                  the internal communication.
-            @type  intIP:         str
+            @param bridgeIF:        Network interface used for the container
+                                    communication.
+            @type  bridgeIF:        str
 
-            @param bridgeIP:      IP address of the network interface used for
-                                  the container communication.
-            @type  bridgeIP:      str
+            @param intIP:           IP address of the network interface used for
+                                    the internal communication.
+            @type  intIP:           str
 
-            @param envPort:       Port where the environment process running
-                                  inside the container is listening for
-                                  connections to other endpoints. (Used for
-                                  port forwarding.)
-            @type  envPort:       int
+            @param bridgeIP:        IP address of the network interface used for
+                                    the container communication.
+            @type  bridgeIP:        str
 
-            @param rosproxyPort:  Port where the rosproxy process running
-                                  inside the container is listening for
-                                  connections to console clients. (Used for
-                                  port forwarding.)
-            @type  rosproxyPort:  int
+            @param envPort:         Port where the environment process running
+                                    inside the container is listening for
+                                    connections to other endpoints. (Used for
+                                    port forwarding.)
+            @type  envPort:         int
 
-            @param rootfsDir:     Filesystem path to the root directory of the
-                                  container filesystem.
-            @type  rootfsDir:     str
+            @param rosproxyPort:    Port where the rosproxy process running
+                                    inside the container is listening for
+                                    connections to console clients. (Used for
+                                    port forwarding.)
+            @type  rosproxyPort:    int
 
-            @param confDir:       Filesystem path to the directory where
-                                  container configuration files should be
-                                  stored.
-            @type  confDir:       str
+            @param rootfsDir:       Filesystem path to the root directory of the
+                                    container filesystem.
+            @type  rootfsDir:       str
 
-            @param dataDir:       Filesystem path to the directory where
-                                  temporary data of a container should be
-                                  stored.
-            @type  dataDir:       str
+            @param confDir:         Filesystem path to the directory where
+                                    container configuration files should be
+                                    stored.
+            @type  confDir:         str
 
-            @param pkgDir:        Filesystem paths to the package directories
-                                  as a list of tuples where each tuple contains
-                                  the path to the directory in the host machine
-                                  and the path to the directory to which the
-                                  host directory will be bound in the container
-                                  filesystem (without the @param rootfsDir).
-            @type  pkgDir:        [(str, str)]
+            @param dataDir:         Filesystem path to the directory where
+                                    temporary data of a container should be
+                                    stored.
+            @type  dataDir:         str
 
-            @param rosRel:        Container filesytem ROS release in this
-                                  deployment instance of the cloud engine
-            @type  rosRel:        str
+            @param pkgDir:          Filesystem paths to the package directories
+                                    as a list of tuples where each tuple
+                                    contains the path to the directory in the
+                                    host machine and the path to the directory
+                                    to which the host directory will be bound in
+                                    the container filesystem (without the
+                                    @param rootfsDir).
+            @type  pkgDir:          [(str, str)]
 
-            @param data:          More data about the machine.
-            @type  data:          dict
+            @param rosRel:          Container filesytem ROS release in this
+                                    deployment instance of the cloud engine
+            @type  rosRel:          str
+
+            @param data:            More data about the machine configuration.
+            @type  data:            dict
         """
         self._reactor = reactor
         self._internalIP = intIP
@@ -491,6 +542,7 @@ class ContainerClient(Referenceable):
         self._rosRel = rosRel
 
         # Network configuration
+        self._bridgeIF = bridgeIF
         self._network = bridgeIP[:bridgeIP.rfind('.')]
         self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
 
@@ -598,6 +650,12 @@ class ContainerClient(Referenceable):
             cloud engine.
         """
         return self._rosRel
+
+    @property
+    def bridgeIF(self):
+        """ Network interface used for the communication with the containers.
+        """
+        return self._bridgeIF
 
     @property
     def masterIP(self):
@@ -809,9 +867,9 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
-         internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, pkgDir, rosRel, data):
+def main(reactor, cred, masterIP, masterPort, masterPassword, infraPasswd,
+         bridgeIF, internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir,
+         confDir, dataDir, pkgDir, rosRel, data):
     log.startLogging(sys.stdout)
 
     def _err(reason):
@@ -822,9 +880,9 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     reactor.connectTCP(masterIP, masterPort, factory)
 
     client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
-                             infraPasswd, internalIP, bridgeIP, envPort,
-                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir,
-                             rosRel, data)
+                             infraPasswd, bridgeIF, internalIP, bridgeIP,
+                             envPort, rosproxyPort, rootfsDir, confDir, dataDir,
+                             pkgDir, rosRel, data)
 
     d = factory.login(cred, (client, data))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
