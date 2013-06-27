@@ -202,7 +202,7 @@ class _Connection(object):
         # ensure all whitespace characters around group are stripped
         group = group.strip()
 
-        if not _IP_V4_REGEX.match(groupIp):
+        if groupIp and not _IP_V4_REGEX.match(groupIp):
             raise ValueError('Invalid IPv4 address')
 
         self._rce.createContainer(cTag, group, groupIp, size, cpu, memory,
