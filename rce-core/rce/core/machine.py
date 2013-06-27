@@ -47,7 +47,7 @@ from rce.core.error import InvalidRequest, MaxNumberExceeded
 from rce.core.container import Container
 
 
-# Helper to generate random strings
+# Helper function to generate random strings
 randomString = lambda length: ''.join(choice(letters) for _ in xrange(length))
 
 

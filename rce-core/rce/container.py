@@ -34,6 +34,8 @@
 import os
 import sys
 import shutil
+from random import choice
+from string import letters
 
 pjoin = os.path.join
 
@@ -59,6 +61,10 @@ from rce.util.process import execute
 from rce.core.error import MaxNumberExceeded
 # from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
+
+
+# Helper function to generate random strings
+randomString = lambda length: ''.join(choice(letters) for _ in xrange(length))
 
 
 _UPSTART_COMM = """
@@ -386,6 +392,8 @@ class ContainerClient(Referenceable):
 
         There can be only one Container Client per machine.
     """
+    _UID_LEN = 8
+
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
                  intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
                  dataDir, pkgDir, rosRel, data):
@@ -485,7 +493,10 @@ class ContainerClient(Referenceable):
         # Network configuration
         self._network = bridgeIP[:bridgeIP.rfind('.')]
         self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
-        self._ovsBridges = {}
+
+        # Virtual network
+        self._bridges = set()
+        self._uid = {}
 
         # Physical parameters of machine
         # TODO: Is a human settings at this time,
@@ -660,82 +671,96 @@ class ContainerClient(Referenceable):
         assert container not in self._containers
         self._containers.add(container)
 
-    def remote_createBridge(self, groupname):
+    def remote_createBridge(self, name):
         """ Create a new OVS Bridge.
 
-            @param groupname:       Unique name of the network group.
-            @type  groupname:       str
+            @param name:        Unique name of the network group.
+            @type  name:        str
 
-            @return:                Exit status of command.
-            @rtype:                 twisted.internet.defer.Deferred
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
         """
-        if groupname not in self._ovsBridges:
-            self._ovsBridges[groupname] = set()
-            return execute(('/usr/bin/ovs-vsctl', '--', '--may-exist',
-                            'add-br', 'br-{0}'.format(groupname)),
-                           reactor=self._reactor)
+        if name in self._bridges:
+            raise InternalError('Bridge already exists.')
 
-    def remote_destroyBridge(self, groupname):
+        self._bridges.add(name)
+        return execute(('/usr/bin/ovs-vsctl', '--', '--may-exist', 'add-br',
+                        'br-{0}'.format(name)), reactor=self._reactor)
+
+    def remote_destroyBridge(self, name):
         """ Destroy a OVS Bridge.
 
-            @param groupname:       Unique name of the network group.
-            @type  groupname:       str
+            @param name:        Unique name of the network group.
+            @type  name:        str
 
-            @return:                Exit status of command.
-            @rtype:                 twisted.internet.defer.Deferred
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
         """
-        if groupname in self._ovsBridges:
-            del self._ovsBridges[groupname]
-            return execute(('/usr/bin/ovs-vsctl', 'del-br',
-                            'br-{0}'.format(groupname)), reactor=self._reactor)
+        if name not in self._bridges:
+            raise InternalError('Bridge does not exist.')
+
+        self._bridges.remove(name)
+        return execute(('/usr/bin/ovs-vsctl', 'del-br',
+                        'br-{0}'.format(name)), reactor=self._reactor)
 
 
-    def remote_createTunnel(self, groupname, targetIP):
+    def remote_createTunnel(self, name, targetIP):
         """ Create a new GRE Tunnel.
 
-            @param groupname:       Unique name of the network group.
-            @type  groupname:       str
+            @param name:        Unique name of the network group.
+            @type  name:        str
 
-            @param targetIP:        Target IP for the GRE Tunnel.
-            @type  targetIP:        str
+            @param targetIP:    Target IP for the GRE Tunnel.
+            @type  targetIP:    str
 
-            @return:                Exit status of command.
-            @rtype:                 twisted.internet.defer.Deferred
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
         """
-        hashIP = str(abs(hash(targetIP)))[:8]
-        bridgename = str(int(hashIP) ^ int(groupname))
+        if name not in self._bridges:
+            raise InternalError('Bridge does not exist.')
 
-        if hashIP not in self._ovsBridges[groupname]:
-            self._ovsBridges[groupname].add(hashIP)
+        key = (name, targetIP)
 
-            bridge = 'br-{0}'.format(groupname)
-            port = 'gre-{0}'.format(bridgename)
-            remote = 'options:remote_ip={0}'.format(targetIP)
+        if key in self._uid:
+            raise InternalError('Tunnel already exists.')
 
-            return execute(('/usr/bin/ovs-vsctl', 'add-port', bridge, port,
-                            '--', 'set', 'interface', port, 'type=gre', remote),
-                           reactor=self._reactor)
+        while 1:
+            uid = randomString(self._UID_LEN)
 
-    def remote_destroyTunnel(self, groupname, targetIP):
+            if uid not in self._uid.itervalues():
+                break
+
+        self._uid[key] = uid
+        port = 'gre-{0}'.format(uid)
+
+        return execute(('/usr/bin/ovs-vsctl', 'add-port', 'br-{0}'.format(name),
+                        port, '--', 'set', 'interface', port, 'type=gre',
+                        'options:remote_ip={0}'.format(targetIP)),
+                       reactor=self._reactor)
+
+    def remote_destroyTunnel(self, name, targetIP):
         """ Destroy a GRE Tunnel.
 
-            @param groupname:       Unique name of the network group.
-            @type  groupname:       str
+            @param name:        Unique name of the network group.
+            @type  name:        str
 
-            @param targetIP:        Target IP for the GRE Tunnel.
-            @type  targetIP:        str
+            @param targetIP:    Target IP for the GRE Tunnel.
+            @type  targetIP:    str
 
-            @return:                Exit status of command.
-            @rtype:                 twisted.internet.defer.Deferred
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
         """
-        hashIP = str(abs(hash(targetIP)))[:8]
-        bridgename = str(int(hashIP) ^ int(groupname))
+        if name not in self._bridges:
+            raise InternalError('Bridge does not exist.')
 
-        if hashIP in self._ovsBridges[groupname]:
-            self._ovsBridges[groupname].remove(hashIP)
-            return execute(('/usr/bin/ovs-vsctl', 'del-port',
-                            'gre-{0}'.format(bridgename)),
-                           reactor=self._reactor)
+        key = (name, targetIP)
+
+        if key not in self._uid:
+            raise InternalError('Tunnel deos not exist.')
+
+        return execute(('/usr/bin/ovs-vsctl', 'del-port',
+                        'gre-{0}'.format(self._uid.pop(key))),
+                       reactor=self._reactor)
 
     def unregisterContainer(self, container):
         assert container in self._containers
