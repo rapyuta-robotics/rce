@@ -171,14 +171,15 @@ class RCEContainer(Referenceable):
         ovsip = data.get('ip')
 
         if ovsname and ovsip:
-            ovsup = pjoin(confDir, 'ovsup')
-            # TODO: OVS down: Not supported on 12.04, can be added later
-            #ovsdown = pjoin(confDir, 'ovsdown')
-            ovsdown = None
             ovsif = 'eth1'
+            ovsup = pjoin(confDir, 'ovsup')
+
+            if client.ubuntuRel > 'quantal':
+                ovsdown = pjoin(confDir, 'ovsdown')
+            else:
+                ovsdown = None
         else:
-            ovsup = ovsdown = None
-            ovsif = None
+            ovsif = ovsup = ovsdown = None
 
         # Construct password
         passwd = encodeAES(cipher(client.masterPassword),
@@ -386,7 +387,7 @@ class ContainerClient(Referenceable):
 
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
                  bridgeIF, intIP, bridgeIP, envPort, rosproxyPort, rootfsDir,
-                 confDir, dataDir, pkgDir, rosRel, data):
+                 confDir, dataDir, pkgDir, ubuntuRel, rosRel, data):
         """ Initialize the Container Client.
 
             @param reactor:         Reference to the twisted reactor.
@@ -452,6 +453,10 @@ class ContainerClient(Referenceable):
                                     @param rootfsDir).
             @type  pkgDir:          [(str, str)]
 
+            @param ubuntuRel:       Host filesystem Ubuntu release used in this
+                                    machine.
+            @type  ubuntuRel:       str
+
             @param rosRel:          Container filesytem ROS release in this
                                     deployment instance of the cloud engine
             @type  rosRel:          str
@@ -473,17 +478,22 @@ class ContainerClient(Referenceable):
         self._masterPasswd = masterPasswd
         self._infraPasswd = infraPasswd
 
+        # Container directories
         self._rootfs = rootfsDir
         self._confDir = confDir
         self._dataDir = dataDir
         self._pkgDir = pkgDir
 
+        # Release info
+        self._ubuntuRel = ubuntuRel
+        self._rosRel = rosRel
+
         for _, path in self._pkgDir:
             os.mkdir(os.path.join(self._rootfs, path))
 
+        # Container info
         self._nrs = set(range(100, 200))
         self._containers = set()
-        self._rosRel = rosRel
 
         # Network configuration
         self._bridgeIF = bridgeIF
@@ -586,6 +596,11 @@ class ContainerClient(Referenceable):
     def pkgDirIter(self):
         """ Iterator over all file system paths of package directories. """
         return self._pkgDir.__iter__()
+
+    @property
+    def ubuntuRel(self):
+        """ Host filesystem Ubuntu release in this machine. """
+        return self._ubuntuRel
 
     @property
     def rosRel(self):
@@ -799,7 +814,7 @@ class ContainerClient(Referenceable):
 
 def main(reactor, cred, masterIP, masterPort, masterPassword, infraPasswd,
          bridgeIF, internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir,
-         confDir, dataDir, pkgDir, rosRel, data):
+         confDir, dataDir, pkgDir, ubuntuRel, rosRel, data):
     log.startLogging(sys.stdout)
 
     def _err(reason):
@@ -812,7 +827,7 @@ def main(reactor, cred, masterIP, masterPort, masterPassword, infraPasswd,
     client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
                              infraPasswd, bridgeIF, internalIP, bridgeIP,
                              envPort, rosproxyPort, rootfsDir, confDir, dataDir,
-                             pkgDir, rosRel, data)
+                             pkgDir, ubuntuRel, rosRel, data)
 
     d = factory.login(cred, (client, data))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))

@@ -31,17 +31,17 @@
 #
 
 # Python specific imports
-from ConfigParser import SafeConfigParser, Error
 import os
+import string
 import socket
 import fcntl
 import struct
 import re
 import urllib2
+from ConfigParser import SafeConfigParser, Error
 
 # rce specific imports
 from rce.util.name import validateName, IllegalName
-from urllib2 import URLError
 
 
 # Global storage of config parser
@@ -49,6 +49,20 @@ _settings = None
 
 # Path where the configuration file can be found
 PATH = os.path.join(os.getenv('HOME'), '.rce', 'config.ini')
+
+
+def get_host_ubuntu_release():
+    """ Parse configuration file to get the codename of the Ubuntu release of
+        the host filesystem.
+    """
+    with open('/etc/lsb-release') as config:
+        for line in config:
+            k, v = line.split('=')
+
+            if k == 'DISTRIB_CODENAME':
+                return v.strip(string.whitespace + '\'"')
+
+    raise ValueError('Corrupt release information.')
 
 
 class NoValidSettings(Exception):
@@ -173,9 +187,10 @@ class _Settings(object):
         self._gzip_lvl = None
         self._dev_mode = None
         self._pw_file = None
+        self._host_ubuntu = None
         self._host_ros = None
-        self._container_ros = None
         self._container_ubuntu = None
+        self._container_ros = None
 
         # Network
         self._container_if = None
@@ -208,68 +223,64 @@ class _Settings(object):
 
     @property
     def gzip_lvl(self):
-        """ Compression level used in ROS message forwarder.
-        """
+        """ Compression level used in ROS message forwarder. """
         return self._gzip_lvl
 
     @property
     def dev_mode(self):
-        """ Flag which is True if the cloud engine runs in developer mode.
-        """
+        """ Flag which is True if the cloud engine runs in developer mode. """
         return self._dev_mode
 
     @property
     def pw_file(self):
-        """ Path to the credentials database.
-        """
+        """ Path to the credentials database. """
         return self._pw_file
 
     @property
+    def host_ubuntu_release(self):
+        """ Ubuntu release used in the host filesystem. """
+        return self._host_ubuntu
+
+    @property
     def host_ros_release(self):
-        """ ROS release used in the host filesystem.
-        """
+        """ ROS release used in the host filesystem. """
         return self._host_ros
 
     @property
-    def container_ros_release(self):
-        """ ROS release used inside the container.
-        """
-        return self._container_ros
-
-    @property
     def container_ubuntu_release(self):
-        """ Ubuntu release used inside the container..
-        """
+        """ Ubuntu release used inside the container. """
         return self._container_ubuntu
 
     @property
+    def container_ros_release(self):
+        """ ROS release used inside the container. """
+        return self._container_ros
+
+    @property
     def container_interface(self):
-        """ Name of the container network interface.
-        """
+        """ Name of the container network interface. """
         return self._container_if
 
     @property
     def external_IP(self):
-        """ IP address of network interface used for external communication.
-        """
+        """ IP address of network interface used for external communication. """
         return self._external_ip
 
     @property
     def internal_IP(self):
-        """ IP address of network interface used for internal communication.
-        """
+        """ IP address of network interface used for internal communication. """
         return self._internal_ip
 
     @property
     def container_IP(self):
-        """ IP address of network interface used for container communication.
+        """ IP address of network interface used for communication with
+            containers.
         """
         return self._container_ip
 
     @property
     def localhost_IP(self):
-        """ IP address of loopback network interface.
-        """
+        """ IP address of loopback network interface. """
         return self._localhost_ip
 
     @property
@@ -323,38 +334,32 @@ class _Settings(object):
 
     @property
     def size(self):
-        """ Maximum number of containers which can run in the machine.
-        """
+        """ Maximum number of containers which can run in the machine. """
         return self._size
 
     @property
     def cpu(self):
-        """ Parameter to define cpu attributes/capacity
-        """
+        """ Parameter to define CPU attributes/capacity. """
         return self._cpu
 
     @property
     def memory(self):
-        """ Parameter to define memory attributes/capacity
-        """
+        """ Parameter to define memory attributes/capacity. """
         return self._memory
 
     @property
     def bandwidth(self):
-        """ Parameter to define bandwidth attributes/capacity
-        """
+        """ Parameter to define bandwidth attributes/capacity. """
         return self._bandwidth
 
     @property
     def special_features(self):
-        """ Parameter to define special attributes like avx,gpu,hadoop etc
-        """
+        """ Parameter to define special attributes like avx,gpu,hadoop, etc. """
         return self._special_features
 
     @property
     def rootfs(self):
-        """ Path to the root directory of the container filesystem.
-        """
+        """ Path to the root directory of the container filesystem. """
         return self._rootfs
 
     @property
@@ -403,6 +408,7 @@ class _Settings(object):
         settings._gzip_lvl = parser.getint('global', 'gzip_lvl')
         settings._dev_mode = parser.getboolean('global', 'dev_mode')
         settings._pw_file = parser.get('global', 'password_file')
+        settings._host_ubuntu = get_host_ubuntu_release()
         settings._host_ros = parser.get('global', 'host_ros_release')
         settings._container_ros = parser.get('global', 'container_ros_release')
         settings._container_ubuntu = parser.get('global',
@@ -477,7 +483,7 @@ class _RCESettingsParser(SafeConfigParser, object):
     """
     # case where in a custom setup the global IP address is preconfigured
     # and does not necessarily bind to a network interface
-    # eg: ElasticIP or custom DNS routings
+    # e.g.: ElasticIP or custom DNS routings
     _IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
                               '{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
 
@@ -517,7 +523,7 @@ class _RCESettingsParser(SafeConfigParser, object):
             if ifname == 'aws_dns':
                 return urllib2.urlopen(_RCESettingsParser._AWS_IP_V4_ADDR,
                                        timeout=3).read()
-        except URLError:
+        except urllib2.URLError:
             raise NoValidSettings('There seems to be something wrong with '
                                   'AWS or configuration settings.')
 

@@ -108,4 +108,5 @@ if __name__ == '__main__':
          cred.password, settings.container_interface, settings.internal_IP,
          settings.container_IP, settings.comm_port, settings.ros_proxy_port,
          settings.rootfs, settings.conf_dir, settings.data_dir,
-         settings.packages, settings.container_ros_release, data)
+         settings.packages, settings.host_ubuntu_release,
+         settings.container_ros_release, data)

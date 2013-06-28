@@ -35,12 +35,12 @@ import os
 import sys
 import readline
 import glob
-import string
 from subprocess import check_call, call
-from ConfigParser import SafeConfigParser, NoSectionError
+from ConfigParser import SafeConfigParser
 
 # rce specific imports
-from rce.util.settings import PATH, getSettings, NoValidSettings
+from rce.util.settings import PATH, getSettings, NoValidSettings, \
+    get_host_ubuntu_release
 
 
 # Setup the Python interpreter path auto-complete.
@@ -137,26 +137,6 @@ def _get_deployment_type():
                           ('aws', 'rackspace', 'other'), 2)
 
 
-def _get_compat_ros_release(container_ubuntu, container_ros):
-    """ Get the compatible ROS releases for the host and container filesystem,
-        based on a requested ROS release for the container.
-    """
-    host_ubuntu = _get_host_ubuntu_release()
-
-    if container_ros not in _SUPPORT_VERSIONS[container_ubuntu]:
-        container_ros = _SUPPORT_VERSIONS[container_ubuntu][0]
-        print ('The ROS release you selected is incompatible with ubuntu '
-               "'{0}'.".format(container_ubuntu))
-        print('Selecting optimal ROS release: {1}'.format(container_ros))
-
-    if container_ubuntu >= host_ubuntu:
-        host_ros = container_ros
-    else:
-        host_ros = _SUPPORT_VERSIONS[host_ubuntu][0]
-
-    return container_ros, host_ros
-
-
 def _get_container_ros_release():
     """ Ask for ROS release to deploy in the container.
     """
@@ -166,24 +146,12 @@ def _get_container_ros_release():
 
 
 def _get_container_ubuntu_release():
-    """ Ask for ubuntu release to deploy in the container.
+    """ Ask for Ubuntu release to deploy in the container.
     """
     opt = _select_option('Enter the Ubuntu release to deploy in the container.',
                          ('precise (12.04 LTS)', 'quantal (12.10)',
                           'raring (13.04)'), 0)
     return opt.split()[0]
-
-
-def _get_host_ubuntu_release():
-    """ Parse configuration file to get the codename of the ubuntu release of
-        the host filesystem.
-    """
-    with open('/etc/lsb-release') as config:
-        for line in config:
-            k, v = line.split('=')
-            if k == 'DISTRIB_CODENAME':
-                return v.strip(string.whitespace + '\'"')
-    raise NoSectionError('Corrupt release information')
 
 
 def _get_container_rootfs():
@@ -213,6 +181,28 @@ def _get_interface(channel, default):
     return ifname
 
 
+# Validator of combo of Ubuntu release & ROS release
+def _get_compat_ros_release(container_ubuntu, container_ros):
+    """ Get the compatible ROS releases for the host and container filesystem,
+        based on a requested ROS release for the container.
+    """
+    host_ubuntu = get_host_ubuntu_release()
+
+    if container_ros not in _SUPPORT_VERSIONS[container_ubuntu]:
+        container_ros = _SUPPORT_VERSIONS[container_ubuntu][0]
+        print ('The ROS release you selected is incompatible with Ubuntu '
+               "'{0}'.".format(container_ubuntu))
+        print('Selecting optimal ROS release: {1}'.format(container_ros))
+
+    if container_ubuntu >= host_ubuntu:
+        host_ros = container_ros
+    else:
+        host_ros = _SUPPORT_VERSIONS[host_ubuntu][0]
+
+    return container_ros, host_ros
+
+
+# Implementation of individual options
 def provision_config(config, config_file, deploy_type):
     """ Provision settings.ini as required for first runs.
     """
@@ -322,7 +312,7 @@ def provision_container(config):
 
     # Install the packages in the host filesystem
     cmds = (_INSTALL.format(_BASE_PREP),
-            _ROS_SRC.format(base=_get_host_ubuntu_release()),
+            _ROS_SRC.format(base=get_host_ubuntu_release()),
             _ROS_KEY,
             _INSTALL.format(host_pkgs),
             # Temprory hack as OVS dkms does not function as promised
@@ -450,7 +440,7 @@ if __name__ == '__main__':
         try:
             candidates = os.listdir('/opt/ros')
             if candidates and config.host_ros_release not in candidates:
-                if max(candidates) in _SUPPORT_VERSIONS[_get_host_ubuntu_release()]:
+                if max(candidates) in _SUPPORT_VERSIONS[get_host_ubuntu_release()]:
                     config.host_ros_release = max(candidates)
         except OSError:
             pass
