@@ -78,7 +78,7 @@ class Node(Referenceable, ArgumentMixin):
     """
     # CONFIG
     _STOP_ESCALATION = [('INT', 15), ('TERM', 2), ('KILL', None)]
-    _LOG_DIR = '/opt/rce/data'# TODO: After splitting process: '/home/ros'
+    _LOG_DIR = '/opt/rce/data'  # TODO: After splitting process: '/home/ros'
 
     def __init__(self, owner, pkg, exe, args, name, namespace):
         """ Initialize and start the Node.
@@ -115,13 +115,12 @@ class Node(Referenceable, ArgumentMixin):
         owner.registerNode(self)
         self._owner = owner
 
-        self._protocol = None
         self._reactor = owner.reactor
         self._call = None
         self._protocol = None
 
         # Find and validate executable
-        cmd = [self._loader.findNode(pkg, exe)] # raises ResourceNotFound
+        cmd = [self._loader.findNode(pkg, exe)]  # raises ResourceNotFound
 
         # Add arguments
         args = self.processArgument(args)
@@ -137,8 +136,6 @@ class Node(Referenceable, ArgumentMixin):
         # Process name and namespace argument
         if name:
             cmd.append('__name:={0}'.format(name))
-        else:
-            name = exe
 
         if namespace:
             cmd.append('__ns:={0}'.format(namespace))
@@ -154,7 +151,7 @@ class Node(Referenceable, ArgumentMixin):
 
         # Start node
         log.msg('Start Node {0}/{1} [pkg: {2}, exe: '
-                '{3}].'.format(namespace, name, pkg, exe))
+                '{3}].'.format(namespace, name or exe, pkg, exe))
         self._reactor.spawnProcess(self._protocol, cmd[0], cmd, env=os.environ)
 
         self._name = '{0}/{1}'.format(pkg, exe)
