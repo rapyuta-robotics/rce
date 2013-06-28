@@ -36,7 +36,7 @@ LONG_DESCRIPTION = """ TODO """
 
 setup(
     name='rce-core',
-    description=' Core package of RoboEarth Cloud Engine.',
+    description='Core package of RoboEarth Cloud Engine.',
     long_description=LONG_DESCRIPTION,
     version='0.1',
     author='Dominique Hunziker',
@@ -52,5 +52,6 @@ setup(
     scripts=['scripts/rce-make', 'scripts/rce-setup-rcemake',
              'scripts/rce-master', 'scripts/rce-container',
              'scripts/rce-robot', 'scripts/rce-environment',
-             'scripts/rce-rosproxy', 'scripts/rce-maintain']
+             'scripts/rce-rosproxy', 'scripts/rce-maintain'],
+    package_data={'rce.core': ['data/*.upstart', 'data/*.script']},
 )

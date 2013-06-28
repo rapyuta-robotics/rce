@@ -38,7 +38,14 @@ import shutil
 from random import choice
 from string import letters
 
+try:
+    import pkg_resources
+except ImportError:
+    print("Can not import the package 'pkg_resources'.")
+    exit(1)
+
 pjoin = os.path.join
+load_resource = pkg_resources.resource_string  #@UndefinedVariable
 
 try:
     import iptc
@@ -68,95 +75,24 @@ from rce.core.error import MaxNumberExceeded
 randomString = lambda length: ''.join(choice(letters) for _ in xrange(length))
 
 
-_UPSTART_COMM = """
-# description
-author "Dominique Hunziker"
-description "RCE Comm - Framework for managing and using ROS Apps"
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-
-kill timeout 5
-
-script
-    # setup environment
-    . /opt/rce/setup.sh
-    {chownCmd}
-    {ifconfCmd}
-
-    # start environment node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
-end script
-"""
+_UPSTART_COMM = load_resource('rce.core', 'data/comm.upstart')
+# _UPSTART_LAUNCHER = load_resource('rce.core', 'data/launcher.upstart')
+_UPSTART_ROSAPI = load_resource('rce.core', 'data/rosapi.upstart')
+_LXC_NETWORK_SCRIPT = load_resource('rce.core', 'data/lxc-network.script')
 
 
-_UPSTART_ROSAPI = """
-# description
-author "Mayank Singh"
-description "ROS API - Framework to query ROS specific information"
+def passthrough(f):
+    """ Decorator which is used to add a function as a Deferred callback and
+        passing the input unchanged to the output.
 
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
+        @param f:           Function which should be decorated.
+        @type  f:           callable
+    """
+    def wrapper(response):
+        f()
+        return response
 
-kill timeout 5
-
-script
-    # setup environment
-    . /opt/rce/setup.sh
-
-    # start rosapi node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-rosproxy {proxyPort}
-end script
-"""
-
-
-# TODO: Modify name of executable
-_UPSTART_LAUNCHER = """
-# description
-author "Dominique Hunziker"
-description "RCE Launcher - Framework for managing and using ROS Apps"
-
-# start/stop conditions
-start on started rce
-stop on stopping rce
-
-# timeout before the process is killed; generous as a lot of processes have
-# to be terminated by the launcher.
-kill timeout 30
-
-script
-    # setup environment
-    . /opt/rce/setup.sh
-
-    # start launcher
-    start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
-end script
-"""
-
-
-_NETWORK_INTERFACES = """
-auto lo
-iface lo inet loopback
-
-auto eth0
-iface eth0 inet static
-    address {{ip}}
-    netmask 255.255.255.0
-    network {network}.0
-    broadcast {network}.255
-    gateway {network}.1
-    dns-nameservers {network}.1 127.0.0.1
-"""
-
-
-_GROUP_NETWORK = """
-#!/bin/bash
-
-ifconfig $5 0.0.0.0 {if_op}
-ovs-vsctl {ovs_op}-port br-{name} $5
-"""
+    return wrapper
 
 
 class RCEContainer(Referenceable):
@@ -180,14 +116,9 @@ class RCEContainer(Referenceable):
             @param data:        Extra data used to configure the container.
             @type  data:        dict
         """
-        # TODO: __init__ throws ValueError in which case the config and data
-        #       directories are not removed!
-
-        # Store the references
         self._client = client
-
         self._nr = nr
-        self._name = 'C{0}'.format(nr)
+        self._name = name = 'C{0}'.format(nr)
         self._terminating = None
 
         # Additional container parameters to use
@@ -201,101 +132,107 @@ class RCEContainer(Referenceable):
 
         client.registerContainer(self)
 
-        if data.get('name'):
-            ifconfCmd = ('ifconfig eth1 netmask 255.255.255.0 '
-                         'broadcast 192.168.1.255')
-        else:
-            ifconfCmd = "#no ovs"
-
         # Create the directories for the container
-        self._confDir = pjoin(client.confDir, self._name)
-        self._dataDir = pjoin(client.dataDir, self._name)
+        self._confDir = confDir = pjoin(client.confDir, name)
+        self._dataDir = dataDir = pjoin(client.dataDir, name)
 
-        if os.path.isdir(self._confDir):
+        if os.path.isdir(confDir):
             raise ValueError('There is already a configuration directory for '
-                             "'{0}'.".format(self._name))
+                             "'{0}'.".format(name))
 
-        if os.path.isdir(self._dataDir):
+        if os.path.isdir(dataDir):
             raise ValueError('There is already a data directory for '
-                             "'{0}'.".format(self._name))
+                             "'{0}'.".format(name))
 
-        os.mkdir(self._confDir)
-        os.mkdir(self._dataDir)
+        os.mkdir(confDir)
+        os.mkdir(dataDir)
 
         # Create additional folders for the container
-        rceDir = pjoin(self._dataDir, 'rce')
-        rosDir = pjoin(self._dataDir, 'ros')
+        rceDir = pjoin(dataDir, 'rce')
+        rosDir = pjoin(dataDir, 'ros')
 
         os.mkdir(rceDir)
         os.mkdir(rosDir)
 
-        if self._client.rosRel > 'fuerte':
+        if client.rosRel > 'fuerte':
             # TODO: Switch to user 'ros' when the launcher is used again
-            rosdepUser = os.path.join(rceDir, '.ros/rosdep')
-            rosdepRoot = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
-            shutil.copytree(rosdepRoot, rosdepUser)
-            chownCmd = 'chown -R rce:rce /opt/rce/data/.ros'
-        else:
-            chownCmd = '#no chown'
+            shutil.copytree(pjoin(client.rootfs, 'root/.ros/rosdep'),
+                            pjoin(rceDir, '.ros/rosdep'))
 
         # Create network variables
-        ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
+        bridgeIP = client.bridgeIP
+        ip = '{0}.{1}'.format(bridgeIP.rsplit('.', 1)[0], nr)
         self._address = '{0}:{1}'.format(ip, client.envPort)
         self._rosproxyAddress = '{0}:{1}'.format(ip, client.rosproxyPort)
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
-        brname = data.get('name')
-        brip = data.get('ip')
+        ovsname = data.get('name')
+        ovsip = data.get('ip')
 
-        if brname and brip:
-            ovsup = pjoin(self._confDir, 'ovsup')
+        if ovsname and ovsip:
+            ovsup = pjoin(confDir, 'ovsup')
             # TODO: OVS down: Not supported on 12.04, can be added later
-            #ovsdown = pjoin(self._confDir, 'ovsdown')
+            #ovsdown = pjoin(confDir, 'ovsdown')
             ovsdown = None
+            ovsif = 'eth1'
+        else:
+            ovsup = ovsdown = None
+            ovsif = None
 
         # Construct password
-        passwd = encodeAES(cipher(self._client.masterPassword),
-                           salter(uid, self._client.infraPassword))
+        passwd = encodeAES(cipher(client.masterPassword),
+                           salter(uid, client.infraPassword))
 
         # Create upstart scripts
-        with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
-            f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
-                                         masterPort=self._client.masterPort,
-                                         internalPort=self._client.envPort,
-                                         uid=uid, passwd=passwd,
-                                         chownCmd=chownCmd,
-                                         ifconfCmd=ifconfCmd))
+        upComm = pjoin(confDir, 'upstartComm')
+        with open(upComm, 'w') as f:
+            f.write(_UPSTART_COMM.format(masterIP=client.masterIP,
+                                         masterPort=client.masterPort,
+                                         internalPort=client.envPort,
+                                         uid=uid, passwd=passwd))
 
-        with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
-            f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
+        upRosapi = pjoin(confDir, 'upstartRosapi')
+        with open(upRosapi, 'w') as f:
+            f.write(_UPSTART_ROSAPI.format(proxyPort=client.rosproxyPort))
 
         # TODO: For the moment there is no upstart script for the launcher.
-#        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
+#        upLauncher = pjoin(confDir, 'upstartLauncher')
+#        with open(upLauncher, 'w') as f:
 #            f.write(_UPSTART_LAUNCHER)
 
         # Setup network
-        with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
-            f.write(client.getNetworkConfigTemplate().format(ip=ip))
+        networkIF = pjoin(confDir, 'networkInterfaces')
+        with open(networkIF, 'w') as f:
+            f.write('auto lo\n')
+            f.write('iface lo inet loopback\n')
+            f.write('\n')
+            f.write('auto eth0\n')
+            f.write('iface eth0 inet static\n')
+            f.write('    address {0}\n'.format(ip))
+            f.write('    gateway {0}\n'.format(bridgeIP))
+            f.write('    dns-nameservers {0} 127.0.0.1\n'.format(bridgeIP))
+
+            if ovsif:
+                f.write('\n')
+                f.write('auto {0}\n'.format(ovsif))
+                f.write('iface {0} inet static\n'.format(ovsif))
+                f.write('    address {0}\n'.format(ovsip))
 
         # Create up/down script for virtual network interface if necessary
         if ovsup:
             with open(ovsup, 'w') as f:
-                f.write(_GROUP_NETWORK.format(if_op='up', ovs_op='add',
-                                              name=brname))
+                f.write(_LXC_NETWORK_SCRIPT.format(if_op='up', ovs_op='add',
+                                                   name=ovsname))
 
             os.chmod(ovsup, stat.S_IRWXU)
 
         if ovsdown:
             with open(ovsdown, 'w') as f:
-                f.write(_GROUP_NETWORK.format(if_op='down', ovs_op='del',
-                                              name=brname))
+                f.write(_LXC_NETWORK_SCRIPT.format(if_op='down', ovs_op='del',
+                                                   name=ovsname))
 
             os.chmod(ovsdown, stat.S_IRWXU)
-
-        # Create the container
-        self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name)
 
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -310,71 +247,74 @@ class RCEContainer(Referenceable):
 #            writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
 #            writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
 
+        # Create the container
+        self._container = container = Container(client.reactor, client.rootfs,
+                                                confDir, name)
+
         # Add lxc bridge
-        self._container.addNetworkInterface('eth0', self._client.bridgeIF, ip)
+        container.addNetworkInterface('eth0', client.bridgeIF, ip)
 
         # Add the virtual network bridge if necessary
-        if brname and brip:
-            self._container.addNetworkInterface('eth1', None, brip, ovsup,
-                                                ovsdown)
+        if ovsname and ovsip:
+            container.addNetworkInterface(ovsif, None, ovsip, ovsup, ovsdown)
 
         # Add additional lines to fstab file of container
-        self._container.extendFstab(rosDir, 'home/ros', False)
-        self._container.extendFstab(rceDir, 'opt/rce/data', False)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
-                                    'etc/init/rceComm.conf', True)
+        container.extendFstab(rosDir, 'home/ros', False)
+        container.extendFstab(rceDir, 'opt/rce/data', False)
+        container.extendFstab(upComm, 'etc/init/rceComm.conf', True)
         # TODO: For the moment there is no upstart script for the launcher.
-#        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
-#                                    'etc/init/rceLauncher.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
-                                    'etc/init/rceRosapi.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
-                                    'etc/network/interfaces', True)
+#        container.extendFstab(upLauncher, 'etc/init/rceLauncher.conf', True)
+        container.extendFstab(upRosapi, 'etc/init/rceRosapi.conf', True)
+        container.extendFstab(networkIF, 'etc/network/interfaces', True)
 
         for srcPath, destPath in client.pkgDirIter:
-            self._container.extendFstab(srcPath, destPath, True)
+            container.extendFstab(srcPath, destPath, True)
 
     def start(self):
         """ Method which starts the container.
         """
         # NOTE: can raise iptc.xtables.XTablesError
         # add remote rule for RCE internal communication
-        self._remoteRule = iptc.Rule()
-        self._remoteRule.protocol = 'tcp'
-        self._remoteRule.dst = self._client.internalIP
-        m = self._remoteRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._fwdPort
-        t = self._remoteRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._address
+        self._remoteRule = rule
 
         # add local (loopback) rule for RCE internal communication
-        self._localRule = iptc.Rule()
-        self._localRule.protocol = 'tcp'
-        self._localRule.out_interface = 'lo'
-        self._localRule.dst = self._client.internalIP
-        m = self._localRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.out_interface = 'lo'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._fwdPort
-        t = self._localRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._address
+        self._localRule = rule
 
         # add remote rule for rosproxy
-        self._rosremoteRule = iptc.Rule()
-        self._rosremoteRule.protocol = 'tcp'
-        self._rosremoteRule.dst = self._client.internalIP
-        m = self._rosremoteRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._rosproxyFwdPort
-        t = self._rosremoteRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._rosproxyAddress
+        self._rosremoteRule = rule
 
         # add local(loopback) rule for rosproxy
-        self._roslocalRule = iptc.Rule()
-        self._roslocalRule.protocol = 'tcp'
-        self._roslocalRule.out_interface = 'lo'
-        self._roslocalRule.dst = self._client.internalIP
-        m = self._roslocalRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.out_interface = 'lo'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._rosproxyFwdPort
-        t = self._roslocalRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._rosproxyAddress
+        self._roslocalRule = rule
 
         self._client.prerouting.insert_rule(self._remoteRule)
         self._client.output.insert_rule(self._localRule)
@@ -403,21 +343,22 @@ class RCEContainer(Referenceable):
 
         return self._container.stop(self._name)
 
-    def _destroy(self, response):
+    def _destroy(self):
         """ Internally used method to clean up after the container has been
             stopped.
         """
-        self._client.returnNr(self._nr)
-        self._client.unregisterContainer(self)
-        self._client = None
+        if self._client:
+            self._client.returnNr(self._nr)
+            self._client.unregisterContainer(self)
+            self._client = None
 
-        for path in (self._confDir, self._dataDir):
-            try:
-                shutil.rmtree(path)
-            except:
-                pass
+        if self._confDir:
+            shutil.rmtree(self._confDir, True)
+            self._confDir = None
 
-        return response
+        if self._dataDir:
+            shutil.rmtree(self._dataDir, True)
+            self._dataDir = None
 
     def remote_destroy(self):
         """ Method should be called to destroy the container.
@@ -425,11 +366,14 @@ class RCEContainer(Referenceable):
         if not self._terminating:
             if self._container:
                 self._terminating = self._stop()
-                self._terminating.addBoth(self._destroy)
+                self._terminating.addBoth(passthrough(self._destroy))
             else:
                 self._terminating = succeed(None)
 
         return self._terminating
+
+    def __del__(self):
+        self._destroy()
 
 
 class ContainerClient(Referenceable):
@@ -543,8 +487,7 @@ class ContainerClient(Referenceable):
 
         # Network configuration
         self._bridgeIF = bridgeIF
-        self._network = bridgeIP[:bridgeIP.rfind('.')]
-        self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
+        self._bridgeIP = bridgeIP
 
         # Virtual network
         self._bridges = set()
@@ -658,6 +601,13 @@ class ContainerClient(Referenceable):
         return self._bridgeIF
 
     @property
+    def bridgeIP(self):
+        """ IP address of network interface used for the communication with
+            the containers.
+        """
+        return self._bridgeIP
+
+    @property
     def masterIP(self):
         """ IP address of master process. """
         return self._masterIP
@@ -681,26 +631,6 @@ class ContainerClient(Referenceable):
     def output(self):
         """ Reference to iptables' chain OUTPUT of the table NAT. """
         return self._output
-
-    def getNetworkAddress(self):
-        """ Get the network's IP address without the last byte as a string.
-
-            @return:            The network's IP address, e.g. '10.0.3'.
-            @rtype:             str
-        """
-        return self._network
-
-    def getNetworkConfigTemplate(self):
-        """ Get the template which is used to generate the network
-            configuration file '/etc/network/interfaces'. The template contains
-            the format field {ip} which has to be used to assign the correct
-            IP address to the container.
-
-            @return:            Network configration template containing the
-                                format field {ip}.
-            @rtype:             str
-        """
-        return self._networkConf
 
     def remote_createContainer(self, uid, data):
         """ Create a new Container.

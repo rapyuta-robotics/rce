@@ -228,7 +228,7 @@ class Container(object):
                     f.write('lxc.network.link = {0}\n'.format(link))
 
                 if ip:
-                    f.write('lxc.network.ipv4 = {0}\n'.format(ip))
+                    f.write('lxc.network.ipv4 = {0}/24\n'.format(ip))
 
                 if up:
                     f.write('lxc.network.script.up = {0}\n'.format(up))

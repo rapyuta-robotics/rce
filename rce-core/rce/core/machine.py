@@ -508,10 +508,10 @@ class EmptyNetworkGroup(object):
     @property
     def name(self):
         """ Name of the network group. """
-        return ''
+        return None
 
-    def createContainer(self, data, userID, ip):
-        return Container(data, userID, self, ip)
+    def createContainer(self, data, userID):
+        return Container(data, userID, self, None)
 
     def registerContainer(self, _):
         pass

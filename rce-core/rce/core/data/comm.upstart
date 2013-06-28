@@ -1,0 +1,17 @@
+# description
+author "Dominique Hunziker"
+description "RCE Comm - Framework for managing and using ROS Apps"
+
+# start/stop conditions
+start on (started rce and net-device-up IFACE=eth0)
+stop on stopping rce
+
+kill timeout 5
+
+script
+    # setup environment
+    . /opt/rce/setup.sh
+
+    # start environment node
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
+end script

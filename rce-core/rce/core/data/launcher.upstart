@@ -1,0 +1,19 @@
+# description
+author "Dominique Hunziker"
+description "RCE Launcher - Framework for managing and using ROS Apps"
+
+# start/stop conditions
+start on started rce
+stop on stopping rce
+
+# timeout before the process is killed; generous as a lot of processes have
+# to be terminated by the launcher.
+kill timeout 30
+
+script
+    # setup environment
+    . /opt/rce/setup.sh
+
+    # start launcher
+    start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
+end script

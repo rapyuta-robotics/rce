@@ -1,0 +1,17 @@
+# description
+author "Mayank Singh"
+description "ROS API - Framework to query ROS specific information"
+
+# start/stop conditions
+start on (started rce and net-device-up IFACE=eth0)
+stop on stopping rce
+
+kill timeout 5
+
+script
+    # setup environment
+    . /opt/rce/setup.sh
+
+    # start rosapi node
+    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-rosproxy {proxyPort}
+end script
