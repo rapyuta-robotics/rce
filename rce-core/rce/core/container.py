@@ -36,27 +36,92 @@ from twisted.internet.defer import Deferred, succeed
 
 # rce specific imports
 from rce.core.base import Proxy
+from rce.util.error import InternalError
 
 
 class Container(Proxy):
     """ Representation of an LXC container.
     """
-    def __init__(self, machine, userID):
+    def __init__(self, data, userID, group, ip):
         """ Initialize the Container.
 
-            @param machine:     Machine in which the container was created.
-            @type  machine:     rce.core.machine.Machine
+            @param data:        Extra data used to configure the container.
+            @type  data:        dict
 
             @param userID:      ID of the user who created the container.
             @type  userID:      str
+
+            # TODO: Add doc
         """
         super(Container, self).__init__()
+
+        self._machine = None
         self._userID = userID
-        self._machine = machine
-        machine.registerContainer(self)
+        self._group = group
+        self._ip = ip
+
+        self._size = data.pop('size', 1)
+        self._cpu = data.pop('cpu', 0)
+        self._memory = data.pop('memory', 0)
+        self._bandwidth = data.pop('bandwidth', 0)
+        self._specialFeatures = data.pop('specialFeatures', [])
 
         self._pending = set()
         self._address = None
+
+    @property
+    def size(self):
+        """ # TODO: Add doc """
+        return self._size
+
+    @property
+    def cpu(self):
+        """ # TODO: Add doc """
+        return self._cpu
+
+    @property
+    def memory(self):
+        """ # TODO: Add doc """
+        return self._memory
+
+    @property
+    def bandwidth(self):
+        """ # TODO: Add doc """
+        return self._bandwidth
+
+    @property
+    def specialFeatures(self):
+        """ # TODO: Add doc """
+        return self._specialFeatures
+
+    @property
+    def userID(self):
+        """ # TODO: Add doc """
+        return self._userID
+
+    @property
+    def machine(self):
+        """ Reference to the machine proxy in which the container resides. """
+        return self._machine
+
+    @property
+    def serialized(self):
+        """ Property is used to store the relevant container information for
+            the container process.
+        """
+        return {'name':self._group.name, 'ip':self._ip}
+
+    def assignMachine(self, machine):
+        """ # TODO: Add doc
+        """
+        if self._machine:
+            raise InternalError('Can not assign the same container multiple '
+                                'times.')
+
+        self._machine = machine
+
+        self._group.registerContainer(self)
+        machine.registerContainer(self)
 
     def getAddress(self):
         """ Get the address which should be used to connect to the environment
@@ -98,9 +163,13 @@ class Container(Proxy):
         """ Method should be called to destroy the container and will take care
             of deleting all circular references.
         """
-        if self._machine:
-            self._machine.unregisterContainer(self)
-            self._machine = None
+        if self._group:
+            if self._machine:
+                self._group.unregisterContainer(self)
+                self._machine.unregisterContainer(self)
+                self._machine = None
+
+            self._group = None
 
             super(Container, self).destroy()
         else:

@@ -431,7 +431,7 @@ class EndpointAvatar(Avatar):
             @param endpoint:    Representation of the Endpoint.
             @type  endpoint:    rce.core.network.Endpoint
         """
-        self._realm = realm # Required in subclass
+        self._realm = realm  # Required in subclass
         self._endpoint = endpoint
 
     def perspective_setupNamespace(self, remoteNamespace):
@@ -846,7 +846,7 @@ class EndpointConnection(object):
         if not (serverReady and clientReady):
             # There was a problem in making the server/client ready for the
             # connection attempt
-            ### TODO: What should we do here?
+            # TODO: What should we do here?
             return Failure(InternalError('Server/Client could not be prepared '
                                          'for connection attempt.'))
 
@@ -887,7 +887,7 @@ class EndpointConnection(object):
 
         if not (serverAuth and clientAuth):
             # There was a problem in authenticating the connection
-            ### TODO: What should we do here?
+            # TODO: What should we do here?
             return Failure(InternalError('Connection could not be '
                                          'authenticated.'))
 

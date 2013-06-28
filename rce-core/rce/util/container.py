@@ -37,25 +37,12 @@ pjoin = os.path.join
 
 # twisted specific imports
 from twisted.python import log
-from twisted.python.failure import Failure
-from twisted.internet.defer import Deferred
-from twisted.internet.utils import getProcessValue
+
+# rce specific imports
+from rce.util.process import execute
 
 
-_CONFIG = """
-lxc.utsname = {hostname}
-
-lxc.tty = 4
-lxc.pts = 1024
-lxc.rootfs = {fs}
-lxc.mount = {fstab}
-
-lxc.network.type = veth
-lxc.network.flags = up
-lxc.network.name = eth0
-lxc.network.link = lxcbr0
-lxc.network.ipv4 = {ip}
-
+_CONFIG_CGROUP = """
 lxc.cgroup.devices.deny = a
 # /dev/null and zero
 lxc.cgroup.devices.allow = c 1:3 rwm
@@ -65,14 +52,16 @@ lxc.cgroup.devices.allow = c 5:1 rwm
 lxc.cgroup.devices.allow = c 5:0 rwm
 lxc.cgroup.devices.allow = c 4:0 rwm
 lxc.cgroup.devices.allow = c 4:1 rwm
-# /dev/{{,u}}random
+# /dev/{,u}random
 lxc.cgroup.devices.allow = c 1:9 rwm
 lxc.cgroup.devices.allow = c 1:8 rwm
 lxc.cgroup.devices.allow = c 136:* rwm
 lxc.cgroup.devices.allow = c 5:2 rwm
 # rtc
 lxc.cgroup.devices.allow = c 254:0 rwm
+"""
 
+_CONFIG_CAP = """
 # restrict capabilities
 #   can't use: lxc.cap.drop = sys_admin
 #   see: man capabilities for more information
@@ -90,26 +79,21 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 #lxc.cap.drop = sys_time
 """
 
-
 _FSTAB_BASE = """
 proc    {proc}    proc    nodev,noexec,nosuid    0 0
 devpts    {devpts}    devpts    defaults    0 0
 sysfs    {sysfs}    sysfs    defaults    0 0
 """
 
-
-_FSTAB_BIND = '{srcDir}    {fsDir}    none    bind{ro}    0 0\n'
-
-
-class ContainerError(Exception):
-    """ Exception is raised when a LXC command fails.
-    """
+_FSTAB_BIND = """
+{srcDir}    {dstDir}    none    bind{ro}    0 0
+"""
 
 
 class Container(object):
     """ Class representing a single container.
     """
-    def __init__(self, reactor, rootfs, conf, hostname, ip):
+    def __init__(self, reactor, rootfs, conf, hostname):
         """ Initialize the Container.
 
             @param reactor:     Reference to the twisted::reactor
@@ -125,17 +109,12 @@ class Container(object):
 
             @param hostname:    Host name of the container.
             @type  hostname:    str
-
-            @param ip:          IP address which the container should use.
-                                Use '0.0.0.0' for DHCP.
-            @type  ip:          str
         """
         self._reactor = reactor
         self._rootfs = rootfs
         self._conf = pjoin(conf, 'config')
         self._fstab = pjoin(conf, 'fstab')
         self._hostname = hostname
-        self._ip = ip
 
         if not os.path.isabs(conf):
             raise ValueError('Container configuration directory is not an '
@@ -153,7 +132,53 @@ class Container(object):
             raise ValueError('There is already a fstab file in the container '
                              "configuration directory '{0}'.".format(conf))
 
+        self._ifs = []
         self._fstabExt = []
+
+    def addNetworkInterface(self, name, link=None, ip=None, up=None, down=None):
+        """ Add a network interface to the configuration file.
+
+            @param name:    Name of the network interface inside the container.
+            @type  name:    str
+
+            @param link:    Name of the network interface in the host system
+                            which will be connected to the container network
+                            interface.
+            @type  link:    str
+
+            @param ip:      IP address which will be assigned to the container
+                            network interface. Use '0.0.0.0' for DHCP.
+            @type  ip:      str
+
+            @param up:      Path to a script which should be executed in the
+                            host system once the interface has to be set up.
+            @type  up:      str
+
+            @param down:    Path to a script which should be executed in the
+                            host system once the interface has to teared down.
+            @type  down:    str
+        """
+        if up:
+            if not os.path.isabs(up):
+                raise ValueError('Path to up script has to be absolute.')
+
+            if not os.path.isfile(up):
+                raise ValueError('Path to up script is not a file.')
+
+            if not os.access(up, os.X_OK):
+                raise ValueError('Up script is not executable.')
+
+        if down:
+            if not os.path.isabs(down):
+                raise ValueError('Path to down script has to be absolute.')
+
+            if not os.path.isfile(down):
+                raise ValueError('Path to down script is not a file.')
+
+            if not os.access(down, os.X_OK):
+                raise ValueError('Down script is not executable.')
+
+        self._ifs.append((name, link, ip, up, down))
 
     def extendFstab(self, src, fs, ro):
         """ Add a line to the fstab file using bind.
@@ -162,30 +187,71 @@ class Container(object):
             @type  src:     str
 
             @param fs:      Path in container filesystem to which the source
-                            should be bind.
+                            should be bound.
             @type  fs:      str
 
             @param ro:      Flag to indicate whether bind should be read-only
                             or not.
             @type  ro:      bool
         """
-        self._fstabExt.append(_FSTAB_BIND.format(srcDir=src,
-                                                 fsDir=pjoin(self._rootfs, fs),
-                                                 ro=',ro' if ro else ''))
+        dst = pjoin(self._rootfs, fs)
 
-    def _setup(self):
-        """ Setup necessary files.
+        if not os.path.isabs(src):
+            raise ValueError('Source path has to be absolute.')
+
+        if not os.path.exists(src):
+            raise ValueError('Source path does not exist.')
+
+        if not os.path.exists(dst):
+            raise ValueError('Destination path does not exist.')
+
+        self._fstabExt.append((src, dst, ro))
+
+    def _setupFiles(self):
+        """ Setup the configuration and fstab file.
         """
         with open(self._conf, 'w') as f:
-            f.write(_CONFIG.format(hostname=self._hostname, fs=self._rootfs,
-                                   fstab=self._fstab, ip=self._ip))
+            # Write base config
+            f.write('lxc.utsname = {0}\n'.format(self._hostname))
+            f.write('\n')
+            f.write('lxc.rootfs = {0}\n'.format(self._rootfs))
+            f.write('lxc.mount = {0}\n'.format(self._fstab))
+
+            # Write interface config
+            for name, link, ip, up, down in self._ifs:
+                f.write('\n')
+                f.write('lxc.network.type = veth\n')
+                f.write('lxc.network.flags = up\n')
+                f.write('lxc.network.name = {0}\n'.format(name))
+
+                if link:
+                    f.write('lxc.network.link = {0}\n'.format(link))
+
+                if ip:
+                    f.write('lxc.network.ipv4 = {0}/24\n'.format(ip))
+
+                if up:
+                    f.write('lxc.network.script.up = {0}\n'.format(up))
+
+                if down:
+                    f.write('lxc.network.script.down = {0}\n'.format(down))
+
+
+            # Write cgroup config
+            f.write(_CONFIG_CGROUP)
+
+            # Write capabilities config
+            # TODO: Add at some point?
+            # f.write(_CONFIG_CAP)
 
         with open(self._fstab, 'w') as f:
-            f.write(_FSTAB_BASE.format(
-                proc=pjoin(self._rootfs, 'proc'),
-                devpts=pjoin(self._rootfs, 'dev/pts'),
-                sysfs=pjoin(self._rootfs, 'sys')))
-            f.writelines(self._fstabExt)
+            f.write(_FSTAB_BASE.format(proc=pjoin(self._rootfs, 'proc'),
+                                       devpts=pjoin(self._rootfs, 'dev/pts'),
+                                       sysfs=pjoin(self._rootfs, 'sys')))
+
+            for src, dst, ro in self._fstabExt:
+                f.write(_FSTAB_BIND.format(srcDir=src, dstDir=dst,
+                                           ro=',ro' if ro else ''))
 
     def start(self, name):
         """ Start the container.
@@ -198,31 +264,11 @@ class Container(object):
                             error message.
             @rtype:         twisted.internet.defer.Deferred
         """
-        self._setup()
+        self._setupFiles()
 
         log.msg("Start container '{0}'".format(name))
-        deferred = Deferred()
-
-        try:
-            dfrd = getProcessValue('/usr/bin/lxc-start',
-                                   ('-n', name, '-f', self._conf, '-d'),
-                                   env=os.environ, reactor=self._reactor)
-            def cb(retVal):
-                if retVal == 0:
-                    deferred.callback('Container successfully started.')
-                else:
-                    e = ContainerError('Container could not be started: '
-                                       'Received exit code {0} from '
-                                       'lxc-start.'.format(retVal))
-                    deferred.errback(Failure(e))
-
-            dfrd.addCallback(cb)
-        except OSError:
-            e = ContainerError('Insufficient system resources to start a new '
-                               'process.')
-            deferred.errback(Failure(e))
-
-        return deferred
+        return execute(('/usr/bin/lxc-start', '-n', name, '-f', self._conf,
+                        '-d'), reactor=self._reactor)
 
     def stop(self, name):
         """ Stop the container.
@@ -236,61 +282,4 @@ class Container(object):
             @type  command:     twisted.internet.defer.Deferred
         """
         log.msg("Stop container '{0}'".format(name))
-        deferred = Deferred()
-
-        try:
-            dfrd = getProcessValue('/usr/bin/lxc-stop', ('-n', name),
-                                   env=os.environ, reactor=self._reactor)
-
-            def cb(retVal):
-                if retVal == 0:
-                    deferred.callback('Container successfully stopped.')
-                else:
-                    e = ContainerError('Container could not be stopped: '
-                                       'Received exit code {0} from '
-                                       'lxc-stop.'.format(retVal))
-                    deferred.errback(Failure(e))
-
-            dfrd.addCallback(cb)
-        except OSError:
-            e = ContainerError('Insufficient system resources to stop a '
-                               'process.')
-            deferred.errback(Failure(e))
-
-        return deferred
-
-#    def execute(self, name, command):
-#        """ Execute a command inside the container.
-#
-#            @param name:        Name of the container which will execute the
-#                                command.
-#            @type  name:        str
-#
-#            @param command:     Command which should be executed.
-#            @type  command:     [str]
-#        """
-#        def cb(_):
-#            print('\nSuccessful.')
-#            self._reactor.stop()
-#
-#        def eb(err):
-#            print('\n{0}'.format(err.getErrorMessage()))
-#            self._reactor.stop()
-#
-#        deferred = Deferred()
-#        deferred.addCallbacks(cb, eb)
-#
-#        self.extendFstab('/usr/lib/lxc', pjoin(self._rootfs, 'usr/lib/lxc'),
-#                         False)
-#
-#        protocol = self._setup(deferred, sys.stdout.write, sys.stderr.write)
-#
-#        try:
-#            cmd = ['/usr/bin/lxc-execute', '-n', name, '-f', self._conf, '--']
-#            cmd += command
-#            self._reactor.spawnProcess(protocol, cmd[0], cmd, env=os.environ)
-#        except Exception as e:
-#            import traceback
-#            print('Caught an exception when trying to execute a command in '
-#                  'the container.')
-#            print('\n'.join(traceback.format_exception_only(type(e), e)))
+        return execute(('/usr/bin/lxc-stop', '-n', name), reactor=self._reactor)

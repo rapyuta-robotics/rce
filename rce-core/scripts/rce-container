@@ -68,9 +68,17 @@ def _get_argparse():
         parser.add_argument('infraPassword', type=str,
                             help='Admin-Infrastructure Password')
 
-    parser.add_argument('--maxContainers', type=int,
-                        help='Maximum Number of Containers to support on this '
-                             'machine.', default=settings.max_container)
+    parser.add_argument('--size', type=int,
+                        help='Total Size of Machine ', default=settings.size)
+    parser.add_argument('--cpu', type=int,
+                        help='Total CPU of Machine ', default=settings.cpu)
+    parser.add_argument('--memory', type=int,
+                        help='Total Memory of Machine ', default=settings.memory)
+    parser.add_argument('--bandwidth', type=int,
+                        help='Total Bandwidth of Machine ', default=settings.bandwidth)
+    parser.add_argument('--special_features', type=str,
+                        help="Special features of Machine input, e.g. 'avxi,gpu,ssev3'",
+                        default=settings.special_features)
 
     return parser
 
@@ -87,8 +95,17 @@ if __name__ == '__main__':
                                 sha256(args.infraPassword).hexdigest())
         passwd = sha256(args.masterPassword).hexdigest()
 
-    main(reactor, cred, args.masterIP, passwd, cred.password,
-         settings.internal_port, settings.internal_IP, settings.container_IP,
-         settings.comm_port, settings.ros_proxy_port, settings.rootfs,
-         settings.conf_dir, settings.data_dir, settings.packages,
-         args.maxContainers, settings.container_ros_release)
+    if isinstance(args.special_features, list):
+        specialFeatures = args.special_features
+    else:
+        specialFeatures = args.special_features.strip("' ").split(',')
+
+    data = {'size':args.size, 'cpu':args.cpu,
+            'memory':args.memory, 'bandwidth':args.bandwidth,
+            'specialFeatures':specialFeatures}
+
+    main(reactor, cred, args.masterIP, settings.internal_port, passwd,
+         cred.password, settings.container_interface, settings.internal_IP,
+         settings.container_IP, settings.comm_port, settings.ros_proxy_port,
+         settings.rootfs, settings.conf_dir, settings.data_dir,
+         settings.packages, settings.container_ros_release, data)

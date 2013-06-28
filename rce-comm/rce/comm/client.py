@@ -92,23 +92,29 @@ class RCERobotProtocol(WebSocketClientProtocol):
         self._connection.receivedMessage(msg)
 
     def sendMessage(self, msg):
-        """ Internally used method to send messages via RCERobotProtocol.
+        """ Internally used method to send messages via WebSocket connection.
+            Thread-safe implementation.
 
             @param msg:         Message which should be sent.
         """
-        def send(msg):
-            binaries, jsonMsg = recursiveBinarySearch(msg)
-
-            WebSocketClientProtocol.sendMessage(self, json.dumps(jsonMsg))
-
-            for data in binaries:
-                msg = data[0] + data[1].getvalue()
-                WebSocketClientProtocol.sendMessage(self, msg, binary=True)
+        binaries, msg = recursiveBinarySearch(msg)
+        msg = json.dumps(msg)
 
         if isInIOThread():
-            send(msg)
+            self._send(msg, binaries)
         else:
-            self._connection.reactor.callFromThread(send, msg)
+            self._connection.reactor.callFromThread(self._send, msg, binaries)
+
+    def _send(self, msg, binaries):
+        """ Internally used method to send messages via WebSocket connection.
+            Handles the actual sending of the message. (Not thread-safe; use
+            sendMessage instead.)
+        """
+        WebSocketClientProtocol.sendMessage(self, msg)
+
+        for data in binaries:
+            binMsg = data[0] + data[1].getvalue()
+            WebSocketClientProtocol.sendMessage(self, binMsg, binary=True)
 
     def onClose(self, *args):
         """ This method is called by twisted when the connection has been
@@ -347,15 +353,69 @@ class RCE(object):
         self._sendMessage(types.DATA_MESSAGE, {'iTag':dest, 'type':msgType,
                                                'msgID':msgID, 'msg':msg})
 
-    def createContainer(self, cTag):
+    def createContainer(self, cTag, group='', groupIp='', size=1, cpu=0,
+                        memory=0, bandwidth=0, specialFeatures=[]):
         """ Create a container.
 
-            @param cTag:        Unique tag which will be used to identify the
-                                container to create.
-            @type  cTag:        str
+            @param cTag:                Unique tag which will be used to
+                                        identify the container to create.
+            @type  cTag:                str
+
+            @param group:               The container group to which the
+                                        container will be added.
+            @type  group:               str
+
+            @param groupIp:             The static IPv4 address which will be
+                                        assigned to the container inside the
+                                        group.
+            @type  groupIp:             str
+
+            @param size:                The container instance size.
+            @type  size:                int
+
+            @param cpu:                 CPU Allocation.
+            @type  cpu:                 int
+
+            @param memory:              Memory Allocation.
+            @type  memory:              int
+
+            @param bandwidth:           Bandwidth allocation.
+            @type  bandwidth:           int
+
+            @param specialFeatures:     Special features required,
+                                        e.g. ['gpu','hadoop','avxii'].
+            @type  specialFeatures:     list
         """
         print("Request creation of container '{0}'.".format(cTag))
-        self._sendMessage(types.CREATE_CONTAINER, {'containerTag':cTag})
+        data = {}
+
+        if group:
+            data['group'] = group
+
+        if groupIp:
+            data['groupIp'] = groupIp
+
+        if size:
+            data['size'] = size
+
+        if cpu:
+            data['cpu'] = cpu
+
+        if memory:
+            data['memory'] = memory
+
+        if bandwidth:
+            data['bandwidth'] = bandwidth
+
+        if specialFeatures:
+            data['specialFeatures'] = specialFeatures
+
+        container = {'containerTag':cTag}
+
+        if data:
+            container['containerData'] = data
+
+        self._sendMessage(types.CREATE_CONTAINER, container)
 
     def destroyContainer(self, cTag):
         """ Destroy a container.

@@ -49,7 +49,7 @@ class ControlView(Viewable):
     """ View implementing all control actions which a user can perform to
         interact with the cloud engine.
     """
-    def view_createContainer(self, user, tag):
+    def view_createContainer(self, user, tag, data={}):
         """ Create a new Container object.
 
             @param user:        User for which the container will be created.
@@ -58,6 +58,9 @@ class ControlView(Viewable):
             @param tag:         Tag which is used to identify the container
                                 in subsequent requests.
             @type  tag:         str
+
+            @param data:        Extra data used to configure the container.
+            @type  data:        dict
         """
         try:
             validateName(tag)
@@ -68,7 +71,8 @@ class ControlView(Viewable):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
 
-        namespace, remote_container = user.realm.createContainer(user.userID)
+        namespace, remote_container = user.realm.createContainer(user.userID,
+                                                                 data)
         container = Container(namespace, remote_container)
         user.containers[tag] = container
         container.notifyOnDeath(user.containerDied)
@@ -478,7 +482,7 @@ class AdminMonitorView(Viewable):
         try:
             machine = (machine for machine in user.realm._balancer._machines
                        if machineIP == machine.IP).next()
-            return {'active':machine.active, 'capacity':machine.capacity}
+            return {'active':machine.active, 'size':machine.size}
         except StopIteration:
             raise InvalidRequest('No such machine.')
 

@@ -115,6 +115,7 @@ class Node(Referenceable, ArgumentMixin):
         owner.registerNode(self)
         self._owner = owner
 
+        self._protocol = None
         self._reactor = owner.reactor
         self._call = None
         self._protocol = None

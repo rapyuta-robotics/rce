@@ -1,5 +1,5 @@
-container -s c100
-container -s c101
+container start -n c100
+container start -n c101
 node start -c c100 -n paramTest -p Test -e paramTest.py -a argument
 parameter add -c c100 -n str -v Hello
 parameter add -c c100 -n int -v 99

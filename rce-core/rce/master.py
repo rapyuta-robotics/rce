@@ -83,32 +83,23 @@ class RoboEarthCloudEngine(object):
     """
     implements(IRealm, IMasterRealm)
 
-    # CONFIG
-    LOAD_BALANCER_CLS = LoadBalancer
-    DISTRIBUTOR_CLS = Distributor
-
-    def __init__(self, checker, intIP, port):
+    def __init__(self, checker, port):
         """ Initialize the RoboEarth Cloud Engine realm.
 
             @param checker:     Login checker which authenticates the User when
                                 an initial request is received.
             @type  checker:     twisted.cred.checkers.ICredentialsChecker
 
-            @param intIP:       IP address of the network interface used for
-                                the internal communication.
-            @type  intIP:       str
-
             @param port:        Port where the robot process is listening for
-                                connections to other endpoints.
+                                connections from other endpoints.
             @type  port:        int
         """
         self._checker = checker
-        self._intIP = intIP
         self._port = port
 
         self._network = Network()
-        self._balancer = self.LOAD_BALANCER_CLS(self)
-        self._distributor = self.DISTRIBUTOR_CLS()
+        self._balancer = LoadBalancer()
+        self._distributor = Distributor()
 
         self._users = {}
         self._pendingContainer = {}
@@ -130,7 +121,7 @@ class RoboEarthCloudEngine(object):
             detach = lambda: avatar.logout()
             print('Connection to Container process established.')
         elif avatarId == 'robot':
-            endpoint = RobotEndpoint(self._network, self._distributor, self,
+            endpoint = RobotEndpoint(self._network, self._distributor,
                                      self._port)
             endpoint.callback(mind)
             avatar = RobotEndpointAvatar(self, endpoint)
@@ -161,15 +152,6 @@ class RoboEarthCloudEngine(object):
 
         return self._users[userID]
 
-    def getInternalIP(self):
-        """ Get the IP address of the network interface used for the internal
-            communication.
-
-            @return:            IP address of the network interface.
-            @rtype:             str
-        """
-        return self._intIP
-
     def requestURL(self, userID):
         """ Callback for Robot resource to retrieve the location of the Robot
             process to which a WebSocket connection should be established.
@@ -192,17 +174,21 @@ class RoboEarthCloudEngine(object):
 
         return location.getWebsocketAddress()
 
-    def createContainer(self, userID):
+    def createContainer(self, userID, data):
         """ Callback for User instance to create a new Container object in a
             container process.
 
-            @param userID:        UserID of the user who created the container.
-            @type  userID:        str
+            @param userID:      UserID of the user who created the container.
+            @type  userID:      str
+
+            @param data:        Extra data which is used to configure the
+                                container.
+            @param data:        dict
 
             @return:            New Namespace and Container instance.
             @rtype:             (rce.core.environment.Environment,
                                  rce.core.container.Container)
-                                (subclasses of rce.core.base.Proxy)
+                                 (subclasses of rce.core.base.Proxy)
         """
         while 1:
             uid = uuid4().hex
@@ -211,7 +197,7 @@ class RoboEarthCloudEngine(object):
                 break
 
         try:
-            container = self._balancer.createContainer(uid, userID)
+            container = self._balancer.createContainer(uid, userID, data)
         except ContainerProcessError:
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')
@@ -258,11 +244,11 @@ class RoboEarthCloudEngine(object):
 
 
 def main(reactor, internalCred, externalCred, internalPort, externalPort,
-         intIP, commPort, consolePort, extIP):
+         commPort, consolePort):
     log.startLogging(sys.stdout)
 
     # Realms
-    rce = RoboEarthCloudEngine(externalCred, intIP, commPort)
+    rce = RoboEarthCloudEngine(externalCred, commPort)
     user = UserRealm(rce)
 
     internalCred.add_checker(rce.checkUIDValidity)
@@ -280,9 +266,5 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
 
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)
-
-    print("\nConnection Details:\n")
-    print("Internal IP Address: {0}".format(intIP))
-    print("Global IP Address:   {0}\n".format(extIP))
 
     reactor.run()

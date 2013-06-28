@@ -45,8 +45,7 @@ if [ $? -ne 0 ]; then
     exit
 fi
 
-#setup some environment variables
-
+# Setup HOME environment variable
 TMP_HOME=$HOME
 export HOME=/root
 

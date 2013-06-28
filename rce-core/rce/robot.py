@@ -189,11 +189,11 @@ class Connection(object):
 
     # Forwarding to View
 
-    def createContainer(self, tag):
+    def createContainer(self, tag, data={}):
         if not self._view:
             raise ForwardingError('Reference of the view is missing.')
 
-        self._view.createContainer(tag)
+        self._view.createContainer(tag, data)
 
     createContainer.__doc__ = IRobot.get('createContainer').getDoc()
 
@@ -307,9 +307,9 @@ class RobotView(object):
         """
         self._connection.reportError(failure.getErrorMessage())
 
-    def createContainer(self, tag):
+    def createContainer(self, tag, data={}):
         try:
-            d = self._view.callRemote('createContainer', tag)
+            d = self._view.callRemote('createContainer', tag, data)
         except (DeadReferenceError, PBConnectionLost):
             raise DeadConnection()
 
@@ -564,7 +564,7 @@ class RobotClient(Endpoint):
             @type  extIP:       str
 
             @param extPort:     Port where the server for the external
-                                communication is listening for websocket
+                                communication is listening for WebSocket
                                 connections.
             @type  extPort:     int
 

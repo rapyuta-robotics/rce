@@ -53,6 +53,8 @@ from twisted.internet.defer import Deferred
 
 
 # Compression level used for communication
+#     0:    use no compression
+#     1-9:  use compression (1: fastest; 9: slowest, best compression)
 _GZIP_LVL = 9
 
 
@@ -342,7 +344,10 @@ if HAS_ROS:
         def _rosCB(self, msg):
             """ Internally used callback for ROS Subscriber.
             """
-            self.publish(StringIO(zlib.compress(msg._buff, _GZIP_LVL)))
+            if _GZIP_LVL:
+                self.publish(StringIO(zlib.compress(msg._buff, _GZIP_LVL)))
+            else:
+                self.publish(StringIO(msg._buff))
 
         def __del__(self):
             """ Finalize the Publisher.
@@ -382,7 +387,12 @@ if HAS_ROS:
                 Publisher.
             """
             rosMsg = rospy.AnyMsg()
-            rosMsg._buff = zlib.decompress(msg.getvalue())
+
+            if _GZIP_LVL:
+                rosMsg._buff = zlib.decompress(msg.getvalue())
+            else:
+                rosMsg._buff = msg.getvalue()
+
             self._pub.publish(rosMsg)
 
         def __del__(self):
@@ -427,7 +437,11 @@ if HAS_ROS:
             """ Internally used callback for ROS Service.
             """
             event = _EventRef()
-            msg = StringIO(zlib.compress(req._buff, _GZIP_LVL))
+
+            if _GZIP_LVL:
+                msg = StringIO(zlib.compress(req._buff, _GZIP_LVL))
+            else:
+                msg = StringIO(req._buff)
 
             with self._lock:
                 self._pending.add(event)
@@ -449,7 +463,12 @@ if HAS_ROS:
                 Service as response.
             """
             rosMsg = rospy.AnyMsg()
-            rosMsg._buff = zlib.decompress(msg.getvalue())
+
+            if _GZIP_LVL:
+                rosMsg._buff = zlib.decompress(msg.getvalue())
+            else:
+                rosMsg._buff = msg.getvalue()
+
             event.set(rosMsg)
 
         def __del__(self):

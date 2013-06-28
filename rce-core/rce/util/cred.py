@@ -49,6 +49,9 @@ from twisted.cred import error
 from twisted.cred.credentials import IUsernameHashedPassword
 from twisted.cred.checkers import ICredentialsChecker
 
+# rce specific imports
+from rce.util.name import validateName, IllegalName
+
 
 # AES Encryptors strength depends on input password length, ensure it with
 # appropriate hash
@@ -91,12 +94,12 @@ _PASS_RE = r'^.*(?=.{4,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[\W]).*$'
 # Used doc strings
 _PASSWORD_FAIL = ('Password must be between 4-20 digits long and has to '
                   'contain at least one uppercase, lowercase, digit, and '
-                  'special character.')
+                  'special character. No whitespace allowed.')
 _FIRST_RUN_MSG = ('It appears this is your first run or your credentials '
                   'database has changed or is incomplete. You must set the '
                   'passwords for the Admin and Admin-Infrastructure accounts.')
 _NEW_PASS_PROMPT = ('\nNote: The password must be between 4-20 characters long '
-                    'and contain at least one'
+                    'and contain no whitespace and at least one'
                     '\n\t* lowercase,'
                     '\n\t* uppercase,'
                     '\n\t* digit'
@@ -168,7 +171,7 @@ class RCECredChecker(object):
         while True:
             passwd = raw_input(msg_pw).strip()
             if passwd == raw_input(msg_cf).strip():
-                if self.pass_validator(passwd):
+                if ' ' not in passwd and self.pass_validator(passwd):
                     return passwd
                 else:
                     print('Password does not contain appropriate characters.')
@@ -356,6 +359,11 @@ class RCECredChecker(object):
             @return:            Result of Operation
             @rtype:             bool
         """
+        try:
+            validateName(username)
+        except IllegalName as e:
+            raise CredentialError(str(e))
+
         if not (self.pass_validator(password) or provision):
             raise CredentialError(_PASSWORD_FAIL)
 

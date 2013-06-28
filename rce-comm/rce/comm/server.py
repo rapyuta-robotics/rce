@@ -280,7 +280,8 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
         """ Internally used method to process a request to create a container.
         """
         try:
-            self._avatar.createContainer(data['containerTag'])
+            self._avatar.createContainer(data['containerTag'],
+                                         data.get('containerData', {}))
         except KeyError as e:
             raise InvalidRequest("Can not process 'CreateContainer' request. "
                                  'Missing key: {0}'.format(e))

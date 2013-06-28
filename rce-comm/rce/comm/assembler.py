@@ -188,7 +188,7 @@ class MessageAssembler(object):
                                 used.
 
             @param timeout:     Timeout in seconds after which incomplete
-                                message parts are removed.
+                                messages are discarded.
             @type  timeout:     int
         """
         self._protocol = protocol
@@ -204,7 +204,7 @@ class MessageAssembler(object):
         self._cleaner = LoopingCall(self._cleanUp)
 
     def forwardCompleteMessage(self, msgRepr):
-        """ Callback for client.assembler._IncompleteMsg to send a completed
+        """ Callback for rce.comm.assembler._IncompleteMsg to send a completed
             message to the correct handler.
         """
         self._incompleteMsgs.remove(msgRepr)
@@ -219,7 +219,7 @@ class MessageAssembler(object):
             @param msg:     Received string message.
             @type  msg:     str
 
-            @param uris:    Return value of _recursiveURISearch
+            @param uris:    Return value of self._recursiveURISearch
             @type  uris:    [ (str, dict, str) or (str, list, int) ]
         """
         missing = []

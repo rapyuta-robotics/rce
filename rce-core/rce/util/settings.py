@@ -178,6 +178,7 @@ class _Settings(object):
         self._container_ubuntu = None
 
         # Network
+        self._container_if = None
         self._external_ip = None
         self._internal_ip = None
         self._container_ip = None
@@ -195,7 +196,11 @@ class _Settings(object):
         self._converters = None
 
         # Machine
-        self._max_container = None
+        self._size = None
+        self._cpu = None
+        self._memory = None
+        self._bandwidth = None
+        self._special_features = None
         self._rootfs = None
         self._conf_dir = None
         self._data_dir = None
@@ -236,6 +241,12 @@ class _Settings(object):
         """ Ubuntu release used inside the container..
         """
         return self._container_ubuntu
+
+    @property
+    def container_interface(self):
+        """ Name of the container network interface.
+        """
+        return self._container_if
 
     @property
     def external_IP(self):
@@ -311,10 +322,34 @@ class _Settings(object):
         return self._converters
 
     @property
-    def max_container(self):
+    def size(self):
         """ Maximum number of containers which can run in the machine.
         """
-        return self._max_container
+        return self._size
+
+    @property
+    def cpu(self):
+        """ Parameter to define cpu attributes/capacity
+        """
+        return self._cpu
+
+    @property
+    def memory(self):
+        """ Parameter to define memory attributes/capacity
+        """
+        return self._memory
+
+    @property
+    def bandwidth(self):
+        """ Parameter to define bandwidth attributes/capacity
+        """
+        return self._bandwidth
+
+    @property
+    def special_features(self):
+        """ Parameter to define special attributes like avx,gpu,hadoop etc
+        """
+        return self._special_features
 
     @property
     def rootfs(self):
@@ -374,6 +409,7 @@ class _Settings(object):
                                                 'container_ubuntu_release')
 
         # Network
+        settings._container_if = parser.get('network', 'container_if')
         settings._external_ip = parser.getIP('network', 'external_if')
         settings._internal_ip = parser.getIP('network', 'internal_if')
         settings._container_ip = parser.getIP('network', 'container_if')
@@ -391,10 +427,17 @@ class _Settings(object):
         settings._converters = tuple(c for _, c in parser.items('converters'))
 
         # Machine
-        settings._max_container = parser.getint('machine', 'max_container')
+        settings._size = parser.getint('machine', 'size')
+        settings._cpu = parser.getint('machine', 'cpu')
+        settings._memory = parser.getint('machine', 'memory')
+        settings._bandwidth = parser.getint('machine', 'bandwidth')
         settings._rootfs = parser.get('machine', 'rootfs')
         settings._conf_dir = parser.get('machine', 'conf_dir')
         settings._data_dir = parser.get('machine', 'data_dir')
+        # Figure out the special features
+        special_features = parser.get('machine', 'special_features')
+        settings._special_features = [i.strip() for i in
+                                      special_features.strip('[]').split(',')]
 
         # ROS packages
         settings._packages = []

@@ -147,7 +147,7 @@ class CustomOptions(usage.Options):
         self.terminal.write('vestigial option')
 
 
-#Various Option Classes follow
+# Various Option Classes follow
 class UserAddOptions(CustomOptions):
     """
         Parameters for user add.
@@ -200,12 +200,27 @@ class UserOptions(CustomOptions):
     )
 
 
+class ContainerStartOptions(CustomOptions):
+    """
+        Parameters for container start.
+    """
+    optParameters = (
+        ("name", "n", None , "Container Name"),
+        ("group", "g", None, "Container Group"),
+        ("groupIp", "a", None , "Container Group IPv4 address"),
+        ("size", "s", None , "Container Size"),
+        ("cpu", "c", None , "CPU options"),
+        ("memory", "m", None , "memory options"),
+        ("bandwidth", "b", None , "Bandwidth options"),
+        ("specialopts", "o", None , "Special features options"),
+    )
+
+
 class ContainerOptions(CustomOptions):
     """
         Options for container command.
     """
     optParameters = (
-        ("start", "s", None, "Start a Container"),
         ("stop", "t", None, "Stop a Container"),
         ("services", "v", None, "List services running on the container"),
         ("topics", "o", None, "List topics running on the container"),
@@ -213,6 +228,10 @@ class ContainerOptions(CustomOptions):
     )
     optFlags = (
         ("list", "l", "List all containers of the user logged in"),
+    )
+
+    subCommands = (
+        ("start", None, ContainerStartOptions, "Start a Container"),
     )
 
 
@@ -403,7 +422,7 @@ class ConsoleClient(HistoricRecvLine):
         HistoricRecvLine.connectionMade(self)
         self._factory = PBClientFactory()
 
-        reactor.connectTCP(self._masterIP, self._console_port, self._factory) #@UndefinedVariable
+        reactor.connectTCP(self._masterIP, self._console_port, self._factory)  #@UndefinedVariable
         self.terminal.write("Username: ")
 
     def lineReceived(self, line):
@@ -415,7 +434,7 @@ class ConsoleClient(HistoricRecvLine):
         """
         def _cbError(why, msg):
             err(why, msg)
-            reactor.stop() #@UndefinedVariable
+            reactor.stop()  #@UndefinedVariable
 
         def _cbConnectionSuccess(view):
             self._user = view
@@ -522,14 +541,14 @@ class ConsoleClient(HistoricRecvLine):
             d = self._user[domain].callRemote(command, *args)
             d.addCallback(lambda result: self.terminal.write(str(result)))
 
-    #Various commands follow
+    # Various commands follow
     def cmd_EXIT(self, line):
         """ Handler for exit command.
 
             @param line:    line input from terminal.
             @type  line:    string
         """
-        reactor.stop() #@UndefinedVariable
+        reactor.stop()  # @UndefinedVariable
 
     def cmd_USER(self, line):
         """ Handler for user command.
@@ -574,11 +593,29 @@ class ConsoleClient(HistoricRecvLine):
 
         try:
             config.parseOptions(line)
+            cmd = config.subCommand
+            opts = config.subOptions if hasattr(config, 'subOptions') else {}
         except usage.UsageError as errortext:
             self.terminal.write("BUG in usage: {0}".format(errortext))
         else:
-            if config['start']:
-                self.callToUser('createContainer', 'robot', config['start'])
+            if cmd == 'start':
+                if (opts['name']):
+                    data = {}
+                    if opts.get('group'):
+                        data['group'] = opts['group']
+                    if opts.get('groupIp'):
+                        data['groupIp'] = opts['groupIp']
+                    if opts.get('size'):
+                        data['size'] = opts['size']
+                    if opts.get('bandwidth'):
+                        data['bandwidth'] = opts['bandwidth']
+                    if opts.get('memory'):
+                        data['memory'] = opts['memory']
+                    if opts.get('specialopts'):
+                        data['specialFeatures'] = opts['specialopts']
+                    self.callToUser('createContainer', 'robot', opts['name'],
+                                    data)
+
             elif config['stop']:
                 self.callToUser('destroyContainer', 'robot', config['stop'])
             elif config['services']:
@@ -773,7 +810,7 @@ def runWithProtocol(klass, masterIP, port):
     try:
         p = ServerProtocol(klass, masterIP, port)
         stdio.StandardIO(p)
-        reactor.run() #@UndefinedVariable
+        reactor.run()  #@UndefinedVariable
     finally:
         termios.tcsetattr(fd, termios.TCSANOW, oldSettings)
         os.write(fd, "\r\x1bc\r")

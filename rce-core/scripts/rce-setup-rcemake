@@ -35,7 +35,7 @@ import os
 if __name__ == '__main__':
     # Before we start to import everything check if the script can be executed
     if os.getuid() != 0:
-        print('setupRCEmake has to be run as super user.')
+        print('rce-setup-rcemake has to be run as super user.')
         exit(1)
 
 # Python specific imports

@@ -33,14 +33,24 @@
 # Python specific imports
 import os
 import sys
+import stat
 import shutil
+from random import choice
+from string import letters
+
+try:
+    import pkg_resources
+except ImportError:
+    print("Can not import the package 'pkg_resources'.")
+    exit(1)
 
 pjoin = os.path.join
+load_resource = pkg_resources.resource_string  #@UndefinedVariable
 
 try:
     import iptc
 except ImportError:
-    print('python-iptables could not be imported.')
+    print("Can not import the package 'python-iptables'.")
     print('    see: http://github.com/ldx/python-iptables')
     exit(1)
 
@@ -55,96 +65,40 @@ from rce.util.error import InternalError
 from rce.util.container import Container
 from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
+from rce.util.process import execute
 from rce.core.error import MaxNumberExceeded
 # from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
 
-_UPSTART_COMM = """
-# description
-author "Dominique Hunziker"
-description "RCE Comm - Framework for managing and using ROS Apps"
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-
-kill timeout 5
-
-script
-    # setup environment
-    . /opt/rce/setup.sh
-
-    # start environment node
-    {chown_cmd}
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-environment -- {masterIP} {masterPort} {internalPort} {uid} {passwd}
-end script
-"""
+# Helper function to generate random strings
+randomString = lambda length: ''.join(choice(letters) for _ in xrange(length))
 
 
-_UPSTART_ROSAPI = """
-# description
-author "Mayank Singh"
-description "ROS API - Framework to query ROS specific information"
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-
-kill timeout 5
-
-script
-    # setup environment
-    . /opt/rce/setup.sh
-
-    #start rosapi node
-    start-stop-daemon --start -c rce:rce -d /opt/rce/data --retry 5 --exec /usr/local/bin/rce-rosproxy {proxyPort}
-end script
-"""
-
-# TODO: Modify name of executable
-_UPSTART_LAUNCHER = """
-# description
-author "Dominique Hunziker"
-description "RCE Launcher - Framework for managing and using ROS Apps"
-
-# start/stop conditions
-start on started rce
-stop on stopping rce
-
-# timeout before the process is killed; generous as a lot of processes have
-# to be terminated by the launcher.
-kill timeout 30
-
-script
-    # setup environment
-    . /opt/rce/setup.sh
-
-    # start launcher
-    start-stop-daemon --start -c ros:ros -d /home/ros --retry 5 --exec /opt/rce/src/launcher.py
-end script
-"""
+_UPSTART_COMM = load_resource('rce.core', 'data/comm.upstart')
+# _UPSTART_LAUNCHER = load_resource('rce.core', 'data/launcher.upstart')
+_UPSTART_ROSAPI = load_resource('rce.core', 'data/rosapi.upstart')
+_LXC_NETWORK_SCRIPT = load_resource('rce.core', 'data/lxc-network.script')
 
 
-_NETWORK_INTERFACES = """
-auto lo
-iface lo inet loopback
+def passthrough(f):
+    """ Decorator which is used to add a function as a Deferred callback and
+        passing the input unchanged to the output.
 
-auto eth0
-iface eth0 inet static
-    address {{ip}}
-    netmask 255.255.255.0
-    network {network}.0
-    broadcast {network}.255
-    gateway {network}.1
-    dns-nameservers {network}.1 127.0.0.1
-"""
+        @param f:           Function which should be decorated.
+        @type  f:           callable
+    """
+    def wrapper(response):
+        f()
+        return response
+
+    return wrapper
 
 
 class RCEContainer(Referenceable):
     """ Container representation which is used to run a ROS environment.
     """
-    def __init__(self, client, nr, uid):
+    def __init__(self, client, nr, uid, data):
         """ Initialize the deployment container.
 
             @param client:      Container client which is responsible for
@@ -158,59 +112,127 @@ class RCEContainer(Referenceable):
             @param uid:         Unique ID which is used by the environment
                                 process to login to the Master.
             @type  uid:         str
-        """
-        # Store the references
-        self._client = client
-        client.registerContainer(self)
 
+            @param data:        Extra data used to configure the container.
+            @type  data:        dict
+        """
+        self._client = client
         self._nr = nr
-        self._name = 'C{0}'.format(nr)
+        self._name = name = 'C{0}'.format(nr)
         self._terminating = None
 
+        # Additional container parameters to use
+        # TODO: At the moment not used; currently data also does not contain
+        #       these information
+#        self._size = data.get('size', 1)
+#        self._cpu = data.get('cpu', 0)
+#        self._memory = data.get('memory', 0)
+#        self._bandwidth = data.get('bandwidth', 0)
+#        self._specialFeatures = data.get('specialFeatures', [])
+
+        client.registerContainer(self)
+
         # Create the directories for the container
-        self._confDir = pjoin(client.confDir, self._name)
-        self._dataDir = pjoin(client.dataDir, self._name)
+        self._confDir = confDir = pjoin(client.confDir, name)
+        self._dataDir = dataDir = pjoin(client.dataDir, name)
 
-        if os.path.isdir(self._confDir):
+        if os.path.isdir(confDir):
             raise ValueError('There is already a configuration directory for '
-                             "'{0}'.".format(self._name))
+                             "'{0}'.".format(name))
 
-        if os.path.isdir(self._dataDir):
+        if os.path.isdir(dataDir):
             raise ValueError('There is already a data directory for '
-                             "'{0}'.".format(self._name))
+                             "'{0}'.".format(name))
 
-        os.mkdir(self._confDir)
-        os.mkdir(self._dataDir)
+        os.mkdir(confDir)
+        os.mkdir(dataDir)
 
         # Create additional folders for the container
-        rceDir = pjoin(self._dataDir, 'rce')
-        rosDir = pjoin(self._dataDir, 'ros')
+        rceDir = pjoin(dataDir, 'rce')
+        rosDir = pjoin(dataDir, 'ros')
 
         os.mkdir(rceDir)
         os.mkdir(rosDir)
 
-        if self._client.rosRel > 'fuerte':
-            user_rosdep = os.path.join(rceDir, '.ros/rosdep')
-            root_rosdep = os.path.join(self._client.rootfs, 'root/.ros/rosdep')
-            shutil.copytree(root_rosdep, user_rosdep)
-            chown_cmd = 'chown -R rce:rce /opt/rce/data/.ros'
-        else:
-            chown_cmd = '#'
+        if client.rosRel > 'fuerte':
+            # TODO: Switch to user 'ros' when the launcher is used again
+            shutil.copytree(pjoin(client.rootfs, 'root/.ros/rosdep'),
+                            pjoin(rceDir, '.ros/rosdep'))
 
         # Create network variables
-        ip = '{0}.{1}'.format(client.getNetworkAddress(), nr)
+        bridgeIP = client.bridgeIP
+        ip = '{0}.{1}'.format(bridgeIP.rsplit('.', 1)[0], nr)
         self._address = '{0}:{1}'.format(ip, client.envPort)
         self._rosproxyAddress = '{0}:{1}'.format(ip, client.rosproxyPort)
         self._fwdPort = str(nr + 8700)
         self._rosproxyFwdPort = str(nr + 10700)
 
-        # Construct password
-        passwd = encodeAES(cipher(self._client.masterPassword),
-                           salter(uid, self._client.infraPassword))
+        ovsname = data.get('name')
+        ovsip = data.get('ip')
 
-        # Create the container
-        self._container = Container(client.reactor, client.rootfs,
-                                    self._confDir, self._name, ip)
+        if ovsname and ovsip:
+            ovsup = pjoin(confDir, 'ovsup')
+            # TODO: OVS down: Not supported on 12.04, can be added later
+            #ovsdown = pjoin(confDir, 'ovsdown')
+            ovsdown = None
+            ovsif = 'eth1'
+        else:
+            ovsup = ovsdown = None
+            ovsif = None
+
+        # Construct password
+        passwd = encodeAES(cipher(client.masterPassword),
+                           salter(uid, client.infraPassword))
+
+        # Create upstart scripts
+        upComm = pjoin(confDir, 'upstartComm')
+        with open(upComm, 'w') as f:
+            f.write(_UPSTART_COMM.format(masterIP=client.masterIP,
+                                         masterPort=client.masterPort,
+                                         internalPort=client.envPort,
+                                         uid=uid, passwd=passwd))
+
+        upRosapi = pjoin(confDir, 'upstartRosapi')
+        with open(upRosapi, 'w') as f:
+            f.write(_UPSTART_ROSAPI.format(proxyPort=client.rosproxyPort))
+
+        # TODO: For the moment there is no upstart script for the launcher.
+#        upLauncher = pjoin(confDir, 'upstartLauncher')
+#        with open(upLauncher, 'w') as f:
+#            f.write(_UPSTART_LAUNCHER)
+
+        # Setup network
+        networkIF = pjoin(confDir, 'networkInterfaces')
+        with open(networkIF, 'w') as f:
+            f.write('auto lo\n')
+            f.write('iface lo inet loopback\n')
+            f.write('\n')
+            f.write('auto eth0\n')
+            f.write('iface eth0 inet static\n')
+            f.write('    address {0}\n'.format(ip))
+            f.write('    gateway {0}\n'.format(bridgeIP))
+            f.write('    dns-nameservers {0} 127.0.0.1\n'.format(bridgeIP))
+
+            if ovsif:
+                f.write('\n')
+                f.write('auto {0}\n'.format(ovsif))
+                f.write('iface {0} inet static\n'.format(ovsif))
+                f.write('    address {0}\n'.format(ovsip))
+
+        # Create up/down script for virtual network interface if necessary
+        if ovsup:
+            with open(ovsup, 'w') as f:
+                f.write(_LXC_NETWORK_SCRIPT.format(if_op='up', ovs_op='add',
+                                                   name=ovsname))
+
+            os.chmod(ovsup, stat.S_IRWXU)
+
+        if ovsdown:
+            with open(ovsdown, 'w') as f:
+                f.write(_LXC_NETWORK_SCRIPT.format(if_op='down', ovs_op='del',
+                                                   name=ovsname))
+
+            os.chmod(ovsdown, stat.S_IRWXU)
 
         # TODO: SSL stuff
 #        if self._USE_SSL:
@@ -225,81 +247,74 @@ class RCEContainer(Referenceable):
 #            writeCertToFile(cert, os.path.join(rceDir, 'cert.pem'))
 #            writeKeyToFile(key, os.path.join(rceDir, 'key.pem'))
 
+        # Create the container
+        self._container = container = Container(client.reactor, client.rootfs,
+                                                confDir, name)
+
+        # Add lxc bridge
+        container.addNetworkInterface('eth0', client.bridgeIF, ip)
+
+        # Add the virtual network bridge if necessary
+        if ovsname and ovsip:
+            container.addNetworkInterface(ovsif, None, ovsip, ovsup, ovsdown)
+
         # Add additional lines to fstab file of container
-        self._container.extendFstab(rosDir, 'home/ros', False)
-        self._container.extendFstab(rceDir, 'opt/rce/data', False)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartComm'),
-                                    'etc/init/rceComm.conf', True)
-        # TODO: For the moment there is no upstart launcher.
-#        self._container.extendFstab(pjoin(self._confDir, 'upstartLauncher'),
-#                                    'etc/init/rceLauncher.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'upstartRosapi'),
-                                    'etc/init/rceRosapi.conf', True)
-        self._container.extendFstab(pjoin(self._confDir, 'networkInterfaces'),
-                                    'etc/network/interfaces', True)
+        container.extendFstab(rosDir, 'home/ros', False)
+        container.extendFstab(rceDir, 'opt/rce/data', False)
+        container.extendFstab(upComm, 'etc/init/rceComm.conf', True)
+        # TODO: For the moment there is no upstart script for the launcher.
+#        container.extendFstab(upLauncher, 'etc/init/rceLauncher.conf', True)
+        container.extendFstab(upRosapi, 'etc/init/rceRosapi.conf', True)
+        container.extendFstab(networkIF, 'etc/network/interfaces', True)
 
         for srcPath, destPath in client.pkgDirIter:
-            self._container.extendFstab(srcPath, destPath, True)
-
-        # Create upstart scripts
-        with open(pjoin(self._confDir, 'upstartComm'), 'w') as f:
-            f.write(_UPSTART_COMM.format(masterIP=self._client.masterIP,
-                                         masterPort=self._client.masterPort,
-                                         internalPort=self._client.envPort,
-                                         uid=uid, passwd=passwd,
-                                         chown_cmd=chown_cmd))
-
-        with open(pjoin(self._confDir, 'upstartRosapi'), 'w') as f:
-            f.write(_UPSTART_ROSAPI.format(proxyPort=self._client.rosproxyPort))
-        # TODO: For the moment there is no upstart launcher.
-#        with open(pjoin(self._confDir, 'upstartLauncher'), 'w') as f:
-#            f.write(_UPSTART_LAUNCHER)
-
-        # Setup network
-        with open(pjoin(self._confDir, 'networkInterfaces'), 'w') as f:
-            f.write(client.getNetworkConfigTemplate().format(ip=ip))
+            container.extendFstab(srcPath, destPath, True)
 
     def start(self):
         """ Method which starts the container.
         """
         # NOTE: can raise iptc.xtables.XTablesError
         # add remote rule for RCE internal communication
-        self._remoteRule = iptc.Rule()
-        self._remoteRule.protocol = 'tcp'
-        self._remoteRule.dst = self._client.internalIP
-        m = self._remoteRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._fwdPort
-        t = self._remoteRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._address
+        self._remoteRule = rule
 
         # add local (loopback) rule for RCE internal communication
-        self._localRule = iptc.Rule()
-        self._localRule.protocol = 'tcp'
-        self._localRule.out_interface = 'lo'
-        self._localRule.dst = self._client.internalIP
-        m = self._localRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.out_interface = 'lo'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._fwdPort
-        t = self._localRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._address
+        self._localRule = rule
 
         # add remote rule for rosproxy
-        self._rosremoteRule = iptc.Rule()
-        self._rosremoteRule.protocol = 'tcp'
-        self._rosremoteRule.dst = self._client.internalIP
-        m = self._rosremoteRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._rosproxyFwdPort
-        t = self._rosremoteRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._rosproxyAddress
+        self._rosremoteRule = rule
 
         # add local(loopback) rule for rosproxy
-        self._roslocalRule = iptc.Rule()
-        self._roslocalRule.protocol = 'tcp'
-        self._roslocalRule.out_interface = 'lo'
-        self._roslocalRule.dst = self._client.internalIP
-        m = self._roslocalRule.create_match('tcp')
+        rule = iptc.Rule()
+        rule.protocol = 'tcp'
+        rule.out_interface = 'lo'
+        rule.dst = self._client.internalIP
+        m = rule.create_match('tcp')
         m.dport = self._rosproxyFwdPort
-        t = self._roslocalRule.create_target('DNAT')
+        t = rule.create_target('DNAT')
         t.to_destination = self._rosproxyAddress
+        self._roslocalRule = rule
 
         self._client.prerouting.insert_rule(self._remoteRule)
         self._client.output.insert_rule(self._localRule)
@@ -328,21 +343,22 @@ class RCEContainer(Referenceable):
 
         return self._container.stop(self._name)
 
-    def _destroy(self, response):
+    def _destroy(self):
         """ Internally used method to clean up after the container has been
             stopped.
         """
-        self._client.returnNr(self._nr)
-        self._client.unregisterContainer(self)
-        self._client = None
+        if self._client:
+            self._client.returnNr(self._nr)
+            self._client.unregisterContainer(self)
+            self._client = None
 
-        for path in (self._confDir, self._dataDir):
-            try:
-                shutil.rmtree(path)
-            except:
-                pass
+        if self._confDir:
+            shutil.rmtree(self._confDir, True)
+            self._confDir = None
 
-        return response
+        if self._dataDir:
+            shutil.rmtree(self._dataDir, True)
+            self._dataDir = None
 
     def remote_destroy(self):
         """ Method should be called to destroy the container.
@@ -350,11 +366,14 @@ class RCEContainer(Referenceable):
         if not self._terminating:
             if self._container:
                 self._terminating = self._stop()
-                self._terminating.addBoth(self._destroy)
+                self._terminating.addBoth(passthrough(self._destroy))
             else:
                 self._terminating = succeed(None)
 
         return self._terminating
+
+    def __del__(self):
+        self._destroy()
 
 
 class ContainerClient(Referenceable):
@@ -363,72 +382,82 @@ class ContainerClient(Referenceable):
 
         There can be only one Container Client per machine.
     """
+    _UID_LEN = 8
+
     def __init__(self, reactor, masterIP, masterPort, masterPasswd, infraPasswd,
-                 intIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-                 dataDir, pkgDir, rosRel):
+                 bridgeIF, intIP, bridgeIP, envPort, rosproxyPort, rootfsDir,
+                 confDir, dataDir, pkgDir, rosRel, data):
         """ Initialize the Container Client.
 
-            @param reactor:       Reference to the twisted reactor.
-            @type  reactor:       twisted::reactor
+            @param reactor:         Reference to the twisted reactor.
+            @type  reactor:         twisted::reactor
 
-            @param masterIP:      IP address of the Master process.
-            @type  masterIP:      str
+            @param masterIP:        IP address of the Master process.
+            @type  masterIP:        str
 
-            @param masterPort:    Port of the Master process used for internal
-                                  communications.
-            @type  masterPort:    int
+            @param masterPort:      Port of the Master process used for internal
+                                    communications.
+            @type  masterPort:      int
 
-            @param masterPasswd:  SHA 256 Digested Master Password.
-            @type  masterPasswd:  str
+            @param masterPasswd:    SHA 256 Digested Master Password.
+            @type  masterPasswd:    str
 
-            @param infraPasswd:   SHA 256 Digested Infra Password.
-            @type  infraPasswd:   str
+            @param infraPasswd:     SHA 256 Digested Infra Password.
+            @type  infraPasswd:     str
 
-            @param intIP:         IP address of the network interface used for
-                                  the internal communication.
-            @type  intIP:         str
+            @param bridgeIF:        Network interface used for the container
+                                    communication.
+            @type  bridgeIF:        str
 
-            @param bridgeIP:      IP address of the network interface used for
-                                  the container communication.
-            @type  bridgeIP:      str
+            @param intIP:           IP address of the network interface used for
+                                    the internal communication.
+            @type  intIP:           str
 
-            @param envPort:       Port where the environment process running
-                                  inside the container is listening for
-                                  connections to other endpoints. (Used for
-                                  port forwarding.)
-            @type  envPort:       int
+            @param bridgeIP:        IP address of the network interface used for
+                                    the container communication.
+            @type  bridgeIP:        str
 
-            @param rosproxyPort:  Port where the rosproxy process running
-                                  inside the container is listening for
-                                  connections to console clients. (Used for
-                                  port forwarding.)
-            @type  rosproxyPort:  int
+            @param envPort:         Port where the environment process running
+                                    inside the container is listening for
+                                    connections to other endpoints. (Used for
+                                    port forwarding.)
+            @type  envPort:         int
 
-            @param rootfsDir:     Filesystem path to the root directory of the
-                                  container filesystem.
-            @type  rootfsDir:     str
+            @param rosproxyPort:    Port where the rosproxy process running
+                                    inside the container is listening for
+                                    connections to console clients. (Used for
+                                    port forwarding.)
+            @type  rosproxyPort:    int
 
-            @param confDir:       Filesystem path to the directory where
-                                  container configuration files should be
-                                  stored.
-            @type  confDir:       str
+            @param rootfsDir:       Filesystem path to the root directory of the
+                                    container filesystem.
+            @type  rootfsDir:       str
 
-            @param dataDir:       Filesystem path to the directory where
-                                  temporary data of a container should be
-                                  stored.
-            @type  dataDir:       str
+            @param confDir:         Filesystem path to the directory where
+                                    container configuration files should be
+                                    stored.
+            @type  confDir:         str
 
-            @param pkgDir:        Filesystem paths to the package directories
-                                  as a list of tuples where each tuple contains
-                                  the path to the directory in the host machine
-                                  and the path to the directory to which the
-                                  host directory will be bound in the container
-                                  filesystem (without the @param rootfsDir).
-            @type  pkgDir:        [(str, str)]
-            
-            @param rosRel:       Container filesytem ROS release in this 
-                                 deployment instance of the cloud engine
-            @type  rosRel:       str
+            @param dataDir:         Filesystem path to the directory where
+                                    temporary data of a container should be
+                                    stored.
+            @type  dataDir:         str
+
+            @param pkgDir:          Filesystem paths to the package directories
+                                    as a list of tuples where each tuple
+                                    contains the path to the directory in the
+                                    host machine and the path to the directory
+                                    to which the host directory will be bound in
+                                    the container filesystem (without the
+                                    @param rootfsDir).
+            @type  pkgDir:          [(str, str)]
+
+            @param rosRel:          Container filesytem ROS release in this
+                                    deployment instance of the cloud engine
+            @type  rosRel:          str
+
+            @param data:            More data about the machine configuration.
+            @type  data:            dict
         """
         self._reactor = reactor
         self._internalIP = intIP
@@ -457,13 +486,57 @@ class ContainerClient(Referenceable):
         self._rosRel = rosRel
 
         # Network configuration
-        self._network = bridgeIP[:bridgeIP.rfind('.')]
-        self._networkConf = _NETWORK_INTERFACES.format(network=self._network)
+        self._bridgeIF = bridgeIF
+        self._bridgeIP = bridgeIP
+
+        # Virtual network
+        self._bridges = set()
+        self._uid = {}
+
+        # Physical parameters of machine
+        # TODO: Is a human settings at this time,
+        #       rce.util.sysinfo should fill this role soon
+        self._size = data.get('size')
+        self._cpu = data.get('cpu')
+        self._memeory = data.get('memory')
+        self._bandwidth = data.get('bandwidth')
+        self._specialFeatures = data.get('special_features')
 
         # Common iptables references
         nat = iptc.Table(iptc.Table.NAT)
         self._prerouting = iptc.Chain(nat, 'PREROUTING')
         self._output = iptc.Chain(nat, 'OUTPUT')
+
+    def remote_getSysinfo(self, request):
+        """ Get realtime Sysinfo data from machine.
+
+            @param request:     data desired
+            @type  request:     # TODO: Add type
+
+            @return:            # TODO: What?
+            @rtype:             # TODO: Add type
+        """
+        # TODO : replace these calls with call to rce.util.sysinfo
+        response_table = {
+            'size':self._size,
+            'cpu':self._cpu,
+            'memory': self._memeory,
+            'bandwidth': self._bandwidth,
+            # 'keyword': some value or function to provide the data
+        }
+
+        return response_table[request]
+
+    def remote_setSysinfo(self, request, value):
+        """ Set some system parameter to the machine.
+
+            @param request:     data desired
+            @type  request:     # TODO: Add type
+
+            @param value:       data value
+            @type  value:       # TODO: Add type
+        """
+        raise NotImplementedError
 
     @property
     def reactor(self):
@@ -516,10 +589,23 @@ class ContainerClient(Referenceable):
 
     @property
     def rosRel(self):
-        """ Container filesytem ROS release in this 
-            deployment instance of the cloud engine
+        """ Container filesytem ROS release in this deployment instance of the
+            cloud engine.
         """
         return self._rosRel
+
+    @property
+    def bridgeIF(self):
+        """ Network interface used for the communication with the containers.
+        """
+        return self._bridgeIF
+
+    @property
+    def bridgeIP(self):
+        """ IP address of network interface used for the communication with
+            the containers.
+        """
+        return self._bridgeIP
 
     @property
     def masterIP(self):
@@ -546,33 +632,17 @@ class ContainerClient(Referenceable):
         """ Reference to iptables' chain OUTPUT of the table NAT. """
         return self._output
 
-    def getNetworkAddress(self):
-        """ Get the network's IP address without the last byte as a string.
-
-            @return:            The network's IP address, e.g. '10.0.3'.
-            @rtype:             str
-        """
-        return self._network
-
-    def getNetworkConfigTemplate(self):
-        """ Get the template which is used to generate the network
-            configuration file '/etc/network/interfaces'. The template contains
-            the format field {ip} which has to be used to assign the correct
-            IP address to the container.
-
-            @return:            Network configration template containing the
-                                format field {ip}.
-            @rtype:             str
-        """
-        return self._networkConf
-
-    def remote_createContainer(self, uid):
+    def remote_createContainer(self, uid, data):
         """ Create a new Container.
 
             @param uid:         Unique ID which the environment process inside
                                 the container needs to login to the Master
                                 process.
             @type  uid:         str
+
+            @param data:        Extra data which is used to configure the
+                                container.
+            @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.container.RCEContainer
@@ -582,12 +652,103 @@ class ContainerClient(Referenceable):
         except KeyError:
             raise MaxNumberExceeded('Can not manage any additional container.')
 
-        container = RCEContainer(self, nr, uid)
+        container = RCEContainer(self, nr, uid, data)
         return container.start().addCallback(lambda _: container)
 
     def registerContainer(self, container):
         assert container not in self._containers
         self._containers.add(container)
+
+    def remote_createBridge(self, name):
+        """ Create a new OVS Bridge.
+
+            @param name:        Unique name of the network group.
+            @type  name:        str
+
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
+        """
+        if name in self._bridges:
+            raise InternalError('Bridge already exists.')
+
+        self._bridges.add(name)
+        return execute(('/usr/bin/ovs-vsctl', '--', '--may-exist', 'add-br',
+                        'br-{0}'.format(name)), reactor=self._reactor)
+
+    def remote_destroyBridge(self, name):
+        """ Destroy a OVS Bridge.
+
+            @param name:        Unique name of the network group.
+            @type  name:        str
+
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
+        """
+        if name not in self._bridges:
+            raise InternalError('Bridge does not exist.')
+
+        self._bridges.remove(name)
+        return execute(('/usr/bin/ovs-vsctl', 'del-br',
+                        'br-{0}'.format(name)), reactor=self._reactor)
+
+
+    def remote_createTunnel(self, name, targetIP):
+        """ Create a new GRE Tunnel.
+
+            @param name:        Unique name of the network group.
+            @type  name:        str
+
+            @param targetIP:    Target IP for the GRE Tunnel.
+            @type  targetIP:    str
+
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
+        """
+        if name not in self._bridges:
+            raise InternalError('Bridge does not exist.')
+
+        key = (name, targetIP)
+
+        if key in self._uid:
+            raise InternalError('Tunnel already exists.')
+
+        while 1:
+            uid = randomString(self._UID_LEN)
+
+            if uid not in self._uid.itervalues():
+                break
+
+        self._uid[key] = uid
+        port = 'gre-{0}'.format(uid)
+
+        return execute(('/usr/bin/ovs-vsctl', 'add-port', 'br-{0}'.format(name),
+                        port, '--', 'set', 'interface', port, 'type=gre',
+                        'options:remote_ip={0}'.format(targetIP)),
+                       reactor=self._reactor)
+
+    def remote_destroyTunnel(self, name, targetIP):
+        """ Destroy a GRE Tunnel.
+
+            @param name:        Unique name of the network group.
+            @type  name:        str
+
+            @param targetIP:    Target IP for the GRE Tunnel.
+            @type  targetIP:    str
+
+            @return:            Exit status of command.
+            @rtype:             twisted.internet.defer.Deferred
+        """
+        if name not in self._bridges:
+            raise InternalError('Bridge does not exist.')
+
+        key = (name, targetIP)
+
+        if key not in self._uid:
+            raise InternalError('Tunnel deos not exist.')
+
+        return execute(('/usr/bin/ovs-vsctl', 'del-port',
+                        'gre-{0}'.format(self._uid.pop(key))),
+                       reactor=self._reactor)
 
     def unregisterContainer(self, container):
         assert container in self._containers
@@ -636,9 +797,9 @@ class ContainerClient(Referenceable):
             self._cleanPackageDir()
 
 
-def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
-         internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir, confDir,
-         dataDir, pkgDir, maxNr, rosRel):
+def main(reactor, cred, masterIP, masterPort, masterPassword, infraPasswd,
+         bridgeIF, internalIP, bridgeIP, envPort, rosproxyPort, rootfsDir,
+         confDir, dataDir, pkgDir, rosRel, data):
     log.startLogging(sys.stdout)
 
     def _err(reason):
@@ -649,11 +810,11 @@ def main(reactor, cred, masterIP, masterPassword, infraPasswd, masterPort,
     reactor.connectTCP(masterIP, masterPort, factory)
 
     client = ContainerClient(reactor, masterIP, masterPort, masterPassword,
-                             infraPasswd, internalIP, bridgeIP, envPort,
-                             rosproxyPort, rootfsDir, confDir, dataDir, pkgDir,
-                             rosRel)
+                             infraPasswd, bridgeIF, internalIP, bridgeIP,
+                             envPort, rosproxyPort, rootfsDir, confDir, dataDir,
+                             pkgDir, rosRel, data)
 
-    d = factory.login(cred, (client, maxNr))
+    d = factory.login(cred, (client, data))
     d.addCallback(lambda ref: setattr(client, '_avatar', ref))
     d.addErrback(_err)
 
