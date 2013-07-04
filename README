@@ -1,15 +1,15 @@
 Content of git respository
 ==========================
 
-- benchmark:
-    Client-side scripts, data, and plots for a simple communication benchmark.
+- measure:
+    Client-side scripts for a simple communication measurements and plotting.
 
 - rce-client:
     Python and ROS client for the RoboEarth Cloud Engine.
     (Tested with ROS fuerte & groovy)
 
 - rce-comm:
-    The files common to rce-client, rce-core and rce-client.
+    The files common to rce-core and rce-client.
 
 - rce-core:
     The core files of the RoboEarth Cloud Engine.

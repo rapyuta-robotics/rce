@@ -27,7 +27,7 @@ Necessary libaries to link against
 Test the client
 ===============
 
-    To the test rce++ client:
+    To test the rce++ client:
       1. Build the test application (configure Makefile as necessary)
 
            cd test

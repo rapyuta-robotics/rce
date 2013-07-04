@@ -1,28 +1,7 @@
 Test
 ====
 
-Contains test and benchmark nodes.
-Some nodes require image support; Python Imaging Libary and ROS sensor_msgs
+Contains test and measurement nodes.
 
-Barcode
-=======
-
-Dependencies:
-  1) zbar library - http://zbar.sourceforge.net
-     with Python module - http://pypi.python.org/pypi/zbar
-	Options for zbar library:
-	  --disable-video
-	  --without-jpeg
-	  --without-imagemagick
-	  --without-python
-	  --without-gtk
-	  --without-qt
-  
-  2) Google API python client - http://code.google.com/p/google-api-python-client/
-  
-  3) nltk (Natural language toolkit) - python-nltk (base package) & wordnet corpus
-
-rceBinaryMsgDebug
-=================
-
-Status untested with newest release 
+nodes/converterTest.py requires image support:
+    - Python Imaging Libary and ROS sensor_msgs

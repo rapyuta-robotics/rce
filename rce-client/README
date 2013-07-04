@@ -2,10 +2,10 @@ Installation:
     python setup.py install
 
 Python Client:
-    Use the class 'Connection' from the module rce.comm.
+    Use the class 'Connection' from the module 'rce.comm'.
 
 ROS Client:
-    Use the script ros.py to start the client. Requires a configuration
+    Use the script 'rce-ros' to start the client. Requires a configuration
     file. An example can be found in rce/test/debug.cfg
     
       rce-ros <path to config file>
