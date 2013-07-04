@@ -1,5 +1,3 @@
 string testType
-string testName
 ---
-int32[] sizes
 float32[] times

@@ -1,0 +1,17 @@
+c2c.py / r2c.py:
+    - Run measurement
+    - Usage: --help
+    - Output: c2c.data / r2c.data
+
+rosbridge.py:
+    - Run measurement using rosbridge
+    - Server-side dependencies: ros-{ros release}-rosbridge-server
+    - On server-side run:
+       $ roscore
+       $ rosrun Test stringEcho.py
+       $ roslaunch rosbridge_server rosbridge_websocket.launch
+
+plot.py
+    - Small script to quickly plot data
+    - Usage: --help
+    - Dependencies: python-matplotlib
