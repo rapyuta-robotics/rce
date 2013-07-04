@@ -224,7 +224,7 @@ def provision_config(config, config_file, deploy_type):
 
     config = {
         'global':{
-            'gzip_lvl':9,
+            'gzip_lvl':0,
             'dev_mode':config.dev_mode,
             'password_file':config.pw_file,
             'host_ros_release':config.host_ros_release,

@@ -55,7 +55,7 @@ from twisted.internet.defer import Deferred
 # Compression level used for communication
 #     0:    use no compression
 #     1-9:  use compression (1: fastest; 9: slowest, best compression)
-_GZIP_LVL = 9
+_GZIP_LVL = 0
 
 
 class _Base(object):
@@ -454,7 +454,7 @@ if HAS_ROS:
             response = event.get()
 
             if not isinstance(response, genpy.message.Message):
-                raise Exception('Interrupted.') # TODO: Change exception?
+                raise Exception('Interrupted.')  # TODO: Change exception?
 
             return response
 
