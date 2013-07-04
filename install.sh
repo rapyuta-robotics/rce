@@ -18,6 +18,8 @@ install_pkg() {
     printf "\n\n"
 }
 
+cd $(dirname $0)
+
 install_pkg rce-util
 install_pkg rce-comm
 install_pkg rce-core
