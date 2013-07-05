@@ -36,7 +36,7 @@ import json
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO #@UnusedImport
+    from StringIO import StringIO  #@UnusedImport
 
 # zope specific imports
 from zope.interface import implements
@@ -411,19 +411,20 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                                 format and False otherwise.
             @type  binary:      bool
         """
-#        log.msg('WebSocket: Received new message from client. '
-#                '(binary={0})'.format(binary))
+#        print('WebSocket: Received new message from client. '
+#              '(binary={0})'.format(binary))
+
         try:
             self._assembler.processMessage(msg, binary)
         except InvalidRequest as e:
-            msg = 'Invalid Request: {0}'.format(e)
-            self.sendErrorMessage(msg)
+            self.sendErrorMessage('Invalid Request: {0}'.format(e))
         except DeadConnection:
+            self.sendErrorMessage('Dead Connection')
             self.dropConnection()
         except:
             import traceback
             traceback.print_exc()
-            self.sendErrorMessage("Fatal Error")
+            self.sendErrorMessage('Fatal Error')
 
     def sendMessage(self, msg):
         """ Internally used method to send a message to the robot.
