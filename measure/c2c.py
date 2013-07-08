@@ -90,11 +90,9 @@ class Measurement(object):
             self._conn.createContainer(cTag)
 
         ### Add the nodes
-        for cTag in self._cTag:
-            self._conn.addNode(cTag, 'strEcho', 'Test', 'stringEcho.py')
-
         self._conn.addNode(self._cTag[0], 'strTester', 'Test',
                            'stringTester.py')
+        self._conn.addNode(self._cTag[1], 'strEcho', 'Test', 'stringEcho.py')
 
         ### Add interfaces and connections
         # Connections Robot - StringTester
