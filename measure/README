@@ -15,3 +15,24 @@ plot.py
     - Small script to quickly plot data
     - Usage: --help
     - Dependencies: python-matplotlib
+
+
+
+Setup
+=====
+
+c2c - without rce:
+    - Run 'rce-ros' to create two containers
+       $ rce-ros ./measure.cfg
+    - Enter the two containers using ssh (default password: admin)
+       $ ssh root@10.0.3.xxx
+    - Stop the cloud engine components in the container
+       # service rce stop
+    - Configure the ROS network
+       # unset ROS_HOSTNAME
+       # export ROS_IP=<local IP address>
+       # export ROS_MASTER_URI=http://<IP address>:11311
+    - Run roscore in one container matching the configured IP address
+       # roscore &
+    - Run stringEcho node in one container and the testRunner in the other container
+       # rosrun Test {stringEcho.py / testRunner.py}
