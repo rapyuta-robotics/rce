@@ -74,11 +74,11 @@ class Environment(object):
             for container in self._containers:
                 self._conn.createContainer(**container)
 
-            for node in self._nodes:
-                self._conn.addNode(**node)
-
             for parameter in self._parameters:
                 self._conn.addParameter(**parameter)
+
+            for node in self._nodes:
+                self._conn.addNode(**node)
 
             for interface in self._interfaces:
                 self._conn.addInterface(**interface)
