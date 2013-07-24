@@ -38,7 +38,7 @@ setup(
     name='rce-console',
     description='Console package of RoboEarth Cloud Engine.',
     long_description=LONG_DESCRIPTION,
-    version='0.1',
+    version='0.3',
     author='Dominique Hunziker',
     author_email='dominique.hunziker@gmail.com',
     url='http:github.com/IDSCETHZurich/rce.git',
