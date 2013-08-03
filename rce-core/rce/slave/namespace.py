@@ -75,7 +75,7 @@ class Namespace(Referenceable):
         del self._interfaces[addr]
         self._endpoint.referenceDied('interfaceDied', interface)
 
-    def remote_createInterface(self, uid, iType, msgType, addr):
+    def remote_createInterface(self, uid, iType, clsName, addr):
         """ Create an Interface object in the namespace and therefore in
             the endpoint.
 
@@ -106,7 +106,7 @@ class Namespace(Referenceable):
             raise InternalError('Interface type is not supported by this '
                                 'namespace.')
 
-        return cls(self, UUID(bytes=uid), msgType, addr)
+        return cls(self, UUID(bytes=uid), clsName, addr)
 
     def remote_destroy(self):
         """ Method should be called to destroy the namespace and will take care

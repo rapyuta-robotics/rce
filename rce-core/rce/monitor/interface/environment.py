@@ -267,3 +267,67 @@ class SubscriberInterface(_ROSInterfaceBase):
 
     def _callback(self, msg):
         self._reactor.callFromThread(self.received, msg._buff, uuid4().hex)
+
+class _StringEchoInterfaceBase(Interface):
+    def __init__(self, owner, uid, addr, dummy):
+        Interface.__init__(self, owner, uid, addr)
+        self._reactor = owner.reactor
+        self._port = addr
+        self._service = None
+
+class StringEchoServiceProtocol(object):
+    
+    def dataReceived(self, data):
+        """
+        As soon as any data is received, write it back.
+        """
+        # wait for response
+        self.factory.interface.received(data)
+    
+    def _callback(self, data):
+        self.transport.write(data)
+
+class StringEchoServiceFactory(Factory):
+    def __init__(self, interface):
+        self.interface = interface
+
+class StringEchoServiceInterface(_StringEchoInterfaceBase):
+    """ Class which is used as a StringEchoService Interface.
+    """
+    def _start(self):
+        f = StringEchoServiceFactory(self)
+        f.protocol = StringEchoServiceProtocol
+        self._service = reactor.listenTCP(self._port, f)
+        
+    def _stop(self):
+        self._service.stopListening()
+
+
+class StringEchoClientProtocol(Protocol):
+    def lineReceived(self, line):
+        self.factory.interface.received(line)  
+
+class StringEchoClientFactory(Factory):
+    def __init__(self, interface):
+        self.interface = interface
+
+class StringEchoClientInterface(_StringEchoInterfaceBase):
+    """ Class which is used as a StringEchoService Interface.
+    """
+    def __init__(self, owner, uid, addr, ip):
+        _StringEchoInterfaceBase.__init__(self, owner, uid, addr, '')
+        self._ip = ip
+
+    def __start(self):
+        self._factory = StringEchoClientFactory(self)
+        self._factory.protocol = StringEchoClientProtocol
+        self._service = self._reactor.connectTCP(self._ip, self._port, 
+                                                 self._factory)
+
+    def _stop(self):
+        self._service.disconnect()
+    
+    def _send(self, data):
+        self._factory.protocol.sendLine(data)
+        
+    
