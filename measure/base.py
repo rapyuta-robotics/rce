@@ -136,9 +136,8 @@ class LocalTest(TestBase):
         self._time = time.time()
         self._sendReq()
 
-    def _resp(self, resp):
+    def _resp(self, data):
         stop = time.time()
-        data = resp['data']
 
         if not self._ready:
             if self._dropCnt > 3:
@@ -181,6 +180,9 @@ class LocalServiceTest(LocalTest):
     def _sendReq(self):
         self._srv.call({'data' : self._str})
 
+    def _resp(self, resp):
+        super(LocalServiceTest, self)._resp(resp['data'])
+
 
 class LocalTopicTest(LocalTest):
     def __init__(self, conn, iTag):
@@ -200,3 +202,6 @@ class LocalTopicTest(LocalTest):
 
     def _sendReq(self):
         self._pub.publish({'data' : self._str})
+
+    def _resp(self, resp):
+        super(LocalServiceTest, self)._resp(resp['data'])
