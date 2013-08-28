@@ -360,8 +360,7 @@ class Loader(object):
             @raise:         rce.util.loader.ResourceNotFound
         """
         try:
-            return roslib.packages.find_node(pkg, exe,
-                                            rospack=self._rp)[0]
+            return roslib.packages.find_node(pkg, exe, rospack=self._rp)[0]
         except IndexError:
             raise ResourceNotFound('Can not find executable "{0}" in '
                                    'ROS package "{1}".'.format(exe, pkg))
