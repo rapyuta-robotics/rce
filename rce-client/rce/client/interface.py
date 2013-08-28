@@ -75,7 +75,8 @@ class _Base(object):
     def __del__(self):
         """ Finalize the Interface.
         """
-        print(self._DOWN_MSG.format(self._iTag))
+        if hasattr(self, '_iTag'):
+            print(self._DOWN_MSG.format(self._iTag))
 
 
 class _CB_Base(_Base):
