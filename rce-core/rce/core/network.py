@@ -223,8 +223,9 @@ class Endpoint(Proxy):
             @rtype:             rce.core.network.LoopbackConnection
         """
         if not self._loopback:
-            self._loopback = LoopbackConnection(Protocol(self))
-            self.callRemote('getLoopback').chainDeferred(self._loopback)
+            protocol = Protocol(self)
+            self._loopback = LoopbackConnection(protocol)
+            self.callRemote('getLoopback').chainDeferred(protocol)
 
         return self._loopback
 
