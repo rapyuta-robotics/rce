@@ -50,6 +50,7 @@ except ImportError:
 
 # twisted specific imports
 from twisted.internet.defer import Deferred
+from twisted.internet.threads import deferToThreadPool
 
 
 # Compression level used for communication
@@ -228,8 +229,8 @@ class _ServiceProvider(_CB_Base):
         """ Callback hook.
         """
         reactor = self._conn._reactor
-        d = self.reactor.deferToThreadPool(reactor, reactor.getThreadPool(),
-                                           self._cb, msg, *self._args)
+        d = deferToThreadPool(reactor, reactor.getThreadPool(),
+                              self._cb, msg, *self._args)
         d.addCallback(self._response_success, msgID)
         d.addErrback(self._response_failure, msgID)
 
@@ -434,43 +435,43 @@ if HAS_ROS:
 
             super(ROSServiceClient, self).__init__(conn, iTag, srvType)
 
-        def _rosCB(self, req):
+        def _rosCB(self, rosReq):
             """ Internally used callback for ROS Service.
             """
             event = _EventRef()
 
             if _GZIP_LVL:
-                msg = StringIO(zlib.compress(req._buff, _GZIP_LVL))
+                req = StringIO(zlib.compress(rosReq._buff, _GZIP_LVL))
             else:
-                msg = StringIO(req._buff)
+                req = StringIO(rosReq._buff)
 
             with self._lock:
                 self._pending.add(event)
 
-            self._call(msg, self._rceCB, event)
+            self._call(req, self._rceCB, event)
 
             with self._lock:
                 self._pending.discard(event)
 
-            response = event.get()
+            rosResp = event.get()
 
-            if not isinstance(response, genpy.message.Message):
+            if not isinstance(rosResp, genpy.message.Message):
                 raise Exception('Interrupted.')  # TODO: Change exception?
 
-            return response
+            return rosResp
 
-        def _rceCB(self, msg, event):
+        def _rceCB(self, resp, event):
             """ Internally used method to send received message to the ROS
                 Service as response.
             """
-            rosMsg = rospy.AnyMsg()
+            rosResp = rospy.AnyMsg()
 
             if _GZIP_LVL:
-                rosMsg._buff = zlib.decompress(msg.getvalue())
+                rosResp._buff = zlib.decompress(resp.getvalue())
             else:
-                rosMsg._buff = msg.getvalue()
+                rosResp._buff = resp.getvalue()
 
-            event.set(rosMsg)
+            event.set(rosResp)
 
         def __del__(self):
             """ Finalize the Service.
@@ -502,19 +503,30 @@ if HAS_ROS:
                 raise ValueError('Service type is not valid. Has to be of the '
                                  'form pkg/srv, i.e. std_msgs/Int8.')
 
-            srvCls = conn.loader.loadSrv(*args)
-            srvCls._request_class = rospy.AnyMsg
-            srvCls._response_class = rospy.AnyMsg
+            self._srvCls = conn.loader.loadSrv(*args)
+            self._srvCls._request_class = rospy.AnyMsg
+            self._srvCls._response_class = rospy.AnyMsg
             super(ROSServiceProvider, self).__init__(conn, iTag, srvType,
-                                                     self._rceCB)
+                                                     self._rceCB, ())
 
-        def _rceCB(self, msg):
+        def _rceCB(self, req):
             """ Internally used method to send received message to the ROS
                 Service as request.
             """
-            rosMsg = rospy.AnyMsg()
-            rosMsg._buff = msg
+            rosReq = rospy.AnyMsg()
+
+            if _GZIP_LVL:
+                rosReq._buff = zlib.decompress(req.getvalue())
+            else:
+                rosReq._buff = req.getvalue()
 
             rospy.wait_for_service(self._addr, timeout=5)
             serviceFunc = rospy.ServiceProxy(self._addr, self._srvCls)
-            return serviceFunc(rosMsg)
+            rosResp = serviceFunc(rosReq)
+
+            if _GZIP_LVL:
+                resp = StringIO(zlib.compress(rosResp._buff, _GZIP_LVL))
+            else:
+                resp = StringIO(rosResp._buff)
+
+            return resp

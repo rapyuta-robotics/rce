@@ -175,7 +175,6 @@ class Connection(object):
 
     reportError.__doc__ = IServersideProtocol.get('sendErrorMessage').getDoc()
 
-
     def sendMessage(self, iTag, clsName, msgID, msg):
         if not self._protocol:
             # TODO: What should we do here?

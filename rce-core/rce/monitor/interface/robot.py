@@ -64,7 +64,8 @@ class ServiceError(Exception):
     """
 
 
-class _AbstractConverter(Interface):
+class _AbstractRobotInterface(Interface, object):
+    # Important to inherit from object here to properly use the Mixins!
     """ Abstract base class which provides the basics for the robot-side
         interfaces.
     """
@@ -91,26 +92,14 @@ class _AbstractConverter(Interface):
 
         self._clsName = clsName
 
-    def _receive(self, msg, msgID):
-        """ This method is used as a hook to send the message received from the
-            robot to the appropriate protocol.
-        """
-        raise NotImplementedError("The method '_receive' has to "
-                                  'be implemented.')
 
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        """ This method is used as a hook to send the message received from the
-            protocol to the robot.
-        """
-        raise NotImplementedError("The method '_sendToClient' has to "
-                                  'be implemented.')
-
-
-class _ConverterBase(_AbstractConverter):
+class _ConverterBase(_AbstractRobotInterface):
     """ Class which implements the basic functionality of a Converter.
+
+        For the actual communication with the robot-side a Mixin has to be used.
     """
     def __init__(self, owner, uid, clsName, tag):
-        _AbstractConverter.__init__(self, owner, uid, clsName, tag)
+        _AbstractRobotInterface.__init__(self, owner, uid, clsName, tag)
 
         self._converter = owner.converter
 
@@ -119,7 +108,7 @@ class _ConverterBase(_AbstractConverter):
 
         self._loadClass(owner.loader)
 
-    __init__.__doc__ = _AbstractConverter.__init__.__doc__
+    __init__.__doc__ = _AbstractRobotInterface.__init__.__doc__
 
     def _loadClass(self, loader):
         """ This method is used as a hook to load the necessary ROS class
@@ -201,117 +190,10 @@ class _ConverterBase(_AbstractConverter):
         self._sendToClient(jsonMsg, msgID, protocol, remoteID)
 
 
-class ServiceClientConverter(_ConverterBase):
-    """ Class which is used as a Service-Client Converter.
-    """
-    def __init__(self, owner, uid, clsName, tag):
-        _ConverterBase.__init__(self, owner, uid, clsName, tag)
-
-        self._pendingRequests = {}
-
-    __init__.__doc__ = _ConverterBase.__init__.__doc__
-
-    def _loadClass(self, loader):
-        args = self._clsName.split('/')
-
-        if len(args) != 2:
-            raise InvalidResoureName('srv type is not valid. Has to be of the '
-                                     'from pkg/msg, i.e. std_msgs/Int8.')
-
-        srvCls = loader.loadSrv(*args)
-        self._inputMsgCls = srvCls._response_class
-        self._outputMsgCls = srvCls._request_class
-
-    def _receive(self, msg, msgID):
-        try:
-            msgID, protocol, remoteID = self._pendingRequests.pop(msgID)
-        except KeyError:
-            raise ServiceError('Service Client does not wait for a response '
-                               'with message ID {0}.'.format(msgID))
-
-        self.respond(msg, msgID, protocol, remoteID)
-
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        while 1:
-            uid = uuid4().hex
-
-            if uid not in self._pendingRequests:
-                break
-
-        self._pendingRequests[uid] = (msgID, protocol, remoteID)
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
-
-
-class ServiceProviderConverter(_ConverterBase):
-    """ Class which is used as a Service-Provider Converter.
-    """
-    def remote_connect(self, protocol, remoteID):
-        if self._protocols:
-            raise InternalError('Can not register more than one interface '
-                                'at a time with a Service-Provider.')
-
-        return _ConverterBase.remote_connect(self, protocol, remoteID)
-
-    remote_connect.__doc__ = _ConverterBase.remote_connect.__doc__
-
-    def _loadClass(self, loader):
-        args = self._clsName.split('/')
-
-        if len(args) != 2:
-            raise InvalidResoureName('srv type is not valid. Has to be of the '
-                                     'from pkg/msg, i.e. std_msgs/Int8.')
-
-        srvCls = loader.loadSrv(*args)
-        self._inputMsgCls = srvCls._request_class
-        self._outputMsgCls = srvCls._response_class
-
-    def _receive(self, msg, msgID):
-        self.received(msg, msgID)
-
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
-
-
-class PublisherConverter(_ConverterBase):
-    """ Class which is used as a Publisher Converter.
-    """
-    def _loadClass(self, loader):
-        args = self._clsName.split('/')
-
-        if len(args) != 2:
-            raise InvalidResoureName('msg type is not valid. Has to be of the '
-                                     'from pkg/msg, i.e. std_msgs/Int8.')
-
-        self._outputMsgCls = loader.loadMsg(*args)
-
-    def _receive(self, msg, msgID):
-        self.received(msg, msgID)
-
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
-
-
-class SubscriberConverter(_ConverterBase):
-    """ Class which is used as a Subscriber Converter.
-    """
-    def _loadClass(self, loader):
-        args = self._clsName.split('/')
-
-        if len(args) != 2:
-            raise InvalidResoureName('msg type is not valid. Has to be of the '
-                                     'from pkg/msg, i.e. std_msgs/Int8.')
-
-        self._inputMsgCls = loader.loadMsg(*args)
-
-    def _receive(self, msg, msgID):
-        self.received(msg, msgID)
-
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
-
-
-class _ForwarderBase(_AbstractConverter):
+class _ForwarderBase(_AbstractRobotInterface):
     """ Class which implements the basic functionality of a Forwarder.
+
+        For the actual communication with the robot-side a Mixin has to be used.
     """
     _GZIP_LVL = settings.gzip_lvl
 
@@ -365,19 +247,20 @@ class _ForwarderBase(_AbstractConverter):
             self._sendToClient(StringIO(msg), msgID, protocol, remoteID)
 
 
-class ServiceClientForwarder(_ForwarderBase):
-    """ Class which is used as a Service-Client Forwarder.
+class _ServiceClient(object):
+    """ Mixin which provides the implementation for the communication with the
+        robot-side for a Service-Client.
     """
-    def __init__(self, owner, uid, clsName, tag):
-        _ForwarderBase.__init__(self, owner, uid, clsName, tag)
+    def __init__(self, *args, **kw):
+        super(_ServiceClient, self).__init__(*args, **kw)
 
         self._pendingRequests = {}
 
-    __init__.__doc__ = _ForwarderBase.__init__.__doc__
+    __init__.__doc__ = _AbstractRobotInterface.__init__.__doc__
 
-    def _receive(self, msg, msgID):
+    def _receive(self, msg, uid):
         try:
-            msgID, protocol, remoteID = self._pendingRequests.pop(msgID)
+            msgID, protocol, remoteID = self._pendingRequests.pop(uid)
         except KeyError:
             raise ServiceError('Service Client does not wait for a response '
                                'with message ID {0}.'.format(msgID))
@@ -392,20 +275,21 @@ class ServiceClientForwarder(_ForwarderBase):
                 break
 
         self._pendingRequests[uid] = (msgID, protocol, remoteID)
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
+        self._owner.sendToClient(self._addr, self._clsName, uid, msg)
 
 
-class ServiceProviderForwarder(_ForwarderBase):
-    """ Class which is used as a Service-Provider Forwarder.
+class _ServiceProvider(object):
+    """ Mixin which provides the implementation for the communication with the
+        robot-side for a Service-Provider.
     """
     def remote_connect(self, protocol, remoteID):
         if self._protocols:
             raise InternalError('Can not register more than one interface '
                                 'at a time with a Service-Provider.')
 
-        return _ForwarderBase.remote_connect(self, protocol, remoteID)
+        return super(_ServiceProvider, self).remote_connect(protocol, remoteID)
 
-    remote_connect.__doc__ = _ForwarderBase.remote_connect.__doc__
+    remote_connect.__doc__ = _AbstractRobotInterface.remote_connect.__doc__
 
     def _receive(self, msg, msgID):
         self.received(msg, msgID)
@@ -414,21 +298,99 @@ class ServiceProviderForwarder(_ForwarderBase):
         self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
-class PublisherForwarder(_ForwarderBase):
+class _Publisher(object):
+    """ Mixin which provides the implementation for the communication with the
+        robot-side for a Publisher.
+    """
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
+
+
+class _Subscriber(object):
+    """ Mixin which provides the implementation for the communication with the
+        robot-side for a Subscriber.
+    """
+    def _receive(self, msg, msgID):
+        self.received(msg, msgID)
+
+    def _sendToClient(self, msg, msgID, protocol, remoteID):
+        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
+
+
+class ServiceClientConverter(_ServiceClient, _ConverterBase):
+    """ Class which is used as a Service-Client Converter.
+    """
+    def _loadClass(self, loader):
+        args = self._clsName.split('/')
+
+        if len(args) != 2:
+            raise InvalidResoureName('srv type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
+
+        srvCls = loader.loadSrv(*args)
+        self._inputMsgCls = srvCls._response_class
+        self._outputMsgCls = srvCls._request_class
+
+
+class ServiceProviderConverter(_ServiceProvider, _ConverterBase):
+    """ Class which is used as a Service-Provider Converter.
+    """
+    def _loadClass(self, loader):
+        args = self._clsName.split('/')
+
+        if len(args) != 2:
+            raise InvalidResoureName('srv type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
+
+        srvCls = loader.loadSrv(*args)
+        self._inputMsgCls = srvCls._request_class
+        self._outputMsgCls = srvCls._response_class
+
+
+class PublisherConverter(_Publisher, _ConverterBase):
+    """ Class which is used as a Publisher Converter.
+    """
+    def _loadClass(self, loader):
+        args = self._clsName.split('/')
+
+        if len(args) != 2:
+            raise InvalidResoureName('msg type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
+
+        self._outputMsgCls = loader.loadMsg(*args)
+
+
+class SubscriberConverter(_Subscriber, _ConverterBase):
+    """ Class which is used as a Subscriber Converter.
+    """
+    def _loadClass(self, loader):
+        args = self._clsName.split('/')
+
+        if len(args) != 2:
+            raise InvalidResoureName('msg type is not valid. Has to be of the '
+                                     'from pkg/msg, i.e. std_msgs/Int8.')
+
+        self._inputMsgCls = loader.loadMsg(*args)
+
+
+class ServiceClientForwarder(_ServiceClient, _ForwarderBase):
+    """ Class which is used as a Service-Client Forwarder.
+    """
+
+
+class ServiceProviderForwarder(_ServiceProvider, _ForwarderBase):
+    """ Class which is used as a Service-Provider Forwarder.
+    """
+
+
+class PublisherForwarder(_Publisher, _ForwarderBase):
     """ Class which is used as a Publisher Forwarder.
     """
-    def _receive(self, msg, msgID):
-        self.received(msg, msgID)
-
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
 
 
-class SubscriberForwarder(_ForwarderBase):
+class SubscriberForwarder(_Subscriber, _ForwarderBase):
     """ Class which is used as a Subscriber Forwarder.
     """
-    def _receive(self, msg, msgID):
-        self.received(msg, msgID)
-
-    def _sendToClient(self, msg, msgID, protocol, remoteID):
-        self._owner.sendToClient(self._addr, self._clsName, msgID, msg)
