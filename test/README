@@ -1,7 +1,58 @@
+Config Files
+============
+
+ - debug.cfg
+    Basic configuration file containing most of the configration options.
+
+    Creates one container running a string echo (service and topic based) node
+    (Test - nodes/stringEcho.py) as well as a node (Test - nodes/paramTest.py)
+    to test access to ROS parameter service. Additionally, two empty containers
+    are created designed to be uesed to test virtual network.
+
+ - lo_client.cfg / lo_server.cfg
+    Configuration files to setup the simplest case of a robot network (i.e.
+    connecting two robots).
+
+    For this setup no working container filesystem and no running container
+    process is necessary. As the names indicate, the server config file has
+    to be running before the client config can be launched. Additionally,
+    the server needs the string echo node running.
+
+
 Test
 ====
 
 Contains test and measurement nodes.
 
-nodes/converterTest.py requires image support:
-    - Python Imaging Libary and ROS sensor_msgs
+Available nodes:
+ - nodes/converterTest.py (Status unknown!)
+    Requires image support:
+     - Python Imaging Libary and ROS sensor_msgs
+
+    Provides a service which adds to ints and additionally returns the RoboEarth
+    logo as a ROS sensor_msgs/Image.
+
+ - nodes/paramTest.py
+    Requires serveral parameters to be sent in the ROS parameter server.
+    
+    Provides a service ro retrieve several parameters from the ROS parameter
+    server as well as a command line argument. Primarily used to test the
+    interface to add parameters to a container and the passing of command line
+    arguments to ROS nodes.
+
+ - nodes/stringEcho.py
+    Provides a string echo interface both synchronously as a service as well as
+    asynchronously as a publisher/subscriber. Used to the the communication.
+    Additionally, the node is used for performing round-trip time measurements
+    in conjunction with rce's measure tools.
+
+ - nodes/stringTester.py
+    Provides an implemenation of the TestCenter used to perform the round-trip
+    time measurements and exposes the functionality as ROS services outside the
+    container. Primarily used by rce's measure tools.
+
+Available scripts:
+ - scripts/testRunner.py
+    Provides a command line interface to the TestCenter implementation to perform
+    round-trip time measurements. Primarily used to run measurements for the
+    virutal network.
