@@ -47,7 +47,7 @@ from rce.util.settings import getSettings
 settings = getSettings()
 
 
-_STD_DIR = ['/proc', '/dev', '/dev/pts', '/sys']
+_STD_DIR = ['/proc','/proc/sys/fs/binfmt_misc', '/dev', '/dev/pts', '/sys']
 
 
 def up():
