@@ -39,7 +39,16 @@ iface lo inet loopback
 auto eth0
 iface eth0 inet dhcp
 EOF
-
+   # Setup locales
+ cat << EOF >> /opt/rce/container/rootfs/etc/environment
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
+LANGUAGE=en_US.UTF-8
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+LC_CTYPE=C
+EOF
+ 
+   #
     if [ -e $rootfs/etc/dhcp/dhclient.conf ]; then
         sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp/dhclient.conf
     elif [ -e $rootfs/etc/dhcp3/dhclient.conf ]; then
