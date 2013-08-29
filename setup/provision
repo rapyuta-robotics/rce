@@ -331,6 +331,7 @@ def provision_container(config):
 
     # Provision the container filesystem
     cmds = [
+        'dpkg-reconfigure locales',
         'adduser --disabled-password --disabled-login ros',
         'adduser --disabled-password --disabled-login '
             '--home /opt/rce/data rce',
