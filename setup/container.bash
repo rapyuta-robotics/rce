@@ -40,7 +40,7 @@ auto eth0
 iface eth0 inet dhcp
 EOF
    # Setup locales
- cat << EOF >> $rootfs/rootfs/etc/environment
+ cat << EOF >> $rootfs/etc/environment
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
 LANGUAGE=en_US.UTF-8
 LANG=en_US.UTF-8
