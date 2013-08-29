@@ -59,7 +59,7 @@ from rce.comm._version import MINIMAL_VERSION, CURRENT_VERSION
 from rce.comm.error import InvalidRequest, DeadConnection
 from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
 from rce.comm.interfaces import IMasterRealm, IRobotRealm, \
-    IServersideProtocol, IRobot, IMessageReceiver
+    IProtocol, IRobot, IMessageReceiver
 from rce.util.interface import verifyObject
 
 
@@ -175,7 +175,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
     """ Protocol which is used for the connections from the robots to the
         robot manager.
     """
-    implements(IServersideProtocol)
+    implements(IProtocol)
 
     # CONFIG
     MSG_QUEUE_TIMEOUT = 60
@@ -446,7 +446,7 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
 
     def sendDataMessage(self, iTag, clsName, msgID, msg):
         """ Callback for Connection object to send a data message to the robot
-            using this websocket connection.
+            using this WebSocket connection.
 
             @param iTag:        Tag which is used to identify the interface
                                 from the message is sent.
@@ -472,14 +472,30 @@ class RobotWebSocketProtocol(WebSocketServerProtocol):
                           'data' : {'iTag' : iTag, 'type' : clsName,
                                     'msgID' : msgID, 'msg' : msg}})
 
+    def sendInterfaceStatusUpdateMessage(self, iTag, status):
+        """ Callback for Connection object to send a interface status message to
+            the robot using this WebSocket connection.
+
+            @param iTag:        Tag which is used to identify the interface
+                                which changed its status.
+            @type  iTag:        str
+
+            @param status:      Boolean indicating whether the interface should
+                                be active or not.
+            @type  status:      bool
+        """
+        self.sendMessage({'type' : types.STATUS,
+                          'data' : {'topic' : types.STATUS_INTERFACE,
+                                    'iTag' : iTag, 'status' : status}})
+
     def sendErrorMessage(self, msg):
         """ Callback for Connection object to send an error message to the robot
-            using this websocket connection.
+            using this WebSocket connection.
 
             @param msg:         Message which should be sent to the robot.
             @type  msg:         str
         """
-        self.sendMessage({'data' : msg, 'type' : types.ERROR})
+        self.sendMessage({'type' : types.ERROR, 'data' : msg})
 
     def onClose(self, wasClean, code, reason):
         """ Method is called by the Autobahn engine when the connection has
@@ -505,7 +521,7 @@ class CloudEngineWebSocketFactory(WebSocketServerFactory):
                                 methods for the protocol.
             @type  realm:       rce.comm.interfaces.IRobotRealm
 
-            @param url:         URL where the websocket server factory will
+            @param url:         URL where the WebSocket server factory will
                                 listen for connections. For more information
                                 refer to the base class:
                                     autobahn.websocket.WebSocketServerFactory

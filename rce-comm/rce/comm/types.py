@@ -40,8 +40,13 @@
 
         DM      ROS Message
 
-        ST      Status message (currently not used)
+        ST      Status message
         ER      Error message
+
+
+    Content Types of RCE Client Status Messages (ST):
+
+        iu      Interface status update
 """
 
 CREATE_CONTAINER = 'CC'
@@ -52,5 +57,7 @@ CONFIGURE_CONNECTION = 'CX'
 
 DATA_MESSAGE = 'DM'
 
-#STATUS = 'ST'
+STATUS = 'ST'
 ERROR = 'ER'
+
+STATUS_INTERFACE = 'iu'

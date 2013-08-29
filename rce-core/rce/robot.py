@@ -53,7 +53,7 @@ from rce.util.converter import Converter
 from rce.util.loader import Loader
 from rce.util.interface import verifyObject
 from rce.comm.error import DeadConnection
-from rce.comm.interfaces import IRobotRealm, IServersideProtocol, \
+from rce.comm.interfaces import IRobotRealm, IProtocol, \
     IRobot, IMessageReceiver
 from rce.comm.server import CloudEngineWebSocketFactory
 from rce.monitor.interface.robot import PublisherConverter, \
@@ -157,7 +157,7 @@ class Connection(object):
             @type  protocol:    rce.comm.interfaces.IServersideProtocol
         """
         assert self._protocol is None
-        verifyObject(IServersideProtocol, protocol)
+        verifyObject(IProtocol, protocol)
         self._protocol = protocol
 
     def unregisterProtocol(self, protocol):
@@ -173,7 +173,7 @@ class Connection(object):
     def reportError(self, msg):
         self._protocol.sendErrorMessage(msg)
 
-    reportError.__doc__ = IServersideProtocol.get('sendErrorMessage').getDoc()
+    reportError.__doc__ = IProtocol.get('sendErrorMessage').getDoc()
 
     def sendMessage(self, iTag, clsName, msgID, msg):
         if not self._protocol:
@@ -184,7 +184,19 @@ class Connection(object):
 
         self._protocol.sendDataMessage(iTag, clsName, msgID, msg)
 
-    sendMessage.__doc__ = IServersideProtocol.get('sendDataMessage').getDoc()
+    sendMessage.__doc__ = IProtocol.get('sendDataMessage').getDoc()
+
+    def sendInterfaceStatusUpdate(self, iTag, status):
+        if not self._protocol:
+            # TODO: What should we do here?
+            #       One solution would be to queue the messages here for some
+            #       time...
+            return
+
+        self._protocol.sendInterfaceStatusUpdateMessage(iTag, status)
+
+    sendInterfaceStatusUpdate.__doc__ = \
+        IProtocol.get('sendInterfaceStatusUpdateMessage').getDoc()
 
     # Forwarding to View
 
@@ -509,7 +521,42 @@ class Robot(Namespace):
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
         """
+        if not self._connection:
+            # It is possible that the connection is already lost when a data
+            # message is sent, e.g. when the client just disconnects without
+            # properly removing the interfaces, then the interfaces are only
+            # removed after given TIMEOUT, but the connection will already be
+            # gone
+            # TODO: What is the proper reaction to a missing connection, i.e.
+            #       once reconnecting clients are available... ?
+            return
+
         self._connection.sendMessage(iTag, msgType, msgID, msg)
+
+    def sendToClientInterfaceStatusUpdate(self, iTag, status):
+        """ Send a status change which should be used to start or stop the
+            corresponding interface on the client-side to the registered
+            connection.
+
+            @param iTag:        Tag which is used to identify the interface
+                                which changed its status.
+            @type  iTag:        str
+
+            @param status:      Boolean indicating whether the interface should
+                                be active or not.
+            @type  status:      bool
+        """
+        if not self._connection:
+            # It is possible that the connection is already lost when a status
+            # message is sent, e.g. when the client just disconnects without
+            # properly removing the interfaces, then the interfaces are only
+            # removed after given TIMEOUT, but the connection will already be
+            # gone
+            # TODO: What is the proper reaction to a missing connection, i.e.
+            #       once reconnecting clients are available... ?
+            return
+
+        self._connection.sendInterfaceStatusUpdate(iTag, status)
 
     def destroy(self):
         """ # TODO: Add doc

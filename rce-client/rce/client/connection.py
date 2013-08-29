@@ -38,7 +38,7 @@ import re
 from zope.interface import implements
 
 # rce specific imports
-from rce.comm.interfaces import IRobot, IMessageReceiver
+from rce.comm.interfaces import IRobot, IClient
 from rce.comm.client import RCE, ConnectionError
 from rce.client.interface import HAS_ROS
 from rce.client.interface import Publisher, Subscriber, \
@@ -57,7 +57,7 @@ _IP_V4_REGEX = re.compile('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)'
 class _Connection(object):
     """ Abstract implementation of a Connection.
     """
-    implements(IRobot, IMessageReceiver)
+    implements(IRobot, IClient)
 
     INTERFACE_MAP = {}
 
@@ -161,8 +161,8 @@ class _Connection(object):
             @type  iface:       rce.client.interface.*
         """
         if iTag not in self._interfaces:
-            raise ValueError('No Interface register with tag '
-                             '"{0}".'.format(iTag))
+            raise ValueError('No Interface registered with tag '
+                             "'{0}'.".format(iTag))
 
         interfaces = self._interfaces[iTag]
         interfaces.discard(iface)
@@ -182,7 +182,15 @@ class _Connection(object):
             interface.callback(clsName, msg, msgID)
 
     processReceivedMessage.__doc__ = \
-        IMessageReceiver.get('processReceivedMessage').getDoc()
+        IClient.get('processReceivedMessage').getDoc()
+
+    def processInterfaceStatusUpdate(self, iTag, status):
+        # TODO: What to do now with the info ???
+        print('Interface ({0}) has new status: {1} ({2})'.format(iTag, status,
+                                                                 type(status)))
+
+    processInterfaceStatusUpdate.__doc__ = \
+        IClient.get('processInterfaceStatusUpdate').getDoc()
 
     # Forwarding
 

@@ -99,7 +99,7 @@ class IRobotRealm(Interface):
         """
 
 
-class IServersideProtocol(Interface):
+class IProtocol(Interface):
     """ Interface which the Protocol has to implement on the server side.
     """
     def sendDataMessage(iTag, clsName, msgID, msg):  #@NoSelf
@@ -124,6 +124,20 @@ class IServersideProtocol(Interface):
                                 complete message can be replaced by a StringIO
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
+        """
+
+    def sendInterfaceStatusUpdateMessage(iTag, status): #@NoSelf
+        """ Send a status change to the client such that the client can start
+            or stop its client-side interface implementation according to the
+            status information.
+
+            @param iTag:        Tag which is used to identify the interface
+                                which changed its status.
+            @type  iTag:        str
+
+            @param status:      Boolean indicating whether the interface should
+                                be active or not.
+            @type  status:      bool
         """
 
     def sendErrorMessage(msg):  #@NoSelf
@@ -317,7 +331,7 @@ class IMessageReceiver(Interface):
         client/server.
     """
     def processReceivedMessage(iTag, clsName, msgID, msg):  #@NoSelf
-        """ Process a data message which has been received from the other side.
+        """ Process a data message which has been received from the server side.
 
             @param iTag:        Tag which is used to identify the interface to
                                 which this message should be sent.
@@ -338,4 +352,22 @@ class IMessageReceiver(Interface):
                                 complete message can be replaced by a StringIO
                                 instance which is interpreted as binary data.
             @type  msg:         {str : {} / base_types / StringIO} / StringIO
+        """
+
+
+class IClient(IMessageReceiver):
+    """ Interface which declares additional necessary callback for the
+        communication on the client side.
+    """
+    def processInterfaceStatusUpdate(iTag, status): #@NoSelf
+        """ Process a interface status update message received from the server
+            side.
+
+            @param iTag:        Tag which is used to identify the interface
+                                which changed its status.
+            @type  iTag:        str
+
+            @param status:      Boolean indicating whether the interface should
+                                be active or not.
+            @type  status:      bool
         """

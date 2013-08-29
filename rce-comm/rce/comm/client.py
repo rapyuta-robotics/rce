@@ -51,7 +51,7 @@ from autobahn.websocket import connectWS, WebSocketClientFactory, \
 # rce specific imports
 from rce.comm import types
 from rce.comm._version import CURRENT_VERSION
-from rce.comm.interfaces import IRobot, IMessageReceiver
+from rce.comm.interfaces import IRobot, IClient
 from rce.comm.assembler import recursiveBinarySearch, MessageAssembler
 from rce.util.interface import verifyObject
 
@@ -197,7 +197,7 @@ class RCE(object):
                                 connection.
             @type  reactor:     twisted::reactor
         """
-        verifyObject(IMessageReceiver, receiver)
+        verifyObject(IClient, receiver)
 
         self._receiver = receiver
         self._userID = userID
@@ -625,9 +625,27 @@ class RCE(object):
                              'the key {0}.'.format(e))
 
         if msgType == types.ERROR:
-            print('Received error message: {0}'.format(data))
-#        elif msgType == types.STATUS:
-#            print('Received status message: {0}'.format(data))
+            print('Received ERROR message: {0}'.format(data))
+        elif msgType == types.STATUS:
+            try:
+                topic = data['topic']
+            except KeyError as e:
+                raise ValueError('Received STATUS message from robot process '
+                                 'is missing the key {0}.'.format(e))
+
+            if topic == types.STATUS_INTERFACE:
+                try:
+                    iTag = data['iTag']
+                    status = data['status']
+                except KeyError as e:
+                    raise ValueError('Received STATUS message (Interface '
+                                     'Status Update) from robot process is '
+                                     'missing the key {0}.'.format(e))
+
+                self._receiver.processInterfaceStatusUpdate(iTag, status)
+            else:
+                print('Received STATUS message with unknown content type: '
+                      '{0}'.format(topic))
         elif msgType == types.DATA_MESSAGE:
             try:
                 iTag = data['iTag']
@@ -635,7 +653,7 @@ class RCE(object):
                 rosMsg = data['msg']
                 msgID = data['msgID']
             except KeyError as e:
-                raise ValueError('Data of received message from robot process '
+                raise ValueError('Received DATA message from robot process '
                                  'is missing the key {0}.'.format(e))
 
             self._receiver.processReceivedMessage(iTag, clsName, msgID, rosMsg)

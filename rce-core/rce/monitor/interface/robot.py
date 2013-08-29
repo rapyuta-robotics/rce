@@ -92,6 +92,12 @@ class _AbstractRobotInterface(Interface, object):
 
         self._clsName = clsName
 
+    def _start(self):
+        self._owner.sendToClientInterfaceStatusUpdate(self._addr, True)
+
+    def _stop(self):
+        self._owner.sendToClientInterfaceStatusUpdate(self._addr, False)
+
 
 class _ConverterBase(_AbstractRobotInterface):
     """ Class which implements the basic functionality of a Converter.
