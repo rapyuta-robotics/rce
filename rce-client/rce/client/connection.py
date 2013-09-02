@@ -130,42 +130,39 @@ class _Connection(object):
 
     # Callback Interface objects
 
-    def registerInterface(self, iTag, iface, unique):
+    def registerInterface(self, iTag, interface):
         """ Callback for Interface.
 
             @param iTag:        Tag of interface which should be registered.
             @type  iTag:        str
 
-            @param iface:       Interface instance which should be registered.
-            @type  iface:       rce.client.interface.*
-
-            @param unique:      Flag to indicate whether Interface should be
-                                unique for its tag or not.
-            @type  unique:      bool
+            @param interface:   Interface instance which should be registered.
+            @type  interface:   rce.client.interface.*
         """
         if iTag not in self._interfaces:
             self._interfaces[iTag] = weakref.WeakSet()
-        elif unique:
-            ValueError('Can not have multiple interfaces with the same tag.')
+        elif interface.UNIQUE:
+            raise ValueError('Can not have multiple interfaces with the same '
+                             'tag.')
 
-        self._interfaces[iTag].add(iface)
+        self._interfaces[iTag].add(interface)
 
-    def unregisterInterface(self, iTag, iface):
+    def unregisterInterface(self, iTag, interface):
         """ Callback for Interfaces.
 
             @param iTag:        Tag of interface which should be unregistered.
             @type  iTag:        str
 
-            @param iface:       Interface instance which should be
+            @param interface:   Interface instance which should be
                                 unregistered.
-            @type  iface:       rce.client.interface.*
+            @type  interface:   rce.client.interface.*
         """
         if iTag not in self._interfaces:
             raise ValueError('No Interface registered with tag '
                              "'{0}'.".format(iTag))
 
         interfaces = self._interfaces[iTag]
-        interfaces.discard(iface)
+        interfaces.discard(interface)
 
         if not interfaces:
             del self._interfaces[iTag]
@@ -179,15 +176,20 @@ class _Connection(object):
             interfaces = []
 
         for interface in interfaces:
-            interface.callback(clsName, msg, msgID)
+            if interface.CALLABLE:
+                interface.callback(clsName, msg, msgID)
 
     processReceivedMessage.__doc__ = \
         IClient.get('processReceivedMessage').getDoc()
 
     def processInterfaceStatusUpdate(self, iTag, status):
-        # TODO: What to do now with the info ???
-        print('Interface ({0}) has new status: {1} ({2})'.format(iTag, status,
-                                                                 type(status)))
+        try:
+            interfaces = self._interfaces[iTag].copy()
+        except (KeyError, weakref.ReferenceError):
+            interfaces = []
+
+        for interface in interfaces:
+            interface.setEnabled(status)
 
     processInterfaceStatusUpdate.__doc__ = \
         IClient.get('processInterfaceStatusUpdate').getDoc()

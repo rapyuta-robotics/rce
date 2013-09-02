@@ -59,52 +59,112 @@ from twisted.internet.threads import deferToThreadPool
 _GZIP_LVL = 0
 
 
+class InterfaceDisabledError(Exception):
+    """ Exception is raised when an interface is called even though the
+        interface is disabled.
+    """
+
+
 class _Base(object):
     """ Abstract base for all Interface classes.
     """
+    UNIQUE = False
+    CALLABLE = False
+
     _UP_MSG = "Interface '{0}' is up."
     _DOWN_MSG = "Interface '{0}' is down."
 
     def __init__(self, conn, iTag, clsName):
         """ Initialize the Interface.
         """
+        self._status = False
+        self._statusListener = set()
+
         print(self._UP_MSG.format(iTag))
         self._conn = conn
         self._iTag = iTag
         self._clsName = clsName
 
+        conn.registerInterface(iTag, self)
+        self._registered = True
+
     def __del__(self):
         """ Finalize the Interface.
         """
+        self._unregister()
+
         if hasattr(self, '_iTag'):
             print(self._DOWN_MSG.format(self._iTag))
 
-
-class _CB_Base(_Base):
-    """ Abstract base for all Interface classes which have to be registered with
-        the connection.
-    """
-    _UNIQUE = False
-
-    def __init__(self, conn, iTag, clsName):
-        """ Initialize the Interface.
+    @property
+    def status(self):
+        """ Status (enabled/disabled) of the interface.
         """
-        conn.registerInterface(iTag, self, self._UNIQUE)
-        self._subscribed = True
+        return self._status
 
-        super(_CB_Base, self).__init__(conn, iTag, clsName)
+    def registerStatusListener(self, cb):
+        """ Register a status listener which will be called with status changes.
 
-    def _unsubscribe(self):
-        """ Internally used method to unsubscribe the Interface.
+            @param cb:          Callable which takes this interface instance as
+                                first and the status flag as second argument.
+            @type  cb:          callable
         """
-        if hasattr(self, '_subscribed') and self._subscribed:
+        self._statusListener.add(cb)
+
+    def unregisterStatusListener(self, cb):
+        """ Unregister a previously registered status listener.
+
+            @param cb:          Callable which should unregistered.
+            @type  cb:          callable
+        """
+        self._statusListener.discard(cb)
+
+    def setEnabled(self, status):
+        """ Callback for RCE client to enable/disable the interface.
+        """
+        self._status = status
+
+        if status:
+            self._start()
+        else:
+            self._stop()
+
+        for cb in self._statusListener:
+            cb(self, status)
+
+    def _start(self):
+        """ Hook which is called when the status of the interface switches from
+            disabled to enabled.
+        """
+
+    def _stop(self):
+        """ Hook which is called when the status of the interface switches from
+            enabled to disabled.
+        """
+
+    def _unregister(self):
+        """ Internally used method to unregister the interface from the RCE
+            client.
+        """
+        if hasattr(self, '_registered') and self._registered:
             self._conn.unregisterInterface(self._iTag, self)
-            self._subscribed = False
+            self._registered = False
+
+
+class _CallableBase(_Base):
+    """ Abstract base for all Interface classes which are callable by the RCE
+        client.
+    """
+    CALLABLE = True
 
     def callback(self, msgType, msg, msgID):
         """ Callback for RCE. To implement the callback overwrite the hook
             '_callback'.
         """
+        if not self._status:
+            raise InterfaceDisabledError('A disabled interface should not be '
+                                         'called by the RCE client.')
+
         if not msgType == self._clsName:
             raise TypeError('Received unexpected message type.')
 
@@ -114,13 +174,6 @@ class _CB_Base(_Base):
         """ Callback to process the received message.
         """
         raise NotImplementedError('Method _callback has not been implemented.')
-
-    def __del__(self):
-        """ Finalize the Interface.
-        """
-        self._unsubscribe()
-
-        super(_CB_Base, self).__del__()
 
 
 class _Publisher(_Base):
@@ -132,13 +185,16 @@ class _Publisher(_Base):
     def publish(self, msg):
         """ Publish a message.
         """
+        if not self._status:
+            raise InterfaceDisabledError('A disabled interface should not be '
+                                         'called.')
+
         self._conn.sendMessage(self._iTag, self._clsName, msg, 'nil')
 
 
-class _Subscriber(_CB_Base):
+class _Subscriber(_CallableBase):
     """ Abstract implementation of a Subscriber Interface.
     """
-    _UNIQUE = False
     _UP_MSG = "Subscriber to RCE Interface '{0}' is up."
     _DOWN_MSG = "Subscriber to RCE Interface '{0}' is down."
 
@@ -150,10 +206,11 @@ class _Subscriber(_CB_Base):
         super(_Subscriber, self).__init__(conn, iTag, msgType)
 
     def unsubscribe(self):
-        """ Unsubscribe from Interface. Afterwards no more messages are given
-            to the registered callback.
+        """ Unsubscribe interface from topic. Afterwards no more messages are
+            given to the registered callback. To resubscribe a new interface
+            has to be created.
         """
-        self._unsubscribe()
+        self._unregister()
 
     def _callback(self, msg, _):
         """ Callback hook.
@@ -161,10 +218,11 @@ class _Subscriber(_CB_Base):
         self._cb(msg)
 
 
-class _ServiceClient(_CB_Base):
+class _ServiceClient(_CallableBase):
     """ Abstract implementation of a Service Client Interface.
     """
-    _UNIQUE = True
+    UNIQUE = True
+
     _UP_MSG = "Service Client to RCE Interface '{0}' is up."
     _DOWN_MSG = "Service Client to RCE Interface '{0}' is down."
 
@@ -188,6 +246,10 @@ class _ServiceClient(_CB_Base):
             @param *args:       Additional arguments which will be passed to the
                                 callback.
         """
+        if not self._status:
+            raise InterfaceDisabledError('A disabled interface should not be '
+                                         'called.')
+
         if not callable(cb):
             raise TypeError('Callback has to be callable.')
 
@@ -210,10 +272,11 @@ class _ServiceClient(_CB_Base):
                   'with any request.')
 
 
-class _ServiceProvider(_CB_Base):
+class _ServiceProvider(_CallableBase):
     """ Abstract implementation of a Service Provider Interface.
     """
-    _UNIQUE = True
+    UNIQUE = True
+
     _UP_MSG = "Service Provider to RCE Interface '{0}' is up."
     _DOWN_MSG = "Service Provider to RCE Interface '{0}' is down."
 
@@ -224,6 +287,13 @@ class _ServiceProvider(_CB_Base):
         self._args = args
 
         super(_ServiceProvider, self).__init__(conn, iTag, srvType)
+
+    def unregister(self):
+        """ Unregister the service provider. Afterwards no more service requests
+            are given to the registered callback. To reregister the service
+            provider a new interface has to be created.
+        """
+        self._unregister()
 
     def _callback(self, msg, msgID):
         """ Callback hook.
@@ -238,12 +308,24 @@ class _ServiceProvider(_CB_Base):
         """ Internally used method which is executed when the service has been
             successfully called.
         """
+        if not self._status:
+            # Can not help it if the response takes some time and in the mean
+            # time the interface is disabled; therefore, don't raise an error
+            # instead just skip sending the response
+            return
+
         self._conn.sendMessage(self._iTag, self._clsName, msg, msgID)
 
     def _response_failure(self, failure, msgID):
         """ Internally used method which is executed when the service call has
             failed.
         """
+        if not self._status:
+            # Can not help it if the response takes some time and in the mean
+            # time the interface is disabled; therefore, don't raise an error
+            # instead just skip sending the response
+            return
+
         # TODO: Return something useful to the cloud here!
         print('Service call failed.')
 
@@ -296,7 +378,7 @@ if HAS_ROS:
 
     class _EventRef(object):
         """ Helper class which acts as a threading.Event, but which can be used
-            to pass a reference together which signaling the event.
+            to pass a reference when signaling the event.
         """
         def __init__(self):
             self._cond = Condition(Lock())
@@ -338,9 +420,6 @@ if HAS_ROS:
             self._sub = None
             self._addr = addr
 
-            self._sub = rospy.Subscriber(addr, rospy.AnyMsg, self._rosCB)
-            print("Local ROS Subscriber on topic '{0}' is up.".format(addr))
-
             super(ROSPublisher, self).__init__(conn, iTag, msgType)
 
         def _rosCB(self, msg):
@@ -351,14 +430,22 @@ if HAS_ROS:
             else:
                 self.publish(StringIO(msg._buff))
 
+        def _start(self):
+            self._sub = rospy.Subscriber(self._addr, rospy.AnyMsg, self._rosCB)
+            print("Local ROS Subscriber on topic '{0}' is "
+                  'up.'.format(self._addr))
+
+        def _stop(self):
+            self._sub.unregister()
+            self._sub = None
+            print("Local ROS Subscriber on topic '{0}' is "
+                  'down.'.format(self._addr))
+
         def __del__(self):
             """ Finalize the Publisher.
             """
             if self._sub:
-                self._sub.unregister()
-                self._sub = None
-                print("Local ROS Subscriber on topic '{0}' is "
-                      'down.'.format(self._addr))
+                self._stop()
 
             super(ROSPublisher, self).__del__()
 
@@ -371,15 +458,11 @@ if HAS_ROS:
             """
             self._pub = None
             self._addr = addr
+            self._args = msgType.split('/')
 
-            args = msgType.split('/')
-
-            if len(args) != 2:
+            if len(self._args) != 2:
                 raise ValueError('Message type is not valid. Has to be of the '
                                  'form pkg/msg, i.e. std_msgs/Int8.')
-
-            self._pub = rospy.Publisher(addr, conn.loader.loadMsg(*args))
-            print("Local ROS Publisher on topic '{0}' is up.".format(addr))
 
             super(ROSSubscriber, self).__init__(conn, iTag, msgType,
                                                 self._rceCB)
@@ -397,14 +480,23 @@ if HAS_ROS:
 
             self._pub.publish(rosMsg)
 
+        def _start(self):
+            self._pub = rospy.Publisher(self._addr,
+                                        self._conn.loader.loadMsg(*self._args))
+            print("Local ROS Publisher on topic '{0}' is "
+                  'up.'.format(self._addr))
+
+        def _stop(self):
+            self._pub.unregister()
+            self._pub = None
+            print("Local ROS Publisher on topic '{0}' is "
+                  'down.'.format(self._addr))
+
         def __del__(self):
             """ Finalize the Subscriber.
             """
             if self._pub:
-                self._pub.unregister()
-                self._pub = None
-                print("Local ROS Publisher on topic '{0}' is "
-                      'down.'.format(self._addr))
+                self._stop()
 
             super(ROSSubscriber, self).__del__()
 
@@ -426,12 +518,9 @@ if HAS_ROS:
                 raise ValueError('Service type is not valid. Has to be of the '
                                  'form pkg/srv, i.e. std_msgs/Int8.')
 
-            srvCls = conn.loader.loadSrv(*args)
-            srvCls._request_class = rospy.AnyMsg
-            srvCls._response_class = rospy.AnyMsg
-
-            self._service = rospy.Service(addr, srvCls, self._rosCB)
-            print("Local ROS Service on address '{0}' is up.".format(addr))
+            self._srvCls = conn.loader.loadSrv(*args)
+            self._srvCls._request_class = rospy.AnyMsg
+            self._srvCls._response_class = rospy.AnyMsg
 
             super(ROSServiceClient, self).__init__(conn, iTag, srvType)
 
@@ -456,7 +545,7 @@ if HAS_ROS:
             rosResp = event.get()
 
             if not isinstance(rosResp, genpy.message.Message):
-                raise Exception('Interrupted.')  # TODO: Change exception?
+                raise rospy.ServiceException('Service call interrupted.')
 
             return rosResp
 
@@ -473,18 +562,28 @@ if HAS_ROS:
 
             event.set(rosResp)
 
-        def __del__(self):
-            """ Finalize the Service.
-            """
-            if self._service:
-                self._service.shutdown()
-                self._service = None
-                print("Local ROS Service on address '{0}' is "
-                      'down.'.format(self._addr))
+        def _start(self):
+            self._service = rospy.Service(self._addr, self._srvCls, self._rosCB)
+            print("Local ROS Service on address '{0}' is "
+                  'up.'.format(self._addr))
+
+        def _stop(self):
+            self._service.shutdown()
+            self._service = None
+            print("Local ROS Service on address '{0}' is "
+                  'down.'.format(self._addr))
 
             with self._lock:
                 for event in self._pending:
                     event.set(None)
+
+        def __del__(self):
+            """ Finalize the Service.
+            """
+            if self._service:
+                self._stop()
+
+            assert len(self._pending) == 0
 
             super(ROSServiceClient, self).__del__()
 
@@ -506,6 +605,7 @@ if HAS_ROS:
             self._srvCls = conn.loader.loadSrv(*args)
             self._srvCls._request_class = rospy.AnyMsg
             self._srvCls._response_class = rospy.AnyMsg
+
             super(ROSServiceProvider, self).__init__(conn, iTag, srvType,
                                                      self._rceCB, ())
 
