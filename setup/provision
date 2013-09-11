@@ -315,9 +315,6 @@ def provision_container(config):
             _ROS_SRC.format(base=get_host_ubuntu_release()),
             _ROS_KEY,
             _INSTALL.format(host_pkgs),
-            # Temprory hack as OVS dkms does not function as promised
-            'sudo apt-get -y install --reinstall '
-            'openvswitch-datapath-dkms || true',
             'sudo /etc/init.d/openvswitch-switch start')
 
     for cmd in cmds:
@@ -331,6 +328,7 @@ def provision_container(config):
 
     # Provision the container filesystem
     cmds = [
+        'dpkg-reconfigure locales',
         'adduser --disabled-password --disabled-login ros',
         'adduser --disabled-password --disabled-login '
             '--home /opt/rce/data rce',

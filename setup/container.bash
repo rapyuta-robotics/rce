@@ -31,6 +31,14 @@ configure_ubuntu()
     rootfs=$1
     hostname=$2
 
+   # Setup locales
+ cat << EOF >> $rootfs/etc/environment
+LANGUAGE=en_US.UTF-8
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+LC_CTYPE=C
+EOF
+
    # configure the network using the dhcp
     cat <<EOF > $rootfs/etc/network/interfaces
 auto lo
@@ -75,8 +83,8 @@ download_ubuntu()
     arch=$2
     baserel=$3
 
-	echo "Setting optimum mirror from host machine."
-	mirror=`cat /etc/apt/sources.list | grep '^deb ' | head -1 | tr " " "\n" | head -2 | tail -1` 
+    echo "Setting optimum mirror from host machine."
+    mirror=`cat /etc/apt/sources.list | grep '^deb ' | head -1 | tr " " "\n" | head -2 | tail -1`
 
     # check the mini ubuntu was not already downloaded
     mkdir -p "$cache/partial-$arch"
@@ -276,15 +284,17 @@ touch $rootfs/etc/init/rceRosapi.conf
 
 #The rest of the provisioning.
 SOURCE="${BASH_SOURCE[0]}"
+
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
+
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 cp $DIR/setup.sh $rootfs/opt/rce/setup.sh
 sed -i "s/rosrel/$rosrel/g" $rootfs/opt/rce/setup.sh
 
 cp $DIR/rce.conf $rootfs/etc/init/rce.conf
-sed -i "s/rosrel/$rosrel/g" $rootfs/etc/init/rce.conf 
+sed -i "s/rosrel/$rosrel/g" $rootfs/etc/init/rce.conf
