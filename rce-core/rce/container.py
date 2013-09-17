@@ -138,12 +138,15 @@ class RCEContainer(Referenceable):
 
         if os.path.isdir(confDir):
             raise ValueError('There is already a configuration directory for '
-                             "'{0}'.".format(name))
+                             "'{0}' \n Please remove it manually if the engine "
+                             'did not shut down correctly on last execution and '
+                             'you are sure it is not in use. \n dir: {1}.'.format(name, confDir))
 
         if os.path.isdir(dataDir):
             raise ValueError('There is already a data directory for '
-                             "'{0}'.".format(name))
-
+                             "'{0}' \n Please remove it manually if the engine "
+                             'did not shut down correctly on last execution and '
+                             'you are sure it is not in use. \n dir: {1}.'.format(name, dataDir))
         os.mkdir(confDir)
         os.mkdir(dataDir)
 
