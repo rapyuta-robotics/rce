@@ -361,6 +361,9 @@ class Loader(object):
         """
         try:
             return roslib.packages.find_node(pkg, exe, rospack=self._rp)[0]
+        except rospkg.ResourceNotFound:
+            raise ResourceNotFound('Can not find ROS package '
+                                   '"{0}".'.format(pkg))
         except IndexError:
             raise ResourceNotFound('Can not find executable "{0}" in '
                                    'ROS package "{1}".'.format(exe, pkg))

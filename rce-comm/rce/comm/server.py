@@ -102,8 +102,11 @@ class RobotResource(Resource):
         """
         msg = {'url' : 'ws://{0}/'.format(addr)}
 
-        if version != CURRENT_VERSION:
+        if version < CURRENT_VERSION:
             msg['current'] = CURRENT_VERSION
+        elif version > CURRENT_VERSION:
+            # Should never happen; is already handled in render_GET
+            raise ValueError
 
         cls._render(request, httpstatus.HTTP_STATUS_CODE_OK[0],
                     'application/json; charset=utf-8', json.dumps(msg))
@@ -146,6 +149,10 @@ class RobotResource(Resource):
             request.setHeader('content-type', 'text/plain; charset=utf-8')
             return ('Client version is insufficient. Minimal version is '
                     "'{0}'.".format(MINIMAL_VERSION))
+        elif version > CURRENT_VERSION:
+            request.setResponseCode(httpstatus.HTTP_STATUS_CODE_NOT_IMPLEMENTED[0])
+            request.setHeader('content-type', 'text/plain; charset=utf-8')
+            return 'Client version is newer than version supported by server.'
 
         # Version is ok, now the GET request can be processed
         # Extract and check the arguments

@@ -322,7 +322,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('createContainer', tag, data)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -332,7 +332,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('destroyContainer', tag)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -343,7 +343,7 @@ class RobotView(object):
             d = self._view.callRemote('addNode', cTag, nTag, pkg, exe, args,
                                       name, namespace)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -353,7 +353,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('removeNode', cTag, nTag)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -364,7 +364,7 @@ class RobotView(object):
             d = self._view.callRemote('addInterface', eTag, iTag, iType,
                                       clsName, addr)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -374,7 +374,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('removeInterface', eTag, iTag)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -384,7 +384,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('addParameter', cTag, name, value)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -394,7 +394,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('removeParameter', cTag, name)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -404,7 +404,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('addConnection', tagA, tagB)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -414,7 +414,7 @@ class RobotView(object):
         try:
             d = self._view.callRemote('removeConnection', tagA, tagB)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
         d.addErrback(self._reportError)
 
@@ -495,7 +495,7 @@ class Robot(Namespace):
         try:
             self._interfaces[iTag].receive(clsName, msgID, msg)
         except (DeadReferenceError, PBConnectionLost):
-            raise DeadConnection()
+            raise DeadConnection
 
     def sendToClient(self, iTag, msgType, msgID, msg):
         """ Process a data message which has been received from an interface
