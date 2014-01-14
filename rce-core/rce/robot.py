@@ -583,7 +583,7 @@ class RobotClient(Endpoint):
 
     # CONFIG
     CONNECT_TIMEOUT = 30
-    RECONNECT_TIMEOUT = 10
+    RECONNECT_TIMEOUT = 0 # TODO: For now remove the possibility of reconnecting
 
     def __init__(self, reactor, masterIP, masterPort, commPort, extIP, extPort,
                  loader, converter):

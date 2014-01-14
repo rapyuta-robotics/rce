@@ -206,6 +206,7 @@ class _Settings(object):
         self._external_port = None
         self._comm_port = None
         self._ros_proxy_port = None
+        self._web_ui_port = None
 
         # Converters
         self._converters = None
@@ -326,6 +327,13 @@ class _Settings(object):
         return self._ros_proxy_port
 
     @property
+    def web_ui_port(self):
+        """ Port on which the Master process is listening for external
+            HTTP request from the Web User Interface.
+        """
+        return self._web_ui_port
+
+    @property
     def converters(self):
         """ List of custom message converters which are used in the Robot
             processes.
@@ -428,6 +436,7 @@ class _Settings(object):
         settings._external_port = parser.getint('comm', 'external_port')
         settings._comm_port = parser.getint('comm', 'comm_port')
         settings._ros_proxy_port = parser.getint('comm', 'ros_proxy_port')
+        settings._web_ui_port = parser.getint('comm', 'web_ui_port')
 
         # Converters
         settings._converters = tuple(c for _, c in parser.items('converters'))

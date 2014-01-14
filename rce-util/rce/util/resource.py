@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#     rce-core/rce-master
+#     rce-util/rce/util/resource.py
 #
 #     This file is part of the RoboEarth Cloud Engine framework.
 #
@@ -12,7 +12,7 @@
 #     the European Union Seventh Framework Programme FP7/2007-2013 under
 #     grant agreement no248942 RoboEarth.
 #
-#     Copyright 2013 RoboEarth
+#     Copyright 2014 RoboEarth
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -30,23 +30,22 @@
 #
 #
 
-# twisted specific imports
-from twisted.internet import reactor
+# Python specific imports
+import os.path
+import sys
 
-# rce specific imports
-from rce.master import main
-from rce.util.cred import RCECredChecker, RCEInternalChecker
-from rce.util.settings import getSettings
-settings = getSettings()
 
-if __name__ == '__main__':
-    print("\nConnection Details:\n")
-    print("Internal IP Address: {0}".format(settings.internal_IP))
-    print("Global IP Address:   {0}\n".format(settings.external_IP))
+def getModulePath(module):
+    """ Borrowed from https://wiki.python.org/moin/Distutils/Tutorial
+        which in turn borrowed from wxglade.py
+    """
+    try:
+        root = module.__file__
+    except AttributeError:
+        print("Module is missing the attribute '__file__'")
+        sys.exit(1)
 
-    # Credentials checkers used in the cloud engine
-    extCred = RCECredChecker(settings.pw_file)
-    intCred = RCEInternalChecker(extCred)
+    if os.path.islink(root):
+        root = os.path.realpath(root)
 
-    main(reactor, intCred, extCred, settings.internal_port, settings.http_port,
-         settings.comm_port, settings.external_port, settings.web_ui_port)
+    return os.path.dirname(os.path.abspath(root))

@@ -41,7 +41,12 @@ from zope.interface import implements
 from twisted.python import log
 from twisted.cred.portal import IRealm, Portal
 from twisted.spread.pb import IPerspective, PBServerFactory
+from twisted.web.resource import IResource
+#from twisted.web.guard import HTTPAuthSessionWrapper, DigestCredentialFactory
 from twisted.web.server import Site
+
+# Autobahn specific imports
+from autobahn.websocket import listenWS
 
 # rce specific imports
 from rce.util.error import InternalError
@@ -54,10 +59,11 @@ from rce.core.network import Network
 from rce.core.environment import EnvironmentEndpoint, EnvironmentEndpointAvatar
 from rce.core.robot import RobotEndpoint, RobotEndpointAvatar
 from rce.core.user import User
+from rce.core.webUI import getRootResource, WebUIFeedFactory
 
 
 class UserRealm(object):
-    """
+    """ TODO: Add doc
     """
     implements(IRealm)
 
@@ -65,11 +71,15 @@ class UserRealm(object):
         self._rce = rce
 
     def requestAvatar(self, avatarId, mind, *interfaces):
-        if IPerspective not in interfaces:
-            raise NotImplementedError('RoboEarthCloudEngine only '
-                                      'handles IPerspective.')
+        user = self._rce.getUser(avatarId)
 
-        return IPerspective, self._rce.getUser(avatarId), lambda: None
+        if IPerspective in interfaces:
+            return IPerspective, user, lambda: None
+
+        if IResource in interfaces:
+            return IResource, getRootResource(), lambda: None
+
+        raise NotImplementedError
 
 
 class RoboEarthCloudEngine(object):
@@ -244,7 +254,7 @@ class RoboEarthCloudEngine(object):
 
 
 def main(reactor, internalCred, externalCred, internalPort, externalPort,
-         commPort, consolePort):
+         commPort, consolePort, httpPort):
     log.startLogging(sys.stdout)
 
     # Realms
@@ -254,15 +264,25 @@ def main(reactor, internalCred, externalCred, internalPort, externalPort,
     internalCred.add_checker(rce.checkUIDValidity)
 
     # Portals
-    rcePortal = Portal(rce, (internalCred,))
-    consolePortal = Portal(user, (externalCred,))
+    endpointPortal = Portal(rce, (internalCred,))
+    userPortal = Portal(user, (externalCred,))
+
+# TODO: Add at some point?
+#    credentialFactory = DigestCredentialFactory('md5', 'Rapyuta')
+#    uiResource = HTTPAuthSessionWrapper(userPortal, (credentialFactory,))
 
     # Internal Communication
-    reactor.listenTCP(internalPort, PBServerFactory(rcePortal))
+    reactor.listenTCP(internalPort, PBServerFactory(endpointPortal))
 
     # Client Connections
-    reactor.listenTCP(consolePort, PBServerFactory(consolePortal))
     reactor.listenTCP(externalPort, Site(RobotResource(rce)))
+    reactor.listenTCP(consolePort, PBServerFactory(userPortal))
+
+    # TODO: For now just assume 'testUser' logs in
+    #reactor.listenTCP(httpPort, Site(uiResource))
+    reactor.listenTCP(httpPort, Site(getRootResource()))
+
+    listenWS(WebUIFeedFactory('ws://localhost:14014', rce.getUser('testUser')))
 
     reactor.addSystemEventTrigger('before', 'shutdown', rce.preShutdown)
     reactor.addSystemEventTrigger('after', 'shutdown', rce.postShutdown)

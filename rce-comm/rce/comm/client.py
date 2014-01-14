@@ -129,7 +129,7 @@ class RCERobotProtocol(WebSocketClientProtocol):
         """ This method is called by twisted when the connection could not be
             initialized.
         """
-        print(reason)
+        print('Handshake failed: {0}'.format(reason))
         WebSocketClientProtocol.failHandshake(self, reason)
 
 
@@ -300,7 +300,8 @@ class RCE(object):
         self._connectedDeferred = deferred
 
         def eb(e):
-            print(e.getErrorMessage())
+            print('Could not get address to valid robot endpoint: '
+                  '{0}'.format(e.getErrorMessage()))
 
             if self._connectedDeferred:
                 self._connectedDeferred.errback(e)

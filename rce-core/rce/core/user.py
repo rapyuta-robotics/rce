@@ -58,9 +58,12 @@ class User(Avatar):
         self._realm = realm
         self._userID = userID
 
-        self.robots = {}
-        self.containers = {}
-        self.connections = {}
+        self._robots = {}
+        self._containers = {}
+        self._connections = {}
+
+        # TODO: Temporary for WebUI!
+        self._listeners = set()
 
     @property
     def realm(self):
@@ -71,26 +74,6 @@ class User(Avatar):
     def userID(self):
         """ User ID of this User. """
         return self._userID
-
-    def registerRobot(self, robot, robotID):
-        """ Create a new Robot Wrapper.
-
-            # TODO: Add description of arguments
-
-            @raise:             rce.core.error.InvalidRequest
-        """
-        try:
-            validateName(robotID)
-        except IllegalName as e:
-            raise InvalidRequest('Robot ID is invalid: {0}'.format(e))
-
-        if (robotID in self.robots or robotID in self.containers):
-            raise InvalidRequest('ID is already used for a container '
-                                 'or robot.')
-
-        robot = Robot(robot)
-        self.robots[robotID] = robot
-        robot.notifyOnDeath(self.robotDied)
 
     def perspective_getUserView(self, console=True):
         """
@@ -104,6 +87,57 @@ class User(Avatar):
         else:
             return {'console': MonitorView(), 'robot': ControlView()}
 
+    def getRobotList(self):
+        """ # TODO: Add doc
+        """
+        return self._robots.keys()
+
+    def getContainerList(self):
+        """ # TODO: Add doc
+        """
+        return self._containers.keys()
+
+    def registerRobot(self, robot, robotID):
+        """ Create a new Robot Wrapper.
+
+            # TODO: Add description of arguments
+
+            @raise:             rce.core.error.InvalidRequest
+        """
+        try:
+            validateName(robotID)
+        except IllegalName as e:
+            raise InvalidRequest('Robot ID is invalid: {0}'.format(e))
+
+        if self.hasEndpoint(robotID):
+            raise InvalidRequest('ID is already used for a container '
+                                 'or robot.')
+
+        robot = Robot(robot)
+        self._robots[robotID] = robot
+        robot.notifyOnDeath(self._robotDied)
+
+        self._updateFeed()
+
+    def registerContainer(self, container, tag):
+        """ # TODO: Add doc
+        """
+        self._containers[tag] = container
+        container.notifyOnDeath(self._containerDied)
+
+        self._updateFeed()
+
+    def registerConnection(self, connection, key):
+        """ # TODO: Add doc
+        """
+        self._connections[key] = connection
+        connection.notifyOnDeath(self._connectionDied)
+
+    def hasEndpoint(self, tag):
+        """ # TODO: Add doc
+        """
+        return tag in self._containers or tag in self._robots
+
     def getEndpoint(self, tag):
         """ Get an endpoint of the user matching the given tag.
 
@@ -114,49 +148,106 @@ class User(Avatar):
             @return:            Endpoint which was requested.
             @rtype:             rce.core.network.Endpoint
 
-            @raise:             rce.core.error.InvalidRequest
+            @raise:             KeyError
         """
-        if tag in self.robots:
-            return self.robots[tag]
-        elif tag in self.containers:
-            return self.containers[tag]
+        if tag in self._robots:
+            return self._robots[tag]
+        elif tag in self._containers:
+            return self._containers[tag]
         else:
-            raise InvalidRequest('Can not get a non existent endpoint '
-                                 "'{0}'.".format(tag))
+            raise KeyError(tag)
 
-    def containerDied(self, container):
+    def getRobot(self, robotID):
+        """ # TODO: Add doc
+
+            @raise:             KeyError
+        """
+        return self._robots[robotID]
+
+    def getContainer(self, tag):
+        """ # TODO: Add doc
+
+            @raise:             KeyError
+        """
+        return self._containers[tag]
+
+    def popContainer(self, tag):
+        """ # TODO: Add doc
+
+            @raise:             KeyError
+        """
+        container = self._containers.pop(tag)
+        container.dontNotifyOnDeath(self._containerDied)
+        return container
+
+    def hasConnection(self, key):
+        """ # TODO: Add doc
+        """
+        return key in self._connections
+
+    def popConnection(self, key):
+        """ # TODO: Add doc
+
+            @raise:             KeyError
+        """
+        connection = self._connections.pop(key)
+        connection.dontNotifyOnDeath(self._connectionDied)
+        return connection
+
+    def registerListener(self, listener):
+        """ TODO: Temporary for WebUI!
+        """
+        self._listeners.add(listener)
+        listener.feedUpdate({'robot' : self._robots.keys(),
+                             'container' : self._containers.keys()})
+
+    def unregisterListener(self, listener):
+        """ TODO: Temporary for WebUI!
+        """
+        self._listeners.discard(listener)
+
+    def _updateFeed(self):
+        """ TODO: Temporary for WebUI!
+        """
+        for listener in self._listeners:
+            listener.feedUpdate({'robot' : self._robots.keys(),
+                                 'container' : self._containers.keys()})
+
+    def _containerDied(self, container):
         """ Callback which is used to inform the user of the death of a
             container.
         """
-        if self.containers:
-            for uid, candidate in self.containers.iteritems():
+        if self._containers:
+            for uid, candidate in self._containers.iteritems():
                 if candidate == container:
-                    del self.containers[uid]
+                    del self._containers[uid]
+                    self._updateFeed()
                     break
         else:
             print('Received notification for dead Container, '
                   'but User is already destroyed.')
 
-    def robotDied(self, robot):
+    def _robotDied(self, robot):
         """ Callback which is used to inform the user of the death of a robot.
         """
-        if self.robots:
-            for uid, candidate in self.robots.iteritems():
+        if self._robots:
+            for uid, candidate in self._robots.iteritems():
                 if candidate == robot:
-                    del self.robots[uid]
+                    del self._robots[uid]
+                    self._updateFeed()
                     break
         else:
             print('Received notification for dead Robot, '
                   'but User is already destroyed.')
 
-    def connectionDied(self, connection):
+    def _connectionDied(self, connection):
         """ Callback which is used to inform the user of the death of a
             connection.
         """
-        if self.connections:
-            for uid, candidate in self.connections.iteritems():
+        if self._connections:
+            for uid, candidate in self._connections.iteritems():
                 if candidate == connection:
-                    del self.connections[uid]
+                    del self._connections[uid]
                     break
         else:
             print('Received notification for dead Connection, '
@@ -167,21 +258,21 @@ class User(Avatar):
             destroying all objects owned by this User as well as deleting all
             circular references.
         """
-        for connection in self.connections.itervalues():
-            connection.dontNotifyOnDeath(self.connectionDied)
+        for connection in self._connections.itervalues():
+            connection.dontNotifyOnDeath(self._connectionDied)
 
-        for container in self.containers.itervalues():
-            container.dontNotifyOnDeath(self.containerDied)
+        for container in self._containers.itervalues():
+            container.dontNotifyOnDeath(self._containerDied)
 
-        for robot in self.robots.itervalues():
-            robot.dontNotifyOnDeath(self.robotDied)
+        for robot in self._robots.itervalues():
+            robot.dontNotifyOnDeath(self._robotDied)
 
-        for container in self.containers.itervalues():
+        for container in self._containers.itervalues():
             container.destroy()
 
-        for robot in self.robots.itervalues():
+        for robot in self._robots.itervalues():
             robot.destroy()
 
-        self.connections = None
-        self.containers = None
-        self.robots = None
+        self._connections = None
+        self._containers = None
+        self._robots = None

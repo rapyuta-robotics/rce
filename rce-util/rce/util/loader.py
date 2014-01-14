@@ -77,6 +77,7 @@ except ImportError:
     print('Make sure they are installed and the ROS Environment is setup.')
     exit(1)
 
+
 class ResourceNotFound(Exception):
     """ Exception is raised by the Loader when a resource can not be found.
     """

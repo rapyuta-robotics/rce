@@ -38,14 +38,7 @@ import shutil
 from random import choice
 from string import letters
 
-try:
-    import pkg_resources
-except ImportError:
-    print("Can not import the package 'pkg_resources'.")
-    exit(1)
-
 pjoin = os.path.join
-load_resource = pkg_resources.resource_string  #@UndefinedVariable
 
 try:
     import iptc
@@ -61,12 +54,14 @@ from twisted.spread.pb import Referenceable, PBClientFactory, \
     DeadReferenceError, PBConnectionLost
 
 # rce specific imports
+import rce.core
+from rce.core.error import MaxNumberExceeded
 from rce.util.error import InternalError
 from rce.util.container import Container
 from rce.util.cred import salter, encodeAES, cipher
 from rce.util.network import isLocalhost
 from rce.util.process import execute
-from rce.core.error import MaxNumberExceeded
+from rce.util.resource import getModulePath
 # from rce.util.ssl import createKeyCertPair, loadCertFile, loadKeyFile, \
 #    writeCertToFile, writeKeyToFile
 
@@ -75,10 +70,19 @@ from rce.core.error import MaxNumberExceeded
 randomString = lambda length: ''.join(choice(letters) for _ in xrange(length))
 
 
-_UPSTART_COMM = load_resource('rce.core', 'data/comm.upstart')
+# Helper function to load resources
+def _loadResource(name):
+    with open(pjoin(getModulePath(rce.core), 'data', name), 'r') as res:
+        return res.read()
+
+
+_UPSTART_COMM = _loadResource('comm.upstart')
 # _UPSTART_LAUNCHER = load_resource('rce.core', 'data/launcher.upstart')
-_UPSTART_ROSAPI = load_resource('rce.core', 'data/rosapi.upstart')
-_LXC_NETWORK_SCRIPT = load_resource('rce.core', 'data/lxc-network.script')
+_UPSTART_ROSAPI = _loadResource('rosapi.upstart')
+_LXC_NETWORK_SCRIPT = _loadResource('lxc-network.script')
+
+
+del _loadResource
 
 
 def passthrough(f):

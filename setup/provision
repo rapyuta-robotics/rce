@@ -241,7 +241,8 @@ def provision_config(config, config_file, deploy_type):
             'internal_port':8080,
             'external_port':8081,
             'comm_port':10030,
-            'ros_proxy_port':9020
+            'ros_proxy_port':9020,
+            'web_ui_port':9999
         },
         'machine':{
             'size':10,

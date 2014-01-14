@@ -45,6 +45,11 @@ from rce.core.wrapper import Container
 from rce.slave.interface import Types
 
 
+# Helper function to generate commutative key generator for connections
+_connectionKeyGen = lambda tagA, tagB: (int(md5(tagA).hexdigest(), 16)
+                                        ^ int(md5(tagB).hexdigest(), 16))
+
+
 class ControlView(Viewable):
     """ View implementing all control actions which a user can perform to
         interact with the cloud engine.
@@ -67,15 +72,13 @@ class ControlView(Viewable):
         except IllegalName as e:
             raise InvalidRequest('Container tag is invalid: {0}'.format(e))
 
-        if tag in user.containers or tag in user.robots:
+        if user.hasEndpoint(tag):
             raise InvalidRequest('Tag is already used for a container '
                                  'or robot.')
 
-        namespace, remote_container = user.realm.createContainer(user.userID,
-                                                                 data)
-        container = Container(namespace, remote_container)
-        user.containers[tag] = container
-        container.notifyOnDeath(user.containerDied)
+        namespace, remote_container = user._realm.createContainer(user.userID,
+                                                                  data)
+        user.registerContainer(Container(namespace, remote_container), tag)
 
         m = 'Container {0} successfully created.'.format(tag)
         d = DeferredList([namespace(), remote_container()],
@@ -93,11 +96,10 @@ class ControlView(Viewable):
             @type  tag:         str
         """
         try:
-            container = user.containers.pop(tag)
+            container = user.popContainer(tag)
         except KeyError:
             raise InvalidRequest('Can not destroy non existent container.')
 
-        container.dontNotifyOnDeath(user.containerDied)
         container.destroy()
 
         # TODO: Return some info about success/failure of request
@@ -140,7 +142,7 @@ class ControlView(Viewable):
             @type  namespace:   str
         """
         try:
-            user.containers[cTag].addNode(nTag, pkg, exe, args, name, namespace)
+            user.getContainer(cTag).addNode(nTag, pkg, exe, args, name, namespace)
         except KeyError:
             raise InvalidRequest('Can not add Node, because Container {0} '
                                  'does not exist.'.format(cTag))
@@ -163,7 +165,7 @@ class ControlView(Viewable):
             @type  nTag:        str
         """
         try:
-            user.containers[cTag].removeNode(nTag)
+            user.getContainer(cTag).removeNode(nTag)
         except KeyError:
             raise InvalidRequest('Can not remove Node, because Container {0} '
                                  'does not exist.'.format(cTag))
@@ -192,7 +194,7 @@ class ControlView(Viewable):
             @type  value:       str, int, float, bool, list
         """
         try:
-            user.containers[cTag].addParameter(name, value)
+            user.getContainer(cTag).addParameter(name, value)
         except KeyError:
             raise InvalidRequest('Can not add Parameter, because Container '
                                  '{0} does not exist.'.format(cTag))
@@ -214,7 +216,7 @@ class ControlView(Viewable):
             @type  name:        str
         """
         try:
-            user.containers[cTag].removeParameter(name)
+            user.getContainer(cTag).removeParameter(name)
         except KeyError:
             raise InvalidRequest('Can not remove Parameter, because Container '
                                  '{0} does not exist.'.format(cTag))
@@ -258,13 +260,13 @@ class ControlView(Viewable):
         """
         if iType.endswith('Converter') or iType.endswith('Forwarder'):
             try:
-                user.robots[eTag].addInterface(iTag, iType, clsName)
+                user.getRobot(eTag).addInterface(iTag, iType, clsName)
             except KeyError:
                 raise InvalidRequest('Can not add Interface, because Robot '
                                      '{0} does not exist.'.format(eTag))
         elif iType.endswith('Interface'):
             try:
-                user.containers[eTag].addInterface(iTag, iType, clsName, addr)
+                user.getContainer(eTag).addInterface(iTag, iType, clsName, addr)
             except KeyError:
                 raise InvalidRequest('Can not add Interface, because '
                                      'Container {0} does not '
@@ -290,7 +292,11 @@ class ControlView(Viewable):
                                 which should be removed.
             @type  iTag:        str
         """
-        user.getEndpoint(eTag).removeInterface(iTag)
+        try:
+            user.getEndpoint(eTag).removeInterface(iTag)
+        except KeyError:
+            raise InvalidRequest('Can not remove interface from non existent '
+                                 "endpoint '{0}'.".format(eTag))
 
         # TODO: Return some info about success/failure of request
 
@@ -311,8 +317,12 @@ class ControlView(Viewable):
         eTagA, iTagA = tagA.split('/', 2)
         eTagB, iTagB = tagB.split('/', 2)
 
-        ifA = user.getEndpoint(eTagA).getInterface(iTagA)
-        ifB = user.getEndpoint(eTagB).getInterface(iTagB)
+        try:
+            ifA = user.getEndpoint(eTagA).getInterface(iTagA)
+            ifB = user.getEndpoint(eTagB).getInterface(iTagB)
+        except KeyError as e:
+            raise InvalidRequest('Can not connect interfaces from non existent '
+                                 "endpoint '{0}'.".format(e))
 
         if ifA.clsName != ifB.clsName:
             raise InvalidRequest('Can not connect two interfaces with '
@@ -324,14 +334,12 @@ class ControlView(Viewable):
                                  '{1}.'.format(Types.decode(ifA.iType),
                                                Types.decode(ifB.iType)))
 
-        key = int(md5(tagA).hexdigest(), 16) ^ int(md5(tagB).hexdigest(), 16)
+        key = _connectionKeyGen(tagA, tagB)
 
-        if key in user.connections:
+        if user.hasConnection(key):
             raise InvalidRequest('Can not add the same connection twice.')
 
-        connection = user.realm.createConnection(ifA.obj, ifB.obj)
-        user.connections[key] = connection
-        connection.notifyOnDeath(user.connectionDied)
+        user.registerConnection(user._realm.createConnection(ifA.obj, ifB.obj), key)
 
         # TODO: Return some info about success/failure of request
 
@@ -349,15 +357,14 @@ class ControlView(Viewable):
                                     testRobot/logPublisher
             @type  tagX:        str
         """
-        key = int(md5(tagA).hexdigest(), 16) ^ int(md5(tagB).hexdigest(), 16)
+        key = _connectionKeyGen(tagA, tagB)
 
         try:
-            connection = user.connections.pop(key)
+            connection = self.popConnection(key)
         except KeyError:
-                raise InvalidRequest('Can not disconnect two unconnected '
-                                     'interfaces.')
+            raise InvalidRequest('Can not disconnect two unconnected '
+                                 'interfaces.')
 
-        connection.dontNotifyOnDeath(user.connectionDied)
         connection.destroy()
 
         # TODO: Return some info about success/failure of request
@@ -380,7 +387,7 @@ class MonitorView(Viewable):
             @param old_pw:      Old password
             @type  old_pw:      str
         """
-        user.realm._checker.passwd(user.userID, new_pw, old_pw)
+        user._realm._checker.passwd(user.userID, new_pw, old_pw)
 
     def view_list_containers(self, user):
         """ Remote call to list containers under the logged-in user.
@@ -393,7 +400,7 @@ class MonitorView(Viewable):
                                 containers.
             @rtype:             [ str ]
         """
-        return user.containers.keys()
+        return user.getContainerList()
 
     def view_list_robots(self, user):
         """ List Robots under the logged in user.
@@ -405,7 +412,7 @@ class MonitorView(Viewable):
             @return:            List of the robot IDs of connected robots.
             @rtype:             [ str ]
         """
-        return user.robots.keys()
+        return user.getRobotList()
 
     def view_get_rosapi_connect_info(self, user, tag):
         """ Remote call to get ROSAPI request URL and key for a particular
@@ -425,7 +432,7 @@ class MonitorView(Viewable):
             @rtype:             twisted.internet.defer.Deferred
         """
         try:
-            container = user.containers[tag]
+            container = user.getContainer(tag)
         except KeyError:
             raise InvalidRequest('Container {0} does not exist.'.format(tag))
 
@@ -443,7 +450,7 @@ class AdminMonitorView(Viewable):
     def view_list_machines(self, user):
         """ Remote call to list machine IPs.
         """
-        return [machine.IP for machine in user.realm._balancer._machines]
+        return [machine.IP for machine in user._realm._balancer._machines]
 
     def view_machine_containers(self, user, machineIP):
         """ Remote call to list containers in a machine with given IP.
@@ -461,7 +468,7 @@ class AdminMonitorView(Viewable):
         # TODO: Can not return rce.master.container.Container instances need
         #       some conversion into string, tuple, or some other base type
         try:
-            return (machine for machine in user.realm._balancer._machines
+            return (machine for machine in user._realm._balancer._machines
                     if machineIP == machine.IP).next()._containers
         except StopIteration:
             raise InvalidRequest('No such machine.')
@@ -480,7 +487,7 @@ class AdminMonitorView(Viewable):
             @rtype:             { str : int }
         """
         try:
-            machine = (machine for machine in user.realm._balancer._machines
+            machine = (machine for machine in user._realm._balancer._machines
                        if machineIP == machine.IP).next()
             return {'active':machine.active, 'size':machine.size}
         except StopIteration:
@@ -497,7 +504,7 @@ class AdminMonitorView(Viewable):
             @return:            List of the user IDs of logged-in users.
             @rtype:             [ str ]
         """
-        return user.realm._users.keys()
+        return user._realm._users.keys()
 
     def view_add_user(self, user, username, password):
         """ Remote call to add user.
@@ -511,7 +518,7 @@ class AdminMonitorView(Viewable):
             @param password:    The password of the new user.
             @type  password:    str
         """
-        user.realm._checker.addUser(username, password)
+        user._realm._checker.addUser(username, password)
 
     def view_remove_user(self, user, username):
         """ Remote call to remove user.
@@ -523,7 +530,7 @@ class AdminMonitorView(Viewable):
                                 removed.
             @type  username:    str
         """
-        user.realm._checker.removeUser(username)
+        user._realm._checker.removeUser(username)
 
     def view_update_user(self, user, username, password):
         """ Remote call to edit user information.
@@ -539,7 +546,7 @@ class AdminMonitorView(Viewable):
                                 updated.
             @type  password:    str
         """
-        user.realm._checker.passwd(username, password, True)
+        user._realm._checker.passwd(username, password, True)
 
     def view_list_containers_by_user(self, user, userID):
         """ Remote call to list containers under a given user.
@@ -552,7 +559,7 @@ class AdminMonitorView(Viewable):
                                 containers should be listed.
             @type  userID:      str
         """
-        return user._realm.getUser(userID).containers.keys()
+        return user._realm.getUser(userID).getContainerList()
 
     def view_list_robots_by_user(self, user, userID):
         """ List robots under the user specified.
@@ -565,4 +572,4 @@ class AdminMonitorView(Viewable):
                                 should be listed.
             @type  userID:      str
         """
-        return user._realm.getUser(userID).robots.keys()
+        return user._realm.getUser(userID).getRobotList()
