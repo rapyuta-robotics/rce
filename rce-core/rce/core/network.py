@@ -845,15 +845,12 @@ class EndpointConnection(object):
                                 communication server.
             @rtype:             twisted.internet.address.IPv4Address
         """
-        ((serverReady, a), (clientReady, b)) = result
+        ((serverReady, _), (clientReady, _)) = result
 
         if not (serverReady and clientReady):
             # There was a problem in making the server/client ready for the
             # connection attempt
             # TODO: What should we do here?
-            print 'Connection Authentication failed: ', a
-            print 'Connection Authentication failed: ', b
-
             return Failure(InternalError('Server/Client could not be prepared '
                                          'for connection attempt.'))
 
