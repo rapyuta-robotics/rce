@@ -67,14 +67,31 @@ function onError(canvas, context, event) {
 function draw(canvas, context, endpoints) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.strokeStyle = "#88bce7";
-    context.strokeRect(100, (canvas.height - BAR_H) / 2, canvas.width - 200, BAR_H);
+    context.beginPath();
+
+    context.strokeStyle = "#0075bf";
+    context.lineWidth = 2;
+
+    var y = canvas.height / 2 + 20.5;
+
+    for (var x = 0; x < canvas.width; x += 20) {
+        context.moveTo(x, y);
+        context.lineTo(x + 12, y);
+    }
+
+    context.stroke();
 
     context.font = "20px sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
+
+    context.fillStyle = "#000000";
+    context.fillText("Amazon Ireland", canvas.width / 2, 12);
+    context.fillText("Eindhoven", canvas.width / 2, canvas.height - 12);
+
+    context.textAlign = "left"
     context.fillStyle = "#0075bf";
-    context.fillText("RoboEarth Cloud Engine", canvas.width / 2, canvas.height / 2);
+    context.fillText("RoboEarth Cloud Engine", 12, canvas.height / 2);
 
     drawContainers(canvas, context, endpoints.container);
     drawRobots(canvas, context, endpoints.robot);
