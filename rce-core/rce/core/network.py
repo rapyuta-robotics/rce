@@ -1062,7 +1062,7 @@ class Connection(object):
             take care deleting all circular references.
         """
         if self._cbs:
-            for cb in self._cbs:
+            for cb in self._cbs.copy():
                 cb(self)
 
             self._cbs = None

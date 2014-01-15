@@ -159,7 +159,7 @@ class Proxy(object):
             @type  cb:          callable
         """
         try:
-            self.__cbs.remove(cb)
+            self.__cbs.discard(cb)
         except AttributeError:
             pass
 
@@ -266,3 +266,80 @@ class Proxy(object):
     def __disconnected(self, _):
         self.__notify(Failure(DeadReferenceError('Broker is disconnected.')))
         self.__obj = None
+
+
+class MonitoredDict(dict):
+    """ # TODO: Add doc
+    """
+    def __init__(self, *args, **kw):
+        dict.__init__(self, *args, **kw)
+
+        self._addListener = None
+        self._removeListener = None
+
+    def clear(self):
+        if self._removeListener:
+            copy = self.copy()
+
+        dict.clear(self)
+
+        if self._removeListener:
+            for key, value in copy.iteritems():
+                self._removeListener(key, value)
+
+    def pop(self, key):
+        value = dict.pop(self, key)
+
+        if self._removeListener:
+            self._removeListener(key, value)
+
+        return value
+
+    def popitem(self):
+        key, value = dict.popitem(self)
+
+        if self._removeListener:
+            self._removeListener(key, value)
+
+        return key, value
+
+    def __setitem__(self, key, value):
+        dict.__setitem__(self, key, value)
+
+        if self._addListener:
+            self._addListener(key, value)
+
+    def __delitem__(self, key):
+        if self._removeListener:
+            value = self[key]
+
+        dict.__delitem__(self, key)
+
+        if self._removeListener:
+            self._removeListener(key, value)
+
+    @property
+    def addListener(self):
+        """ # TODO: Add doc
+        """
+        return self._addListener
+
+    @addListener.setter
+    def addListener(self, listener):
+        if listener is not None and not callable(listener):
+            raise AttributeError
+
+        self._addListener = listener
+
+    @property
+    def removeListener(self):
+        """ # TODO: Add doc
+        """
+        return self._removeListener
+
+    @removeListener.setter
+    def removeListener(self, listener):
+        if listener is not None and not callable(listener):
+            raise AttributeError
+
+        self._removeListener = listener

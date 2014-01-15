@@ -36,50 +36,9 @@ from twisted.spread.pb import Avatar
 # rce specific imports
 from rce.util.name import validateName, IllegalName
 from rce.core.error import InvalidRequest
+from rce.core.base import MonitoredDict
 from rce.core.view import MonitorView, AdminMonitorView, ControlView
 from rce.core.wrapper import Robot
-
-
-class MonitoredDict(dict):
-    def __init__(self, *args, **kw):
-        dict.__init__(self, *args, **kw)
-
-        self._addListener = None
-        self._removeListener = None
-
-    def __setitem__(self, key, value):
-        if self._addListener:
-            self._addListener(key, value)
-
-        dict.__setitem__(self, key, value)
-
-    def __delitem__(self, key):
-        if self._removeListener:
-            self._removeListener(key, self[key])
-
-        dict.__delitem__(self, key)
-
-    @property
-    def additionListener(self):
-        return self._addListener
-
-    @additionListener.setter
-    def additionListener(self, listener):
-        if listener is not None and not callable(listener):
-            raise AttributeError
-
-        self._addListener = listener
-
-    @property
-    def removeListener(self):
-        return self._removeListener
-
-    @removeListener.setter
-    def removeListener(self, listener):
-        if listener is not None and not callable(listener):
-            raise AttributeError
-
-        self._removeListener = listener
 
 
 class User(Avatar):
@@ -100,21 +59,20 @@ class User(Avatar):
         self._realm = realm
         self._userID = userID
 
+        self._listeners = set()
+
         self.robots = MonitoredDict()
         self.containers = MonitoredDict()
         self.connections = MonitoredDict()
 
-        self.robots.additionListener = self._addRobot
-        self.robots.removalListener = self._removeRobot
+        self.robots.addListener = self._addRobot
+        self.robots.removeListener = self._removeRobot
 
-        self.containers.additionListener = self._addContainer
-        self.containers.removalListener = self._removeContainer
+        self.containers.addListener = self._addContainer
+        self.containers.removeListener = self._removeContainer
 
-        self.connections.additionListener = self._addConnection
-        self.connections.removalListener = self._removeConnection
-
-        # TODO: Temporary for WebUI!
-        self._listeners = set()
+        self.connections.addListener = self._addConnection
+        self.connections.removeListener = self._removeConnection
 
     @property
     def realm(self):
@@ -136,7 +94,7 @@ class User(Avatar):
         elif not console:
             return ControlView()
         else:
-            return {'console': MonitorView(), 'robot': ControlView()}
+            return {'console' : MonitorView(), 'robot' : ControlView()}
 
     def registerRobot(self, robot, robotID):
         """ Create a new Robot Wrapper.
@@ -176,6 +134,25 @@ class User(Avatar):
             raise InvalidRequest('Can not get a non existent endpoint '
                                  "'{0}'.".format(tag))
 
+    def registerListener(self, listener):
+        """ TODO: Add doc
+        """
+        self._listeners.add(listener)
+        self._updateListener(listener)
+
+    def unregisterListener(self, listener):
+        """ TODO: Add doc
+        """
+        self._listeners.discard(listener)
+
+    def _updateListener(self, listener):
+        listener.feedUpdate({'robot' : {k : [] for k in self.robots.iterkeys()},
+                             'container' : {k : v.nodes.keys() for k, v in self.containers.iteritems()}})
+
+    def _publishUpdate(self):
+        for listener in self._listeners:
+            self._updateListener(listener)
+
     def _addRobot(self, tag, robot):
         robot.notifyOnDeath(self._robotDied)
         self._publishUpdate()
@@ -184,59 +161,7 @@ class User(Avatar):
         robot.dontNotifyOnDeath(self._robotDied)
         self._publishUpdate()
 
-    def _addContainer(self, tag, container):
-        container.notifyOnDeath(self._containerDied)
-        self._publishUpdate()
-
-    def _removeContainer(self, tag, container):
-        container.dontNotifyOnDeath(self._containerDied)
-        self._publishUpdate()
-
-    def _addConnection(self, tag, connection):
-        connection.notifyOnDeath(self._connectionDied)
-        self._publishUpdate()
-
-    def _removeConnection(self, tag, connection):
-        connection.dontNotifyOnDeath(self._connectionDied)
-        self._publishUpdate()
-
-    def registerListener(self, listener):
-        """ TODO: Temporary for WebUI!
-        """
-        self._listeners.add(listener)
-        self._updateListener(listener)
-
-    def unregisterListener(self, listener):
-        """ TODO: Temporary for WebUI!
-        """
-        self._listeners.discard(listener)
-
-    def _updateListener(self, listener):
-        listener.feedUpdate({'robot' : self.robots.keys(),
-                             'container' : self.containers.keys()})
-
-    def _publishUpdate(self):
-        for listener in self._listeners:
-            self._updateListener(listener)
-
-    def _containerDied(self, container):
-        """ Callback which is used to inform the user of the death of a
-            container.
-        """
-        if self.containers:
-            for uid, candidate in self.containers.iteritems():
-                if candidate == container:
-                    del self.containers[uid]
-                    break
-            else:
-                print('Received notification for non existent Container.')
-        else:
-            print('Received notification for dead Container, '
-                  'but User is already destroyed.')
-
     def _robotDied(self, robot):
-        """ Callback which is used to inform the user of the death of a robot.
-        """
         if self.robots:
             for uid, candidate in self.robots.iteritems():
                 if candidate == robot:
@@ -248,10 +173,33 @@ class User(Avatar):
             print('Received notification for dead Robot, '
                   'but User is already destroyed.')
 
+    def _addContainer(self, tag, container):
+        container.notifyOnDeath(self._containerDied)
+        self._publishUpdate()
+
+    def _removeContainer(self, tag, container):
+        container.dontNotifyOnDeath(self._containerDied)
+        self._publishUpdate()
+
+    def _containerDied(self, container):
+        if self.containers:
+            for uid, candidate in self.containers.iteritems():
+                if candidate == container:
+                    del self.containers[uid]
+                    break
+            else:
+                print('Received notification for non existent Container.')
+        else:
+            print('Received notification for dead Container, '
+                  'but User is already destroyed.')
+
+    def _addConnection(self, tag, connection):
+        connection.notifyOnDeath(self._connectionDied)
+
+    def _removeConnection(self, tag, connection):
+        connection.dontNotifyOnDeath(self._connectionDied)
+
     def _connectionDied(self, connection):
-        """ Callback which is used to inform the user of the death of a
-            connection.
-        """
         if self.connections:
             for uid, candidate in self.connections.iteritems():
                 if candidate == connection:

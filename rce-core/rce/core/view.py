@@ -78,7 +78,11 @@ class ControlView(Viewable):
 
         namespace, remote_container = user.realm.createContainer(user.userID,
                                                                  data)
-        user.containers[tag] = Container(namespace, remote_container)
+        container = Container(namespace, remote_container)
+
+        # FIXME: Hack to get node changes
+        container.nodeChangeListener = user._publishUpdate
+        user.containers[tag] = container
 
         m = 'Container {0} successfully created.'.format(tag)
         d = DeferredList([namespace(), remote_container()],
@@ -96,11 +100,9 @@ class ControlView(Viewable):
             @type  tag:         str
         """
         try:
-            container = user.containers.pop(tag)
+            user.containers.pop(tag).destroy()
         except KeyError:
             raise InvalidRequest('Can not destroy non existent container.')
-
-        container.destroy()
 
         # TODO: Return some info about success/failure of request
 
@@ -353,15 +355,11 @@ class ControlView(Viewable):
                                     testRobot/logPublisher
             @type  tagX:        str
         """
-        key = _connectionKeyGen(tagA, tagB)
-
         try:
-            connection = user.connections.pop(key)
+            user.connections.pop(_connectionKeyGen(tagA, tagB)).destroy()
         except KeyError:
             raise InvalidRequest('Can not disconnect two unconnected '
                                  'interfaces.')
-
-        connection.destroy()
 
         # TODO: Return some info about success/failure of request
 

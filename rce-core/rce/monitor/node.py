@@ -57,12 +57,16 @@ class NodeProtocol(ProcessProtocol):
         self._out = open(out, 'w')
         self._err = open(err, 'w')
 
-        # Overwrite method from base class
-        self.outReceived = self._out.write
-        self.errReceived = self._err.write
-
     def connectionMade(self):
         self._monitor.started()
+
+    def outReceived(self, data):
+        self._out.write(data)
+        self._out.flush()
+
+    def errReceived(self, data):
+        self._err.write(data)
+        self._err.flush()
 
     def processEnded(self, reason):
         self._monitor.stopped(reason.value.exitCode)

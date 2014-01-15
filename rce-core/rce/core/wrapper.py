@@ -33,6 +33,7 @@
 # rce specific imports
 from rce.util.name import validateName, IllegalName
 from rce.core.error import InvalidRequest, AlreadyDead
+from rce.core.base import MonitoredDict
 from rce.slave.interface import Types
 
 
@@ -79,12 +80,12 @@ class _Wrapper(object):
             @type  cb:          callable
         """
         try:
-            self._cbs.remove(cb)
+            self._cbs.discard(cb)
         except AttributeError:
             pass
 
     def _selfDied(self, _):
-        for cb in self._cbs:
+        for cb in self._cbs.copy():
             cb(self)
 
         self._cbs = None
@@ -109,7 +110,10 @@ class Robot(_Wrapper):
         """
         super(Robot, self).__init__(namespace)
 
-        self._interfaces = {}
+        self.interfaces = MonitoredDict()
+
+        self.interfaces.addListener = self._addInterface
+        self.interfaces.removeListener = self._removeInterface
 
     def getConnectInfo(self):
         """ Get the information necessary to the robot to establish a WebSocket
@@ -149,7 +153,7 @@ class Robot(_Wrapper):
         except IllegalName as e:
             raise InvalidRequest('Interface tag is invalid: {0}'.format(e))
 
-        if iTag in self._interfaces:
+        if iTag in self.interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "
                                  'in the same robot twice.'.format(iTag))
 
@@ -159,9 +163,7 @@ class Robot(_Wrapper):
             raise InvalidRequest('Interface type is invalid.')
 
         interface = self._obj.createInterface(iType, clsName, iTag)
-        interface = Interface(interface, iType, clsName)
-        self._interfaces[iTag] = interface
-        interface.notifyOnDeath(self._interfaceDied)
+        self.interfaces[iTag] = Interface(interface, iType, clsName)
 
     def removeInterface(self, iTag):
         """ Remove an interface from the Robot object.
@@ -171,7 +173,7 @@ class Robot(_Wrapper):
             @type  iTag:        str
         """
         try:
-            self._interfaces.pop(iTag).destroy()
+            self.interfaces.pop(iTag).destroy()
         except KeyError:
             raise InvalidRequest('Can not remove a non existent interface '
                                  "'{0}' from the robot.".format(iTag))
@@ -187,17 +189,25 @@ class Robot(_Wrapper):
             @rtype:             rce.core.user.Interface
         """
         try:
-            return self._interfaces[iTag]
+            return self.interfaces[iTag]
         except KeyError:
             raise InvalidRequest('Can not get a non existent interface '
                                  "'{0}' from the robot.".format(iTag))
 
+    def _addInterface(self, iTag, interface):
+        interface.notifyOnDeath(self._interfaceDied)
+
+    def _removeInterface(self, iTag, interface):
+        interface.dontNotifyOnDeath(self._interfaceDied)
+
     def _interfaceDied(self, interface):
-        if self._interfaces:
-            for key, value in self._interfaces.iteritems():
+        if self.interfaces:
+            for key, value in self.interfaces.iteritems():
                 if value == interface:
-                    del self._interfaces[key]
+                    del self.interfaces[key]
                     break
+            else:
+                print('Received notification for non existent Interface.')
         else:
             print('Received notification for dead Interface, '
                   'but Robot is already destroyed.')
@@ -207,10 +217,10 @@ class Robot(_Wrapper):
             destroying all objects owned by this Robot as well as deleting all
             circular references.
         """
-        for interface in self._interfaces.itervalues():
+        for interface in self.interfaces.itervalues():
             interface.dontNotifyOnDeath(self._interfaceDied)
 
-        self._interfaces = None
+        self.interfaces = None
 
         super(Robot, self).destroy()
 
@@ -234,9 +244,21 @@ class Container(_Wrapper):
         self._container = container
         container.notifyOnDeath(self._containerDied)
 
-        self._nodes = {}
-        self._parameters = {}
-        self._interfaces = {}
+        self.nodes = MonitoredDict()
+        self.parameters = MonitoredDict()
+        self.interfaces = MonitoredDict()
+
+        self.nodes.addListener = self._addNode
+        self.nodes.removeListener = self._removeNode
+
+        self.parameters.addListener = self._addParameter
+        self.parameters.removeListener = self._removeParameter
+
+        self.interfaces.addListener = self._addInterface
+        self.interfaces.removeListener = self._removeInterface
+
+        # FIXME: Hack to get node changes
+        self.nodeChangeListener = None
 
     def addNode(self, nTag, pkg, exe, args, name, namespace):
         """ Add a node to the ROS environment inside the container.
@@ -270,13 +292,15 @@ class Container(_Wrapper):
         except IllegalName:
             raise InvalidRequest('Node tag is not a valid.')
 
-        if nTag in self._nodes:
+        if nTag in self.nodes:
             raise InvalidRequest("Can not use the same node tag '{0}' in the "
                                  'same container twice.'.format(nTag))
 
-        node = self._obj.createNode(pkg, exe, args, name, namespace)
-        self._nodes[nTag] = node
-        node.notifyOnDeath(self._nodeDied)
+        self.nodes[nTag] = self._obj.createNode(pkg, exe, args, name, namespace)
+
+        # FIXME: Hack to get node changes
+        if self.nodeChangeListener is not None and callable(self.nodeChangeListener):
+            self.nodeChangeListener()
 
     def removeNode(self, nTag):
         """ Remove a node from the ROS environment inside the container.
@@ -286,10 +310,14 @@ class Container(_Wrapper):
             @type  nTag:        str
         """
         try:
-            self._nodes.pop(nTag).destroy()
+            self.nodes.pop(nTag).destroy()
         except KeyError:
             raise InvalidRequest('Can not remove a non existent node '
                                  "'{0}' from the container.".format(nTag))
+
+        # FIXME: Hack to get node changes
+        if self.nodeChangeListener is not None and callable(self.nodeChangeListener):
+            self.nodeChangeListener()
 
     def addParameter(self, name, value):
         """ Add a parameter to the ROS environment inside the container.
@@ -305,13 +333,11 @@ class Container(_Wrapper):
         if not name:
             raise InvalidRequest('Parameter name is not a valid.')
 
-        if name in self._parameters:
+        if name in self.parameters:
             raise InvalidRequest("Can not use the same parameter name '{0}' "
                                  'in the same container twice.'.format(name))
 
-        parameter = self._obj.createParameter(name, value)
-        self._parameters[name] = parameter
-        parameter.notifyOnDeath(self._parameterDied)
+        self.parameters[name] = self._obj.createParameter(name, value)
 
     def removeParameter(self, name):
         """ Remove a parameter from the ROS environment inside the container.
@@ -320,7 +346,7 @@ class Container(_Wrapper):
             @type  name:        str
         """
         try:
-            self._parameters.pop(name).destroy()
+            self.parameters.pop(name).destroy()
         except KeyError:
             raise InvalidRequest('Can not remove a non existent node '
                                  "'{0}' from the container.".format(name))
@@ -354,7 +380,7 @@ class Container(_Wrapper):
         except IllegalName:
             raise InvalidRequest('Interface tag is not a valid.')
 
-        if iTag in self._interfaces:
+        if iTag in self.interfaces:
             raise InvalidRequest("Can not use the same interface tag '{0}' "
                                  'in the same container twice.'.format(iTag))
 
@@ -364,9 +390,7 @@ class Container(_Wrapper):
             raise InvalidRequest('Interface type is invalid (Unknown prefix).')
 
         interface = self._obj.createInterface(iType, clsName, addr)
-        interface = Interface(interface, iType, clsName)
-        self._interfaces[iTag] = interface
-        interface.notifyOnDeath(self._interfaceDied)
+        self.interfaces[iTag] = Interface(interface, iType, clsName)
 
     def removeInterface(self, iTag):
         """ Remove an interface from the ROS environment inside the container.
@@ -376,7 +400,7 @@ class Container(_Wrapper):
             @type  iTag:        str
         """
         try:
-            self._interfaces.pop(iTag).destroy()
+            self.interfaces.pop(iTag).destroy()
         except KeyError:
             raise InvalidRequest('Can not remove a non existent interface '
                                  "'{0}' from the container.".format(iTag))
@@ -392,7 +416,7 @@ class Container(_Wrapper):
             @rtype:             rce.core.user.Interface
         """
         try:
-            return self._interfaces[iTag]
+            return self.interfaces[iTag]
         except KeyError:
             raise InvalidRequest('Can not get a non existent interface '
                                  "'{0}' from the container.".format(iTag))
@@ -415,32 +439,56 @@ class Container(_Wrapper):
             print('Received notification for dead Container, '
                   'but Container is already destroyed.')
 
+    def _addNode(self, tag, node):
+        node.notifyOnDeath(self._nodeDied)
+
+    def _removeNode(self, tag, node):
+        node.dontNotifyOnDeath(self._nodeDied)
+
     def _nodeDied(self, node):
         if self._nodes:
             for key, value in self._nodes.iteritems():
                 if value == node:
                     del self._nodes[key]
                     break
+            else:
+                print('Received notification for non existent Node.')
         else:
             print('Received notification for dead Node, '
                   'but Container is already destroyed.')
 
+    def _addParameter(self, name, parameter):
+        parameter.notifyOnDeath(self._parameterDied)
+
+    def _removeParameter(self, name, parameter):
+        parameter.dontNotifyOnDeath(self._parameterDied)
+
     def _parameterDied(self, parameter):
-        if self._parameters:
-            for key, value in self._parameters.iteritems():
+        if self.parameters:
+            for key, value in self.parameters.iteritems():
                 if value == parameter:
-                    del self._parameters[key]
+                    del self.parameters[key]
                     break
+            else:
+                print('Received notification for non existent Parameter.')
         else:
             print('Received notification for dead Parameter, '
                   'but Container is already destroyed.')
 
+    def _addInterface(self, iTag, interface):
+        interface.notifyOnDeath(self._interfaceDied)
+
+    def _removeInterface(self, iTag, interface):
+        interface.dontNotifyOnDeath(self._interfaceDied)
+
     def _interfaceDied(self, interface):
-        if self._interfaces:
-            for key, value in self._interfaces.iteritems():
+        if self.interfaces:
+            for key, value in self.interfaces.iteritems():
                 if value == interface:
-                    del self._interfaces[key]
+                    del self.interfaces[key]
                     break
+            else:
+                print('Received notification for non existent Interface.')
         else:
             print('Received notification for dead Interface, '
                   'but Container is already destroyed.')
@@ -450,18 +498,18 @@ class Container(_Wrapper):
             of destroying all objects owned by this Container as well as
             deleting all circular references.
         """
-        for node in self._nodes.itervalues():
+        for node in self.nodes.itervalues():
             node.dontNotifyOnDeath(self._nodeDied)
 
-        for parameter in self._parameters.itervalues():
+        for parameter in self.parameters.itervalues():
             parameter.dontNotifyOnDeath(self._parameterDied)
 
-        for interface in self._interfaces.itervalues():
+        for interface in self.interfaces.itervalues():
             interface.dontNotifyOnDeath(self._interfaceDied)
 
-        self._nodes = None
-        self._parameters = None
-        self._interfaces = None
+        self.nodes = None
+        self.parameters = None
+        self.interfaces = None
 
         if self._container:
             self._container.dontNotifyOnDeath(self._containerDied)
