@@ -104,7 +104,7 @@ class Endpoint(Referenceable):
     def unregisterNamespace(self, namespace):
         assert namespace in self._namespaces
         self._namespaces.remove(namespace)
-        self.referenceDied('namespaceDied', namespace)
+        self.informMaster('namespaceDied', namespace)
 
     def remote_getLoopback(self):
         """ Get the loopback protocol.
@@ -215,9 +215,9 @@ class Endpoint(Referenceable):
     def unregisterProtocol(self, protocol):
         assert protocol in self._protocols
         self._protocols.remove(protocol)
-        self.referenceDied('protocolDied', protocol)
+        self.informMaster('protocolDied', protocol)
 
-    def referenceDied(self, method, reference):
+    def informMaster(self, method, *args):
         """ Internally used method to inform the Master process that a remote
             referenced object has died.
         """
@@ -226,7 +226,7 @@ class Endpoint(Referenceable):
                 log.err(failure)
 
         try:
-            self._avatar.callRemote(method, reference).addErrback(eb)
+            self._avatar.callRemote(method, *args).addErrback(eb)
         except (DeadReferenceError, PBConnectionLost):
             pass
 

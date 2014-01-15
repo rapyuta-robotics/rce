@@ -292,6 +292,9 @@ class Interface(Referenceable):
             log.msg('Received message dropped, because interface does not '
                     'expected the message.')
 
+        # FIXME: Hack to get traffic info
+        self._owner._trafficOut += len(msg)
+
         self._send(msg, msgID, protocol, remoteID)
 
     def received(self, msg, msgID):
@@ -306,6 +309,9 @@ class Interface(Referenceable):
                                 message.
             @type  msgID:       str
         """
+        # FIXME: Hack to get traffic info
+        self._owner._trafficIn += len(msg)
+
         for protocol in self._protocols:
             protocol.sendMessage(self, msg, msgID)
 

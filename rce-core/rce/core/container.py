@@ -42,7 +42,7 @@ from rce.util.error import InternalError
 class Container(Proxy):
     """ Representation of an LXC container.
     """
-    def __init__(self, data, userID, group, ip):
+    def __init__(self, data, userID, cTag, group, ip):
         """ Initialize the Container.
 
             @param data:        Extra data used to configure the container.
@@ -51,12 +51,15 @@ class Container(Proxy):
             @param userID:      ID of the user who created the container.
             @type  userID:      str
 
+            @param cTag:        # FIXME: Hack to get traffic info to User
+
             # TODO: Add doc
         """
         super(Container, self).__init__()
 
         self._machine = None
         self._userID = userID
+        self._cTag = cTag
         self._group = group
         self._ip = ip
 

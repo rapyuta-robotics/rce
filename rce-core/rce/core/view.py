@@ -77,11 +77,11 @@ class ControlView(Viewable):
                                  'or robot.')
 
         namespace, remote_container = user.realm.createContainer(user.userID,
-                                                                 data)
+                                                                 tag, data)
         container = Container(namespace, remote_container)
 
         # FIXME: Hack to get node changes
-        container.nodeChangeListener = user._publishUpdate
+        container.changeListener = user._publishUpdate
         user.containers[tag] = container
 
         m = 'Container {0} successfully created.'.format(tag)

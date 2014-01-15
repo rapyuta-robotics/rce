@@ -115,6 +115,23 @@ class Robot(_Wrapper):
         self.interfaces.addListener = self._addInterface
         self.interfaces.removeListener = self._removeInterface
 
+        # FIXME: Hack to get node changes
+        self._changeListener = None
+
+        # FIXME: Hack to get traffic info to the User
+        self.trafficInfo = (0, 0)
+
+    @property
+    def changeListener(self):
+        return self._changeListener
+
+    @changeListener.setter
+    def changeListener(self, listener):
+        if listener is not None and not callable(listener):
+            raise AttributeError
+
+        self._changeListener = listener
+
     def getConnectInfo(self):
         """ Get the information necessary to the robot to establish a WebSocket
             connection.
@@ -194,6 +211,13 @@ class Robot(_Wrapper):
             raise InvalidRequest('Can not get a non existent interface '
                                  "'{0}' from the robot.".format(iTag))
 
+    # FIXME: Hack to get traffic info to the User
+    def updateTrafficInfo(self, trafficInfo):
+        self.trafficInfo = trafficInfo
+
+        if self._changeListener:
+            self._changeListener()
+
     def _addInterface(self, iTag, interface):
         interface.notifyOnDeath(self._interfaceDied)
 
@@ -258,7 +282,21 @@ class Container(_Wrapper):
         self.interfaces.removeListener = self._removeInterface
 
         # FIXME: Hack to get node changes
-        self.nodeChangeListener = None
+        self._changeListener = None
+
+        # FIXME: Hack to get traffic info to the User
+        self.trafficInfo = (0, 0)
+
+    @property
+    def changeListener(self):
+        return self._changeListener
+
+    @changeListener.setter
+    def changeListener(self, listener):
+        if listener is not None and not callable(listener):
+            raise AttributeError
+
+        self._changeListener = listener
 
     def addNode(self, nTag, pkg, exe, args, name, namespace):
         """ Add a node to the ROS environment inside the container.
@@ -299,8 +337,8 @@ class Container(_Wrapper):
         self.nodes[nTag] = self._obj.createNode(pkg, exe, args, name, namespace)
 
         # FIXME: Hack to get node changes
-        if self.nodeChangeListener is not None and callable(self.nodeChangeListener):
-            self.nodeChangeListener()
+        if self._changeListener:
+            self._changeListener()
 
     def removeNode(self, nTag):
         """ Remove a node from the ROS environment inside the container.
@@ -316,8 +354,8 @@ class Container(_Wrapper):
                                  "'{0}' from the container.".format(nTag))
 
         # FIXME: Hack to get node changes
-        if self.nodeChangeListener is not None and callable(self.nodeChangeListener):
-            self.nodeChangeListener()
+        if self._changeListener:
+            self._changeListener()
 
     def addParameter(self, name, value):
         """ Add a parameter to the ROS environment inside the container.
@@ -430,6 +468,13 @@ class Container(_Wrapper):
                                                             addr.port + 2000))
         return d
 
+    # FIXME: Hack to get traffic info to the User
+    def updateTrafficInfo(self, trafficInfo):
+        self.trafficInfo = trafficInfo
+
+        if self._changeListener:
+            self._changeListener()
+
     def _containerDied(self, container):
         if self._container:
             assert container == self._container
@@ -446,10 +491,10 @@ class Container(_Wrapper):
         node.dontNotifyOnDeath(self._nodeDied)
 
     def _nodeDied(self, node):
-        if self._nodes:
-            for key, value in self._nodes.iteritems():
+        if self.nodes:
+            for key, value in self.nodes.iteritems():
                 if value == node:
-                    del self._nodes[key]
+                    del self.nodes[key]
                     break
             else:
                 print('Received notification for non existent Node.')

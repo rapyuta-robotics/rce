@@ -83,7 +83,7 @@ class Environment(Namespace):
     def unregisterNode(self, node):
         assert node in self._nodes
         self._nodes.remove(node)
-        self._endpoint.referenceDied('nodeDied', node)
+        self._endpoint.informMaster('nodeDied', node)
 
     def registerParameter(self, parameter):
         assert parameter not in self._parameters
@@ -92,7 +92,7 @@ class Environment(Namespace):
     def unregisterParameter(self, parameter):
         assert parameter in self._parameters
         self._parameters.remove(parameter)
-        self._endpoint.referenceDied('parameterDied', parameter)
+        self._endpoint.informMaster('parameterDied', parameter)
 
     def remote_createNode(self, pkg, exe, args, name, namespace):
         """ Create a Node object in the environment namespace and

@@ -155,6 +155,22 @@ class RobotEndpoint(Endpoint):
 class RobotEndpointAvatar(EndpointAvatar):
     """ Avatar for internal PB connection form a Robot Endpoint.
     """
+    def __init__(self, realm, endpoint):
+        """ Initialize the Endpoint avatar.
+
+            @param realm:       User realm from which a user object can be
+                                retrieved.
+            @type  realm:       # TODO: Check this
+
+            @param endpoint:    Representation of the Endpoint.
+            @type  endpoint:    rce.core.network.Endpoint
+        """
+        self._realm = realm
+        self._endpoint = endpoint
+
+        # FIXME: Hack to get traffic info to the User
+        self._robots = {}
+
     def perspective_setupNamespace(self, remoteRobot, userID, robotID):
         """ Register a Robot namespace with the Master process.
 
@@ -176,3 +192,17 @@ class RobotEndpointAvatar(EndpointAvatar):
         except InvalidRequest:
             robot.destroy()
             raise
+
+        self._robots[remoteRobot] = user.robots[robotID]
+
+    # FIXME: Hack to get traffic info to the User
+    def perspective_namespaceDied(self, remoteRobot):
+        del self._robots[remoteRobot]
+        EndpointAvatar.perspective_namespaceDied(self, remoteRobot)
+
+    # FIXME: Hack to get traffic info to the User
+    def perspective_updateTrafficInfo(self, remoteNamespace, trafficInfo):
+        try:
+            self._robots[remoteNamespace].updateTrafficInfo(trafficInfo)
+        except KeyError:
+            pass

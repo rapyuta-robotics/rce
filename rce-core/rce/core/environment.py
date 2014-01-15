@@ -220,7 +220,7 @@ class EnvironmentEndpoint(Endpoint):
             @param network:     Network to which the endpoint belongs.
             @type  network:     rce.core.network.Network
 
-            @param container:   Container in which the enpoint is living.
+            @param container:   Container in which the endpoint is living.
             @type  container:   rce.core.container.Container
         """
         super(EnvironmentEndpoint, self).__init__(network)
@@ -337,3 +337,10 @@ class EnvironmentEndpointAvatar(EndpointAvatar):
             @type  remoteParam: twisted.spread.pb.RemoteReference
         """
         self._endpoint.destroyParameter(remoteParameter)
+
+    # FIXME: Hack to get traffic info to the User
+    def perspective_updateTrafficInfo(self, remoteNamespace, trafficInfo):
+        try:
+            self._realm.getUser(self._endpoint._container._userID).containers[self._endpoint._container._cTag].updateTrafficInfo(trafficInfo)
+        except AttributeError as e:
+            print(str(e))

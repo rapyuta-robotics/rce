@@ -184,12 +184,14 @@ class RoboEarthCloudEngine(object):
 
         return location.getWebsocketAddress()
 
-    def createContainer(self, userID, data):
+    def createContainer(self, userID, cTag, data):
         """ Callback for User instance to create a new Container object in a
             container process.
 
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
+
+            @param cTag:        # FIXME: Hack to get traffic info to User
 
             @param data:        Extra data which is used to configure the
                                 container.
@@ -207,7 +209,7 @@ class RoboEarthCloudEngine(object):
                 break
 
         try:
-            container = self._balancer.createContainer(uid, userID, data)
+            container = self._balancer.createContainer(uid, userID, cTag, data)
         except ContainerProcessError:
             # TODO: What should we do here?
             raise InternalError('Container can not be created.')

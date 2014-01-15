@@ -435,15 +435,6 @@ class EndpointAvatar(Avatar):
         self._realm = realm  # Required in subclass
         self._endpoint = endpoint
 
-    def perspective_setupNamespace(self, remoteNamespace):
-        """ Register a namespace with the Master process.
-
-            @param remoteNamespace: Reference to the Namesapce in the slave
-                                    process.
-            @type  remoteNamespace: twisted.spread.pb.RemoteReference
-        """
-        raise NotImplementedError
-
     def perspective_interfaceDied(self, remoteInterface):
         """ Notify that a remote interface died.
 
@@ -470,6 +461,10 @@ class EndpointAvatar(Avatar):
             @type  remoteNamespace: twisted.spread.pb.RemoteReference
         """
         self._endpoint.destroyNamespace(remoteNamespace)
+
+    # FIXME: Hack to get traffic info to the User
+    def perspective_updateTrafficInfo(self, remoteNamespace, trafficInfo):
+        raise NotImplementedError
 
     def logout(self):
         """ Callback which should be called upon disconnection of the Endpoint.

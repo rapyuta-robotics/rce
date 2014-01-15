@@ -233,7 +233,7 @@ class Proxy(object):
             self.__pending = None
 
         # fire all callbacks to notify of the proxy's death
-        for cb in self.__cbs:
+        for cb in self.__cbs.copy():
             cb(self)
 
         self.__cbs = None

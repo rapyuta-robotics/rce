@@ -112,7 +112,10 @@ class User(Avatar):
             raise InvalidRequest('ID is already used for a container '
                                  'or robot.')
 
-        self.robots[robotID] = Robot(robot)
+        # FIXME: Hack to get traffic info
+        wrapped = Robot(robot)
+        wrapped.changeListener = self._publishUpdate
+        self.robots[robotID] = wrapped
 
     def getEndpoint(self, tag):
         """ Get an endpoint of the user matching the given tag.
@@ -146,8 +149,8 @@ class User(Avatar):
         self._listeners.discard(listener)
 
     def _updateListener(self, listener):
-        listener.feedUpdate({'robot' : {k : [] for k in self.robots.iterkeys()},
-                             'container' : {k : v.nodes.keys() for k, v in self.containers.iteritems()}})
+        listener.feedUpdate({'robot' : [(k, v.trafficInfo) for k, v in self.robots.iteritems()],
+                             'container' : [(k, v.trafficInfo, v.nodes.keys()) for k, v in self.containers.iteritems()]})
 
     def _publishUpdate(self):
         for listener in self._listeners:

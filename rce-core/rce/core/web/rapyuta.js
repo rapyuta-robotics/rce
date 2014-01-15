@@ -1,3 +1,27 @@
+var FONT_SIZE = 16; // has to be divisible by 2!
+
+// Middle bar
+var BAR_H = 80;
+
+// Endpoint
+var EP_W = 250;
+var EP_H = 100;
+var BORDER = 5;
+var X_OFFSET = 15; // has to be divisible by 3!
+var X_MARGIN = 3; // space between line end & text begin
+
+// Traffic arrows
+var ARROW_H = 80;
+var ARROWHEAD_H = 20;
+
+var X_TEXT = BORDER + X_OFFSET;
+var X_START = BORDER + X_OFFSET / 3 + 0.5;
+var X_END = X_TEXT - X_MARGIN;
+
+var Y_START = BORDER + FONT_SIZE / 2;
+var Y_CONTAINER_NODE_INCREMENT = FONT_SIZE / 2 + 0.5;
+var Y_NODE_NODE_INCREMENT = FONT_SIZE;
+
 function run() {
     var canvas = document.getElementById("rapyuta");
 
@@ -5,97 +29,209 @@ function run() {
         var context = canvas.getContext("2d");
 
         websocket = new WebSocket("ws://" + window.location.hostname + ":14014");
-        websocket.onopen = function(event) { onOpen(canvas, context, event) };
+
         websocket.onclose = function(event) { onClose(canvas, context, event) };
         websocket.onmessage = function(event) { onMessage(canvas, context, event) };
         websocket.onerror = function(event) { onError(canvas, context, event) };
     }
 }
 
-function onOpen(canvas, context, event) {
-    console.log("WebSocket opened");
-}
-
 function onClose(canvas, context, event) {
-    console.log("WebSocket closed");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = "20px sans-serif";
+    context.fillStyle = "#ff0000";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText("disconnected", canvas.width / 2, canvas.height / 2);
 }
 
 function onMessage(canvas, context, event) {
-    console.log("WebSocket message received");
+    console.log("message received");
     draw(canvas, context, JSON.parse(event.data));
 }
 
 function onError(canvas, context, event) {
-    console.log("WebSocket ERROR!");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = "20px bold sans-serif";
+    context.fillStyle = "#ff0000";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText("ERROR", canvas.width / 2, canvas.height / 2);
 }
 
 function draw(canvas, context, endpoints) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = "#88bce7";
-    context.fillRect(100, (canvas.height / 2) - 20, canvas.width - 200, 40);
+    context.strokeStyle = "#88bce7";
+    context.strokeRect(100, (canvas.height - BAR_H) / 2, canvas.width - 200, BAR_H);
 
-    context.font = "16px sans-serif";
+    context.font = "20px sans-serif";
     context.fillStyle = "#0075bf";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText("RoboEarth Cloud Engine", canvas.width / 2, canvas.height / 2);
 
-    drawEPs(canvas, context, endpoints.container, canvas.height / 4);
-    drawEPs(canvas, context, endpoints.robot, 3 * canvas.height / 4);
+    drawContainers(canvas, context, endpoints.container);
+    drawRobots(canvas, context, endpoints.robot);
 }
 
-function drawEPs(canvas, context, endpoints, y) {
-    var EP_W = 150;
-    var EP_H = 100;
+function drawContainers(canvas, context, containers) {
+    var numContainers = containers.length;
 
-    var endpointsLength = Object.keys(endpoints).length;
+    var x = (canvas.width - numContainers * EP_W) / (numContainers + 1);
+    var y = 3 * canvas.height / 16 - EP_H / 2;
 
-    console.log(endpointsLength);
+    var y_traffic = ((canvas.height - BAR_H) / 2 - (y + EP_H)) / 2 + EP_H;
 
-    var x = (canvas.width - endpointsLength * EP_W) / (endpointsLength + 1);
-    var inc = x + EP_W;
+    var increment = x + EP_W;
 
-    for(var cTag in endpoints){
-        if (endpoints.hasOwnProperty(cTag)) {
-            var nodes = endpoints[cTag];
-            var nodesLength = nodes.length;
+    for (var i = 0; i < numContainers; ++i, x += increment) {
+        var container = containers[i]
+        var nodes = container[2];
+        var numNodes = nodes.length;
 
-            context.save();
+        context.save();
+        context.translate(x, y);
 
-            context.translate(x, y - EP_H / 2);
+        context.font = FONT_SIZE + "px sans-serif";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
 
-            context.fillStyle = "#0075bf";
-            context.fillRect(0, 0, EP_W, EP_H);
+        context.fillStyle = "#0075bf";
+        context.fillRect(0, 0, EP_W, EP_H);
 
-            context.font = "12px sans-serif";
-            context.strokeStyle = context.fillStyle = "#ffffff";
-            context.textAlign = "left";
-            context.textBaseline = "middle";
+        context.fillStyle = "#202020";
+        context.fillText("Virtual Machine " + i, EP_W / 2, -Y_START);
 
-            context.beginPath();
+        var yi = Y_START;
 
-            context.fillText(cTag, 5, 10);
+        context.textAlign = "left";
+        context.strokeStyle = context.fillStyle = "#ffffff";
+        context.beginPath();
+        context.fillText(container[0], BORDER, yi);
 
-            for (var i = 0; i < nodesLength; ++i) {
+        yi += Y_CONTAINER_NODE_INCREMENT;
 
-                if (i == 0) {
-                    context.moveTo(10, 17);
-                } else {
-                    context.moveTo(10, 10 + i * 15);
-                }
+        for (var j = 0; j < numNodes; ++j) {
+            context.moveTo(X_START, yi + 0.5); // '+' == one pixel margin
 
-                context.lineTo(10, 25 + i * 15);
-                context.lineTo(17, 25 + i * 15);
-
-                context.fillText(nodes[i], 20, 25 + i * 15);
+            if (j == 0) {
+                yi += Y_NODE_NODE_INCREMENT / 2;
+            } else {
+                yi += Y_NODE_NODE_INCREMENT;
             }
 
-            context.stroke();
-
-            context.restore();
-
-            x += inc;
+            context.lineTo(X_START, yi);
+            context.lineTo(X_END, yi);
+            context.fillText(nodes[j], X_TEXT, yi);
         }
+
+        context.stroke();
+
+        context.save();
+        context.translate(EP_W / 2, y_traffic);
+
+        context.font = FONT_SIZE + "px sans-serif";
+        context.textBaseline = "middle";
+
+        context.strokeStyle = context.fillStyle = "#00cc00";
+        drawArrow(context, 1);
+        context.textAlign = "left";
+        context.fillText(formatBandwidth(container[1][0]), 40, 0);
+
+        context.strokeStyle = context.fillStyle = "#cc0000";
+        drawArrow(context, -1);
+        context.textAlign = "right";
+        context.fillText(formatBandwidth(container[1][1]), -40, 0);
+
+        context.restore();
+
+        context.restore();
+    }
+}
+
+function drawRobots(canvas, context, robots) {
+    var numRobots = robots.length;
+
+    var x = (canvas.width - numRobots * EP_W) / (numRobots + 1);
+    var y = 13 * canvas.height / 16 - EP_H / 2;
+
+    var y_traffic = (y - (canvas.height + BAR_H) / 2) / 2;
+
+    var inc = x + EP_W;
+
+    for (var i = 0; i < numRobots; ++i) {
+        var robot = robots[i];
+
+        context.save();
+        context.translate(x + i * inc, y);
+
+        context.font = FONT_SIZE + "px sans-serif";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+
+        context.fillStyle = "#88bce7";
+        context.fillRect(0, 0, EP_W, EP_H);
+
+        context.fillStyle = "#202020";
+        context.fillText("Robot Client " + i, EP_W / 2, EP_H + Y_START);
+
+        context.fillStyle = "#000000";
+        context.fillText(robot[0], EP_W / 2, EP_H / 2);
+
+        context.save();
+        context.translate(EP_W / 2, -y_traffic);
+
+        context.font = FONT_SIZE + "px sans-serif";
+        context.textBaseline = "middle";
+
+        context.strokeStyle = context.fillStyle = "#00cc00";
+        drawArrow(context, -1);
+        context.textAlign = "right";
+        context.fillText(formatBandwidth(robot[1][0]), -40, 0);
+
+        context.strokeStyle = context.fillStyle = "#cc0000";
+        drawArrow(context, 1);
+        context.textAlign = "left";
+        context.fillText(formatBandwidth(robot[1][1]), 40, 0);
+
+        context.restore();
+
+        context.restore();
+    }
+}
+
+function drawArrow(context, sign) {
+        context.save();
+        context.translate(sign * 15, 0);
+
+        context.beginPath();
+        context.moveTo(-5, -sign * 35);
+        context.lineTo(-5, sign * 10);
+        context.lineTo(-15, sign * 10);
+        context.lineTo(0, sign * 35);
+        context.lineTo(15, sign * 10);
+        context.lineTo(5, sign * 10);
+        context.lineTo(5, -sign * 35);
+        context.lineTo(-5, -sign * 35);
+        context.stroke();
+
+        context.restore();
+}
+
+function formatBandwidth(bw) {
+    var ending;
+
+    if (bw / 1000 > 1) {
+        bw = bw / 1000;
+        ending = " kB/s";
+    } else {
+        ending = " B/s";
+    }
+
+    if (bw / 10 < 1) {
+        return bw.toFixed(2) + ending;
+    } else {
+        return bw.toFixed(1) + ending;
     }
 }

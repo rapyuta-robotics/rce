@@ -152,7 +152,7 @@ class LoadBalancer(object):
 
         machine.destroy()
 
-    def _createContainer(self, data, userID):
+    def _createContainer(self, data, userID, cTag):
         """ # TODO: Add doc
         """
         name = data.pop('group', None)
@@ -175,7 +175,7 @@ class LoadBalancer(object):
             # There is no group, i.e. 'special' group required
             group = self._empty
 
-        return group.createContainer(data, userID)
+        return group.createContainer(data, userID, cTag)
 
     def _getMachine(self, container):
         """ Internally used method to assign a machine to the container which
@@ -219,7 +219,7 @@ class LoadBalancer(object):
         else:
             return max(machines, key=lambda m: m.availability)
 
-    def createContainer(self, uid, userID, data):
+    def createContainer(self, uid, userID, cTag, data):
         """ Select an appropriate machine and create a container.
 
             @param uid:         Unique ID which is used to identify the
@@ -230,13 +230,15 @@ class LoadBalancer(object):
             @param userID:      UserID of the user who created the container.
             @type  userID:      str
 
+            @param cTag:        # FIXME: Hack to get traffic info to User
+
             @param data:        Extra data used to configure the container.
             @type  data:        dict
 
             @return:            New Container instance.
             @rtype:             rce.core.container.Container
         """
-        container = self._createContainer(data, userID)
+        container = self._createContainer(data, userID, cTag)
         self._getMachine(container).assignContainer(container, uid)
         return container
 
@@ -510,8 +512,10 @@ class EmptyNetworkGroup(object):
         """ Name of the network group. """
         return None
 
-    def createContainer(self, data, userID):
-        return Container(data, userID, self, None)
+    def createContainer(self, data, userID, cTag):
+        """ @param cTag:        # FIXME: Hack to get traffic info to User
+        """
+        return Container(data, userID, cTag, self, None)
 
     def registerContainer(self, _):
         pass
@@ -541,8 +545,10 @@ class NetworkGroup(object):
         """ Name of the network group. """
         return self._uid
 
-    def createContainer(self, data, userID):
+    def createContainer(self, data, userID, cTag):
         """ # TODO: Add doc
+
+            @param cTag:        # FIXME: Hack to get traffic info to User
         """
         if not self._ips:
             raise InvalidRequest('No more free IP addresses in subnet.')
@@ -566,7 +572,7 @@ class NetworkGroup(object):
         else:
             ip = '{1}.{0}'.format(self._ips.pop(), self._NETWORK_ADDR)
 
-        return Container(data, userID, self, ip)
+        return Container(data, userID, cTag, self, ip)
 
     def registerContainer(self, container):
         assert container not in self._containers

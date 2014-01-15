@@ -31,9 +31,11 @@
 #
 
 # Python specific imports
+import time
 from uuid import UUID
 
 # twisted specific imports
+from twisted.internet.task import LoopingCall
 from twisted.spread.pb import Referenceable
 
 # rce specific imports
@@ -52,6 +54,12 @@ class Namespace(Referenceable):
         self._interfaces = {}
         self._map = {}
 
+        # FIXME: Hack to get traffic info to the User
+        self._trafficIn = 0
+        self._trafficOut = 0
+        self._lastUpdate = None
+        self._trafficInfoUpdater = LoopingCall(self._updateTrafficInfo)
+
     @property
     def reactor(self):
         """ Reference to twisted::reactor. """
@@ -62,7 +70,25 @@ class Namespace(Referenceable):
         """ Reference to ROS components loader. """
         return self._endpoint.loader
 
+    # FIXME: Hack to get traffic info to the User
+    def _updateTrafficInfo(self):
+        now = time.time()
+        delta = now - self._lastUpdate
+        avgIn = self._trafficIn / delta
+        avgOut = self._trafficOut / delta
+
+        self._trafficIn = 0
+        self._trafficOut = 0
+        self._lastUpdate = now
+
+        self._endpoint.informMaster('updateTrafficInfo', self, (avgIn, avgOut))
+
     def registerInterface(self, interface):
+        # FIXME: Hack to get traffic info to the User
+        if not self._interfaces:
+            self._lastUpdate = time.time()
+            self._trafficInfoUpdater.start(1)
+
         addr = interface.addr
 
         assert addr not in self._interfaces
@@ -73,7 +99,12 @@ class Namespace(Referenceable):
 
         assert addr in self._interfaces
         del self._interfaces[addr]
-        self._endpoint.referenceDied('interfaceDied', interface)
+
+        # FIXME: Hack to get traffic info to the User
+        if not self._interfaces:
+            self._trafficInfoUpdater.stop()
+
+        self._endpoint.informMaster('interfaceDied', interface)
 
     def remote_createInterface(self, uid, iType, msgType, addr):
         """ Create an Interface object in the namespace and therefore in
