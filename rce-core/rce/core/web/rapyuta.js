@@ -11,8 +11,10 @@ var X_OFFSET = 15; // has to be divisible by 3!
 var X_MARGIN = 3; // space between line end & text begin
 
 // Traffic arrows
-var ARROW_H = 80;
-var ARROWHEAD_H = 20;
+var ARROW_W = 10;
+var ARROWHEAD_W = 30;
+var ARROW_H = 70;
+var ARROWHEAD_H = 25;
 
 var X_TEXT = BORDER + X_OFFSET;
 var X_START = BORDER + X_OFFSET / 3 + 0.5;
@@ -22,13 +24,17 @@ var Y_START = BORDER + FONT_SIZE / 2;
 var Y_CONTAINER_NODE_INCREMENT = FONT_SIZE / 2 + 0.5;
 var Y_NODE_NODE_INCREMENT = FONT_SIZE;
 
+var X_ARROW = ARROW_W / 2;
+var X_ARROWHEAD = ARROWHEAD_W / 2;
+var Y_ARROW = ARROW_H / 2;
+var Y_ARROWHEAD = Y_ARROW - ARROWHEAD_H;
+
 function run() {
     var canvas = document.getElementById("rapyuta");
 
     if (canvas.getContext){
         var context = canvas.getContext("2d");
-
-        websocket = new WebSocket("ws://" + window.location.hostname + ":14014");
+        var websocket = new WebSocket("ws://" + window.location.hostname + ":14014");
 
         websocket.onclose = function(event) { onClose(canvas, context, event) };
         websocket.onmessage = function(event) { onMessage(canvas, context, event) };
@@ -46,7 +52,6 @@ function onClose(canvas, context, event) {
 }
 
 function onMessage(canvas, context, event) {
-    console.log("message received");
     draw(canvas, context, JSON.parse(event.data));
 }
 
@@ -66,9 +71,9 @@ function draw(canvas, context, endpoints) {
     context.strokeRect(100, (canvas.height - BAR_H) / 2, canvas.width - 200, BAR_H);
 
     context.font = "20px sans-serif";
-    context.fillStyle = "#0075bf";
     context.textAlign = "center";
     context.textBaseline = "middle";
+    context.fillStyle = "#0075bf";
     context.fillText("RoboEarth Cloud Engine", canvas.width / 2, canvas.height / 2);
 
     drawContainers(canvas, context, endpoints.container);
@@ -78,10 +83,9 @@ function draw(canvas, context, endpoints) {
 function drawContainers(canvas, context, containers) {
     var numContainers = containers.length;
 
-    var x = (canvas.width - numContainers * EP_W) / (numContainers + 1);
-    var y = 3 * canvas.height / 16 - EP_H / 2;
-
-    var y_traffic = ((canvas.height - BAR_H) / 2 - (y + EP_H)) / 2 + EP_H;
+    var x = Math.round((canvas.width - numContainers * EP_W) / (numContainers + 1));
+    var y = Math.round(3 * canvas.height / 16 - EP_H / 2);
+    var y_traffic = Math.round(((canvas.height - BAR_H) / 2 - (y + EP_H)) / 2 + EP_H);
 
     var increment = x + EP_W;
 
@@ -89,6 +93,8 @@ function drawContainers(canvas, context, containers) {
         var container = containers[i]
         var nodes = container[2];
         var numNodes = nodes.length;
+
+        var yi = Y_START;
 
         context.save();
         context.translate(x, y);
@@ -102,8 +108,6 @@ function drawContainers(canvas, context, containers) {
 
         context.fillStyle = "#202020";
         context.fillText("Virtual Machine " + i, EP_W / 2, -Y_START);
-
-        var yi = Y_START;
 
         context.textAlign = "left";
         context.strokeStyle = context.fillStyle = "#ffffff";
@@ -137,12 +141,12 @@ function drawContainers(canvas, context, containers) {
         context.strokeStyle = context.fillStyle = "#00cc00";
         drawArrow(context, 1);
         context.textAlign = "left";
-        context.fillText(formatBandwidth(container[1][0]), 40, 0);
+        context.fillText(formatBandwidth(container[1][0]), ARROWHEAD_W + 10, 0);
 
         context.strokeStyle = context.fillStyle = "#cc0000";
         drawArrow(context, -1);
         context.textAlign = "right";
-        context.fillText(formatBandwidth(container[1][1]), -40, 0);
+        context.fillText(formatBandwidth(container[1][1]), -(ARROWHEAD_W + 10), 0);
 
         context.restore();
 
@@ -153,10 +157,9 @@ function drawContainers(canvas, context, containers) {
 function drawRobots(canvas, context, robots) {
     var numRobots = robots.length;
 
-    var x = (canvas.width - numRobots * EP_W) / (numRobots + 1);
-    var y = 13 * canvas.height / 16 - EP_H / 2;
-
-    var y_traffic = (y - (canvas.height + BAR_H) / 2) / 2;
+    var x = Math.round((canvas.width - numRobots * EP_W) / (numRobots + 1));
+    var y = Math.round(13 * canvas.height / 16 - EP_H / 2);
+    var y_traffic = Math.round((y - (canvas.height + BAR_H) / 2) / 2);
 
     var inc = x + EP_W;
 
@@ -188,12 +191,12 @@ function drawRobots(canvas, context, robots) {
         context.strokeStyle = context.fillStyle = "#00cc00";
         drawArrow(context, -1);
         context.textAlign = "right";
-        context.fillText(formatBandwidth(robot[1][0]), -40, 0);
+        context.fillText(formatBandwidth(robot[1][0]), -(ARROWHEAD_W + 10), 0);
 
         context.strokeStyle = context.fillStyle = "#cc0000";
         drawArrow(context, 1);
         context.textAlign = "left";
-        context.fillText(formatBandwidth(robot[1][1]), 40, 0);
+        context.fillText(formatBandwidth(robot[1][1]), ARROWHEAD_W + 10, 0);
 
         context.restore();
 
@@ -203,17 +206,19 @@ function drawRobots(canvas, context, robots) {
 
 function drawArrow(context, sign) {
         context.save();
-        context.translate(sign * 15, 0);
+        context.translate(sign * X_ARROWHEAD, 0);
+        context.lineWidth = 2;
 
         context.beginPath();
-        context.moveTo(-5, -sign * 35);
-        context.lineTo(-5, sign * 10);
-        context.lineTo(-15, sign * 10);
-        context.lineTo(0, sign * 35);
-        context.lineTo(15, sign * 10);
-        context.lineTo(5, sign * 10);
-        context.lineTo(5, -sign * 35);
-        context.lineTo(-5, -sign * 35);
+        context.moveTo(-X_ARROW, -sign * Y_ARROW);
+        context.lineTo(-X_ARROW, sign * Y_ARROWHEAD);
+        context.lineTo(-X_ARROWHEAD, sign * Y_ARROWHEAD);
+        context.lineTo(0, sign * Y_ARROW);
+        context.lineTo(X_ARROWHEAD, sign * Y_ARROWHEAD);
+        context.lineTo(X_ARROW, sign * Y_ARROWHEAD);
+        context.lineTo(X_ARROW, -sign * Y_ARROW);
+        context.lineTo(-X_ARROW, -sign * Y_ARROW);
+
         context.stroke();
 
         context.restore();
