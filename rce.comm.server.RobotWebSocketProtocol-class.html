@@ -59,67 +59,69 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class RobotWebSocketProtocol</h1><p class="nomargin-top"><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_comm_17" name="uml_class_diagram_for_rce_comm_17">
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" title="Called by Twisted when new TCP connection from client was accepted." alt="" coords="79,857,464,876"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" title="Called by Twisted when established TCP connection from client was lost." alt="" coords="79,876,464,895"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key" title="autobahn.websocket.WebSocketServerProtocol.parseHixie76Key" alt="" coords="79,895,464,913"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" title="Process WebSockets opening handshake request from client." alt="" coords="79,913,464,932"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake" title="During opening handshake the client request was invalid, we send a HTTP &#160;error response and then drop the connection." alt="" coords="79,932,464,951"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse" title="Send out HTTP error response." alt="" coords="79,951,464,969"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml" title="Send HTML page HTTP response." alt="" coords="79,969,464,988"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect" title="Send HTTP Redirect (303) response." alt="" coords="79,988,464,1007"/>
-<area shape="rect" id="node142" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus" title="Used to send out server status/version upon receiving a HTTP/GET without &#160;upgrade to WebSocket header (and option serverStatus is True)." alt="" coords="79,1007,464,1025"/>
-<area shape="rect" id="node1" href="autobahn.websocket.WebSocketServerProtocol-class.html" title="A Twisted protocol for WebSockets servers." alt="" coords="67,825,475,1031"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#MSG_QUEUE_TIMEOUT" title="rce.comm.server.RobotWebSocketProtocol.MSG_QUEUE_TIMEOUT" alt="" coords="112,1076,431,1095"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#__implemented__" title="rce.comm.server.RobotWebSocketProtocol.__implemented__" alt="" coords="112,1095,431,1113"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#__init__" title="Initialize the Protocol." alt="" coords="112,1116,431,1135"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#onConnect" title="Method is called by the Autobahn engine when a request to establish a &#160;connection has been received." alt="" coords="112,1135,431,1153"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#processCompleteMessage" title="Process complete messages by calling the appropriate handler for the &#160;manager." alt="" coords="112,1153,431,1172"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#onMessage" title="Method is called by the Autobahn engine when a message has been received &#160;from the client." alt="" coords="112,1172,431,1191"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendMessage" title="Internally used method to send a message to the robot." alt="" coords="112,1191,431,1209"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendDataMessage" title="Callback for Connection object to send a data message to the robot using &#160;this websocket connection." alt="" coords="112,1209,431,1228"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendErrorMessage" title="Callback for Connection object to send an error message to the robot using &#160;this websocket connection." alt="" coords="112,1228,431,1247"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#onClose" title="Method is called by the Autobahn engine when the connection has been lost." alt="" coords="112,1247,431,1265"/>
-<area shape="rect" id="node141" href="rce.comm.server.RobotWebSocketProtocol-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="112,1265,431,1284"/>
-<area shape="rect" id="node3" href="rce.comm.server.RobotWebSocketProtocol-class.html" title="Protocol which is used for the connections from the robots to the robot manager." alt="" coords="100,1051,441,1290"/>
-<area shape="rect" id="node144" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="175,167,368,185"/>
-<area shape="rect" id="node2" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="163,134,379,191"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="WebSockets protocol spec (draft) versions supported by this implementation." alt="" coords="17,236,525,255"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="WebSocket protocol versions supported by this implementation." alt="" coords="17,255,525,273"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Mapping from protocol spec (draft) version to protocol version." alt="" coords="17,273,525,292"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Mapping from protocol version to the latest protocol spec (draft) version &#160;using that protocol version." alt="" coords="17,292,525,311"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Default WebSockets protocol spec version this implementation speaks." alt="" coords="17,311,525,329"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="By default, this implementation will not allow to speak the obsoleted &#160;Hixie&#45;76 protocol version." alt="" coords="17,329,525,348"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Protocol defined magic used during WebSocket handshake (used in Hybi&#45;drafts and final RFC6455." alt="" coords="17,348,525,367"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="For synched/chopped writes, this is the reactor reentry delay in seconds." alt="" coords="17,367,525,385"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="WebSockets text message type (UTF&#45;8 payload)." alt="" coords="17,385,525,404"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="WebSockets binary message type (arbitrary binary payload)." alt="" coords="17,404,525,423"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSED" alt="" coords="17,423,525,441"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CONNECTING" alt="" coords="17,441,525,460"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSING" alt="" coords="17,460,525,479"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Status codes allowed to send in close." alt="" coords="17,497,525,516"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when initial WebSockets handshake was completed." alt="" coords="17,519,525,537"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when receiving a new message has begun." alt="" coords="17,537,525,556"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when receiving a new message frame has begun." alt="" coords="17,556,525,575"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when receiving data witin message frame." alt="" coords="17,575,525,593"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when a message frame has been completely received." alt="" coords="17,593,525,612"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback fired when complete message frame has been received." alt="" coords="17,612,525,631"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when a message has been completely received." alt="" coords="17,631,525,649"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when Ping was received." alt="" coords="17,649,525,668"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when Pong was received." alt="" coords="17,668,525,687"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Callback when a Close frame was received." alt="" coords="17,687,525,705"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="We (a client) expected the peer (a server) to drop the connection, but it &#160;didn&#39;t (in time self.serverConnectionDropTimeout)." alt="" coords="17,705,525,724"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="We expected the peer to complete the opening handshake with to us." alt="" coords="17,724,525,743"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="We expected the peer to respond to us initiating a close handshake." alt="" coords="17,743,525,761"/>
-<area shape="rect" id="node143" href="javascript:void(0);" title="Hybi&#45;Variant of sendMessage()." alt="" coords="17,780,525,799"/>
-<area shape="rect" id="node5" href="javascript:void(0);" title="A Twisted Protocol class for WebSockets." alt="" coords="5,211,536,805"/>
-<area shape="rect" id="node145" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="160,31,383,49"/>
-<area shape="rect" id="node145" href="javascript:void(0);" title="hash(x)" alt="" coords="160,49,383,68"/>
-<area shape="rect" id="node145" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="160,71,383,89"/>
-<area shape="rect" id="node145" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="160,89,383,108"/>
-<area shape="rect" id="node4" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="148,6,393,114"/>
+<center>  <map id="uml_class_diagram_for_rce_comm_18" name="uml_class_diagram_for_rce_comm_18">
+<area shape="rect" id="node1_55" href="rce.comm.server.RobotWebSocketProtocol-class.html#MSG_QUEUE_TIMEOUT" title="rce.comm.server.RobotWebSocketProtocol.MSG_QUEUE_TIMEOUT" alt="" coords="109,1156,435,1176"/>
+<area shape="rect" id="node1_56" href="rce.comm.server.RobotWebSocketProtocol-class.html#__implemented__" title="rce.comm.server.RobotWebSocketProtocol.__implemented__" alt="" coords="109,1176,435,1196"/>
+<area shape="rect" id="node1_57" href="rce.comm.server.RobotWebSocketProtocol-class.html#__init__" title="Initialize the Protocol." alt="" coords="109,1199,435,1219"/>
+<area shape="rect" id="node1_58" href="rce.comm.server.RobotWebSocketProtocol-class.html#onConnect" title="Method is called by the Autobahn engine when a request to establish a &#160;connection has been received." alt="" coords="109,1219,435,1239"/>
+<area shape="rect" id="node1_59" href="rce.comm.server.RobotWebSocketProtocol-class.html#processCompleteMessage" title="Process complete messages by calling the appropriate handler for the &#160;manager." alt="" coords="109,1239,435,1259"/>
+<area shape="rect" id="node1_60" href="rce.comm.server.RobotWebSocketProtocol-class.html#onMessage" title="Method is called by the Autobahn engine when a message has been received &#160;from the client." alt="" coords="109,1259,435,1279"/>
+<area shape="rect" id="node1_61" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendMessage" title="Internally used method to send a message to the robot." alt="" coords="109,1279,435,1299"/>
+<area shape="rect" id="node1_62" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendDataMessage" title="Callback for Connection object to send a data message to the robot using &#160;this WebSocket connection." alt="" coords="109,1299,435,1319"/>
+<area shape="rect" id="node1_63" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendInterfaceStatusUpdateMessage" title="Callback for Connection object to send a interface status message to the &#160;robot using this WebSocket connection." alt="" coords="109,1319,435,1339"/>
+<area shape="rect" id="node1_64" href="rce.comm.server.RobotWebSocketProtocol-class.html#sendErrorMessage" title="Callback for Connection object to send an error message to the robot using &#160;this WebSocket connection." alt="" coords="109,1339,435,1359"/>
+<area shape="rect" id="node1_65" href="rce.comm.server.RobotWebSocketProtocol-class.html#onClose" title="Method is called by the Autobahn engine when the connection has been lost." alt="" coords="109,1359,435,1379"/>
+<area shape="rect" id="node1_66" href="rce.comm.server.RobotWebSocketProtocol-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="109,1379,435,1399"/>
+<area shape="rect" id="node1" href="rce.comm.server.RobotWebSocketProtocol-class.html" title="Protocol which is used for the connections from the robots to the robot manager." alt="" coords="97,1131,447,1405"/>
+<area shape="rect" id="node2_67" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" title="Called by Twisted when new TCP connection from client was accepted." alt="" coords="79,905,464,925"/>
+<area shape="rect" id="node2_68" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" title="Called by Twisted when established TCP connection from client was lost." alt="" coords="79,925,464,945"/>
+<area shape="rect" id="node2_69" href="autobahn.websocket.WebSocketServerProtocol-class.html#processProxyConnect" title="Process proxy connect." alt="" coords="79,945,464,965"/>
+<area shape="rect" id="node2_70" href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key" title="Parse Hixie76 opening handshake key provided by client." alt="" coords="79,965,464,985"/>
+<area shape="rect" id="node2_71" href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" title="Process WebSocket opening handshake request from client." alt="" coords="79,985,464,1005"/>
+<area shape="rect" id="node2_72" href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake" title="During opening handshake the client request was invalid, we send a HTTP &#160;error response and then drop the connection." alt="" coords="79,1005,464,1025"/>
+<area shape="rect" id="node2_73" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse" title="Send out HTTP error response." alt="" coords="79,1025,464,1045"/>
+<area shape="rect" id="node2_74" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml" title="Send HTML page HTTP response." alt="" coords="79,1045,464,1065"/>
+<area shape="rect" id="node2_75" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect" title="Send HTTP Redirect (303) response." alt="" coords="79,1065,464,1085"/>
+<area shape="rect" id="node2_76" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus" title="Used to send out server status/version upon receiving a HTTP/GET without &#160;upgrade to WebSocket header (and option serverStatus is True)." alt="" coords="79,1085,464,1105"/>
+<area shape="rect" id="node2" href="autobahn.websocket.WebSocketServerProtocol-class.html" title="A Twisted protocol for WebSocket servers." alt="" coords="66,872,475,1112"/>
+<area shape="rect" id="node3_77" href="javascript:void(0);" title="WebSocket protocol spec (draft) versions supported by this implementation." alt="" coords="17,244,525,264"/>
+<area shape="rect" id="node3_78" href="javascript:void(0);" title="WebSocket protocol versions supported by this implementation." alt="" coords="17,264,525,284"/>
+<area shape="rect" id="node3_79" href="javascript:void(0);" title="Mapping from protocol spec (draft) version to protocol version." alt="" coords="17,284,525,304"/>
+<area shape="rect" id="node3_80" href="javascript:void(0);" title="Mapping from protocol version to the latest protocol spec (draft) version &#160;using that protocol version." alt="" coords="17,304,525,324"/>
+<area shape="rect" id="node3_81" href="javascript:void(0);" title="Default WebSocket protocol spec version this implementation speaks: final &#160;RFC6455." alt="" coords="17,324,525,344"/>
+<area shape="rect" id="node3_82" href="javascript:void(0);" title="By default, this implementation will not allow to speak the obsoleted &#160;Hixie&#45;76 protocol version." alt="" coords="17,344,525,364"/>
+<area shape="rect" id="node3_83" href="javascript:void(0);" title="WebSocket text message type (UTF&#45;8 payload)." alt="" coords="17,364,525,384"/>
+<area shape="rect" id="node3_84" href="javascript:void(0);" title="WebSocket binary message type (arbitrary binary payload)." alt="" coords="17,384,525,404"/>
+<area shape="rect" id="node3_85" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSED" alt="" coords="17,404,525,424"/>
+<area shape="rect" id="node3_86" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CONNECTING" alt="" coords="17,424,525,444"/>
+<area shape="rect" id="node3_87" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSING" alt="" coords="17,444,525,464"/>
+<area shape="rect" id="node3_88" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_OPEN" alt="" coords="17,464,525,484"/>
+<area shape="rect" id="node3_89" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_PROXY_CONNECTING" alt="" coords="17,484,525,504"/>
+<area shape="rect" id="node3_90" href="javascript:void(0);" title="Status codes allowed to send in close." alt="" coords="17,524,525,544"/>
+<area shape="rect" id="node3_91" href="javascript:void(0);" title="Callback when initial WebSocket handshake was completed." alt="" coords="17,547,525,567"/>
+<area shape="rect" id="node3_92" href="javascript:void(0);" title="Callback when receiving a new message has begun." alt="" coords="17,567,525,587"/>
+<area shape="rect" id="node3_93" href="javascript:void(0);" title="Callback when receiving a new message frame has begun." alt="" coords="17,587,525,607"/>
+<area shape="rect" id="node3_94" href="javascript:void(0);" title="Callback when receiving data witin message frame." alt="" coords="17,607,525,627"/>
+<area shape="rect" id="node3_95" href="javascript:void(0);" title="Callback when a message frame has been completely received." alt="" coords="17,627,525,647"/>
+<area shape="rect" id="node3_96" href="javascript:void(0);" title="Callback fired when complete message frame has been received." alt="" coords="17,647,525,667"/>
+<area shape="rect" id="node3_97" href="javascript:void(0);" title="Callback when a message has been completely received." alt="" coords="17,667,525,687"/>
+<area shape="rect" id="node3_98" href="javascript:void(0);" title="Callback when Ping was received." alt="" coords="17,687,525,707"/>
+<area shape="rect" id="node3_99" href="javascript:void(0);" title="Callback when Pong was received." alt="" coords="17,707,525,727"/>
+<area shape="rect" id="node3_100" href="javascript:void(0);" title="Callback when a Close frame was received." alt="" coords="17,727,525,747"/>
+<area shape="rect" id="node3_101" href="javascript:void(0);" title="We (a client) expected the peer (a server) to drop the connection, but it &#160;didn&#39;t (in time self.serverConnectionDropTimeout)." alt="" coords="17,747,525,767"/>
+<area shape="rect" id="node3_102" href="javascript:void(0);" title="We expected the peer to complete the opening handshake with to us." alt="" coords="17,767,525,787"/>
+<area shape="rect" id="node3_103" href="javascript:void(0);" title="We expected the peer to respond to us initiating a close handshake." alt="" coords="17,787,525,807"/>
+<area shape="rect" id="node3_104" href="javascript:void(0);" title="Hybi&#45;Variant of sendMessage()." alt="" coords="17,827,525,847"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="A Twisted Protocol class for WebSocket." alt="" coords="5,219,537,853"/>
+<area shape="rect" id="node4_105" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="175,173,368,193"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="162,139,379,199"/>
+<area shape="rect" id="node5_106" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="160,31,383,51"/>
+<area shape="rect" id="node5_107" href="javascript:void(0);" title="hash(x)" alt="" coords="160,51,383,71"/>
+<area shape="rect" id="node5_108" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="160,73,383,93"/>
+<area shape="rect" id="node5_109" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="160,93,383,113"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="147,5,394,120"/>
 </map>
-  <img src="uml_class_diagram_for_rce_comm_17.gif" alt='' usemap="#uml_class_diagram_for_rce_comm_17" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_comm_18.gif" alt='' usemap="#uml_class_diagram_for_rce_comm_18" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -377,9 +379,29 @@
         <span class="summary-sig-arg">msgID</span>,
         <span class="summary-sig-arg">msg</span>)</span><br />
       Callback for Connection object to send a data message to the robot 
-      using this websocket connection.</td>
+      using this WebSocket connection.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendDataMessage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#sendInterfaceStatusUpdateMessage" class="summary-sig-name">sendInterfaceStatusUpdateMessage</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iTag</span>,
+        <span class="summary-sig-arg">status</span>)</span><br />
+      Callback for Connection object to send a interface status message to 
+      the robot using this WebSocket connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendInterfaceStatusUpdateMessage">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -396,7 +418,7 @@
           <td><span class="summary-sig"><a href="rce.comm.server.RobotWebSocketProtocol-class.html#sendErrorMessage" class="summary-sig-name">sendErrorMessage</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">msg</span>)</span><br />
       Callback for Connection object to send an error message to the robot 
-      using this websocket connection.</td>
+      using this WebSocket connection.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendErrorMessage">source&nbsp;code</a></span>
             
@@ -452,6 +474,7 @@
       <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake">failHandshake</a></code>,
       <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key">parseHixie76Key</a></code>,
       <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake">processHandshake</a></code>,
+      <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#processProxyConnect">processProxyConnect</a></code>,
       <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml">sendHtml</a></code>,
       <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse">sendHttpErrorResponse</a></code>,
       <code><a href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect">sendRedirect</a></code>,
@@ -577,7 +600,6 @@
       <code>MESSAGE_TYPE_BINARY</code>,
       <code>MESSAGE_TYPE_TEXT</code>,
       <code>PROTOCOL_TO_SPEC_VERSION</code>,
-      <code>QUEUED_WRITE_DELAY</code>,
       <code>SEND_STATE_GROUND</code>,
       <code>SEND_STATE_INSIDE_MESSAGE</code>,
       <code>SEND_STATE_INSIDE_MESSAGE_FRAME</code>,
@@ -587,10 +609,14 @@
       <code>STATE_CLOSING</code>,
       <code>STATE_CONNECTING</code>,
       <code>STATE_OPEN</code>,
+      <code>STATE_PROXY_CONNECTING</code>,
       <code>SUPPORTED_PROTOCOL_VERSIONS</code>,
-      <code>SUPPORTED_SPEC_VERSIONS</code>,
-      <code>WS_MAGIC</code>
+      <code>SUPPORTED_SPEC_VERSIONS</code>
       </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>autobahn.websocket.WebSocketProtocol</code></b> (private):
+      <code>_QUEUED_WRITE_DELAY</code>,
+      <code>_WS_MAGIC</code>
+      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
       <code>connected</code>,
       <code>transport</code>
@@ -774,7 +800,7 @@
   </tr></table>
   
   <p>Callback for Connection object to send a data message to the robot 
-  using this websocket connection.</p>
+  using this WebSocket connection.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -787,6 +813,34 @@
         <li><strong class="pname"><code>msg</code></strong> ({str : {} / base_types / StringIO} / StringIO) - Message which should be sent. It has to be a JSON compatible 
           dictionary where part or the complete message can be replaced by 
           a StringIO instance which is interpreted as binary data.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendInterfaceStatusUpdateMessage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendInterfaceStatusUpdateMessage</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iTag</span>,
+        <span class="sig-arg">status</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.comm.server-pysrc.html#RobotWebSocketProtocol.sendInterfaceStatusUpdateMessage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Callback for Connection object to send a interface status message to 
+  the robot using this WebSocket connection.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iTag</code></strong> (str) - Tag which is used to identify the interface which changed its 
+          status.</li>
+        <li><strong class="pname"><code>status</code></strong> (bool) - Boolean indicating whether the interface should be active or not.</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -807,7 +861,7 @@
   </tr></table>
   
   <p>Callback for Connection object to send an error message to the robot 
-  using this websocket connection.</p>
+  using this WebSocket connection.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -931,7 +985,7 @@ interfaces a bit quicker.</p>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:16 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:49 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

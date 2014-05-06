@@ -260,7 +260,7 @@ rce.util.converters.image._checkIsStringIO" class="py-name" href="#" onclick="re
 <a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring">                                used.</tt> </tt>
 <a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
 <a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line"><tt class="py-docstring">            @param timeout:     Timeout in seconds after which incomplete</tt> </tt>
-<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"><tt class="py-docstring">                                message parts are removed.</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"><tt class="py-docstring">                                messages are discarded.</tt> </tt>
 <a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line"><tt class="py-docstring">            @type  timeout:     int</tt> </tt>
 <a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_protocol</tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name" targets="Module rce.slave.protocol=rce.slave.protocol-module.html"><a title="rce.slave.protocol" class="py-name" href="#" onclick="return doclink('link-14', 'protocol', 'link-14');">protocol</a></tt> </tt>
@@ -276,7 +276,7 @@ rce.util.converters.image._checkIsStringIO" class="py-name" href="#" onclick="re
 <a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_cleaner</tt> <tt class="py-op">=</tt> <tt class="py-name">LoopingCall</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method rce.comm.assembler.MessageAssembler._cleanUp()=rce.comm.assembler.MessageAssembler-class.html#_cleanUp"><a title="rce.comm.assembler.MessageAssembler._cleanUp" class="py-name" href="#" onclick="return doclink('link-16', '_cleanUp', 'link-16');">_cleanUp</a></tt><tt class="py-op">)</tt> </tt>
 </div><a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"> </tt>
 <a name="MessageAssembler.forwardCompleteMessage"></a><div id="MessageAssembler.forwardCompleteMessage-def"><a name="L206"></a><tt class="py-lineno">206</tt> <a class="py-toggle" href="#" id="MessageAssembler.forwardCompleteMessage-toggle" onclick="return toggle('MessageAssembler.forwardCompleteMessage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.comm.assembler.MessageAssembler-class.html#forwardCompleteMessage">forwardCompleteMessage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msgRepr</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="MessageAssembler.forwardCompleteMessage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MessageAssembler.forwardCompleteMessage-expanded"><a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">        <tt class="py-docstring">""" Callback for client.assembler._IncompleteMsg to send a completed</tt> </tt>
+</div><div id="MessageAssembler.forwardCompleteMessage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MessageAssembler.forwardCompleteMessage-expanded"><a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">        <tt class="py-docstring">""" Callback for rce.comm.assembler._IncompleteMsg to send a completed</tt> </tt>
 <a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line"><tt class="py-docstring">            message to the correct handler.</tt> </tt>
 <a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_incompleteMsgs</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt class="py-name">msgRepr</tt><tt class="py-op">)</tt> </tt>
@@ -292,7 +292,7 @@ rce.comm.server.RobotWebSocketProtocol.processCompleteMessage" class="py-name" h
 <a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-docstring">            @param msg:     Received string message.</tt> </tt>
 <a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"><tt class="py-docstring">            @type  msg:     str</tt> </tt>
 <a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"><tt class="py-docstring">            @param uris:    Return value of _recursiveURISearch</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"><tt class="py-docstring">            @param uris:    Return value of self._recursiveURISearch</tt> </tt>
 <a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line"><tt class="py-docstring">            @type  uris:    [ (str, dict, str) or (str, list, int) ]</tt> </tt>
 <a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">        <tt class="py-name">missing</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
@@ -457,7 +457,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:25 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:58 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

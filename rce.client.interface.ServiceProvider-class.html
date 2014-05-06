@@ -59,16 +59,23 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ServiceProvider</h1><p class="nomargin-top"><span class="codelink"><a href="rce.client.interface-pysrc.html#ServiceProvider">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_clie_10" name="uml_class_diagram_for_rce_clie_10">
-<area shape="rect" id="node40" href="rce.client.interface._ServiceProvider-class.html#__init__" title="Initialize the Service Provider." alt="" coords="17,199,277,217"/>
-<area shape="rect" id="node1" href="rce.client.interface._ServiceProvider-class.html" title="Abstract implementation of a Service Provider Interface." alt="" coords="5,166,288,223"/>
-<area shape="rect" id="node3" href="rce.client.interface.ServiceProvider-class.html" title="Representation of a Service Provider Interface." alt="" coords="88,243,205,287"/>
-<area shape="rect" id="node2" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="116,6,177,50"/>
-<area shape="rect" id="node41" href="rce.client.interface._CB_Base-class.html#callback" title="Callback for RCE." alt="" coords="35,103,261,121"/>
-<area shape="rect" id="node41" href="rce.client.interface._CB_Base-class.html#__del__" title="Finalize the Interface." alt="" coords="35,121,261,140"/>
-<area shape="rect" id="node4" href="rce.client.interface._CB_Base-class.html" title="Abstract base for all Interface classes which have to be registered with the connection." alt="" coords="23,70,273,146"/>
+<center>  <map id="uml_class_diagram_for_rce_clie_11" name="uml_class_diagram_for_rce_clie_11">
+<area shape="rect" id="node1" href="rce.client.interface.ServiceProvider-class.html" title="Representation of a Service Provider Interface." alt="" coords="87,368,206,413"/>
+<area shape="rect" id="node2_10" href="rce.client.interface._ServiceProvider-class.html#UNIQUE" title="rce.client.interface._ServiceProvider.UNIQUE" alt="" coords="17,280,277,300"/>
+<area shape="rect" id="node2_11" href="rce.client.interface._ServiceProvider-class.html#__init__" title="Initialize the Service Provider." alt="" coords="17,303,277,323"/>
+<area shape="rect" id="node2_12" href="rce.client.interface._ServiceProvider-class.html#unregister" title="Unregister the service provider." alt="" coords="17,323,277,343"/>
+<area shape="rect" id="node2" href="rce.client.interface._ServiceProvider-class.html" title="Abstract implementation of a Service Provider Interface." alt="" coords="5,254,289,349"/>
+<area shape="rect" id="node3_13" href="rce.client.interface._Base-class.html#status" title="Status (enabled/disabled) of the interface." alt="" coords="48,32,248,52"/>
+<area shape="rect" id="node3_14" href="rce.client.interface._Base-class.html#__del__" title="Finalize the Interface." alt="" coords="48,55,248,75"/>
+<area shape="rect" id="node3_15" href="rce.client.interface._Base-class.html#registerStatusListener" title="Register a status listener which will be called with status changes." alt="" coords="48,75,248,95"/>
+<area shape="rect" id="node3_16" href="rce.client.interface._Base-class.html#unregisterStatusListener" title="Unregister a previously registered status listener." alt="" coords="48,95,248,115"/>
+<area shape="rect" id="node3_17" href="rce.client.interface._Base-class.html#setEnabled" title="Callback for RCE client to enable/disable the interface." alt="" coords="48,115,248,135"/>
+<area shape="rect" id="node3" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="36,6,260,141"/>
+<area shape="rect" id="node4_18" href="rce.client.interface._CallableBase-class.html#CALLABLE" title="rce.client.interface._CallableBase.CALLABLE" alt="" coords="35,185,261,205"/>
+<area shape="rect" id="node4_19" href="rce.client.interface._CallableBase-class.html#callback" title="Callback for RCE." alt="" coords="35,208,261,228"/>
+<area shape="rect" id="node4" href="rce.client.interface._CallableBase-class.html" title="Abstract base for all Interface classes which are callable by the RCE client." alt="" coords="23,160,273,235"/>
 </map>
-  <img src="uml_class_diagram_for_rce_clie_10.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_10" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_clie_11.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_11" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -94,19 +101,27 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceProvider-class.html" onclick="show_private();">_ServiceProvider</a></code></b>:
-      <code><a href="rce.client.interface._ServiceProvider-class.html#__init__">__init__</a></code>
+      <code><a href="rce.client.interface._ServiceProvider-class.html#__init__">__init__</a></code>,
+      <code><a href="rce.client.interface._ServiceProvider-class.html#unregister">unregister</a></code>
       </p>
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceProvider-class.html" onclick="show_private();">_ServiceProvider</a></code></b> (private):
       <code><a href="rce.client.interface._ServiceProvider-class.html#_callback" onclick="show_private();">_callback</a></code>,
       <code><a href="rce.client.interface._ServiceProvider-class.html#_response_failure" onclick="show_private();">_response_failure</a></code>,
       <code><a href="rce.client.interface._ServiceProvider-class.html#_response_success" onclick="show_private();">_response_success</a></code>
       </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CB_Base-class.html" onclick="show_private();">_CB_Base</a></code></b>:
-      <code><a href="rce.client.interface._CB_Base-class.html#__del__">__del__</a></code>,
-      <code><a href="rce.client.interface._CB_Base-class.html#callback">callback</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CallableBase-class.html" onclick="show_private();">_CallableBase</a></code></b>:
+      <code><a href="rce.client.interface._CallableBase-class.html#callback">callback</a></code>
       </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CB_Base-class.html" onclick="show_private();">_CB_Base</a></code></b> (private):
-      <code><a href="rce.client.interface._CB_Base-class.html#_unsubscribe" onclick="show_private();">_unsubscribe</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#__del__">__del__</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#registerStatusListener">registerStatusListener</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#setEnabled">setEnabled</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#unregisterStatusListener">unregisterStatusListener</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b> (private):
+      <code><a href="rce.client.interface._Base-class.html#_start" onclick="show_private();">_start</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#_stop" onclick="show_private();">_stop</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#_unregister" onclick="show_private();">_unregister</a></code>
       </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -144,11 +159,16 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceProvider-class.html" onclick="show_private();">_ServiceProvider</a></code></b>:
+      <code><a href="rce.client.interface._ServiceProvider-class.html#UNIQUE">UNIQUE</a></code>
+      </p>
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceProvider-class.html" onclick="show_private();">_ServiceProvider</a></code></b> (private):
       <code><a href="rce.client.interface._ServiceProvider-class.html#_DOWN_MSG" onclick="show_private();">_DOWN_MSG</a></code>,
-      <code><a href="rce.client.interface._ServiceProvider-class.html#_UNIQUE" onclick="show_private();">_UNIQUE</a></code>,
       <code><a href="rce.client.interface._ServiceProvider-class.html#_UP_MSG" onclick="show_private();">_UP_MSG</a></code>
       </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CallableBase-class.html" onclick="show_private();">_CallableBase</a></code></b>:
+      <code><a href="rce.client.interface._CallableBase-class.html#CALLABLE">CALLABLE</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -171,6 +191,9 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#status">status</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -203,7 +226,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:15 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:48 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -60,62 +60,63 @@
 <h1 class="epydoc">Class WebSocketServerProtocol</h1><p class="nomargin-top"></p>
 <center>
 <center>  <map id="uml_class_diagram_for_autobahn_2" name="uml_class_diagram_for_autobahn_2">
-<area shape="rect" id="node6" href="javascript:void(0);" title="WebSockets protocol spec (draft) versions supported by this implementation." alt="" coords="17,236,525,255"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="WebSocket protocol versions supported by this implementation." alt="" coords="17,255,525,273"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Mapping from protocol spec (draft) version to protocol version." alt="" coords="17,273,525,292"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Mapping from protocol version to the latest protocol spec (draft) version &#160;using that protocol version." alt="" coords="17,292,525,311"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Default WebSockets protocol spec version this implementation speaks." alt="" coords="17,311,525,329"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="By default, this implementation will not allow to speak the obsoleted &#160;Hixie&#45;76 protocol version." alt="" coords="17,329,525,348"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Protocol defined magic used during WebSocket handshake (used in Hybi&#45;drafts and final RFC6455." alt="" coords="17,348,525,367"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="For synched/chopped writes, this is the reactor reentry delay in seconds." alt="" coords="17,367,525,385"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="WebSockets text message type (UTF&#45;8 payload)." alt="" coords="17,385,525,404"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="WebSockets binary message type (arbitrary binary payload)." alt="" coords="17,404,525,423"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSED" alt="" coords="17,423,525,441"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CONNECTING" alt="" coords="17,441,525,460"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSING" alt="" coords="17,460,525,479"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Status codes allowed to send in close." alt="" coords="17,497,525,516"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when initial WebSockets handshake was completed." alt="" coords="17,519,525,537"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when receiving a new message has begun." alt="" coords="17,537,525,556"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when receiving a new message frame has begun." alt="" coords="17,556,525,575"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when receiving data witin message frame." alt="" coords="17,575,525,593"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a message frame has been completely received." alt="" coords="17,593,525,612"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback fired when complete message frame has been received." alt="" coords="17,612,525,631"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a message has been completely received." alt="" coords="17,631,525,649"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a complete message was received." alt="" coords="17,649,525,668"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when Ping was received." alt="" coords="17,668,525,687"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when Pong was received." alt="" coords="17,687,525,705"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when the connection has been closed." alt="" coords="17,705,525,724"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Callback when a Close frame was received." alt="" coords="17,724,525,743"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="We (a client) expected the peer (a server) to drop the connection, but it &#160;didn&#39;t (in time self.serverConnectionDropTimeout)." alt="" coords="17,743,525,761"/>
-<area shape="rect" id="node6" href="javascript:void(0);" title="Hybi&#45;Variant of sendMessage()." alt="" coords="17,780,525,799"/>
-<area shape="rect" id="node1" href="javascript:void(0);" title="A Twisted Protocol class for WebSockets." alt="" coords="5,211,536,805"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#__implemented__" title="autobahn.websocket.WebSocketServerProtocol.__implemented__" alt="" coords="79,849,464,868"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#onConnect" title="Callback fired during WebSocket opening handshake when new WebSocket client connection is about to be established." alt="" coords="79,871,464,889"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" title="Called by Twisted when new TCP connection from client was accepted." alt="" coords="79,889,464,908"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" title="Called by Twisted when established TCP connection from client was lost." alt="" coords="79,908,464,927"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key" title="autobahn.websocket.WebSocketServerProtocol.parseHixie76Key" alt="" coords="79,927,464,945"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" title="Process WebSockets opening handshake request from client." alt="" coords="79,945,464,964"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake" title="During opening handshake the client request was invalid, we send a HTTP &#160;error response and then drop the connection." alt="" coords="79,964,464,983"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse" title="Send out HTTP error response." alt="" coords="79,983,464,1001"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml" title="Send HTML page HTTP response." alt="" coords="79,1001,464,1020"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect" title="Send HTTP Redirect (303) response." alt="" coords="79,1020,464,1039"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus" title="Used to send out server status/version upon receiving a HTTP/GET without &#160;upgrade to WebSocket header (and option serverStatus is True)." alt="" coords="79,1039,464,1057"/>
-<area shape="rect" id="node5" href="autobahn.websocket.WebSocketServerProtocol-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="79,1057,464,1076"/>
-<area shape="rect" id="node4" href="autobahn.websocket.WebSocketServerProtocol-class.html" title="A Twisted protocol for WebSockets servers." alt="" coords="67,825,475,1082"/>
-<area shape="rect" id="node2" href="rce.comm.server.RobotWebSocketProtocol-class.html" title="Protocol which is used for the connections from the robots to the robot manager." alt="" coords="128,1102,416,1141"/>
-<area shape="rect" id="node7" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="175,167,368,185"/>
-<area shape="rect" id="node3" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="163,134,379,191"/>
-<area shape="rect" id="node8" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="160,31,383,49"/>
-<area shape="rect" id="node8" href="javascript:void(0);" title="hash(x)" alt="" coords="160,49,383,68"/>
-<area shape="rect" id="node8" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="160,71,383,89"/>
-<area shape="rect" id="node8" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="160,89,383,108"/>
-<area shape="rect" id="node5" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="148,6,393,114"/>
+<area shape="rect" id="node1_46" href="autobahn.websocket.WebSocketServerProtocol-class.html#__implemented__" title="autobahn.websocket.WebSocketServerProtocol.__implemented__" alt="" coords="79,899,464,919"/>
+<area shape="rect" id="node1_47" href="autobahn.websocket.WebSocketServerProtocol-class.html#onConnect" title="Callback fired during WebSocket opening handshake when new WebSocket client connection is about to be established." alt="" coords="79,921,464,941"/>
+<area shape="rect" id="node1_48" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionMade" title="Called by Twisted when new TCP connection from client was accepted." alt="" coords="79,941,464,961"/>
+<area shape="rect" id="node1_49" href="autobahn.websocket.WebSocketServerProtocol-class.html#connectionLost" title="Called by Twisted when established TCP connection from client was lost." alt="" coords="79,961,464,981"/>
+<area shape="rect" id="node1_50" href="autobahn.websocket.WebSocketServerProtocol-class.html#processProxyConnect" title="Process proxy connect." alt="" coords="79,981,464,1001"/>
+<area shape="rect" id="node1_51" href="autobahn.websocket.WebSocketServerProtocol-class.html#parseHixie76Key" title="Parse Hixie76 opening handshake key provided by client." alt="" coords="79,1001,464,1021"/>
+<area shape="rect" id="node1_52" href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" title="Process WebSocket opening handshake request from client." alt="" coords="79,1021,464,1041"/>
+<area shape="rect" id="node1_53" href="autobahn.websocket.WebSocketServerProtocol-class.html#failHandshake" title="During opening handshake the client request was invalid, we send a HTTP &#160;error response and then drop the connection." alt="" coords="79,1041,464,1061"/>
+<area shape="rect" id="node1_54" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHttpErrorResponse" title="Send out HTTP error response." alt="" coords="79,1061,464,1081"/>
+<area shape="rect" id="node1_55" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendHtml" title="Send HTML page HTTP response." alt="" coords="79,1081,464,1101"/>
+<area shape="rect" id="node1_56" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendRedirect" title="Send HTTP Redirect (303) response." alt="" coords="79,1101,464,1121"/>
+<area shape="rect" id="node1_57" href="autobahn.websocket.WebSocketServerProtocol-class.html#sendServerStatus" title="Used to send out server status/version upon receiving a HTTP/GET without &#160;upgrade to WebSocket header (and option serverStatus is True)." alt="" coords="79,1121,464,1141"/>
+<area shape="rect" id="node1_58" href="autobahn.websocket.WebSocketServerProtocol-class.html#__provides__" title="Special descriptor for class __provides__" alt="" coords="79,1141,464,1161"/>
+<area shape="rect" id="node1" href="autobahn.websocket.WebSocketServerProtocol-class.html" title="A Twisted protocol for WebSocket servers." alt="" coords="66,873,475,1167"/>
+<area shape="rect" id="node4" href="rce.comm.server.RobotWebSocketProtocol-class.html" title="Protocol which is used for the connections from the robots to the robot manager." alt="" coords="127,1187,417,1227"/>
+<area shape="rect" id="node2_59" href="javascript:void(0);" title="WebSocket protocol spec (draft) versions supported by this implementation." alt="" coords="17,244,525,264"/>
+<area shape="rect" id="node2_60" href="javascript:void(0);" title="WebSocket protocol versions supported by this implementation." alt="" coords="17,264,525,284"/>
+<area shape="rect" id="node2_61" href="javascript:void(0);" title="Mapping from protocol spec (draft) version to protocol version." alt="" coords="17,284,525,304"/>
+<area shape="rect" id="node2_62" href="javascript:void(0);" title="Mapping from protocol version to the latest protocol spec (draft) version &#160;using that protocol version." alt="" coords="17,304,525,324"/>
+<area shape="rect" id="node2_63" href="javascript:void(0);" title="Default WebSocket protocol spec version this implementation speaks: final &#160;RFC6455." alt="" coords="17,324,525,344"/>
+<area shape="rect" id="node2_64" href="javascript:void(0);" title="By default, this implementation will not allow to speak the obsoleted &#160;Hixie&#45;76 protocol version." alt="" coords="17,344,525,364"/>
+<area shape="rect" id="node2_65" href="javascript:void(0);" title="WebSocket text message type (UTF&#45;8 payload)." alt="" coords="17,364,525,384"/>
+<area shape="rect" id="node2_66" href="javascript:void(0);" title="WebSocket binary message type (arbitrary binary payload)." alt="" coords="17,384,525,404"/>
+<area shape="rect" id="node2_67" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSED" alt="" coords="17,404,525,424"/>
+<area shape="rect" id="node2_68" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CONNECTING" alt="" coords="17,424,525,444"/>
+<area shape="rect" id="node2_69" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_CLOSING" alt="" coords="17,444,525,464"/>
+<area shape="rect" id="node2_70" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_OPEN" alt="" coords="17,464,525,484"/>
+<area shape="rect" id="node2_71" href="javascript:void(0);" title="autobahn.websocket.WebSocketProtocol.STATE_PROXY_CONNECTING" alt="" coords="17,484,525,504"/>
+<area shape="rect" id="node2_72" href="javascript:void(0);" title="Status codes allowed to send in close." alt="" coords="17,524,525,544"/>
+<area shape="rect" id="node2_73" href="javascript:void(0);" title="Callback when initial WebSocket handshake was completed." alt="" coords="17,547,525,567"/>
+<area shape="rect" id="node2_74" href="javascript:void(0);" title="Callback when receiving a new message has begun." alt="" coords="17,567,525,587"/>
+<area shape="rect" id="node2_75" href="javascript:void(0);" title="Callback when receiving a new message frame has begun." alt="" coords="17,587,525,607"/>
+<area shape="rect" id="node2_76" href="javascript:void(0);" title="Callback when receiving data witin message frame." alt="" coords="17,607,525,627"/>
+<area shape="rect" id="node2_77" href="javascript:void(0);" title="Callback when a message frame has been completely received." alt="" coords="17,627,525,647"/>
+<area shape="rect" id="node2_78" href="javascript:void(0);" title="Callback fired when complete message frame has been received." alt="" coords="17,647,525,667"/>
+<area shape="rect" id="node2_79" href="javascript:void(0);" title="Callback when a message has been completely received." alt="" coords="17,667,525,687"/>
+<area shape="rect" id="node2_80" href="javascript:void(0);" title="Callback when a complete message was received." alt="" coords="17,687,525,707"/>
+<area shape="rect" id="node2_81" href="javascript:void(0);" title="Callback when Ping was received." alt="" coords="17,707,525,727"/>
+<area shape="rect" id="node2_82" href="javascript:void(0);" title="Callback when Pong was received." alt="" coords="17,727,525,747"/>
+<area shape="rect" id="node2_83" href="javascript:void(0);" title="Callback when the connection has been closed." alt="" coords="17,747,525,767"/>
+<area shape="rect" id="node2_84" href="javascript:void(0);" title="Callback when a Close frame was received." alt="" coords="17,767,525,787"/>
+<area shape="rect" id="node2_85" href="javascript:void(0);" title="We (a client) expected the peer (a server) to drop the connection, but it &#160;didn&#39;t (in time self.serverConnectionDropTimeout)." alt="" coords="17,787,525,807"/>
+<area shape="rect" id="node2_86" href="javascript:void(0);" title="Hybi&#45;Variant of sendMessage()." alt="" coords="17,827,525,847"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="A Twisted Protocol class for WebSocket." alt="" coords="5,219,537,853"/>
+<area shape="rect" id="node3_87" href="javascript:void(0);" title="Return a prefix matching the class name, to identify log messages related &#160;to this protocol instance." alt="" coords="175,173,368,193"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="This is the base class for streaming connection&#45;oriented protocols." alt="" coords="162,139,379,199"/>
+<area shape="rect" id="node5_88" href="javascript:void(0);" title="twisted.internet.protocol.BaseProtocol.connected" alt="" coords="160,31,383,51"/>
+<area shape="rect" id="node5_89" href="javascript:void(0);" title="hash(x)" alt="" coords="160,51,383,71"/>
+<area shape="rect" id="node5_90" href="javascript:void(0);" title="Make a connection to a transport and a server." alt="" coords="160,73,383,93"/>
+<area shape="rect" id="node5_91" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="160,93,383,113"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="This is the abstract superclass of all protocols." alt="" coords="147,5,394,120"/>
 </map>
   <img src="uml_class_diagram_for_autobahn_2.gif" alt='' usemap="#uml_class_diagram_for_autobahn_2" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
-<p>A Twisted protocol for WebSockets servers.</p>
+<p>A Twisted protocol for WebSocket servers.</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -195,8 +196,26 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#processProxyConnect" class="summary-sig-name">processProxyConnect</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Process proxy connect.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="parseHixie76Key"></a><span class="summary-sig-name">parseHixie76Key</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">key</span>)</span></td>
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Parse Hixie76 opening handshake key provided by client.</td>
           <td align="right" valign="top">
             
             
@@ -213,7 +232,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#processHandshake" class="summary-sig-name">processHandshake</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Process WebSockets opening handshake request from client.</td>
+      Process WebSocket opening handshake request from client.</td>
           <td align="right" valign="top">
             
             
@@ -230,7 +249,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="autobahn.websocket.WebSocketServerProtocol-class.html#_processHandshake_buildResponse" class="summary-sig-name" onclick="show_private();">_processHandshake_buildResponse</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">protocol</span>,
+        <span class="summary-sig-arg">res</span>,
         <span class="summary-sig-arg">key</span>)</span><br />
       Callback for Deferred returned by self.onConnect.</td>
           <td align="right" valign="top">
@@ -489,7 +508,6 @@
       <code>MESSAGE_TYPE_BINARY</code>,
       <code>MESSAGE_TYPE_TEXT</code>,
       <code>PROTOCOL_TO_SPEC_VERSION</code>,
-      <code>QUEUED_WRITE_DELAY</code>,
       <code>SEND_STATE_GROUND</code>,
       <code>SEND_STATE_INSIDE_MESSAGE</code>,
       <code>SEND_STATE_INSIDE_MESSAGE_FRAME</code>,
@@ -499,10 +517,14 @@
       <code>STATE_CLOSING</code>,
       <code>STATE_CONNECTING</code>,
       <code>STATE_OPEN</code>,
+      <code>STATE_PROXY_CONNECTING</code>,
       <code>SUPPORTED_PROTOCOL_VERSIONS</code>,
-      <code>SUPPORTED_SPEC_VERSIONS</code>,
-      <code>WS_MAGIC</code>
+      <code>SUPPORTED_SPEC_VERSIONS</code>
       </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>WebSocketProtocol</code></b> (private):
+      <code>_QUEUED_WRITE_DELAY</code>,
+      <code>_WS_MAGIC</code>
+      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.internet.protocol.BaseProtocol</code></b>:
       <code>connected</code>,
       <code>transport</code>
@@ -547,11 +569,13 @@
   client connection is about to be established.</p>
   <p>Throw HttpException when you don't want to accept the WebSocket 
   connection request. For example, throw a 
-  HttpException(httpstatus.HTTP_STATUS_CODE_UNAUTHORIZED[0], &quot;You are 
-  not authorized for this!&quot;).</p>
+  `HttpException(httpstatus.HTTP_STATUS_CODE_UNAUTHORIZED[0], &quot;You are
+  not authorized for this!&quot;)`.</p>
   <p>When you want to accept the connection, return the accepted protocol 
-  from list of WebSockets (sub)protocols provided by client or None to 
-  speak no specific one or when the client list was empty.</p>
+  from list of WebSocket (sub)protocols provided by client or None to speak
+  no specific one or when the client list was empty.</p>
+  <p>You may also return a pair of `(protocol, headers)` to send additional
+  HTTP `headers`.</p>
   <p>:param connectionRequest: WebSocket connection request information. 
   :type connectionRequest: instance of 
   :class:`autobahn.websocket.ConnectionRequest`</p>
@@ -576,7 +600,7 @@
   <p>Called by Twisted when new TCP connection from client was accepted. 
   Default implementation will prepare for initial WebSocket opening 
   handshake. When overriding in derived class, make sure to call this base 
-  class implementation _before_ your code.</p>
+  class implementation *before* your code.</p>
   <dl class="fields">
     <dt>Overrides:
         twisted.internet.protocol.BaseProtocol.connectionMade
@@ -602,10 +626,34 @@
   <p>Called by Twisted when established TCP connection from client was 
   lost. Default implementation will tear down all state properly. When 
   overriding in derived class, make sure to call this base class 
-  implementation _after_ your code.</p>
+  implementation *after* your code.</p>
   <dl class="fields">
     <dt>Overrides:
         twisted.internet.protocol.Protocol.connectionLost
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="processProxyConnect"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">processProxyConnect</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Process proxy connect.</p>
+  <p>Modes: Hybi, Hixie</p>
+  <dl class="fields">
+    <dt>Overrides:
+        WebSocketProtocol.processProxyConnect
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -624,7 +672,7 @@
     </td>
   </tr></table>
   
-  <p>Process WebSockets opening handshake request from client.</p>
+  <p>Process WebSocket opening handshake request from client.</p>
   <dl class="fields">
     <dt>Overrides:
         WebSocketProtocol.processHandshake
@@ -640,7 +688,7 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_processHandshake_buildResponse</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">protocol</span>,
+        <span class="sig-arg">res</span>,
         <span class="sig-arg">key</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -764,7 +812,7 @@ interfaces a bit quicker.</p>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:14 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:47 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -60,52 +60,21 @@
 <h1 class="epydoc">Class ConsoleClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_cons_3" name="uml_class_diagram_for_rce_cons_3">
-<area shape="rect" id="node158" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.currentHistoryBuffer" alt="" coords="56,612,292,631"/>
-<area shape="rect" id="node158" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.handle_UP" alt="" coords="56,631,292,649"/>
-<area shape="rect" id="node158" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.handle_DOWN" alt="" coords="56,649,292,668"/>
-<area shape="rect" id="node158" href="javascript:void(0);" title="twisted.conch.recvline.HistoricRecvLine.handle_RETURN" alt="" coords="56,668,292,687"/>
-<area shape="rect" id="node1" href="javascript:void(0);" title="TerminalProtocol which adds both basic line&#45;editing features and input history." alt="" coords="44,579,303,693"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#__init__" title="Initialize the ConsoleClient." alt="" coords="43,745,307,764"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#showPrompt" title="Show the prompt &gt;&gt;&gt;" alt="" coords="43,764,307,783"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#connectionMade" title="Create a PBClientFactory and connect to master when ConsoleClient connected to StandardIO." alt="" coords="43,783,307,801"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#lineReceived" title="Manage state/mode after connection." alt="" coords="43,801,307,820"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#parseInputLine" title="A function to route various commands entered via Console." alt="" coords="43,820,307,839"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#callToRosProxy" title="Function to handle call to ROSAPI Proxy Server." alt="" coords="43,839,307,857"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#callToUser" title="A wrapper function for call to remote user." alt="" coords="43,857,307,876"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#callToUserAndDisplay" title="A wrapper function around call to user and displaying the result" alt="" coords="43,876,307,895"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#cmd_EXIT" title="Handler for exit command." alt="" coords="43,895,307,913"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#cmd_USER" title="Handler for user command." alt="" coords="43,913,307,932"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#cmd_CONTAINER" title="Handler for container command." alt="" coords="43,932,307,951"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#cmd_NODE" title="Handler for node command." alt="" coords="43,951,307,969"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#cmd_PARAMETER" title="Handler for parameter command." alt="" coords="43,969,307,988"/>
-<area shape="rect" id="node157" href="rce.console.console.ConsoleClient-class.html#cmd_HELP" title="Handler for help command." alt="" coords="43,1007,307,1025"/>
-<area shape="rect" id="node3" href="rce.console.console.ConsoleClient-class.html" title="The class creates the terminal and manages connections with Master and ROSAPI servers on specific containers" alt="" coords="31,713,319,1031"/>
-<area shape="rect" id="node160" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol.__implemented__" alt="" coords="40,31,309,49"/>
-<area shape="rect" id="node160" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol.makeConnection" alt="" coords="40,52,309,71"/>
-<area shape="rect" id="node160" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol.connectionLost" alt="" coords="40,71,309,89"/>
-<area shape="rect" id="node160" href="javascript:void(0);" title="Object Specification Descriptor" alt="" coords="40,89,309,108"/>
-<area shape="rect" id="node160" href="javascript:void(0);" title="Special descriptor for class __provides__" alt="" coords="40,108,309,127"/>
-<area shape="rect" id="node2" href="javascript:void(0);" title="twisted.conch.insults.insults.TerminalProtocol" alt="" coords="28,6,321,133"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.width" alt="" coords="17,177,331,196"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.height" alt="" coords="17,196,331,215"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.TABSTOP" alt="" coords="17,215,331,233"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.ps" alt="" coords="17,233,331,252"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.pn" alt="" coords="17,252,331,271"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.initializeScreen" alt="" coords="17,273,331,292"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.currentLineBuffer" alt="" coords="17,292,331,311"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.setInsertMode" alt="" coords="17,311,331,329"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.setTypeoverMode" alt="" coords="17,329,331,348"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="Write a line containing the current input prompt and the current line &#160;buffer at the current cursor position." alt="" coords="17,348,331,367"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.terminalSize" alt="" coords="17,367,331,385"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.unhandledControlSequence" alt="" coords="17,385,331,404"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.keystrokeReceived" alt="" coords="17,404,331,423"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.characterReceived" alt="" coords="17,423,331,441"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_TAB" alt="" coords="17,441,331,460"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_LEFT" alt="" coords="17,460,331,479"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_RIGHT" alt="" coords="17,479,331,497"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_HOME" alt="" coords="17,497,331,516"/>
-<area shape="rect" id="node159" href="javascript:void(0);" title="twisted.conch.recvline.RecvLine.handle_INSERT" alt="" coords="17,535,331,553"/>
-<area shape="rect" id="node4" href="javascript:void(0);" title="TerminalProtocol which adds line editing features." alt="" coords="5,153,341,559"/>
+<area shape="rect" id="node1_14" href="rce.console.console.ConsoleClient-class.html#__init__" title="Initialize the ConsoleClient." alt="" coords="17,40,337,60"/>
+<area shape="rect" id="node1_15" href="rce.console.console.ConsoleClient-class.html#showPrompt" title="Show the prompt &gt;&gt;&gt;" alt="" coords="17,60,337,80"/>
+<area shape="rect" id="node1_16" href="rce.console.console.ConsoleClient-class.html#connectionMade" title="Create a PBClientFactory and connect to master when ConsoleClient connected to StandardIO." alt="" coords="17,80,337,100"/>
+<area shape="rect" id="node1_17" href="rce.console.console.ConsoleClient-class.html#lineReceived" title="Manage state/mode after connection." alt="" coords="17,100,337,120"/>
+<area shape="rect" id="node1_18" href="rce.console.console.ConsoleClient-class.html#parseInputLine" title="A function to route various commands entered via Console." alt="" coords="17,120,337,140"/>
+<area shape="rect" id="node1_19" href="rce.console.console.ConsoleClient-class.html#callToRosProxy" title="Function to handle call to ROSAPI Proxy Server." alt="" coords="17,140,337,160"/>
+<area shape="rect" id="node1_20" href="rce.console.console.ConsoleClient-class.html#callToUser" title="A wrapper function for call to remote user." alt="" coords="17,160,337,180"/>
+<area shape="rect" id="node1_21" href="rce.console.console.ConsoleClient-class.html#callToUserAndDisplay" title="A wrapper function around call to user and displaying the result" alt="" coords="17,180,337,200"/>
+<area shape="rect" id="node1_22" href="rce.console.console.ConsoleClient-class.html#cmd_EXIT" title="Handler for exit command." alt="" coords="17,200,337,220"/>
+<area shape="rect" id="node1_23" href="rce.console.console.ConsoleClient-class.html#cmd_USER" title="Handler for user command." alt="" coords="17,220,337,240"/>
+<area shape="rect" id="node1_24" href="rce.console.console.ConsoleClient-class.html#cmd_CONTAINER" title="Handler for container command." alt="" coords="17,240,337,260"/>
+<area shape="rect" id="node1_25" href="rce.console.console.ConsoleClient-class.html#cmd_NODE" title="Handler for node command." alt="" coords="17,260,337,280"/>
+<area shape="rect" id="node1_26" href="rce.console.console.ConsoleClient-class.html#cmd_PARAMETER" title="Handler for parameter command." alt="" coords="17,280,337,300"/>
+<area shape="rect" id="node1_27" href="rce.console.console.ConsoleClient-class.html#cmd_HELP" title="Handler for help command." alt="" coords="17,320,337,340"/>
+<area shape="rect" id="node1" href="rce.console.console.ConsoleClient-class.html" title="The class creates the terminal and manages connections with Master and ROSAPI servers on specific containers" alt="" coords="5,6,349,346"/>
 </map>
   <img src="uml_class_diagram_for_rce_cons_3.gif" alt='' usemap="#uml_class_diagram_for_rce_cons_3" ismap="ismap" class="graph-without-title" />
 </center>
@@ -228,8 +197,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#callToRosProxy" class="summary-sig-name">callToRosProxy</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+        <span class="summary-sig-arg">command</span>,
+        <span class="summary-sig-arg">parameter</span>)</span><br />
       Function to handle call to ROSAPI Proxy Server.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToRosProxy">source&nbsp;code</a></span>
@@ -247,8 +216,9 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#callToUser" class="summary-sig-name">callToUser</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+        <span class="summary-sig-arg">command</span>,
+        <span class="summary-sig-arg">domain</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
       A wrapper function for call to remote user.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUser">source&nbsp;code</a></span>
@@ -266,8 +236,9 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="rce.console.console.ConsoleClient-class.html#callToUserAndDisplay" class="summary-sig-name">callToUserAndDisplay</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+        <span class="summary-sig-arg">command</span>,
+        <span class="summary-sig-arg">domain</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
       A wrapper function around call to user and displaying the result</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUserAndDisplay">source&nbsp;code</a></span>
@@ -458,118 +429,6 @@
       
     </td>
   </tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.HistoricRecvLine</code></b>:
-      <code>currentHistoryBuffer</code>,
-      <code>handle_DOWN</code>,
-      <code>handle_RETURN</code>,
-      <code>handle_UP</code>
-      </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.HistoricRecvLine</code></b> (private):
-      <code>_deliverBuffer</code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.RecvLine</code></b>:
-      <code>characterReceived</code>,
-      <code>currentLineBuffer</code>,
-      <code>drawInputLine</code>,
-      <code>handle_BACKSPACE</code>,
-      <code>handle_DELETE</code>,
-      <code>handle_END</code>,
-      <code>handle_HOME</code>,
-      <code>handle_INSERT</code>,
-      <code>handle_LEFT</code>,
-      <code>handle_RIGHT</code>,
-      <code>handle_TAB</code>,
-      <code>initializeScreen</code>,
-      <code>keystrokeReceived</code>,
-      <code>setInsertMode</code>,
-      <code>setTypeoverMode</code>,
-      <code>terminalSize</code>,
-      <code>unhandledControlSequence</code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.insults.insults.TerminalProtocol</code></b>:
-      <code>__providedBy__</code>,
-      <code>__provides__</code>,
-      <code>connectionLost</code>,
-      <code>makeConnection</code>
-      </p>
-    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
-      <code>__delattr__</code>,
-      <code>__format__</code>,
-      <code>__getattribute__</code>,
-      <code>__hash__</code>,
-      <code>__new__</code>,
-      <code>__reduce__</code>,
-      <code>__reduce_ex__</code>,
-      <code>__repr__</code>,
-      <code>__setattr__</code>,
-      <code>__sizeof__</code>,
-      <code>__str__</code>,
-      <code>__subclasshook__</code>
-      </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Class Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-ClassVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.RecvLine</code></b>:
-      <code>TABSTOP</code>,
-      <code>height</code>,
-      <code>pn</code>,
-      <code>ps</code>,
-      <code>width</code>
-      </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.recvline.RecvLine</code></b> (private):
-      <code>_printableChars</code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code>twisted.conch.insults.insults.TerminalProtocol</code></b>:
-      <code>__implemented__</code>
-      </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== PROPERTIES ==================== -->
-<a name="section-Properties"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Properties</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-Properties"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
-      <code>__class__</code>
-      </p>
-    </td>
-  </tr>
 </table>
 <!-- ==================== METHOD DETAILS ==================== -->
 <a name="section-MethodDetails"></a>
@@ -613,9 +472,6 @@
         <li><strong class="pname"><code>masterIP</code></strong> (string) - The IP of the master server</li>
         <li><strong class="pname"><code>consolePort</code></strong> (int) - Port of the master server</li>
     </ul></dd>
-    <dt>Overrides:
-        object.__init__
-    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -636,9 +492,6 @@
   <p>Create a PBClientFactory and connect to master when ConsoleClient 
   connected to StandardIO. Prompt user for Username</p>
   <dl class="fields">
-    <dt>Overrides:
-        twisted.conch.insults.insults.TerminalProtocol.connectionMade
-    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -664,9 +517,6 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>line</code></strong> (string) - line typed on terminal</li>
     </ul></dd>
-    <dt>Overrides:
-        twisted.conch.recvline.RecvLine.lineReceived
-    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -702,8 +552,8 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">callToRosProxy</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">*args</span>,
-        <span class="sig-arg">**kwargs</span>)</span>
+        <span class="sig-arg">command</span>,
+        <span class="sig-arg">parameter</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToRosProxy">source&nbsp;code</a></span>&nbsp;
@@ -732,8 +582,9 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">callToUser</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">*args</span>,
-        <span class="sig-arg">**kwargs</span>)</span>
+        <span class="sig-arg">command</span>,
+        <span class="sig-arg">domain</span>,
+        <span class="sig-arg">*args</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUser">source&nbsp;code</a></span>&nbsp;
@@ -761,8 +612,9 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">callToUserAndDisplay</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">*args</span>,
-        <span class="sig-arg">**kwargs</span>)</span>
+        <span class="sig-arg">command</span>,
+        <span class="sig-arg">domain</span>,
+        <span class="sig-arg">*args</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.console.console-pysrc.html#ConsoleClient.callToUserAndDisplay">source&nbsp;code</a></span>&nbsp;
@@ -1049,7 +901,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:17 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:50 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

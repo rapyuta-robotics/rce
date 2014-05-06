@@ -59,19 +59,16 @@
 <h1 class="epydoc">Class RoboEarthCloudEngine</h1><p class="nomargin-top"><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_mast" name="uml_class_diagram_for_rce_mast">
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#LOAD_BALANCER_CLS" title="rce.master.RoboEarthCloudEngine.LOAD_BALANCER_CLS" alt="" coords="17,31,296,49"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#DISTRIBUTOR_CLS" title="rce.master.RoboEarthCloudEngine.DISTRIBUTOR_CLS" alt="" coords="17,49,296,68"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#__init__" title="Initialize the RoboEarth Cloud Engine realm." alt="" coords="17,71,296,89"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#requestAvatar" title="Returns Avatar for slave processes of the cloud engine." alt="" coords="17,89,296,108"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#getUser" title="Get the user object matching the given user ID." alt="" coords="17,108,296,127"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#getInternalIP" title="Get the IP address of the network interface used for the internal &#160;communication." alt="" coords="17,127,296,145"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#requestURL" title="Callback for Robot resource to retrieve the location of the Robot process &#160;to which a WebSocket connection should be established." alt="" coords="17,145,296,164"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#createContainer" title="Callback for User instance to create a new Container object in a container process." alt="" coords="17,164,296,183"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#checkUIDValidity" title="Method to check if incoming environment ID is valid." alt="" coords="17,183,296,201"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#createConnection" title="Callback for User instance to create a new connection between two &#160;interfaces." alt="" coords="17,201,296,220"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#preShutdown" title="Method is executed by the twisted reactor when a shutdown event is &#160;triggered, before the reactor is being stopped." alt="" coords="17,220,296,239"/>
-<area shape="rect" id="node374" href="rce.master.RoboEarthCloudEngine-class.html#postShutdown" title="Method is executed by the twisted reactor when a shutdown event is &#160;triggered, after the reactor has been stopped." alt="" coords="17,239,296,257"/>
-<area shape="rect" id="node1" href="rce.master.RoboEarthCloudEngine-class.html" title="Realm for the twisted cred system." alt="" coords="5,6,307,263"/>
+<area shape="rect" id="node1_9" href="rce.master.RoboEarthCloudEngine-class.html#__init__" title="Initialize the RoboEarth Cloud Engine realm." alt="" coords="17,40,296,60"/>
+<area shape="rect" id="node1_10" href="rce.master.RoboEarthCloudEngine-class.html#requestAvatar" title="Returns Avatar for slave processes of the cloud engine." alt="" coords="17,60,296,80"/>
+<area shape="rect" id="node1_11" href="rce.master.RoboEarthCloudEngine-class.html#getUser" title="Get the user object matching the given user ID." alt="" coords="17,80,296,100"/>
+<area shape="rect" id="node1_12" href="rce.master.RoboEarthCloudEngine-class.html#requestURL" title="Callback for Robot resource to retrieve the location of the Robot process &#160;to which a WebSocket connection should be established." alt="" coords="17,100,296,120"/>
+<area shape="rect" id="node1_13" href="rce.master.RoboEarthCloudEngine-class.html#createContainer" title="Callback for User instance to create a new Container object in a container &#160;process." alt="" coords="17,120,296,140"/>
+<area shape="rect" id="node1_14" href="rce.master.RoboEarthCloudEngine-class.html#checkUIDValidity" title="Method to check if incoming environment ID is valid." alt="" coords="17,140,296,160"/>
+<area shape="rect" id="node1_15" href="rce.master.RoboEarthCloudEngine-class.html#createConnection" title="Callback for User instance to create a new connection between two &#160;interfaces." alt="" coords="17,160,296,180"/>
+<area shape="rect" id="node1_16" href="rce.master.RoboEarthCloudEngine-class.html#preShutdown" title="Method is executed by the twisted reactor when a shutdown event is &#160;triggered, before the reactor is being stopped." alt="" coords="17,180,296,200"/>
+<area shape="rect" id="node1_17" href="rce.master.RoboEarthCloudEngine-class.html#postShutdown" title="Method is executed by the twisted reactor when a shutdown event is &#160;triggered, after the reactor has been stopped." alt="" coords="17,200,296,220"/>
+<area shape="rect" id="node1" href="rce.master.RoboEarthCloudEngine-class.html" title="Realm for the twisted cred system." alt="" coords="5,6,307,226"/>
 </map>
   <img src="uml_class_diagram_for_rce_mast.gif" alt='' usemap="#uml_class_diagram_for_rce_mast" ismap="ismap" class="graph-without-title" />
 </center>
@@ -109,7 +106,6 @@
         <tr>
           <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">checker</span>,
-        <span class="summary-sig-arg">intIP</span>,
         <span class="summary-sig-arg">port</span>)</span><br />
       Initialize the RoboEarth Cloud Engine realm.</td>
           <td align="right" valign="top">
@@ -161,24 +157,6 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">str</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#getInternalIP" class="summary-sig-name">getInternalIP</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Get the IP address of the network interface used for the internal 
-      communication.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.getInternalIP">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">twisted.internet.defer.Deferred</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -198,14 +176,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">(rce.core.environment.Environment, rce.core.container.Container) 
+      (subclasses of rce.core.base.Proxy)</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="rce.master.RoboEarthCloudEngine-class.html#createContainer" class="summary-sig-name">createContainer</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">userID</span>)</span><br />
-      Callback for User instance to create a new Container object in a
-container process.</td>
+        <span class="summary-sig-arg">userID</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Callback for User instance to create a new Container object in a 
+      container process.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.createContainer">source&nbsp;code</a></span>
             
@@ -308,38 +288,6 @@ container process.</td>
     </td>
   </tr>
 </table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Class Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-ClassVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="LOAD_BALANCER_CLS"></a><span class="summary-name">LOAD_BALANCER_CLS</span> = <code title="LoadBalancer">LoadBalancer</code>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="DISTRIBUTOR_CLS"></a><span class="summary-name">DISTRIBUTOR_CLS</span> = <code title="Distributor">Distributor</code>
-    </td>
-  </tr>
-</table>
 <!-- ==================== PROPERTIES ==================== -->
 <a name="section-Properties"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -392,7 +340,6 @@ container process.</td>
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">checker</span>,
-        <span class="sig-arg">intIP</span>,
         <span class="sig-arg">port</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
@@ -407,9 +354,7 @@ container process.</td>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>checker</code></strong> (twisted.cred.checkers.ICredentialsChecker) - Login checker which authenticates the User when an initial 
           request is received.</li>
-        <li><strong class="pname"><code>intIP</code></strong> (str) - IP address of the network interface used for the internal 
-          communication.</li>
-        <li><strong class="pname"><code>port</code></strong> (int) - Port where the robot process is listening for connections to 
+        <li><strong class="pname"><code>port</code></strong> (int) - Port where the robot process is listening for connections from 
           other endpoints.</li>
     </ul></dd>
     <dt>Overrides:
@@ -467,28 +412,6 @@ container process.</td>
   </dl>
 </td></tr></table>
 </div>
-<a name="getInternalIP"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getInternalIP</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.getInternalIP">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Get the IP address of the network interface used for the internal 
-  communication.</p>
-  <dl class="fields">
-    <dt>Returns: str</dt>
-        <dd>IP address of the network interface.</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="requestURL"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -526,27 +449,26 @@ container process.</td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createContainer</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">userID</span>)</span>
+        <span class="sig-arg">userID</span>,
+        <span class="sig-arg">data</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.master-pysrc.html#RoboEarthCloudEngine.createContainer">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-Callback for User instance to create a new Container object in a
-container process.
-
-@param userID:        UserID of the user who created the container.
-@type  userID:        str
-
-@return:            New Namespace and Container instance.
-@rtype:             (rce.core.environment.Environment,
-                     rce.core.container.Container)
-                    (subclasses of rce.core.base.Proxy)
-
-</pre>
+  <p>Callback for User instance to create a new Container object in a 
+  container process.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>userID</code></strong> (str) - UserID of the user who created the container.</li>
+        <li><strong class="pname"><code>data</code></strong> - Extra data which is used to configure the container.</li>
+        <li><strong class="pname"><code>data</code></strong> - dict</li>
+    </ul></dd>
+    <dt>Returns: (rce.core.environment.Environment, rce.core.container.Container) 
+      (subclasses of rce.core.base.Proxy)</dt>
+        <dd>New Namespace and Container instance.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -629,7 +551,7 @@ container process.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:20 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:53 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

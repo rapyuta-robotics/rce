@@ -59,15 +59,21 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ROSPublisher</h1><p class="nomargin-top"><span class="codelink"><a href="rce.client.interface-pysrc.html#ROSPublisher">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_clie_5" name="uml_class_diagram_for_rce_clie_5">
-<area shape="rect" id="node21" href="rce.client.interface._Publisher-class.html#publish" title="Publish a message." alt="" coords="84,103,195,121"/>
-<area shape="rect" id="node1" href="rce.client.interface._Publisher-class.html" title="Abstract implementation of a Publisher Interface." alt="" coords="72,70,205,127"/>
-<area shape="rect" id="node20" href="rce.client.interface.ROSPublisher-class.html#__init__" title="Initialize the Publisher." alt="" coords="17,180,263,199"/>
-<area shape="rect" id="node20" href="rce.client.interface.ROSPublisher-class.html#__del__" title="Finalize the Publisher." alt="" coords="17,199,263,217"/>
-<area shape="rect" id="node3" href="rce.client.interface.ROSPublisher-class.html" title="Representation of a Publisher Interface using ROS." alt="" coords="5,147,275,223"/>
-<area shape="rect" id="node2" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="108,6,169,50"/>
+<center>  <map id="uml_class_diagram_for_rce_clie_6" name="uml_class_diagram_for_rce_clie_6">
+<area shape="rect" id="node1_9" href="rce.client.interface.ROSPublisher-class.html#__init__" title="Initialize the Publisher." alt="" coords="17,292,263,312"/>
+<area shape="rect" id="node1_10" href="rce.client.interface.ROSPublisher-class.html#__del__" title="Finalize the Publisher." alt="" coords="17,312,263,332"/>
+<area shape="rect" id="node1" href="rce.client.interface.ROSPublisher-class.html" title="Representation of a Publisher Interface using ROS." alt="" coords="5,259,275,339"/>
+<area shape="rect" id="node2_11" href="rce.client.interface._Publisher-class.html#publish" title="Publish a message." alt="" coords="84,213,195,233"/>
+<area shape="rect" id="node2" href="rce.client.interface._Publisher-class.html" title="Abstract implementation of a Publisher Interface." alt="" coords="71,179,206,239"/>
+<area shape="rect" id="node3_12" href="rce.client.interface._Base-class.html#UNIQUE" title="rce.client.interface._Base.UNIQUE" alt="" coords="40,31,240,51"/>
+<area shape="rect" id="node3_13" href="rce.client.interface._Base-class.html#CALLABLE" title="rce.client.interface._Base.CALLABLE" alt="" coords="40,51,240,71"/>
+<area shape="rect" id="node3_14" href="rce.client.interface._Base-class.html#status" title="Status (enabled/disabled) of the interface." alt="" coords="40,71,240,91"/>
+<area shape="rect" id="node3_15" href="rce.client.interface._Base-class.html#registerStatusListener" title="Register a status listener which will be called with status changes." alt="" coords="40,93,240,113"/>
+<area shape="rect" id="node3_16" href="rce.client.interface._Base-class.html#unregisterStatusListener" title="Unregister a previously registered status listener." alt="" coords="40,113,240,133"/>
+<area shape="rect" id="node3_17" href="rce.client.interface._Base-class.html#setEnabled" title="Callback for RCE client to enable/disable the interface." alt="" coords="40,133,240,153"/>
+<area shape="rect" id="node3" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="28,5,252,160"/>
 </map>
-  <img src="uml_class_diagram_for_rce_clie_5.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_5" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_clie_6.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_6" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -129,6 +135,42 @@
       
     </td>
   </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.client.interface.ROSPublisher-class.html#_start" class="summary-sig-name" onclick="show_private();">_start</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Hook which is called when the status of the interface switches from 
+      disabled to enabled.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.client.interface-pysrc.html#ROSPublisher._start">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.client.interface.ROSPublisher-class.html#_stop" class="summary-sig-name" onclick="show_private();">_stop</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Hook which is called when the status of the interface switches from 
+      enabled to disabled.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.client.interface-pysrc.html#ROSPublisher._stop">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -148,9 +190,17 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Publisher-class.html" onclick="show_private();">_Publisher</a></code></b>:
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Publisher-class.html">_Publisher</a></code></b>:
       <code><a href="rce.client.interface._Publisher-class.html#publish">publish</a></code>
       </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#registerStatusListener">registerStatusListener</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#setEnabled">setEnabled</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#unregisterStatusListener">unregisterStatusListener</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b> (private):
+      <code><a href="rce.client.interface._Base-class.html#_unregister" onclick="show_private();">_unregister</a></code>
+      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__format__</code>,
@@ -187,10 +237,14 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Publisher-class.html" onclick="show_private();">_Publisher</a></code></b> (private):
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Publisher-class.html">_Publisher</a></code></b> (private):
       <code><a href="rce.client.interface._Publisher-class.html#_DOWN_MSG" onclick="show_private();">_DOWN_MSG</a></code>,
       <code><a href="rce.client.interface._Publisher-class.html#_UP_MSG" onclick="show_private();">_UP_MSG</a></code>
       </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#CALLABLE">CALLABLE</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#UNIQUE">UNIQUE</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -213,6 +267,9 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#status">status</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -260,6 +317,54 @@
   <dl class="fields">
     <dt>Overrides:
         object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_start"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_start</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.client.interface-pysrc.html#ROSPublisher._start">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hook which is called when the status of the interface switches from 
+  disabled to enabled.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.client.interface._Base-class.html#_start" onclick="show_private();">_Base._start</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_stop"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_stop</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.client.interface-pysrc.html#ROSPublisher._stop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hook which is called when the status of the interface switches from 
+  enabled to disabled.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.client.interface._Base-class.html#_stop" onclick="show_private();">_Base._stop</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -314,7 +419,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:14 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:48 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -59,11 +59,12 @@
 <h1 class="epydoc">Class RCEContainer</h1><p class="nomargin-top"><span class="codelink"><a href="rce.container-pysrc.html#RCEContainer">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_cont_2" name="uml_class_diagram_for_rce_cont_2">
-<area shape="rect" id="node252" href="rce.container.RCEContainer-class.html#__init__" title="Initialize the deployment container." alt="" coords="17,39,181,57"/>
-<area shape="rect" id="node252" href="rce.container.RCEContainer-class.html#start" title="Method which starts the container." alt="" coords="17,57,181,76"/>
-<area shape="rect" id="node252" href="rce.container.RCEContainer-class.html#remote_getPort" title="Get the port which can be used together with the host IP address to reach &#160;connect with the container." alt="" coords="17,76,181,95"/>
-<area shape="rect" id="node252" href="rce.container.RCEContainer-class.html#remote_destroy" title="Method should be called to destroy the container." alt="" coords="17,95,181,113"/>
-<area shape="rect" id="node1" href="rce.container.RCEContainer-class.html" title="Container representation which is used to run a ROS environment." alt="" coords="5,6,192,119"/>
+<area shape="rect" id="node1_5" href="rce.container.RCEContainer-class.html#__init__" title="Initialize the deployment container." alt="" coords="17,40,215,60"/>
+<area shape="rect" id="node1_6" href="rce.container.RCEContainer-class.html#start" title="Method which starts the container." alt="" coords="17,60,215,80"/>
+<area shape="rect" id="node1_7" href="rce.container.RCEContainer-class.html#remote_getPort" title="Get the port which can be used together with the host IP address to reach &#160;connect with the container." alt="" coords="17,80,215,100"/>
+<area shape="rect" id="node1_8" href="rce.container.RCEContainer-class.html#remote_destroy" title="Method should be called to destroy the container." alt="" coords="17,100,215,120"/>
+<area shape="rect" id="node1_9" href="rce.container.RCEContainer-class.html#__del__" title="rce.container.RCEContainer.__del__" alt="" coords="17,120,215,140"/>
+<area shape="rect" id="node1" href="rce.container.RCEContainer-class.html" title="Container representation which is used to run a ROS environment." alt="" coords="5,6,227,146"/>
 </map>
   <img src="uml_class_diagram_for_rce_cont_2.gif" alt='' usemap="#uml_class_diagram_for_rce_cont_2" ismap="ismap" class="graph-without-title" />
 </center>
@@ -97,7 +98,8 @@
           <td><span class="summary-sig"><a href="rce.container.RCEContainer-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">client</span>,
         <span class="summary-sig-arg">nr</span>,
-        <span class="summary-sig-arg">uid</span>)</span><br />
+        <span class="summary-sig-arg">uid</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
       Initialize the deployment container.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#RCEContainer.__init__">source&nbsp;code</a></span>
@@ -166,8 +168,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="_destroy"></a><span class="summary-sig-name">_destroy</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">response</span>)</span><br />
+          <td><span class="summary-sig"><a name="_destroy"></a><span class="summary-sig-name">_destroy</span>(<span class="summary-sig-arg">self</span>)</span><br />
       Internally used method to clean up after the container has been 
       stopped.</td>
           <td align="right" valign="top">
@@ -189,6 +190,22 @@
       Method should be called to destroy the container.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#RCEContainer.remote_destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__del__"></a><span class="summary-sig-name">__del__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#RCEContainer.__del__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -225,7 +242,8 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">client</span>,
         <span class="sig-arg">nr</span>,
-        <span class="sig-arg">uid</span>)</span>
+        <span class="sig-arg">uid</span>,
+        <span class="sig-arg">data</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -243,6 +261,7 @@
           hostname of the container.</li>
         <li><strong class="pname"><code>uid</code></strong> (str) - Unique ID which is used by the environment process to login to 
           the Master.</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - Extra data used to configure the container.</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -297,7 +316,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:18 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:51 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

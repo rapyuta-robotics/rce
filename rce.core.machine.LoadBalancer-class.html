@@ -59,15 +59,18 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class LoadBalancer</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_core_13" name="uml_class_diagram_for_rce_core_13">
-<area shape="rect" id="node294" href="rce.core.machine.LoadBalancer-class.html#__init__" title="Initialize the Load Balancer." alt="" coords="17,39,217,57"/>
-<area shape="rect" id="node294" href="rce.core.machine.LoadBalancer-class.html#createMachine" title="Create a new Machine object, which can be used to create new containers." alt="" coords="17,57,217,76"/>
-<area shape="rect" id="node294" href="rce.core.machine.LoadBalancer-class.html#destroyMachine" title="Destroy a Machine object." alt="" coords="17,76,217,95"/>
-<area shape="rect" id="node294" href="rce.core.machine.LoadBalancer-class.html#createContainer" title="Select an appropriate machine and create a container." alt="" coords="17,95,217,113"/>
-<area shape="rect" id="node294" href="rce.core.machine.LoadBalancer-class.html#cleanUp" title="Method should be called to destroy all machines." alt="" coords="17,113,217,132"/>
-<area shape="rect" id="node1" href="rce.core.machine.LoadBalancer-class.html" title="The Load Balancer is responsible for selecting the appropriate container to launch a new container." alt="" coords="5,6,229,138"/>
+<center>  <map id="uml_class_diagram_for_rce_core_14" name="uml_class_diagram_for_rce_core_14">
+<area shape="rect" id="node1_8" href="rce.core.machine.LoadBalancer-class.html#__init__" title="Initialize the Load Balancer." alt="" coords="17,39,251,59"/>
+<area shape="rect" id="node1_9" href="rce.core.machine.LoadBalancer-class.html#createMachine" title="Create a new Machine object, which can be used to create new containers." alt="" coords="17,59,251,79"/>
+<area shape="rect" id="node1_10" href="rce.core.machine.LoadBalancer-class.html#destroyMachine" title="Destroy a Machine object." alt="" coords="17,79,251,99"/>
+<area shape="rect" id="node1_11" href="rce.core.machine.LoadBalancer-class.html#createContainer" title="Select an appropriate machine and create a container." alt="" coords="17,99,251,119"/>
+<area shape="rect" id="node1_12" href="rce.core.machine.LoadBalancer-class.html#registerIAASHook" title="Register an IAAS Hook object." alt="" coords="17,119,251,139"/>
+<area shape="rect" id="node1_13" href="rce.core.machine.LoadBalancer-class.html#unregisterIAASHook" title="Method should be called to destroy all machines." alt="" coords="17,139,251,159"/>
+<area shape="rect" id="node1_14" href="rce.core.machine.LoadBalancer-class.html#freeGroup" title="# TODO: Add doc" alt="" coords="17,159,251,179"/>
+<area shape="rect" id="node1_15" href="rce.core.machine.LoadBalancer-class.html#cleanUp" title="Method should be called to destroy all machines." alt="" coords="17,179,251,199"/>
+<area shape="rect" id="node1" href="rce.core.machine.LoadBalancer-class.html" title="The Load Balancer is responsible for selecting the appropriate container to launch a new container." alt="" coords="5,5,262,205"/>
 </map>
-  <img src="uml_class_diagram_for_rce_core_13.gif" alt='' usemap="#uml_class_diagram_for_rce_core_13" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_core_14.gif" alt='' usemap="#uml_class_diagram_for_rce_core_14" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -99,8 +102,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">root</span>)</span><br />
+          <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Initialize the Load Balancer.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.__init__">source&nbsp;code</a></span>
@@ -119,7 +121,7 @@
         <tr>
           <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#createMachine" class="summary-sig-name">createMachine</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">ref</span>,
-        <span class="summary-sig-arg">maxNr</span>)</span><br />
+        <span class="summary-sig-arg">data</span>)</span><br />
       Create a new Machine object, which can be used to create new 
       containers.</td>
           <td align="right" valign="top">
@@ -155,12 +157,31 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#_getNextMachine" class="summary-sig-name" onclick="show_private();">_getNextMachine</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="_createContainer"></a><span class="summary-sig-name">_createContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>,
         <span class="summary-sig-arg">userID</span>)</span><br />
-      Internally used method to retrieve the machine where the next 
-      container should be created.</td>
+      # TODO: Add doc</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer._getNextMachine">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer._createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rce.core.machine.Machine</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#_getMachine" class="summary-sig-name" onclick="show_private();">_getMachine</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">container</span>)</span><br />
+      Internally used method to assign a machine to the container which 
+      should be created.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer._getMachine">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -176,10 +197,65 @@
         <tr>
           <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#createContainer" class="summary-sig-name">createContainer</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">uid</span>,
-        <span class="summary-sig-arg">userID</span>)</span><br />
+        <span class="summary-sig-arg">userID</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
       Select an appropriate machine and create a container.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.createContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.LoadBalancer-class.html#registerIAASHook" class="summary-sig-name">registerIAASHook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">hook</span>)</span><br />
+      Register an IAAS Hook object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.registerIAASHook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unregisterIAASHook"></a><span class="summary-sig-name">unregisterIAASHook</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method should be called to destroy all machines.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.unregisterIAASHook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="freeGroup"></a><span class="summary-sig-name">freeGroup</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">uid</span>)</span><br />
+      # TODO: Add doc</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.freeGroup">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -220,6 +296,31 @@
       <code>__str__</code>,
       <code>__subclasshook__</code>
       </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_UID_LEN"></a><span class="summary-name">_UID_LEN</span> = <code title="8">8</code>
     </td>
   </tr>
 </table>
@@ -273,8 +374,7 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">root</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -284,10 +384,6 @@
   
   <p>Initialize the Load Balancer.</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>root</code></strong> (rce.master.RoboEarthCloudEngine) - Reference to top level of data structure.</li>
-    </ul></dd>
     <dt>Overrides:
         object.__init__
     </dt>
@@ -303,7 +399,7 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createMachine</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">ref</span>,
-        <span class="sig-arg">maxNr</span>)</span>
+        <span class="sig-arg">data</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.createMachine">source&nbsp;code</a></span>&nbsp;
@@ -316,7 +412,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ref</code></strong> (twisted.spread.pb.RemoteReference) - Remote reference to the ContainerClient in the container process.</li>
-        <li><strong class="pname"><code>maxNr</code></strong> (int) - The maximum number of container which are allowed in the machine.</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - Data about the machine</li>
     </ul></dd>
     <dt>Returns: rce.core.machine.Machine</dt>
         <dd>New Machine instance.</dd>
@@ -347,28 +443,30 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="_getNextMachine"></a>
+<a name="_getMachine"></a>
 <div class="private">
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">_getNextMachine</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">userID</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_getMachine</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">container</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer._getNextMachine">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer._getMachine">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Internally used method to retrieve the machine where the next 
-  container should be created.</p>
+  <p>Internally used method to assign a machine to the container which 
+  should be created.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>userID</code></strong> (str) - UserID of the user who created the container.</li>
+        <li><strong class="pname"><code>container</code></strong> (rce.core.container.Container) - Container which should be created.</li>
     </ul></dd>
+    <dt>Returns: rce.core.machine.Machine</dt>
+        <dd>Machine to which the container should be assigned.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -381,7 +479,8 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createContainer</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">uid</span>,
-        <span class="sig-arg">userID</span>)</span>
+        <span class="sig-arg">userID</span>,
+        <span class="sig-arg">data</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.createContainer">source&nbsp;code</a></span>&nbsp;
@@ -395,9 +494,31 @@
         <li><strong class="pname"><code>uid</code></strong> (str) - Unique ID which is used to identify the environment process when 
           he connects to the Master.</li>
         <li><strong class="pname"><code>userID</code></strong> (str) - UserID of the user who created the container.</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - Extra data used to configure the container.</li>
     </ul></dd>
     <dt>Returns: rce.core.container.Container</dt>
         <dd>New Container instance.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registerIAASHook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerIAASHook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">hook</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#LoadBalancer.registerIAASHook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register an IAAS Hook object.</p>
+  <p># TODO: Add doc</p>
+  <dl class="fields">
   </dl>
 </td></tr></table>
 </div>
@@ -428,7 +549,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:19 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:51 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

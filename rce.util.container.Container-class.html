@@ -60,11 +60,12 @@
 <h1 class="epydoc">Class Container</h1><p class="nomargin-top"><span class="codelink"><a href="rce.util.container-pysrc.html#Container">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_util" name="uml_class_diagram_for_rce_util">
-<area shape="rect" id="node584" href="rce.util.container.Container-class.html#__init__" title="Initialize the Container." alt="" coords="17,39,304,57"/>
-<area shape="rect" id="node584" href="rce.util.container.Container-class.html#extendFstab" title="Add a line to the fstab file using bind." alt="" coords="17,57,304,76"/>
-<area shape="rect" id="node584" href="rce.util.container.Container-class.html#start" title="Start the container." alt="" coords="17,76,304,95"/>
-<area shape="rect" id="node584" href="rce.util.container.Container-class.html#stop" title="Stop the container." alt="" coords="17,95,304,113"/>
-<area shape="rect" id="node1" href="rce.util.container.Container-class.html" title="Class representing a single container." alt="" coords="5,6,315,119"/>
+<area shape="rect" id="node1_5" href="rce.util.container.Container-class.html#__init__" title="Initialize the Container." alt="" coords="17,40,477,60"/>
+<area shape="rect" id="node1_6" href="rce.util.container.Container-class.html#addNetworkInterface" title="Add a network interface to the configuration file." alt="" coords="17,60,477,80"/>
+<area shape="rect" id="node1_7" href="rce.util.container.Container-class.html#extendFstab" title="Add a line to the fstab file using bind." alt="" coords="17,80,477,100"/>
+<area shape="rect" id="node1_8" href="rce.util.container.Container-class.html#start" title="Start the container." alt="" coords="17,100,477,120"/>
+<area shape="rect" id="node1_9" href="rce.util.container.Container-class.html#stop" title="Stop the container." alt="" coords="17,120,477,140"/>
+<area shape="rect" id="node1" href="rce.util.container.Container-class.html" title="Class representing a single container." alt="" coords="5,6,489,146"/>
 </map>
   <img src="uml_class_diagram_for_rce_util.gif" alt='' usemap="#uml_class_diagram_for_rce_util" ismap="ismap" class="graph-without-title" />
 </center>
@@ -99,11 +100,32 @@
         <span class="summary-sig-arg">reactor</span>,
         <span class="summary-sig-arg">rootfs</span>,
         <span class="summary-sig-arg">conf</span>,
-        <span class="summary-sig-arg">hostname</span>,
-        <span class="summary-sig-arg">ip</span>)</span><br />
+        <span class="summary-sig-arg">hostname</span>)</span><br />
       Initialize the Container.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.util.container-pysrc.html#Container.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.util.container.Container-class.html#addNetworkInterface" class="summary-sig-name">addNetworkInterface</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">link</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">ip</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">up</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">down</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Add a network interface to the configuration file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.util.container-pysrc.html#Container.addNetworkInterface">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -137,10 +159,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="_setup"></a><span class="summary-sig-name">_setup</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Setup necessary files.</td>
+          <td><span class="summary-sig"><a name="_setupFiles"></a><span class="summary-sig-name">_setupFiles</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Setup the configuration and fstab file.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.util.container-pysrc.html#Container._setup">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.util.container-pysrc.html#Container._setupFiles">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -257,8 +279,7 @@
         <span class="sig-arg">reactor</span>,
         <span class="sig-arg">rootfs</span>,
         <span class="sig-arg">conf</span>,
-        <span class="sig-arg">hostname</span>,
-        <span class="sig-arg">ip</span>)</span>
+        <span class="sig-arg">hostname</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -276,12 +297,46 @@
         <li><strong class="pname"><code>conf</code></strong> (str) - Filesystem path of folder where configuration files for the 
           container should be stored.</li>
         <li><strong class="pname"><code>hostname</code></strong> (str) - Host name of the container.</li>
-        <li><strong class="pname"><code>ip</code></strong> (str) - IP address which the container should use. Use '0.0.0.0' for 
-          DHCP.</li>
     </ul></dd>
     <dt>Overrides:
         object.__init__
     </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addNetworkInterface"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addNetworkInterface</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">link</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">ip</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">up</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">down</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.util.container-pysrc.html#Container.addNetworkInterface">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a network interface to the configuration file.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of the network interface inside the container.</li>
+        <li><strong class="pname"><code>link</code></strong> (str) - Name of the network interface in the host system which will be 
+          connected to the container network interface.</li>
+        <li><strong class="pname"><code>ip</code></strong> (str) - IP address which will be assigned to the container network 
+          interface. Use '0.0.0.0' for DHCP.</li>
+        <li><strong class="pname"><code>up</code></strong> (str) - Path to a script which should be executed in the host system once
+          the interface has to be set up.</li>
+        <li><strong class="pname"><code>down</code></strong> (str) - Path to a script which should be executed in the host system once
+          the interface has to teared down.</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -307,7 +362,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>src</code></strong> (str) - Source path in host filesystem.</li>
-        <li><strong class="pname"><code>fs</code></strong> (str) - Path in container filesystem to which the source should be bind.</li>
+        <li><strong class="pname"><code>fs</code></strong> (str) - Path in container filesystem to which the source should be bound.</li>
         <li><strong class="pname"><code>ro</code></strong> (bool) - Flag to indicate whether bind should be read-only or not.</li>
     </ul></dd>
   </dl>
@@ -393,7 +448,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:23 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:55 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

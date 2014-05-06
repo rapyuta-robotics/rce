@@ -59,24 +59,24 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Machine</h1><p class="nomargin-top"><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_core_14" name="uml_class_diagram_for_rce_core_14">
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__init__" title="Initialize the Machine." alt="" coords="17,39,257,57"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#active" title="The number of active containers in the machine." alt="" coords="17,57,257,76"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#capacity" title="The number of active containers in the machine." alt="" coords="17,76,257,95"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#availability" title="The number of available containers in the machine." alt="" coords="17,95,257,113"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#IP" title="The IP address used for the internal communication of the machine." alt="" coords="17,113,257,132"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#createContainer" title="Create a container." alt="" coords="17,132,257,151"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#registerContainer" title="rce.core.machine.Machine.registerContainer" alt="" coords="17,151,257,169"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#unregisterContainer" title="rce.core.machine.Machine.unregisterContainer" alt="" coords="17,169,257,188"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#listContainers" title="rce.core.machine.Machine.listContainers" alt="" coords="17,188,257,207"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#destroyContainer" title="Destroy Container proxy." alt="" coords="17,207,257,225"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#destroy" title="Method should be called to destroy the machine and will take care of &#160;deleting all circular references." alt="" coords="17,225,257,244"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__eq__" title="rce.core.machine.Machine.__eq__" alt="" coords="17,244,257,263"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__ne__" title="rce.core.machine.Machine.__ne__" alt="" coords="17,263,257,281"/>
-<area shape="rect" id="node295" href="rce.core.machine.Machine-class.html#__hash__" title="hash(x)" alt="" coords="17,281,257,300"/>
-<area shape="rect" id="node1" href="rce.core.machine.Machine-class.html" title="Representation of a machine in which containers can be created." alt="" coords="5,6,269,306"/>
+<center>  <map id="uml_class_diagram_for_rce_core_15" name="uml_class_diagram_for_rce_core_15">
+<area shape="rect" id="node1_14" href="rce.core.machine.Machine-class.html#__init__" title="Initialize the Machine." alt="" coords="17,40,233,60"/>
+<area shape="rect" id="node1_15" href="rce.core.machine.Machine-class.html#active" title="The number of active containers in the machine." alt="" coords="17,60,233,80"/>
+<area shape="rect" id="node1_16" href="rce.core.machine.Machine-class.html#size" title="Machine Capacity." alt="" coords="17,80,233,100"/>
+<area shape="rect" id="node1_17" href="rce.core.machine.Machine-class.html#cpu" title="Machine CPU Info." alt="" coords="17,100,233,120"/>
+<area shape="rect" id="node1_18" href="rce.core.machine.Machine-class.html#memory" title="Machine Memory Info." alt="" coords="17,120,233,140"/>
+<area shape="rect" id="node1_19" href="rce.core.machine.Machine-class.html#bandwidth" title="Machine Bandwidth Info." alt="" coords="17,140,233,160"/>
+<area shape="rect" id="node1_20" href="rce.core.machine.Machine-class.html#specialFeatures" title="Machine Special Features Info." alt="" coords="17,160,233,180"/>
+<area shape="rect" id="node1_21" href="rce.core.machine.Machine-class.html#availability" title="Free Machine Capacity." alt="" coords="17,180,233,200"/>
+<area shape="rect" id="node1_22" href="rce.core.machine.Machine-class.html#IP" title="The IP address used for the internal communication of the machine." alt="" coords="17,200,233,220"/>
+<area shape="rect" id="node1_23" href="rce.core.machine.Machine-class.html#getUserCount" title="# TODO: Add doc" alt="" coords="17,220,233,240"/>
+<area shape="rect" id="node1_24" href="rce.core.machine.Machine-class.html#assignContainer" title="# TODO: Add doc" alt="" coords="17,240,233,260"/>
+<area shape="rect" id="node1_25" href="rce.core.machine.Machine-class.html#createBridge" title="Create a new OVS Bridge." alt="" coords="17,260,233,280"/>
+<area shape="rect" id="node1_26" href="rce.core.machine.Machine-class.html#destroyBridge" title="Destroy a OVS Bridge." alt="" coords="17,280,233,300"/>
+<area shape="rect" id="node1_27" href="rce.core.machine.Machine-class.html#__hash__" title="hash(x)" alt="" coords="17,320,233,340"/>
+<area shape="rect" id="node1" href="rce.core.machine.Machine-class.html" title="Representation of a machine in which containers can be created." alt="" coords="5,6,245,346"/>
 </map>
-  <img src="uml_class_diagram_for_rce_core_14.gif" alt='' usemap="#uml_class_diagram_for_rce_core_14" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_core_15.gif" alt='' usemap="#uml_class_diagram_for_rce_core_15" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -108,8 +108,8 @@
         <tr>
           <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">ref</span>,
-        <span class="summary-sig-arg">maxNr</span>,
-        <span class="summary-sig-arg">root</span>)</span><br />
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">balancer</span>)</span><br />
       Initialize the Machine.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.__init__">source&nbsp;code</a></span>
@@ -143,10 +143,78 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#capacity" class="summary-sig-name">capacity</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      The number of active containers in the machine.</td>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#size" class="summary-sig-name">size</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Machine Capacity.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.capacity">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.size">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#cpu" class="summary-sig-name">cpu</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Machine CPU Info.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.cpu">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#memory" class="summary-sig-name">memory</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Machine Memory Info.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.memory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#bandwidth" class="summary-sig-name">bandwidth</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Machine Bandwidth Info.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.bandwidth">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#specialFeatures" class="summary-sig-name">specialFeatures</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Machine Special Features Info.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.specialFeatures">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -161,7 +229,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#availability" class="summary-sig-name">availability</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      The number of available containers in the machine.</td>
+      Free Machine Capacity.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.availability">source&nbsp;code</a></span>
             
@@ -190,16 +258,145 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">rce.core.container.Container</span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#createContainer" class="summary-sig-name">createContainer</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">uid</span>,
+          <td><span class="summary-sig"><a name="getUserCount"></a><span class="summary-sig-name">getUserCount</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">userID</span>)</span><br />
-      Create a container.</td>
+      # TODO: Add doc</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.createContainer">source&nbsp;code</a></span>
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.getUserCount">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="assignContainer"></a><span class="summary-sig-name">assignContainer</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">container</span>,
+        <span class="summary-sig-arg">uid</span>)</span><br />
+      # TODO: Add doc</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.assignContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#createBridge" class="summary-sig-name">createBridge</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Create a new OVS Bridge.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.createBridge">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#destroyBridge" class="summary-sig-name">destroyBridge</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Destroy a OVS Bridge.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroyBridge">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#createTunnel" class="summary-sig-name">createTunnel</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">targetIP</span>)</span><br />
+      Create a new GRE Tunnel.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.createTunnel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#destroyTunnel" class="summary-sig-name">destroyTunnel</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">targetIP</span>)</span><br />
+      Destroy a GRE Tunnel.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroyTunnel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#getSysinfo" class="summary-sig-name">getSysinfo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>)</span><br />
+      Get realtime Sysinfo data from machine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.getSysinfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.core.machine.Machine-class.html#setSysinfo" class="summary-sig-name">setSysinfo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set some system parameter to the machine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.setSysinfo">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -234,22 +431,6 @@
         <span class="summary-sig-arg">container</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.unregisterContainer">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="listContainers"></a><span class="summary-sig-name">listContainers</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.listContainers">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -414,8 +595,8 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">ref</span>,
-        <span class="sig-arg">maxNr</span>,
-        <span class="sig-arg">root</span>)</span>
+        <span class="sig-arg">data</span>,
+        <span class="sig-arg">balancer</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -428,8 +609,9 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ref</code></strong> (twisted.spread.pb.RemoteReference) - Remote reference to the ContainerClient in the container process.</li>
-        <li><strong class="pname"><code>maxNr</code></strong> (int) - The maximum number of container which are allowed in the machine.</li>
-        <li><strong class="pname"><code>root</code></strong> (rce.master.RoboEarthCloudEngine) - Reference to top level of data structure.</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - Data about the machine.</li>
+        <li><strong class="pname"><code>balancer</code></strong> (rce.core.machine.LoadBalancer) - Reference to the load balancer which is responsible for this 
+          machine.</li>
     </ul></dd>
     <dt>Overrides:
         object.__init__
@@ -460,21 +642,113 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="capacity"></a>
+<a name="size"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">capacity</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">size</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.capacity">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.size">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>The number of active containers in the machine.</p>
+  <p>Machine Capacity.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="cpu"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cpu</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.cpu">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Machine CPU Info.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="memory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">memory</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.memory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Machine Memory Info.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="bandwidth"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">bandwidth</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.bandwidth">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Machine Bandwidth Info.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="specialFeatures"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">specialFeatures</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.specialFeatures">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Machine Special Features Info.</p>
   <dl class="fields">
     <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
@@ -497,7 +771,7 @@
     </td>
   </tr></table>
   
-  <p>The number of available containers in the machine.</p>
+  <p>Free Machine Capacity.</p>
   <dl class="fields">
     <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
@@ -529,32 +803,153 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="createContainer"></a>
+<a name="createBridge"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createContainer</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">uid</span>,
-        <span class="sig-arg">userID</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createBridge</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.createContainer">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.createBridge">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Create a container.</p>
+  <p>Create a new OVS Bridge.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>uid</code></strong> (str) - Unique ID which is used to identify the environment process when 
-          he connects to the Master.</li>
-        <li><strong class="pname"><code>userID</code></strong> (str) - UserID of the user who created the container.</li>
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
     </ul></dd>
-    <dt>Returns: rce.core.container.Container</dt>
-        <dd>New Container instance.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyBridge"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyBridge</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroyBridge">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Destroy a OVS Bridge.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="createTunnel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">createTunnel</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">targetIP</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.createTunnel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new GRE Tunnel.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+        <li><strong class="pname"><code>targetIP</code></strong> (str) - Target IP for the GRE Tunnel.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroyTunnel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroyTunnel</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">targetIP</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.destroyTunnel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Destroy a GRE Tunnel.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+        <li><strong class="pname"><code>targetIP</code></strong> (str) - Target IP for the GRE Tunnel.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getSysinfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSysinfo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.getSysinfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get realtime Sysinfo data from machine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>request</code></strong> (# TODO: Add type) - data desired</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setSysinfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setSysinfo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.core.machine-pysrc.html#Machine.setSysinfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set some system parameter to the machine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>request</code></strong> (# TODO: Add type) - data desired</li>
+        <li><strong class="pname"><code>value</code></strong> (# TODO: Add type) - data value</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -609,7 +1004,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:19 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:51 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

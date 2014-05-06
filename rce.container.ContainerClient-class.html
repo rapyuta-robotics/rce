@@ -59,21 +59,21 @@
 <h1 class="epydoc">Class ContainerClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_rce_cont" name="uml_class_diagram_for_rce_cont">
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#__init__" title="Initialize the Container Client." alt="" coords="17,39,931,57"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="17,57,931,76"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#internalIP" title="IP address of this process in the internal network." alt="" coords="17,76,931,95"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#masterPort" title="Port of the master process used for internal communications." alt="" coords="17,95,931,113"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#envPort" title="Port where the environment process running inside the container is &#160;listening for new connections." alt="" coords="17,113,931,132"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#rosproxyPort" title="Port where the ROS proxy running inside the container is listening for new &#160;connections." alt="" coords="17,132,931,151"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#rootfs" title="Host filesystem path of container filesystem root directory." alt="" coords="17,151,931,169"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#confDir" title="Filesystem path of configuration directory." alt="" coords="17,169,931,188"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#dataDir" title="Filesystem path of temporary data directory." alt="" coords="17,188,931,207"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#pkgDirIter" title="Iterator over all file system paths of package directories." alt="" coords="17,207,931,225"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#rosRel" title="Container filesytem ROS release in this deployment instance of the cloud &#160;engine" alt="" coords="17,225,931,244"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#masterIP" title="IP address of master process." alt="" coords="17,244,931,263"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#masterPassword" title="SHA 256 Digested Master Password." alt="" coords="17,263,931,281"/>
-<area shape="rect" id="node251" href="rce.container.ContainerClient-class.html#terminate" title="Method should be called to terminate all running containers before the &#160;reactor is stopped." alt="" coords="17,300,931,319"/>
-<area shape="rect" id="node1" href="rce.container.ContainerClient-class.html" title="Container client is responsible for the creation and destruction of containers in a machine." alt="" coords="5,6,941,325"/>
+<area shape="rect" id="node1_14" href="rce.container.ContainerClient-class.html#__init__" title="Initialize the Container Client." alt="" coords="17,40,1085,60"/>
+<area shape="rect" id="node1_15" href="rce.container.ContainerClient-class.html#remote_getSysinfo" title="Get realtime Sysinfo data from machine." alt="" coords="17,60,1085,80"/>
+<area shape="rect" id="node1_16" href="rce.container.ContainerClient-class.html#remote_setSysinfo" title="Set some system parameter to the machine." alt="" coords="17,80,1085,100"/>
+<area shape="rect" id="node1_17" href="rce.container.ContainerClient-class.html#reactor" title="Reference to twisted::reactor." alt="" coords="17,100,1085,120"/>
+<area shape="rect" id="node1_18" href="rce.container.ContainerClient-class.html#internalIP" title="IP address of this process in the internal network." alt="" coords="17,120,1085,140"/>
+<area shape="rect" id="node1_19" href="rce.container.ContainerClient-class.html#masterPort" title="Port of the master process used for internal communications." alt="" coords="17,140,1085,160"/>
+<area shape="rect" id="node1_20" href="rce.container.ContainerClient-class.html#envPort" title="Port where the environment process running inside the container is &#160;listening for new connections." alt="" coords="17,160,1085,180"/>
+<area shape="rect" id="node1_21" href="rce.container.ContainerClient-class.html#rosproxyPort" title="Port where the ROS proxy running inside the container is listening for new &#160;connections." alt="" coords="17,180,1085,200"/>
+<area shape="rect" id="node1_22" href="rce.container.ContainerClient-class.html#rootfs" title="Host filesystem path of container filesystem root directory." alt="" coords="17,200,1085,220"/>
+<area shape="rect" id="node1_23" href="rce.container.ContainerClient-class.html#confDir" title="Filesystem path of configuration directory." alt="" coords="17,220,1085,240"/>
+<area shape="rect" id="node1_24" href="rce.container.ContainerClient-class.html#dataDir" title="Filesystem path of temporary data directory." alt="" coords="17,240,1085,260"/>
+<area shape="rect" id="node1_25" href="rce.container.ContainerClient-class.html#pkgDirIter" title="Iterator over all file system paths of package directories." alt="" coords="17,260,1085,280"/>
+<area shape="rect" id="node1_26" href="rce.container.ContainerClient-class.html#ubuntuRel" title="Host filesystem Ubuntu release in this machine." alt="" coords="17,280,1085,300"/>
+<area shape="rect" id="node1_27" href="rce.container.ContainerClient-class.html#terminate" title="Method should be called to terminate all running containers before the &#160;reactor is stopped." alt="" coords="17,320,1085,340"/>
+<area shape="rect" id="node1" href="rce.container.ContainerClient-class.html" title="Container client is responsible for the creation and destruction of containers in a machine." alt="" coords="5,6,1097,346"/>
 </map>
   <img src="uml_class_diagram_for_rce_cont.gif" alt='' usemap="#uml_class_diagram_for_rce_cont" ismap="ismap" class="graph-without-title" />
 </center>
@@ -112,6 +112,7 @@
         <span class="summary-sig-arg">masterPort</span>,
         <span class="summary-sig-arg">masterPasswd</span>,
         <span class="summary-sig-arg">infraPasswd</span>,
+        <span class="summary-sig-arg">bridgeIF</span>,
         <span class="summary-sig-arg">intIP</span>,
         <span class="summary-sig-arg">bridgeIP</span>,
         <span class="summary-sig-arg">envPort</span>,
@@ -120,10 +121,49 @@
         <span class="summary-sig-arg">confDir</span>,
         <span class="summary-sig-arg">dataDir</span>,
         <span class="summary-sig-arg">pkgDir</span>,
-        <span class="summary-sig-arg">rosRel</span>)</span><br />
+        <span class="summary-sig-arg">ubuntuRel</span>,
+        <span class="summary-sig-arg">rosRel</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
       Initialize the Container Client.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"># TODO: Add type</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_getSysinfo" class="summary-sig-name">remote_getSysinfo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>)</span><br />
+      Get realtime Sysinfo data from machine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_getSysinfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_setSysinfo" class="summary-sig-name">remote_setSysinfo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set some system parameter to the machine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_setSysinfo">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -292,11 +332,63 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#ubuntuRel" class="summary-sig-name">ubuntuRel</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Host filesystem Ubuntu release in this machine.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.ubuntuRel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#rosRel" class="summary-sig-name">rosRel</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Container filesytem ROS release in this deployment instance of the 
-      cloud engine</td>
+      cloud engine.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.rosRel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#bridgeIF" class="summary-sig-name">bridgeIF</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Network interface used for the communication with the containers.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.bridgeIF">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#bridgeIP" class="summary-sig-name">bridgeIP</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      IP address of network interface used for the communication with the 
+      containers.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.bridgeIP">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -391,47 +483,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">str</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#getNetworkAddress" class="summary-sig-name">getNetworkAddress</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Get the network's IP address without the last byte as a string.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkAddress">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">str</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#getNetworkConfigTemplate" class="summary-sig-name">getNetworkConfigTemplate</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Get the template which is used to generate the network configuration 
-      file '/etc/network/interfaces'.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkConfigTemplate">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">rce.container.RCEContainer</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_createContainer" class="summary-sig-name">remote_createContainer</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">uid</span>)</span><br />
+        <span class="summary-sig-arg">uid</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
       Create a new Container.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createContainer">source&nbsp;code</a></span>
@@ -452,6 +510,80 @@
         <span class="summary-sig-arg">container</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.registerContainer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_createBridge" class="summary-sig-name">remote_createBridge</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Create a new OVS Bridge.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createBridge">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_destroyBridge" class="summary-sig-name">remote_destroyBridge</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Destroy a OVS Bridge.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_destroyBridge">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_createTunnel" class="summary-sig-name">remote_createTunnel</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">targetIP</span>)</span><br />
+      Create a new GRE Tunnel.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createTunnel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">twisted.internet.defer.Deferred</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.container.ContainerClient-class.html#remote_destroyTunnel" class="summary-sig-name">remote_destroyTunnel</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">targetIP</span>)</span><br />
+      Destroy a GRE Tunnel.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_destroyTunnel">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -532,6 +664,31 @@
     </td>
   </tr>
 </table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_UID_LEN"></a><span class="summary-name">_UID_LEN</span> = <code title="8">8</code>
+    </td>
+  </tr>
+</table>
 <!-- ==================== METHOD DETAILS ==================== -->
 <a name="section-MethodDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -563,6 +720,7 @@
         <span class="sig-arg">masterPort</span>,
         <span class="sig-arg">masterPasswd</span>,
         <span class="sig-arg">infraPasswd</span>,
+        <span class="sig-arg">bridgeIF</span>,
         <span class="sig-arg">intIP</span>,
         <span class="sig-arg">bridgeIP</span>,
         <span class="sig-arg">envPort</span>,
@@ -571,7 +729,9 @@
         <span class="sig-arg">confDir</span>,
         <span class="sig-arg">dataDir</span>,
         <span class="sig-arg">pkgDir</span>,
-        <span class="sig-arg">rosRel</span>)</span>
+        <span class="sig-arg">ubuntuRel</span>,
+        <span class="sig-arg">rosRel</span>,
+        <span class="sig-arg">data</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -588,6 +748,7 @@
         <li><strong class="pname"><code>masterPort</code></strong> (int) - Port of the Master process used for internal communications.</li>
         <li><strong class="pname"><code>masterPasswd</code></strong> (str) - SHA 256 Digested Master Password.</li>
         <li><strong class="pname"><code>infraPasswd</code></strong> (str) - SHA 256 Digested Infra Password.</li>
+        <li><strong class="pname"><code>bridgeIF</code></strong> (str) - Network interface used for the container communication.</li>
         <li><strong class="pname"><code>intIP</code></strong> (str) - IP address of the network interface used for the internal 
           communication.</li>
         <li><strong class="pname"><code>bridgeIP</code></strong> (str) - IP address of the network interface used for the container 
@@ -609,8 +770,62 @@
           machine and the path to the directory to which the host directory
           will be bound in the container filesystem (without the @param 
           rootfsDir).</li>
+        <li><strong class="pname"><code>ubuntuRel</code></strong> (str) - Host filesystem Ubuntu release used in this machine.</li>
         <li><strong class="pname"><code>rosRel</code></strong> (str) - Container filesytem ROS release in this deployment instance of 
           the cloud engine</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - More data about the machine configuration.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_getSysinfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_getSysinfo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_getSysinfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get realtime Sysinfo data from machine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>request</code></strong> (# TODO: Add type) - data desired</li>
+    </ul></dd>
+    <dt>Returns: # TODO: Add type</dt>
+        <dd># TODO: What?</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_setSysinfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_setSysinfo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_setSysinfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set some system parameter to the machine.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>request</code></strong> (# TODO: Add type) - data desired</li>
+        <li><strong class="pname"><code>value</code></strong> (# TODO: Add type) - data value</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -824,6 +1039,29 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="ubuntuRel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ubuntuRel</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.ubuntuRel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Host filesystem Ubuntu release in this machine.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="rosRel"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -839,7 +1077,54 @@
   </tr></table>
   
   <p>Container filesytem ROS release in this deployment instance of the 
-  cloud engine</p>
+  cloud engine.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="bridgeIF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">bridgeIF</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.bridgeIF">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Network interface used for the communication with the containers.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@property</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="bridgeIP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">bridgeIP</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.bridgeIP">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>IP address of network interface used for the communication with the 
+  containers.</p>
   <dl class="fields">
     <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
@@ -963,51 +1248,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="getNetworkAddress"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNetworkAddress</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkAddress">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Get the network's IP address without the last byte as a string.</p>
-  <dl class="fields">
-    <dt>Returns: str</dt>
-        <dd>The network's IP address, e.g. '10.0.3'.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getNetworkConfigTemplate"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNetworkConfigTemplate</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.getNetworkConfigTemplate">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Get the template which is used to generate the network configuration 
-  file '/etc/network/interfaces'. The template contains the format field 
-  {ip} which has to be used to assign the correct IP address to the 
-  container.</p>
-  <dl class="fields">
-    <dt>Returns: str</dt>
-        <dd>Network configration template containing the format field {ip}.</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="remote_createContainer"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1016,7 +1256,8 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_createContainer</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">uid</span>)</span>
+        <span class="sig-arg">uid</span>,
+        <span class="sig-arg">data</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createContainer">source&nbsp;code</a></span>&nbsp;
@@ -1029,9 +1270,118 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>uid</code></strong> (str) - Unique ID which the environment process inside the container 
           needs to login to the Master process.</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - Extra data which is used to configure the container.</li>
     </ul></dd>
     <dt>Returns: rce.container.RCEContainer</dt>
         <dd>New Container instance.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_createBridge"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_createBridge</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createBridge">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new OVS Bridge.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Exit status of command.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_destroyBridge"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_destroyBridge</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_destroyBridge">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Destroy a OVS Bridge.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Exit status of command.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_createTunnel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_createTunnel</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">targetIP</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_createTunnel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new GRE Tunnel.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+        <li><strong class="pname"><code>targetIP</code></strong> (str) - Target IP for the GRE Tunnel.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Exit status of command.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remote_destroyTunnel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remote_destroyTunnel</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">targetIP</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#ContainerClient.remote_destroyTunnel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Destroy a GRE Tunnel.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Unique name of the network group.</li>
+        <li><strong class="pname"><code>targetIP</code></strong> (str) - Target IP for the GRE Tunnel.</li>
+    </ul></dd>
+    <dt>Returns: twisted.internet.defer.Deferred</dt>
+        <dd>Exit status of command.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1062,7 +1412,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:18 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:51 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

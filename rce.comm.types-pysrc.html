@@ -99,21 +99,28 @@
 <a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
 <a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">        DM      ROS Message</tt> </tt>
 <a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-docstring">        ST      Status message (currently not used)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-docstring">        ST      Status message</tt> </tt>
 <a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">        ER      Error message</tt> </tt>
-<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
-<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
-<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable rce.comm.types.CREATE_CONTAINER=rce.comm.types-module.html#CREATE_CONTAINER"><a title="rce.comm.types.CREATE_CONTAINER" class="py-name" href="#" onclick="return doclink('link-0', 'CREATE_CONTAINER', 'link-0');">CREATE_CONTAINER</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'CC'</tt> </tt>
-<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable rce.comm.types.DESTROY_CONTAINER=rce.comm.types-module.html#DESTROY_CONTAINER"><a title="rce.comm.types.DESTROY_CONTAINER" class="py-name" href="#" onclick="return doclink('link-1', 'DESTROY_CONTAINER', 'link-1');">DESTROY_CONTAINER</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'DC'</tt> </tt>
-<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
-<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable rce.comm.types.CONFIGURE_COMPONENT=rce.comm.types-module.html#CONFIGURE_COMPONENT"><a title="rce.comm.types.CONFIGURE_COMPONENT" class="py-name" href="#" onclick="return doclink('link-2', 'CONFIGURE_COMPONENT', 'link-2');">CONFIGURE_COMPONENT</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'CN'</tt> </tt>
-<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable rce.comm.types.CONFIGURE_CONNECTION=rce.comm.types-module.html#CONFIGURE_CONNECTION"><a title="rce.comm.types.CONFIGURE_CONNECTION" class="py-name" href="#" onclick="return doclink('link-3', 'CONFIGURE_CONNECTION', 'link-3');">CONFIGURE_CONNECTION</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'CX'</tt> </tt>
-<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"> </tt>
-<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable rce.comm.types.DATA_MESSAGE=rce.comm.types-module.html#DATA_MESSAGE"><a title="rce.comm.types.DATA_MESSAGE" class="py-name" href="#" onclick="return doclink('link-4', 'DATA_MESSAGE', 'link-4');">DATA_MESSAGE</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'DM'</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-docstring">    Content Types of RCE Client Status Messages (ST):</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-docstring">        iu      Interface status update</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable rce.comm.types.CREATE_CONTAINER=rce.comm.types-module.html#CREATE_CONTAINER"><a title="rce.comm.types.CREATE_CONTAINER" class="py-name" href="#" onclick="return doclink('link-0', 'CREATE_CONTAINER', 'link-0');">CREATE_CONTAINER</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'CC'</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable rce.comm.types.DESTROY_CONTAINER=rce.comm.types-module.html#DESTROY_CONTAINER"><a title="rce.comm.types.DESTROY_CONTAINER" class="py-name" href="#" onclick="return doclink('link-1', 'DESTROY_CONTAINER', 'link-1');">DESTROY_CONTAINER</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'DC'</tt> </tt>
 <a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"> </tt>
-<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-comment">#STATUS = 'ST'</tt> </tt>
-<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable rce.comm.types.ERROR=rce.comm.types-module.html#ERROR"><a title="rce.comm.types.ERROR" class="py-name" href="#" onclick="return doclink('link-5', 'ERROR', 'link-5');">ERROR</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ER'</tt> </tt>
-<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable rce.comm.types.CONFIGURE_COMPONENT=rce.comm.types-module.html#CONFIGURE_COMPONENT"><a title="rce.comm.types.CONFIGURE_COMPONENT" class="py-name" href="#" onclick="return doclink('link-2', 'CONFIGURE_COMPONENT', 'link-2');">CONFIGURE_COMPONENT</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'CN'</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable rce.comm.types.CONFIGURE_CONNECTION=rce.comm.types-module.html#CONFIGURE_CONNECTION"><a title="rce.comm.types.CONFIGURE_CONNECTION" class="py-name" href="#" onclick="return doclink('link-3', 'CONFIGURE_CONNECTION', 'link-3');">CONFIGURE_CONNECTION</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'CX'</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable rce.comm.types.DATA_MESSAGE=rce.comm.types-module.html#DATA_MESSAGE"><a title="rce.comm.types.DATA_MESSAGE" class="py-name" href="#" onclick="return doclink('link-4', 'DATA_MESSAGE', 'link-4');">DATA_MESSAGE</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'DM'</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable rce.comm.types.STATUS=rce.comm.types-module.html#STATUS"><a title="rce.comm.types.STATUS" class="py-name" href="#" onclick="return doclink('link-5', 'STATUS', 'link-5');">STATUS</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ST'</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"><tt id="link-6" class="py-name" targets="Variable rce.comm.types.ERROR=rce.comm.types-module.html#ERROR"><a title="rce.comm.types.ERROR" class="py-name" href="#" onclick="return doclink('link-6', 'ERROR', 'link-6');">ERROR</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ER'</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"><tt id="link-7" class="py-name" targets="Variable rce.comm.types.STATUS_INTERFACE=rce.comm.types-module.html#STATUS_INTERFACE"><a title="rce.comm.types.STATUS_INTERFACE" class="py-name" href="#" onclick="return doclink('link-7', 'STATUS_INTERFACE', 'link-7');">STATUS_INTERFACE</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'iu'</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -146,7 +153,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:25 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:59 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

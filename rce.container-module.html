@@ -114,12 +114,31 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="rce.container-module.html#passthrough" class="summary-sig-name">passthrough</a>(<span class="summary-sig-arg">f</span>)</span><br />
+      Decorator which is used to add a function as a Deferred callback and 
+      passing the input unchanged to the output.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.container-pysrc.html#passthrough">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="main"></a><span class="summary-sig-name">main</span>(<span class="summary-sig-arg">reactor</span>,
         <span class="summary-sig-arg">cred</span>,
         <span class="summary-sig-arg">masterIP</span>,
+        <span class="summary-sig-arg">masterPort</span>,
         <span class="summary-sig-arg">masterPassword</span>,
         <span class="summary-sig-arg">infraPasswd</span>,
-        <span class="summary-sig-arg">masterPort</span>,
+        <span class="summary-sig-arg">bridgeIF</span>,
         <span class="summary-sig-arg">internalIP</span>,
         <span class="summary-sig-arg">bridgeIP</span>,
         <span class="summary-sig-arg">envPort</span>,
@@ -128,8 +147,9 @@
         <span class="summary-sig-arg">confDir</span>,
         <span class="summary-sig-arg">dataDir</span>,
         <span class="summary-sig-arg">pkgDir</span>,
-        <span class="summary-sig-arg">maxNr</span>,
-        <span class="summary-sig-arg">rosRel</span>)</span></td>
+        <span class="summary-sig-arg">ubuntuRel</span>,
+        <span class="summary-sig-arg">rosRel</span>,
+        <span class="summary-sig-arg">data</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.container-pysrc.html#main">source&nbsp;code</a></span>
             
@@ -164,67 +184,85 @@
         <a name="pjoin"></a><span class="summary-name">pjoin</span> = <code title="os.path.join">os.path.join</code>
     </td>
   </tr>
-<tr class="private">
+<tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="rce.container-module.html#_UPSTART_COMM" class="summary-name" onclick="show_private();">_UPSTART_COMM</a> = <code title="&quot;&quot;&quot;
-# description
-author &quot;Dominique Hunziker&quot;
-description &quot;RCE Comm - Framework for managing and using ROS Apps&quot;
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-..."><code class="variable-ellipsis">...</code></code>
+        <a name="load_resource"></a><span class="summary-name">load_resource</span> = <code title="pkg_resources.resource_string">pkg_resources.resource_string</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="randomString"></a><span class="summary-name">randomString</span> = <code title="lambda length:">lambda length:</code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="rce.container-module.html#_UPSTART_ROSAPI" class="summary-name" onclick="show_private();">_UPSTART_ROSAPI</a> = <code title="&quot;&quot;&quot;
-# description
-author &quot;Mayank Singh&quot;
-description &quot;ROS API - Framework to query ROS specific information&quot;
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-..."><code class="variable-ellipsis">...</code></code>
+        <a name="_UPSTART_COMM"></a><span class="summary-name">_UPSTART_COMM</span> = <code title="load_resource('rce.core', 'data/comm.upstart')">load_resource('rce.core', 'data/comm.upstart')</code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="rce.container-module.html#_UPSTART_LAUNCHER" class="summary-name" onclick="show_private();">_UPSTART_LAUNCHER</a> = <code title="&quot;&quot;&quot;
-# description
-author &quot;Dominique Hunziker&quot;
-description &quot;RCE Launcher - Framework for managing and using ROS Apps&quot;
-
-# start/stop conditions
-start on started rce
-stop on stopping rce
-..."><code class="variable-ellipsis">...</code></code>
+        <a href="rce.container-module.html#_UPSTART_ROSAPI" class="summary-name" onclick="show_private();">_UPSTART_ROSAPI</a> = <code title="load_resource('rce.core', 'data/rosapi.upstart')">load_resource('rce.core', 'data/rosapi.upsta<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="rce.container-module.html#_NETWORK_INTERFACES" class="summary-name" onclick="show_private();">_NETWORK_INTERFACES</a> = <code title="&quot;&quot;&quot;
-auto lo
-iface lo inet loopback
-
-auto eth0
-iface eth0 inet static
-    address {{ip}}
-    netmask 255.255.255.0
-..."><code class="variable-ellipsis">...</code></code>
+        <a href="rce.container-module.html#_LXC_NETWORK_SCRIPT" class="summary-name" onclick="show_private();">_LXC_NETWORK_SCRIPT</a> = <code title="load_resource('rce.core', 'data/lxc-network.script')">load_resource('rce.core', 'data/lxc-netw<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="passthrough"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">passthrough</span>(<span class="sig-arg">f</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.container-pysrc.html#passthrough">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Decorator which is used to add a function as a Deferred callback and 
+  passing the input unchanged to the output.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>f</code></strong> (callable) - Function which should be decorated.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -243,32 +281,6 @@ iface eth0 inet static
   </td>
 </tr>
 </table>
-<a name="_UPSTART_COMM"></a>
-<div class="private">
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">_UPSTART_COMM</h3>
-  
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-&quot;&quot;&quot;
-# description
-author &quot;Dominique Hunziker&quot;
-description &quot;RCE Comm - Framework for managing and using ROS Apps&quot;
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-<code class="variable-ellipsis">...</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="_UPSTART_ROSAPI"></a>
 <div class="private">
 <table class="details" border="1" cellpadding="3"
@@ -281,67 +293,25 @@ stop on stopping rce
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-&quot;&quot;&quot;
-# description
-author &quot;Mayank Singh&quot;
-description &quot;ROS API - Framework to query ROS specific information&quot;
-
-# start/stop conditions
-start on (started rce and net-device-up IFACE=eth0)
-stop on stopping rce
-<code class="variable-ellipsis">...</code>
+load_resource('rce.core', 'data/rosapi.upstart')
 </pre></td></tr></table>
 </dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="_UPSTART_LAUNCHER"></a>
+<a name="_LXC_NETWORK_SCRIPT"></a>
 <div class="private">
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">_UPSTART_LAUNCHER</h3>
+  <h3 class="epydoc">_LXC_NETWORK_SCRIPT</h3>
   
   <dl class="fields">
   </dl>
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-&quot;&quot;&quot;
-# description
-author &quot;Dominique Hunziker&quot;
-description &quot;RCE Launcher - Framework for managing and using ROS Apps&quot;
-
-# start/stop conditions
-start on started rce
-stop on stopping rce
-<code class="variable-ellipsis">...</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="_NETWORK_INTERFACES"></a>
-<div class="private">
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">_NETWORK_INTERFACES</h3>
-  
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-&quot;&quot;&quot;
-auto lo
-iface lo inet loopback
-
-auto eth0
-iface eth0 inet static
-    address {{ip}}
-    netmask 255.255.255.0
-<code class="variable-ellipsis">...</code>
+load_resource('rce.core', 'data/lxc-network.script')
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -374,7 +344,7 @@ iface eth0 inet static
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:14 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:47 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

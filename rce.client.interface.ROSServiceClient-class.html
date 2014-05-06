@@ -59,16 +59,22 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ROSServiceClient</h1><p class="nomargin-top"><span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_clie_6" name="uml_class_diagram_for_rce_clie_6">
-<area shape="rect" id="node1" href="rce.client.interface._ServiceClient-class.html" title="Abstract implementation of a Service Client Interface." alt="" coords="81,147,191,191"/>
-<area shape="rect" id="node23" href="rce.client.interface.ROSServiceClient-class.html#__init__" title="Initialize the Service Client." alt="" coords="17,244,256,263"/>
-<area shape="rect" id="node23" href="rce.client.interface.ROSServiceClient-class.html#__del__" title="Finalize the Service." alt="" coords="17,263,256,281"/>
-<area shape="rect" id="node3" href="rce.client.interface.ROSServiceClient-class.html" title="Representation of a Service Client Interface using ROS." alt="" coords="5,211,267,287"/>
-<area shape="rect" id="node2" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="105,6,167,50"/>
-<area shape="rect" id="node25" href="rce.client.interface._CB_Base-class.html#callback" title="Callback for RCE." alt="" coords="24,103,251,121"/>
-<area shape="rect" id="node4" href="rce.client.interface._CB_Base-class.html" title="Abstract base for all Interface classes which have to be registered with the connection." alt="" coords="12,70,263,127"/>
+<center>  <map id="uml_class_diagram_for_rce_clie_7" name="uml_class_diagram_for_rce_clie_7">
+<area shape="rect" id="node1_9" href="rce.client.interface.ROSServiceClient-class.html#__init__" title="Initialize the Service Client." alt="" coords="17,345,256,365"/>
+<area shape="rect" id="node1_10" href="rce.client.interface.ROSServiceClient-class.html#__del__" title="Finalize the Service." alt="" coords="17,365,256,385"/>
+<area shape="rect" id="node1" href="rce.client.interface.ROSServiceClient-class.html" title="Representation of a Service Client Interface using ROS." alt="" coords="5,312,267,392"/>
+<area shape="rect" id="node2_11" href="rce.client.interface._ServiceClient-class.html#UNIQUE" title="rce.client.interface._ServiceClient.UNIQUE" alt="" coords="93,259,180,279"/>
+<area shape="rect" id="node2" href="rce.client.interface._ServiceClient-class.html" title="Abstract implementation of a Service Client Interface." alt="" coords="81,233,191,293"/>
+<area shape="rect" id="node3_12" href="rce.client.interface._Base-class.html#status" title="Status (enabled/disabled) of the interface." alt="" coords="37,31,237,51"/>
+<area shape="rect" id="node3_13" href="rce.client.interface._Base-class.html#registerStatusListener" title="Register a status listener which will be called with status changes." alt="" coords="37,53,237,73"/>
+<area shape="rect" id="node3_14" href="rce.client.interface._Base-class.html#unregisterStatusListener" title="Unregister a previously registered status listener." alt="" coords="37,73,237,93"/>
+<area shape="rect" id="node3_15" href="rce.client.interface._Base-class.html#setEnabled" title="Callback for RCE client to enable/disable the interface." alt="" coords="37,93,237,113"/>
+<area shape="rect" id="node3" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="25,5,249,120"/>
+<area shape="rect" id="node4_16" href="rce.client.interface._CallableBase-class.html#CALLABLE" title="rce.client.interface._CallableBase.CALLABLE" alt="" coords="24,164,251,184"/>
+<area shape="rect" id="node4_17" href="rce.client.interface._CallableBase-class.html#callback" title="Callback for RCE." alt="" coords="24,187,251,207"/>
+<area shape="rect" id="node4" href="rce.client.interface._CallableBase-class.html" title="Abstract base for all Interface classes which are callable by the RCE client." alt="" coords="12,139,263,213"/>
 </map>
-  <img src="uml_class_diagram_for_rce_clie_6.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_6" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_clie_7.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_7" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -119,7 +125,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="_rosCB"></a><span class="summary-sig-name">_rosCB</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">req</span>)</span><br />
+        <span class="summary-sig-arg">rosReq</span>)</span><br />
       Internally used callback for ROS Service.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient._rosCB">source&nbsp;code</a></span>
@@ -137,12 +143,48 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="_rceCB"></a><span class="summary-sig-name">_rceCB</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">msg</span>,
+        <span class="summary-sig-arg">resp</span>,
         <span class="summary-sig-arg">event</span>)</span><br />
       Internally used method to send received message to the ROS Service as
       response.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient._rceCB">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.client.interface.ROSServiceClient-class.html#_start" class="summary-sig-name" onclick="show_private();">_start</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Hook which is called when the status of the interface switches from 
+      disabled to enabled.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient._start">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="rce.client.interface.ROSServiceClient-class.html#_stop" class="summary-sig-name" onclick="show_private();">_stop</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Hook which is called when the status of the interface switches from 
+      enabled to disabled.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient._stop">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -169,15 +211,20 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceClient-class.html" onclick="show_private();">_ServiceClient</a></code></b> (private):
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceClient-class.html">_ServiceClient</a></code></b> (private):
       <code><a href="rce.client.interface._ServiceClient-class.html#_call" onclick="show_private();">_call</a></code>,
       <code><a href="rce.client.interface._ServiceClient-class.html#_callback" onclick="show_private();">_callback</a></code>
       </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CB_Base-class.html" onclick="show_private();">_CB_Base</a></code></b>:
-      <code><a href="rce.client.interface._CB_Base-class.html#callback">callback</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CallableBase-class.html" onclick="show_private();">_CallableBase</a></code></b>:
+      <code><a href="rce.client.interface._CallableBase-class.html#callback">callback</a></code>
       </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CB_Base-class.html" onclick="show_private();">_CB_Base</a></code></b> (private):
-      <code><a href="rce.client.interface._CB_Base-class.html#_unsubscribe" onclick="show_private();">_unsubscribe</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#registerStatusListener">registerStatusListener</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#setEnabled">setEnabled</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#unregisterStatusListener">unregisterStatusListener</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b> (private):
+      <code><a href="rce.client.interface._Base-class.html#_unregister" onclick="show_private();">_unregister</a></code>
       </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -215,11 +262,16 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceClient-class.html" onclick="show_private();">_ServiceClient</a></code></b> (private):
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceClient-class.html">_ServiceClient</a></code></b>:
+      <code><a href="rce.client.interface._ServiceClient-class.html#UNIQUE">UNIQUE</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._ServiceClient-class.html">_ServiceClient</a></code></b> (private):
       <code><a href="rce.client.interface._ServiceClient-class.html#_DOWN_MSG" onclick="show_private();">_DOWN_MSG</a></code>,
-      <code><a href="rce.client.interface._ServiceClient-class.html#_UNIQUE" onclick="show_private();">_UNIQUE</a></code>,
       <code><a href="rce.client.interface._ServiceClient-class.html#_UP_MSG" onclick="show_private();">_UP_MSG</a></code>
       </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._CallableBase-class.html" onclick="show_private();">_CallableBase</a></code></b>:
+      <code><a href="rce.client.interface._CallableBase-class.html#CALLABLE">CALLABLE</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -242,6 +294,9 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#status">status</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -289,6 +344,54 @@
   <dl class="fields">
     <dt>Overrides:
         object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_start"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_start</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient._start">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hook which is called when the status of the interface switches from 
+  disabled to enabled.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.client.interface._Base-class.html#_start" onclick="show_private();">_Base._start</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_stop"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_stop</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="rce.client.interface-pysrc.html#ROSServiceClient._stop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hook which is called when the status of the interface switches from 
+  enabled to disabled.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="rce.client.interface._Base-class.html#_stop" onclick="show_private();">_Base._stop</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -343,7 +446,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:15 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:48 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -90,7 +90,9 @@
 <a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
 <a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
 <a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># rce specific imports</tt> </tt>
-<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-0', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-1', 'util', 'link-1');">util</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module rce.util.name=rce.util.name-module.html"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-2', 'name', 'link-2');">name</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Function rce.util.name.validateName()=rce.util.name-module.html#validateName"><a title="rce.util.name.validateName" class="py-name" href="#" onclick="return doclink('link-3', 'validateName', 'link-3');">validateName</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Class rce.util.name.IllegalName=rce.util.name.IllegalName-class.html"><a title="rce.util.name.IllegalName" class="py-name" href="#" onclick="return doclink('link-4', 'IllegalName', 'link-4');">IllegalName</a></tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package rce=rce-module.html"><a title="rce" class="py-name" href="#" onclick="return doclink('link-0', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package rce.util=rce.util-module.html"><a title="rce.util" class="py-name" href="#" onclick="return doclink('link-1', 'util', 'link-1');">util</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Method rce.core.machine.EmptyNetworkGroup.name()=rce.core.machine.EmptyNetworkGroup-class.html#name,Method rce.core.machine.NetworkGroup.name()=rce.core.machine.NetworkGroup-class.html#name,Module rce.util.name=rce.util.name-module.html"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-2', 'name', 'link-2');">name</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Function rce.util.name.validateName()=rce.util.name-module.html#validateName"><a title="rce.util.name.validateName" class="py-name" href="#" onclick="return doclink('link-3', 'validateName', 'link-3');">validateName</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Class rce.util.name.IllegalName=rce.util.name.IllegalName-class.html"><a title="rce.util.name.IllegalName" class="py-name" href="#" onclick="return doclink('link-4', 'IllegalName', 'link-4');">IllegalName</a></tt> </tt>
 <a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-5" class="py-name"><a title="rce" class="py-name" href="#" onclick="return doclink('link-5', 'rce', 'link-0');">rce</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Package rce.core=rce.core-module.html"><a title="rce.core" class="py-name" href="#" onclick="return doclink('link-6', 'core', 'link-6');">core</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module rce.comm.error=rce.comm.error-module.html,Module rce.core.error=rce.core.error-module.html,Module rce.util.error=rce.util.error-module.html"><a title="rce.comm.error
 rce.core.error
 rce.util.error" class="py-name" href="#" onclick="return doclink('link-7', 'error', 'link-7');">error</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Class rce.comm.error.InvalidRequest=rce.comm.error.InvalidRequest-class.html,Class rce.core.error.InvalidRequest=rce.core.error.InvalidRequest-class.html,Class rce.rosproxy.InvalidRequest=rce.rosproxy.InvalidRequest-class.html"><a title="rce.comm.error.InvalidRequest
@@ -136,11 +138,12 @@ rce.core.wrapper._Wrapper.notifyOnDeath" class="py-name" href="#" onclick="retur
 <a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_cbs</tt><tt class="py-op">.</tt><tt class="py-name">add</tt><tt class="py-op">(</tt><tt class="py-name">cb</tt><tt class="py-op">)</tt> </tt>
 <a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">:</tt> </tt>
 <a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-19" class="py-name"><a title="rce.core.error.AlreadyDead" class="py-name" href="#" onclick="return doclink('link-19', 'AlreadyDead', 'link-9');">AlreadyDead</a></tt><tt class="py-op">(</tt><tt class="py-string">'{0} is already '</tt> </tt>
-<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                              <tt class="py-string">'dead.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__class__</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Variable rce.comm.interfaces.IMasterRealm.__name__=rce.comm.interfaces.IMasterRealm-class.html#__name__,Variable rce.comm.interfaces.IMessageReceiver.__name__=rce.comm.interfaces.IMessageReceiver-class.html#__name__,Variable rce.comm.interfaces.IRobot.__name__=rce.comm.interfaces.IRobot-class.html#__name__,Variable rce.comm.interfaces.IRobotRealm.__name__=rce.comm.interfaces.IRobotRealm-class.html#__name__,Variable rce.comm.interfaces.IServersideProtocol.__name__=rce.comm.interfaces.IServersideProtocol-class.html#__name__,Variable rce.util.converters.interfaces.ICustomROSConverter.__name__=rce.util.converters.interfaces.ICustomROSConverter-class.html#__name__,Variable twisted.web.resource.IResource.__name__=twisted.web.resource.IResource-class.html#__name__"><a title="rce.comm.interfaces.IMasterRealm.__name__
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                              <tt class="py-string">'dead.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__class__</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Variable rce.comm.interfaces.IClient.__name__=rce.comm.interfaces.IClient-class.html#__name__,Variable rce.comm.interfaces.IMasterRealm.__name__=rce.comm.interfaces.IMasterRealm-class.html#__name__,Variable rce.comm.interfaces.IMessageReceiver.__name__=rce.comm.interfaces.IMessageReceiver-class.html#__name__,Variable rce.comm.interfaces.IProtocol.__name__=rce.comm.interfaces.IProtocol-class.html#__name__,Variable rce.comm.interfaces.IRobot.__name__=rce.comm.interfaces.IRobot-class.html#__name__,Variable rce.comm.interfaces.IRobotRealm.__name__=rce.comm.interfaces.IRobotRealm-class.html#__name__,Variable rce.util.converters.interfaces.ICustomROSConverter.__name__=rce.util.converters.interfaces.ICustomROSConverter-class.html#__name__,Variable twisted.web.resource.IResource.__name__=twisted.web.resource.IResource-class.html#__name__"><a title="rce.comm.interfaces.IClient.__name__
+rce.comm.interfaces.IMasterRealm.__name__
 rce.comm.interfaces.IMessageReceiver.__name__
+rce.comm.interfaces.IProtocol.__name__
 rce.comm.interfaces.IRobot.__name__
 rce.comm.interfaces.IRobotRealm.__name__
-rce.comm.interfaces.IServersideProtocol.__name__
 rce.util.converters.interfaces.ICustomROSConverter.__name__
 twisted.web.resource.IResource.__name__" class="py-name" href="#" onclick="return doclink('link-20', '__name__', 'link-20');">__name__</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
 </div><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"> </tt>
@@ -167,13 +170,14 @@ twisted.web.resource.IResource.__name__" class="py-name" href="#" onclick="retur
 </div><div id="_Wrapper.destroy-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Wrapper.destroy-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-docstring">""" Method should be called to destroy the Wrapper and will take care</tt> </tt>
 <a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">            of destroying the wrapped object.</tt> </tt>
 <a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method rce.core.base.Proxy.destroy()=rce.core.base.Proxy-class.html#destroy,Method rce.core.container.Container.destroy()=rce.core.container.Container-class.html#destroy,Method rce.core.environment.Environment.destroy()=rce.core.environment.Environment-class.html#destroy,Method rce.core.environment.EnvironmentEndpoint.destroy()=rce.core.environment.EnvironmentEndpoint-class.html#destroy,Method rce.core.environment.Node.destroy()=rce.core.environment.Node-class.html#destroy,Method rce.core.environment.Parameter.destroy()=rce.core.environment.Parameter-class.html#destroy,Method rce.core.machine.Machine.destroy()=rce.core.machine.Machine-class.html#destroy,Method rce.core.network.Connection.destroy()=rce.core.network.Connection-class.html#destroy,Method rce.core.network.Endpoint.destroy()=rce.core.network.Endpoint-class.html#destroy,Method rce.core.network.EndpointConnection.destroy()=rce.core.network.EndpointConnection-class.html#destroy,Method rce.core.network.Interface.destroy()=rce.core.network.Interface-class.html#destroy,Method rce.core.network.InterfaceConnection.destroy()=rce.core.network.InterfaceConnection-class.html#destroy,Method rce.core.network.LoopbackConnection.destroy()=rce.core.network.LoopbackConnection-class.html#destroy,Method rce.core.network.Namespace.destroy()=rce.core.network.Namespace-class.html#destroy,Method rce.core.network.Protocol.destroy()=rce.core.network.Protocol-class.html#destroy,Method rce.core.robot.RobotEndpoint.destroy()=rce.core.robot.RobotEndpoint-class.html#destroy,Method rce.core.user.User.destroy()=rce.core.user.User-class.html#destroy,Method rce.core.wrapper.Container.destroy()=rce.core.wrapper.Container-class.html#destroy,Method rce.core.wrapper.Robot.destroy()=rce.core.wrapper.Robot-class.html#destroy,Method rce.core.wrapper._Wrapper.destroy()=rce.core.wrapper._Wrapper-class.html#destroy,Method rce.robot.Connection.destroy()=rce.robot.Connection-class.html#destroy,Method rce.robot.Robot.destroy()=rce.robot.Robot-class.html#destroy,Method rce.robot.RobotView.destroy()=rce.robot.RobotView-class.html#destroy"><a title="rce.core.base.Proxy.destroy
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method rce.core.base.Proxy.destroy()=rce.core.base.Proxy-class.html#destroy,Method rce.core.container.Container.destroy()=rce.core.container.Container-class.html#destroy,Method rce.core.environment.Environment.destroy()=rce.core.environment.Environment-class.html#destroy,Method rce.core.environment.EnvironmentEndpoint.destroy()=rce.core.environment.EnvironmentEndpoint-class.html#destroy,Method rce.core.environment.Node.destroy()=rce.core.environment.Node-class.html#destroy,Method rce.core.environment.Parameter.destroy()=rce.core.environment.Parameter-class.html#destroy,Method rce.core.machine.Machine.destroy()=rce.core.machine.Machine-class.html#destroy,Method rce.core.machine.NetworkGroup.destroy()=rce.core.machine.NetworkGroup-class.html#destroy,Method rce.core.network.Connection.destroy()=rce.core.network.Connection-class.html#destroy,Method rce.core.network.Endpoint.destroy()=rce.core.network.Endpoint-class.html#destroy,Method rce.core.network.EndpointConnection.destroy()=rce.core.network.EndpointConnection-class.html#destroy,Method rce.core.network.Interface.destroy()=rce.core.network.Interface-class.html#destroy,Method rce.core.network.InterfaceConnection.destroy()=rce.core.network.InterfaceConnection-class.html#destroy,Method rce.core.network.LoopbackConnection.destroy()=rce.core.network.LoopbackConnection-class.html#destroy,Method rce.core.network.Namespace.destroy()=rce.core.network.Namespace-class.html#destroy,Method rce.core.network.Protocol.destroy()=rce.core.network.Protocol-class.html#destroy,Method rce.core.robot.RobotEndpoint.destroy()=rce.core.robot.RobotEndpoint-class.html#destroy,Method rce.core.user.User.destroy()=rce.core.user.User-class.html#destroy,Method rce.core.wrapper.Container.destroy()=rce.core.wrapper.Container-class.html#destroy,Method rce.core.wrapper.Robot.destroy()=rce.core.wrapper.Robot-class.html#destroy,Method rce.core.wrapper._Wrapper.destroy()=rce.core.wrapper._Wrapper-class.html#destroy,Method rce.robot.Connection.destroy()=rce.robot.Connection-class.html#destroy,Method rce.robot.Robot.destroy()=rce.robot.Robot-class.html#destroy,Method rce.robot.RobotView.destroy()=rce.robot.RobotView-class.html#destroy"><a title="rce.core.base.Proxy.destroy
 rce.core.container.Container.destroy
 rce.core.environment.Environment.destroy
 rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -205,14 +209,13 @@ rce.robot.RobotView.destroy" class="py-name" href="#" onclick="return doclink('l
 <a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-22" class="py-name" targets="Class rce.core.robot.Robot=rce.core.robot.Robot-class.html,Class rce.core.wrapper.Robot=rce.core.wrapper.Robot-class.html,Class rce.robot.Robot=rce.robot.Robot-class.html"><a title="rce.core.robot.Robot
 rce.core.wrapper.Robot
-rce.robot.Robot" class="py-name" href="#" onclick="return doclink('link-22', 'Robot', 'link-22');">Robot</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method rce.client.connection._Connection.__init__()=rce.client.connection._Connection-class.html#__init__,Method rce.client.interface.ROSPublisher.__init__()=rce.client.interface.ROSPublisher-class.html#__init__,Method rce.client.interface.ROSServiceClient.__init__()=rce.client.interface.ROSServiceClient-class.html#__init__,Method rce.client.interface.ROSServiceProvider.__init__()=rce.client.interface.ROSServiceProvider-class.html#__init__,Method rce.client.interface.ROSSubscriber.__init__()=rce.client.interface.ROSSubscriber-class.html#__init__,Method rce.client.interface.ServiceClient.__init__()=rce.client.interface.ServiceClient-class.html#__init__,Method rce.client.interface._Base.__init__()=rce.client.interface._Base-class.html#__init__,Method rce.client.interface._CB_Base.__init__()=rce.client.interface._CB_Base-class.html#__init__,Method rce.client.interface._EventRef.__init__()=rce.client.interface._EventRef-class.html#__init__,Method rce.client.interface._ServiceClient.__init__()=rce.client.interface._ServiceClient-class.html#__init__,Method rce.client.interface._ServiceProvider.__init__()=rce.client.interface._ServiceProvider-class.html#__init__,Method rce.client.interface._Subscriber.__init__()=rce.client.interface._Subscriber-class.html#__init__,Method rce.client.ros.Environment.__init__()=rce.client.ros.Environment-class.html#__init__,Method rce.comm.assembler.MessageAssembler.__init__()=rce.comm.assembler.MessageAssembler-class.html#__init__,Method rce.comm.assembler._IncompleteMsg.__init__()=rce.comm.assembler._IncompleteMsg-class.html#__init__,Method rce.comm.client.RCE.__init__()=rce.comm.client.RCE-class.html#__init__,Method rce.comm.client.RCERobotFactory.__init__()=rce.comm.client.RCERobotFactory-class.html#__init__,Method rce.comm.client.RCERobotProtocol.__init__()=rce.comm.client.RCERobotProtocol-class.html#__init__,Method rce.comm.server.CloudEngineWebSocketFactory.__init__()=rce.comm.server.CloudEngineWebSocketFactory-class.html#__init__,Method rce.comm.server.RobotResource.__init__()=rce.comm.server.RobotResource-class.html#__init__,Method rce.comm.server.RobotWebSocketProtocol.__init__()=rce.comm.server.RobotWebSocketProtocol-class.html#__init__,Method rce.console.console.ConsoleClient.__init__()=rce.console.console.ConsoleClient-class.html#__init__,Method rce.console.console.CustomOptions.__init__()=rce.console.console.CustomOptions-class.html#__init__,Method rce.container.ContainerClient.__init__()=rce.container.ContainerClient-class.html#__init__,Method rce.container.RCEContainer.__init__()=rce.container.RCEContainer-class.html#__init__,Method rce.core.base.Proxy.__init__()=rce.core.base.Proxy-class.html#__init__,Method rce.core.container.Container.__init__()=rce.core.container.Container-class.html#__init__,Method rce.core.environment.Environment.__init__()=rce.core.environment.Environment-class.html#__init__,Method rce.core.environment.EnvironmentEndpoint.__init__()=rce.core.environment.EnvironmentEndpoint-class.html#__init__,Method rce.core.environment.Node.__init__()=rce.core.environment.Node-class.html#__init__,Method rce.core.environment.Parameter.__init__()=rce.core.environment.Parameter-class.html#__init__,Method rce.core.machine.Distributor.__init__()=rce.core.machine.Distributor-class.html#__init__,Method rce.core.machine.LoadBalancer.__init__()=rce.core.machine.LoadBalancer-class.html#__init__,Method rce.core.machine.Machine.__init__()=rce.core.machine.Machine-class.html#__init__,Method rce.core.machine.MachineAvatar.__init__()=rce.core.machine.MachineAvatar-class.html#__init__,Method rce.core.network.Connection.__init__()=rce.core.network.Connection-class.html#__init__,Method rce.core.network.Endpoint.__init__()=rce.core.network.Endpoint-class.html#__init__,Method rce.core.network.EndpointAvatar.__init__()=rce.core.network.EndpointAvatar-class.html#__init__,Method rce.core.network.EndpointConnection.__init__()=rce.core.network.EndpointConnection-class.html#__init__,Method rce.core.network.Interface.__init__()=rce.core.network.Interface-class.html#__init__,Method rce.core.network.InterfaceConnection.__init__()=rce.core.network.InterfaceConnection-class.html#__init__,Method rce.core.network.LoopbackConnection.__init__()=rce.core.network.LoopbackConnection-class.html#__init__,Method rce.core.network.Namespace.__init__()=rce.core.network.Namespace-class.html#__init__,Method rce.core.network.Network.__init__()=rce.core.network.Network-class.html#__init__,Method rce.core.network.Protocol.__init__()=rce.core.network.Protocol-class.html#__init__,Method rce.core.network._ConnectionValidator.__init__()=rce.core.network._ConnectionValidator-class.html#__init__,Method rce.core.robot.Robot.__init__()=rce.core.robot.Robot-class.html#__init__,Method rce.core.robot.RobotEndpoint.__init__()=rce.core.robot.RobotEndpoint-class.html#__init__,Method rce.core.user.User.__init__()=rce.core.user.User-class.html#__init__,Method rce.core.wrapper.Container.__init__()=rce.core.wrapper.Container-class.html#__init__,Method rce.core.wrapper.Interface.__init__()=rce.core.wrapper.Interface-class.html#__init__,Method rce.core.wrapper.Robot.__init__()=rce.core.wrapper.Robot-class.html#__init__,Method rce.core.wrapper._Wrapper.__init__()=rce.core.wrapper._Wrapper-class.html#__init__,Method rce.environment.Environment.__init__()=rce.environment.Environment-class.html#__init__,Method rce.environment.EnvironmentClient.__init__()=rce.environment.EnvironmentClient-class.html#__init__,Method rce.master.RoboEarthCloudEngine.__init__()=rce.master.RoboEarthCloudEngine-class.html#__init__,Method rce.master.UserRealm.__init__()=rce.master.UserRealm-class.html#__init__,Method rce.monitor.common.ArgumentMixin.__init__()=rce.monitor.common.ArgumentMixin-class.html#__init__,Method rce.monitor.interface.environment.PublisherInterface.__init__()=rce.monitor.interface.environment.PublisherInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceClientInterface.__init__()=rce.monitor.interface.environment.ServiceClientInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceProviderInterface.__init__()=rce.monitor.interface.environment.ServiceProviderInterface-class.html#__init__,Method rce.monitor.interface.environment._ROSInterfaceBase.__init__()=rce.monitor.interface.environment._ROSInterfaceBase-class.html#__init__,Method rce.monitor.interface.robot.ServiceClientConverter.__init__()=rce.monitor.interface.robot.ServiceClientConverter-class.html#__init__,Method rce.monitor.interface.robot.ServiceClientForwarder.__init__()=rce.monitor.interface.robot.ServiceClientForwarder-class.html#__init__,Method rce.monitor.interface.robot._AbstractConverter.__init__()=rce.monitor.interface.robot._AbstractConverter-class.html#__init__,Method rce.monitor.interface.robot._ConverterBase.__init__()=rce.monitor.interface.robot._ConverterBase-class.html#__init__,Method rce.monitor.node.Node.__init__()=rce.monitor.node.Node-class.html#__init__,Method rce.monitor.node.NodeProtocol.__init__()=rce.monitor.node.NodeProtocol-class.html#__init__,Method rce.monitor.parameter.Parameter.__init__()=rce.monitor.parameter.Parameter-class.html#__init__,Method rce.robot.Connection.__init__()=rce.robot.Connection-class.html#__init__,Method rce.robot.Robot.__init__()=rce.robot.Robot-class.html#__init__,Method rce.robot.RobotClient.__init__()=rce.robot.RobotClient-class.html#__init__,Method rce.robot.RobotView.__init__()=rce.robot.RobotView-class.html#__init__,Method rce.rosproxy.ConsoleROSProxyAuthentication.__init__()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#__init__,Method rce.slave.endpoint.Endpoint.__init__()=rce.slave.endpoint.Endpoint-class.html#__init__,Method rce.slave.endpoint._RCEInternalServerFactory.__init__()=rce.slave.endpoint._RCEInternalServerFactory-class.html#__init__,Method rce.slave.interface.Interface.__init__()=rce.slave.interface.Interface-class.html#__init__,Method rce.slave.namespace.Namespace.__init__()=rce.slave.namespace.Namespace-class.html#__init__,Method rce.slave.protocol.RCEInternalProtocol.__init__()=rce.slave.protocol.RCEInternalProtocol-class.html#__init__,Method rce.slave.protocol._Protocol.__init__()=rce.slave.protocol._Protocol-class.html#__init__,Method rce.util.container.Container.__init__()=rce.util.container.Container-class.html#__init__,Method rce.util.converter.Converter.__init__()=rce.util.converter.Converter-class.html#__init__,Method rce.util.cred.RCECredChecker.__init__()=rce.util.cred.RCECredChecker-class.html#__init__,Method rce.util.cred.RCEInternalChecker.__init__()=rce.util.cred.RCEInternalChecker-class.html#__init__,Method rce.util.loader.Loader.__init__()=rce.util.loader.Loader-class.html#__init__,Method rce.util.settings._RCESettingsParser.__init__()=rce.util.settings._RCESettingsParser-class.html#__init__,Method rce.util.settings._Settings.__init__()=rce.util.settings._Settings-class.html#__init__,Method rce.util.sysinfo.AccessDenied.__init__()=rce.util.sysinfo.AccessDenied-class.html#__init__,Method rce.util.sysinfo.NoSuchProcess.__init__()=rce.util.sysinfo.NoSuchProcess-class.html#__init__,Method rce.util.sysinfo.Process.__init__()=rce.util.sysinfo.Process-class.html#__init__"><a title="rce.client.connection._Connection.__init__
+rce.robot.Robot" class="py-name" href="#" onclick="return doclink('link-22', 'Robot', 'link-22');">Robot</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method rce.client.connection._Connection.__init__()=rce.client.connection._Connection-class.html#__init__,Method rce.client.interface.ROSPublisher.__init__()=rce.client.interface.ROSPublisher-class.html#__init__,Method rce.client.interface.ROSServiceClient.__init__()=rce.client.interface.ROSServiceClient-class.html#__init__,Method rce.client.interface.ROSServiceProvider.__init__()=rce.client.interface.ROSServiceProvider-class.html#__init__,Method rce.client.interface.ROSSubscriber.__init__()=rce.client.interface.ROSSubscriber-class.html#__init__,Method rce.client.interface.ServiceClient.__init__()=rce.client.interface.ServiceClient-class.html#__init__,Method rce.client.interface._Base.__init__()=rce.client.interface._Base-class.html#__init__,Method rce.client.interface._EventRef.__init__()=rce.client.interface._EventRef-class.html#__init__,Method rce.client.interface._ServiceClient.__init__()=rce.client.interface._ServiceClient-class.html#__init__,Method rce.client.interface._ServiceProvider.__init__()=rce.client.interface._ServiceProvider-class.html#__init__,Method rce.client.interface._Subscriber.__init__()=rce.client.interface._Subscriber-class.html#__init__,Method rce.client.ros.Environment.__init__()=rce.client.ros.Environment-class.html#__init__,Method rce.comm.assembler.MessageAssembler.__init__()=rce.comm.assembler.MessageAssembler-class.html#__init__,Method rce.comm.assembler._IncompleteMsg.__init__()=rce.comm.assembler._IncompleteMsg-class.html#__init__,Method rce.comm.client.RCE.__init__()=rce.comm.client.RCE-class.html#__init__,Method rce.comm.client.RCERobotFactory.__init__()=rce.comm.client.RCERobotFactory-class.html#__init__,Method rce.comm.client.RCERobotProtocol.__init__()=rce.comm.client.RCERobotProtocol-class.html#__init__,Method rce.comm.server.CloudEngineWebSocketFactory.__init__()=rce.comm.server.CloudEngineWebSocketFactory-class.html#__init__,Method rce.comm.server.RobotResource.__init__()=rce.comm.server.RobotResource-class.html#__init__,Method rce.comm.server.RobotWebSocketProtocol.__init__()=rce.comm.server.RobotWebSocketProtocol-class.html#__init__,Method rce.console.console.ConsoleClient.__init__()=rce.console.console.ConsoleClient-class.html#__init__,Method rce.console.console.CustomOptions.__init__()=rce.console.console.CustomOptions-class.html#__init__,Method rce.container.ContainerClient.__init__()=rce.container.ContainerClient-class.html#__init__,Method rce.container.RCEContainer.__init__()=rce.container.RCEContainer-class.html#__init__,Method rce.core.base.Proxy.__init__()=rce.core.base.Proxy-class.html#__init__,Method rce.core.container.Container.__init__()=rce.core.container.Container-class.html#__init__,Method rce.core.environment.Environment.__init__()=rce.core.environment.Environment-class.html#__init__,Method rce.core.environment.EnvironmentEndpoint.__init__()=rce.core.environment.EnvironmentEndpoint-class.html#__init__,Method rce.core.environment.Node.__init__()=rce.core.environment.Node-class.html#__init__,Method rce.core.environment.Parameter.__init__()=rce.core.environment.Parameter-class.html#__init__,Method rce.core.machine.Distributor.__init__()=rce.core.machine.Distributor-class.html#__init__,Method rce.core.machine.LoadBalancer.__init__()=rce.core.machine.LoadBalancer-class.html#__init__,Method rce.core.machine.Machine.__init__()=rce.core.machine.Machine-class.html#__init__,Method rce.core.machine.MachineAvatar.__init__()=rce.core.machine.MachineAvatar-class.html#__init__,Method rce.core.machine.NetworkGroup.__init__()=rce.core.machine.NetworkGroup-class.html#__init__,Method rce.core.network.Connection.__init__()=rce.core.network.Connection-class.html#__init__,Method rce.core.network.Endpoint.__init__()=rce.core.network.Endpoint-class.html#__init__,Method rce.core.network.EndpointAvatar.__init__()=rce.core.network.EndpointAvatar-class.html#__init__,Method rce.core.network.EndpointConnection.__init__()=rce.core.network.EndpointConnection-class.html#__init__,Method rce.core.network.Interface.__init__()=rce.core.network.Interface-class.html#__init__,Method rce.core.network.InterfaceConnection.__init__()=rce.core.network.InterfaceConnection-class.html#__init__,Method rce.core.network.LoopbackConnection.__init__()=rce.core.network.LoopbackConnection-class.html#__init__,Method rce.core.network.Namespace.__init__()=rce.core.network.Namespace-class.html#__init__,Method rce.core.network.Network.__init__()=rce.core.network.Network-class.html#__init__,Method rce.core.network.Protocol.__init__()=rce.core.network.Protocol-class.html#__init__,Method rce.core.network._ConnectionValidator.__init__()=rce.core.network._ConnectionValidator-class.html#__init__,Method rce.core.robot.Robot.__init__()=rce.core.robot.Robot-class.html#__init__,Method rce.core.robot.RobotEndpoint.__init__()=rce.core.robot.RobotEndpoint-class.html#__init__,Method rce.core.user.User.__init__()=rce.core.user.User-class.html#__init__,Method rce.core.wrapper.Container.__init__()=rce.core.wrapper.Container-class.html#__init__,Method rce.core.wrapper.Interface.__init__()=rce.core.wrapper.Interface-class.html#__init__,Method rce.core.wrapper.Robot.__init__()=rce.core.wrapper.Robot-class.html#__init__,Method rce.core.wrapper._Wrapper.__init__()=rce.core.wrapper._Wrapper-class.html#__init__,Method rce.environment.Environment.__init__()=rce.environment.Environment-class.html#__init__,Method rce.environment.EnvironmentClient.__init__()=rce.environment.EnvironmentClient-class.html#__init__,Method rce.master.RoboEarthCloudEngine.__init__()=rce.master.RoboEarthCloudEngine-class.html#__init__,Method rce.master.UserRealm.__init__()=rce.master.UserRealm-class.html#__init__,Method rce.monitor.common.ArgumentMixin.__init__()=rce.monitor.common.ArgumentMixin-class.html#__init__,Method rce.monitor.interface.environment.PublisherInterface.__init__()=rce.monitor.interface.environment.PublisherInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceClientInterface.__init__()=rce.monitor.interface.environment.ServiceClientInterface-class.html#__init__,Method rce.monitor.interface.environment.ServiceProviderInterface.__init__()=rce.monitor.interface.environment.ServiceProviderInterface-class.html#__init__,Method rce.monitor.interface.environment.SubscriberInterface.__init__()=rce.monitor.interface.environment.SubscriberInterface-class.html#__init__,Method rce.monitor.interface.environment._ROSInterfaceBase.__init__()=rce.monitor.interface.environment._ROSInterfaceBase-class.html#__init__,Method rce.monitor.interface.robot._AbstractRobotInterface.__init__()=rce.monitor.interface.robot._AbstractRobotInterface-class.html#__init__,Method rce.monitor.interface.robot._ConverterBase.__init__()=rce.monitor.interface.robot._ConverterBase-class.html#__init__,Method rce.monitor.interface.robot._ServiceClient.__init__()=rce.monitor.interface.robot._ServiceClient-class.html#__init__,Method rce.monitor.node.Node.__init__()=rce.monitor.node.Node-class.html#__init__,Method rce.monitor.node.NodeProtocol.__init__()=rce.monitor.node.NodeProtocol-class.html#__init__,Method rce.monitor.parameter.Parameter.__init__()=rce.monitor.parameter.Parameter-class.html#__init__,Method rce.robot.Connection.__init__()=rce.robot.Connection-class.html#__init__,Method rce.robot.Robot.__init__()=rce.robot.Robot-class.html#__init__,Method rce.robot.RobotClient.__init__()=rce.robot.RobotClient-class.html#__init__,Method rce.robot.RobotView.__init__()=rce.robot.RobotView-class.html#__init__,Method rce.rosproxy.ConsoleROSProxyAuthentication.__init__()=rce.rosproxy.ConsoleROSProxyAuthentication-class.html#__init__,Method rce.slave.endpoint.Endpoint.__init__()=rce.slave.endpoint.Endpoint-class.html#__init__,Method rce.slave.endpoint._RCEInternalServerFactory.__init__()=rce.slave.endpoint._RCEInternalServerFactory-class.html#__init__,Method rce.slave.interface.Interface.__init__()=rce.slave.interface.Interface-class.html#__init__,Method rce.slave.namespace.Namespace.__init__()=rce.slave.namespace.Namespace-class.html#__init__,Method rce.slave.protocol.RCEInternalProtocol.__init__()=rce.slave.protocol.RCEInternalProtocol-class.html#__init__,Method rce.slave.protocol._Protocol.__init__()=rce.slave.protocol._Protocol-class.html#__init__,Method rce.util.container.Container.__init__()=rce.util.container.Container-class.html#__init__,Method rce.util.converter.Converter.__init__()=rce.util.converter.Converter-class.html#__init__,Method rce.util.cred.RCECredChecker.__init__()=rce.util.cred.RCECredChecker-class.html#__init__,Method rce.util.cred.RCEInternalChecker.__init__()=rce.util.cred.RCEInternalChecker-class.html#__init__,Method rce.util.loader.Loader.__init__()=rce.util.loader.Loader-class.html#__init__,Method rce.util.process._ProcessProtocol.__init__()=rce.util.process._ProcessProtocol-class.html#__init__,Method rce.util.settings._RCESettingsParser.__init__()=rce.util.settings._RCESettingsParser-class.html#__init__,Method rce.util.settings._Settings.__init__()=rce.util.settings._Settings-class.html#__init__,Method rce.util.sysinfo.AccessDenied.__init__()=rce.util.sysinfo.AccessDenied-class.html#__init__,Method rce.util.sysinfo.NoSuchProcess.__init__()=rce.util.sysinfo.NoSuchProcess-class.html#__init__,Method rce.util.sysinfo.Process.__init__()=rce.util.sysinfo.Process-class.html#__init__"><a title="rce.client.connection._Connection.__init__
 rce.client.interface.ROSPublisher.__init__
 rce.client.interface.ROSServiceClient.__init__
 rce.client.interface.ROSServiceProvider.__init__
 rce.client.interface.ROSSubscriber.__init__
 rce.client.interface.ServiceClient.__init__
 rce.client.interface._Base.__init__
-rce.client.interface._CB_Base.__init__
 rce.client.interface._EventRef.__init__
 rce.client.interface._ServiceClient.__init__
 rce.client.interface._ServiceProvider.__init__
@@ -240,6 +243,7 @@ rce.core.machine.Distributor.__init__
 rce.core.machine.LoadBalancer.__init__
 rce.core.machine.Machine.__init__
 rce.core.machine.MachineAvatar.__init__
+rce.core.machine.NetworkGroup.__init__
 rce.core.network.Connection.__init__
 rce.core.network.Endpoint.__init__
 rce.core.network.EndpointAvatar.__init__
@@ -266,11 +270,11 @@ rce.monitor.common.ArgumentMixin.__init__
 rce.monitor.interface.environment.PublisherInterface.__init__
 rce.monitor.interface.environment.ServiceClientInterface.__init__
 rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment.SubscriberInterface.__init__
 rce.monitor.interface.environment._ROSInterfaceBase.__init__
-rce.monitor.interface.robot.ServiceClientConverter.__init__
-rce.monitor.interface.robot.ServiceClientForwarder.__init__
-rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._AbstractRobotInterface.__init__
 rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.interface.robot._ServiceClient.__init__
 rce.monitor.node.Node.__init__
 rce.monitor.node.NodeProtocol.__init__
 rce.monitor.parameter.Parameter.__init__
@@ -290,6 +294,7 @@ rce.util.converter.Converter.__init__
 rce.util.cred.RCECredChecker.__init__
 rce.util.cred.RCEInternalChecker.__init__
 rce.util.loader.Loader.__init__
+rce.util.process._ProcessProtocol.__init__
 rce.util.settings._RCESettingsParser.__init__
 rce.util.settings._Settings.__init__
 rce.util.sysinfo.AccessDenied.__init__
@@ -399,6 +404,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -480,6 +486,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -521,7 +528,6 @@ rce.client.interface.ROSServiceProvider.__init__
 rce.client.interface.ROSSubscriber.__init__
 rce.client.interface.ServiceClient.__init__
 rce.client.interface._Base.__init__
-rce.client.interface._CB_Base.__init__
 rce.client.interface._EventRef.__init__
 rce.client.interface._ServiceClient.__init__
 rce.client.interface._ServiceProvider.__init__
@@ -549,6 +555,7 @@ rce.core.machine.Distributor.__init__
 rce.core.machine.LoadBalancer.__init__
 rce.core.machine.Machine.__init__
 rce.core.machine.MachineAvatar.__init__
+rce.core.machine.NetworkGroup.__init__
 rce.core.network.Connection.__init__
 rce.core.network.Endpoint.__init__
 rce.core.network.EndpointAvatar.__init__
@@ -575,11 +582,11 @@ rce.monitor.common.ArgumentMixin.__init__
 rce.monitor.interface.environment.PublisherInterface.__init__
 rce.monitor.interface.environment.ServiceClientInterface.__init__
 rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment.SubscriberInterface.__init__
 rce.monitor.interface.environment._ROSInterfaceBase.__init__
-rce.monitor.interface.robot.ServiceClientConverter.__init__
-rce.monitor.interface.robot.ServiceClientForwarder.__init__
-rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._AbstractRobotInterface.__init__
 rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.interface.robot._ServiceClient.__init__
 rce.monitor.node.Node.__init__
 rce.monitor.node.NodeProtocol.__init__
 rce.monitor.parameter.Parameter.__init__
@@ -599,6 +606,7 @@ rce.util.converter.Converter.__init__
 rce.util.cred.RCECredChecker.__init__
 rce.util.cred.RCEInternalChecker.__init__
 rce.util.loader.Loader.__init__
+rce.util.process._ProcessProtocol.__init__
 rce.util.settings._RCESettingsParser.__init__
 rce.util.settings._Settings.__init__
 rce.util.sysinfo.AccessDenied.__init__
@@ -658,7 +666,9 @@ rce.core.error.InvalidRequest
 rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-64', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">"Can not use the same node tag '{0}' in the "</tt> </tt>
 <a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">                                 <tt class="py-string">'same container twice.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt class="py-name">nTag</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
 <a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"> </tt>
-<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">        <tt id="link-65" class="py-name" targets="Module rce.monitor.node=rce.monitor.node-module.html"><a title="rce.monitor.node" class="py-name" href="#" onclick="return doclink('link-65', 'node', 'link-65');">node</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name" targets="Method rce.core.environment.Environment.createNode()=rce.core.environment.Environment-class.html#createNode"><a title="rce.core.environment.Environment.createNode" class="py-name" href="#" onclick="return doclink('link-66', 'createNode', 'link-66');">createNode</a></tt><tt class="py-op">(</tt><tt class="py-name">pkg</tt><tt class="py-op">,</tt> <tt class="py-name">exe</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt><tt class="py-op">,</tt> <tt id="link-67" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-67', 'name', 'link-2');">name</a></tt><tt class="py-op">,</tt> <tt id="link-68" class="py-name"><a title="rce.slave.namespace" class="py-name" href="#" onclick="return doclink('link-68', 'namespace', 'link-24');">namespace</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">        <tt id="link-65" class="py-name" targets="Module rce.monitor.node=rce.monitor.node-module.html"><a title="rce.monitor.node" class="py-name" href="#" onclick="return doclink('link-65', 'node', 'link-65');">node</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name" targets="Method rce.core.environment.Environment.createNode()=rce.core.environment.Environment-class.html#createNode"><a title="rce.core.environment.Environment.createNode" class="py-name" href="#" onclick="return doclink('link-66', 'createNode', 'link-66');">createNode</a></tt><tt class="py-op">(</tt><tt class="py-name">pkg</tt><tt class="py-op">,</tt> <tt class="py-name">exe</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt><tt class="py-op">,</tt> <tt id="link-67" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-67', 'name', 'link-2');">name</a></tt><tt class="py-op">,</tt> <tt id="link-68" class="py-name"><a title="rce.slave.namespace" class="py-name" href="#" onclick="return doclink('link-68', 'namespace', 'link-24');">namespace</a></tt><tt class="py-op">)</tt> </tt>
 <a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_nodes</tt><tt class="py-op">[</tt><tt class="py-name">nTag</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-69" class="py-name"><a title="rce.monitor.node" class="py-name" href="#" onclick="return doclink('link-69', 'node', 'link-65');">node</a></tt> </tt>
 <a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt id="link-70" class="py-name"><a title="rce.monitor.node" class="py-name" href="#" onclick="return doclink('link-70', 'node', 'link-65');">node</a></tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="rce.core.base.Proxy.notifyOnDeath
 rce.core.network.Connection.notifyOnDeath
@@ -679,6 +689,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -712,19 +723,29 @@ rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('l
 <a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line"><tt class="py-docstring">            @param value:       Value of the parameter which should be added.</tt> </tt>
 <a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"><tt class="py-docstring">            @type  value:       str, int, float, bool, list</tt> </tt>
 <a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-75" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-75', 'name', 'link-2');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-75" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-75', 'name', 'link-2');">name</a></tt><tt class="py-op">:</tt> </tt>
 <a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-76" class="py-name"><a title="rce.comm.error.InvalidRequest
 rce.core.error.InvalidRequest
 rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-76', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Parameter name is not a valid.'</tt><tt class="py-op">)</tt> </tt>
 <a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line"> </tt>
-<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-77" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-77', 'name', 'link-2');">name</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">:</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-77" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-77', 'name', 'link-2');">name</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">:</tt> </tt>
 <a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-78" class="py-name"><a title="rce.comm.error.InvalidRequest
 rce.core.error.InvalidRequest
 rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-78', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">"Can not use the same parameter name '{0}' "</tt> </tt>
-<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">                                 <tt class="py-string">'in the same container twice.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-79" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-79', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">                                 <tt class="py-string">'in the same container twice.'</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-79" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-79', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
 <a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"> </tt>
-<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt id="link-80" class="py-name" targets="Module rce.monitor.parameter=rce.monitor.parameter-module.html"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-80', 'parameter', 'link-80');">parameter</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name" targets="Method rce.core.environment.Environment.createParameter()=rce.core.environment.Environment-class.html#createParameter"><a title="rce.core.environment.Environment.createParameter" class="py-name" href="#" onclick="return doclink('link-81', 'createParameter', 'link-81');">createParameter</a></tt><tt class="py-op">(</tt><tt id="link-82" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-82', 'name', 'link-2');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
-<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">[</tt><tt id="link-83" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-83', 'name', 'link-2');">name</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-84" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-84', 'parameter', 'link-80');">parameter</a></tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt id="link-80" class="py-name" targets="Module rce.monitor.parameter=rce.monitor.parameter-module.html"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-80', 'parameter', 'link-80');">parameter</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_obj</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name" targets="Method rce.core.environment.Environment.createParameter()=rce.core.environment.Environment-class.html#createParameter"><a title="rce.core.environment.Environment.createParameter" class="py-name" href="#" onclick="return doclink('link-81', 'createParameter', 'link-81');">createParameter</a></tt><tt class="py-op">(</tt><tt id="link-82" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-82', 'name', 'link-2');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">[</tt><tt id="link-83" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-83', 'name', 'link-2');">name</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-84" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-84', 'parameter', 'link-80');">parameter</a></tt> </tt>
 <a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">        <tt id="link-85" class="py-name"><a title="rce.monitor.parameter" class="py-name" href="#" onclick="return doclink('link-85', 'parameter', 'link-80');">parameter</a></tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="rce.core.base.Proxy.notifyOnDeath
 rce.core.network.Connection.notifyOnDeath
 rce.core.wrapper._Wrapper.notifyOnDeath" class="py-name" href="#" onclick="return doclink('link-86', 'notifyOnDeath', 'link-16');">notifyOnDeath</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name" targets="Method rce.core.wrapper.Container._parameterDied()=rce.core.wrapper.Container-class.html#_parameterDied"><a title="rce.core.wrapper.Container._parameterDied" class="py-name" href="#" onclick="return doclink('link-87', '_parameterDied', 'link-87');">_parameterDied</a></tt><tt class="py-op">)</tt> </tt>
@@ -736,13 +757,16 @@ rce.core.wrapper._Wrapper.notifyOnDeath" class="py-name" href="#" onclick="retur
 <a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line"><tt class="py-docstring">            @type  name:        str</tt> </tt>
 <a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
-<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt id="link-88" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-88', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="rce.core.base.Proxy.destroy
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_parameters</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt id="link-88" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-88', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="rce.core.base.Proxy.destroy
 rce.core.container.Container.destroy
 rce.core.environment.Environment.destroy
 rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -763,7 +787,9 @@ rce.robot.RobotView.destroy" class="py-name" href="#" onclick="return doclink('l
 <a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-90" class="py-name"><a title="rce.comm.error.InvalidRequest
 rce.core.error.InvalidRequest
 rce.rosproxy.InvalidRequest" class="py-name" href="#" onclick="return doclink('link-90', 'InvalidRequest', 'link-8');">InvalidRequest</a></tt><tt class="py-op">(</tt><tt class="py-string">'Can not remove a non existent node '</tt> </tt>
-<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">                                 <tt class="py-string">"'{0}' from the container."</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-91" class="py-name"><a title="rce.util.name" class="py-name" href="#" onclick="return doclink('link-91', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">                                 <tt class="py-string">"'{0}' from the container."</tt><tt class="py-op">.</tt><tt class="py-name">format</tt><tt class="py-op">(</tt><tt id="link-91" class="py-name"><a title="rce.core.machine.EmptyNetworkGroup.name
+rce.core.machine.NetworkGroup.name
+rce.util.name" class="py-name" href="#" onclick="return doclink('link-91', 'name', 'link-2');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
 </div><a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"> </tt>
 <a name="Container.addInterface"></a><div id="Container.addInterface-def"><a name="L328"></a><tt class="py-lineno">328</tt> <a class="py-toggle" href="#" id="Container.addInterface-toggle" onclick="return toggle('Container.addInterface');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="rce.core.wrapper.Container-class.html#addInterface">addInterface</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">iTag</tt><tt class="py-op">,</tt> <tt class="py-param">iType</tt><tt class="py-op">,</tt> <tt class="py-param">clsName</tt><tt class="py-op">,</tt> <tt class="py-param">addr</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="Container.addInterface-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Container.addInterface-expanded"><a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">        <tt class="py-docstring">""" Add an interface to the ROS environment inside the container.</tt> </tt>
@@ -855,6 +881,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -924,6 +951,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -1019,6 +1047,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -1045,6 +1074,7 @@ rce.core.environment.EnvironmentEndpoint.destroy
 rce.core.environment.Node.destroy
 rce.core.environment.Parameter.destroy
 rce.core.machine.Machine.destroy
+rce.core.machine.NetworkGroup.destroy
 rce.core.network.Connection.destroy
 rce.core.network.Endpoint.destroy
 rce.core.network.EndpointConnection.destroy
@@ -1091,7 +1121,6 @@ rce.client.interface.ROSServiceProvider.__init__
 rce.client.interface.ROSSubscriber.__init__
 rce.client.interface.ServiceClient.__init__
 rce.client.interface._Base.__init__
-rce.client.interface._CB_Base.__init__
 rce.client.interface._EventRef.__init__
 rce.client.interface._ServiceClient.__init__
 rce.client.interface._ServiceProvider.__init__
@@ -1119,6 +1148,7 @@ rce.core.machine.Distributor.__init__
 rce.core.machine.LoadBalancer.__init__
 rce.core.machine.Machine.__init__
 rce.core.machine.MachineAvatar.__init__
+rce.core.machine.NetworkGroup.__init__
 rce.core.network.Connection.__init__
 rce.core.network.Endpoint.__init__
 rce.core.network.EndpointAvatar.__init__
@@ -1145,11 +1175,11 @@ rce.monitor.common.ArgumentMixin.__init__
 rce.monitor.interface.environment.PublisherInterface.__init__
 rce.monitor.interface.environment.ServiceClientInterface.__init__
 rce.monitor.interface.environment.ServiceProviderInterface.__init__
+rce.monitor.interface.environment.SubscriberInterface.__init__
 rce.monitor.interface.environment._ROSInterfaceBase.__init__
-rce.monitor.interface.robot.ServiceClientConverter.__init__
-rce.monitor.interface.robot.ServiceClientForwarder.__init__
-rce.monitor.interface.robot._AbstractConverter.__init__
+rce.monitor.interface.robot._AbstractRobotInterface.__init__
 rce.monitor.interface.robot._ConverterBase.__init__
+rce.monitor.interface.robot._ServiceClient.__init__
 rce.monitor.node.Node.__init__
 rce.monitor.node.NodeProtocol.__init__
 rce.monitor.parameter.Parameter.__init__
@@ -1169,6 +1199,7 @@ rce.util.converter.Converter.__init__
 rce.util.cred.RCECredChecker.__init__
 rce.util.cred.RCEInternalChecker.__init__
 rce.util.loader.Loader.__init__
+rce.util.process._ProcessProtocol.__init__
 rce.util.settings._RCESettingsParser.__init__
 rce.util.settings._Settings.__init__
 rce.util.sysinfo.AccessDenied.__init__
@@ -1218,7 +1249,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:25 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:59 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -59,16 +59,21 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class _Publisher</h1><p class="nomargin-top"><span class="codelink"><a href="rce.client.interface-pysrc.html#_Publisher">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_rce_clie_18" name="uml_class_diagram_for_rce_clie_18">
-<area shape="rect" id="node80" href="rce.client.interface._Base-class.html#__init__" title="Initialize the Interface." alt="" coords="17,39,228,57"/>
-<area shape="rect" id="node80" href="rce.client.interface._Base-class.html#__del__" title="Finalize the Interface." alt="" coords="17,57,228,76"/>
-<area shape="rect" id="node1" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="5,6,240,82"/>
-<area shape="rect" id="node79" href="rce.client.interface._Publisher-class.html#publish" title="Publish a message." alt="" coords="67,135,177,153"/>
-<area shape="rect" id="node3" href="rce.client.interface._Publisher-class.html" title="Abstract implementation of a Publisher Interface." alt="" coords="55,102,188,159"/>
-<area shape="rect" id="node2" href="rce.client.interface.Publisher-class.html" title="Representation of a Publisher Interface." alt="" coords="11,179,101,218"/>
-<area shape="rect" id="node4" href="rce.client.interface.ROSPublisher-class.html" title="Representation of a Publisher Interface using ROS." alt="" coords="131,179,251,218"/>
+<center>  <map id="uml_class_diagram_for_rce_clie_19" name="uml_class_diagram_for_rce_clie_19">
+<area shape="rect" id="node1_9" href="rce.client.interface._Publisher-class.html#publish" title="Publish a message." alt="" coords="65,253,176,273"/>
+<area shape="rect" id="node1" href="rce.client.interface._Publisher-class.html" title="Abstract implementation of a Publisher Interface." alt="" coords="53,219,187,279"/>
+<area shape="rect" id="node3" href="rce.client.interface.Publisher-class.html" title="Representation of a Publisher Interface." alt="" coords="76,299,167,339"/>
+<area shape="rect" id="node2_10" href="rce.client.interface._Base-class.html#UNIQUE" title="rce.client.interface._Base.UNIQUE" alt="" coords="16,31,227,51"/>
+<area shape="rect" id="node2_11" href="rce.client.interface._Base-class.html#CALLABLE" title="rce.client.interface._Base.CALLABLE" alt="" coords="16,51,227,71"/>
+<area shape="rect" id="node2_12" href="rce.client.interface._Base-class.html#status" title="Status (enabled/disabled) of the interface." alt="" coords="16,71,227,91"/>
+<area shape="rect" id="node2_13" href="rce.client.interface._Base-class.html#__init__" title="Initialize the Interface." alt="" coords="16,93,227,113"/>
+<area shape="rect" id="node2_14" href="rce.client.interface._Base-class.html#__del__" title="Finalize the Interface." alt="" coords="16,113,227,133"/>
+<area shape="rect" id="node2_15" href="rce.client.interface._Base-class.html#registerStatusListener" title="Register a status listener which will be called with status changes." alt="" coords="16,133,227,153"/>
+<area shape="rect" id="node2_16" href="rce.client.interface._Base-class.html#unregisterStatusListener" title="Unregister a previously registered status listener." alt="" coords="16,153,227,173"/>
+<area shape="rect" id="node2_17" href="rce.client.interface._Base-class.html#setEnabled" title="Callback for RCE client to enable/disable the interface." alt="" coords="16,173,227,193"/>
+<area shape="rect" id="node2" href="rce.client.interface._Base-class.html" title="Abstract base for all Interface classes." alt="" coords="4,5,239,200"/>
 </map>
-  <img src="uml_class_diagram_for_rce_clie_18.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_18" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_rce_clie_19.gif" alt='' usemap="#uml_class_diagram_for_rce_clie_19" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -113,8 +118,16 @@
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
       <code><a href="rce.client.interface._Base-class.html#__del__">__del__</a></code>,
-      <code><a href="rce.client.interface._Base-class.html#__init__">__init__</a></code>
+      <code><a href="rce.client.interface._Base-class.html#__init__">__init__</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#registerStatusListener">registerStatusListener</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#setEnabled">setEnabled</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#unregisterStatusListener">unregisterStatusListener</a></code>
       </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b> (private):
+      <code><a href="rce.client.interface._Base-class.html#_start" onclick="show_private();">_start</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#_stop" onclick="show_private();">_stop</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#_unregister" onclick="show_private();">_unregister</a></code>
+      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__format__</code>,
@@ -163,6 +176,14 @@
         <a name="_DOWN_MSG"></a><span class="summary-name">_DOWN_MSG</span> = <code title="'Publisher to RCE Interface \'{0}\' is down.'"><code class="variable-quote">'</code><code class="variable-string">Publisher to RCE Interface \'{0}\' is down.</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#CALLABLE">CALLABLE</a></code>,
+      <code><a href="rce.client.interface._Base-class.html#UNIQUE">UNIQUE</a></code>
+      </p>
+    </td>
+  </tr>
 </table>
 <!-- ==================== PROPERTIES ==================== -->
 <a name="section-Properties"></a>
@@ -183,6 +204,9 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="rce.client.interface._Base-class.html" onclick="show_private();">_Base</a></code></b>:
+      <code><a href="rce.client.interface._Base-class.html#status">status</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -215,7 +239,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 24 11:31:15 2013
+    Generated by Epydoc 3.0.1 on Tue May  6 16:01:48 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
