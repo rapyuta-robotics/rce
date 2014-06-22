@@ -158,6 +158,9 @@ class LoadBalancer(object):
         name = data.pop('group', None)
 
         if name:
+            # TODO: package openvswitch has changed since 12.04
+            raise NotImplementedError
+
             key = (userID, name)
             group = self._groups.get(key)
 
@@ -529,6 +532,9 @@ class NetworkGroup(object):
     def __init__(self, manager, key, uid):
         """ # TODO: Add doc
         """
+        # TODO: package openvswitch has changed since 12.04
+        raise NotImplementedError
+
         self._manager = manager
         self._key = key
         self._uid = uid

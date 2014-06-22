@@ -77,7 +77,7 @@ EOF
 
 download_ubuntu()
 {
-    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,isc-dhcp-client,ssh,language-pack-en,build-essential,python-setuptools,curl,sudo
+    packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,net-tools,isc-dhcp-client,ssh,language-pack-en,build-essential,python,python-setuptools,curl,sudo
 
     cache=$1
     arch=$2

@@ -73,9 +73,11 @@ _BASE_PREP = 'curl python-setuptools python-dev'
 # Packages which are installed in the host filesystem
 # TODO: package 'linux-headers-virtual' is transitional
 _HOST_PKGS = ('lxc debootstrap python-openssl python-imaging '
-              'ros-{ros}-ros-comm ros-{ros}-common-msgs linux-headers-virtual '
-              'openvswitch-datapath-source openvswitch-datapath-dkms '
-              'openvswitch-common openvswitch-switch openvswitch-brcompat')
+              'ros-{ros}-ros-comm ros-{ros}-common-msgs')
+              # TODO: package openvswitch has changed since 12.04
+              #' linux-headers-virtual '
+              #'openvswitch-datapath-source openvswitch-datapath-dkms '
+              #'openvswitch-common openvswitch-switch openvswitch-brcompat')
 
 # Packages which are installed in the container filesystem
 _CONTAINER_PKGS = 'git-core ros-{ros}-ros-comm ros-{ros}-common-msgs'
@@ -83,7 +85,9 @@ _CONTAINER_PKGS = 'git-core ros-{ros}-ros-comm ros-{ros}-common-msgs'
 # Mapping of supported ROS releases and supported Ubuntu releases
 _SUPPORT_VERSIONS = {'precise' : ['fuerte', 'groovy', 'hydro'],
                      'quantal' : ['groovy', 'hydro'],
-                     'raring' : ['hydro']}
+                     'raring' : ['hydro'],
+                     'saucy' : ['indigo'],
+                     'trusty' : ['indigo']}
 
 # Default location of container installation
 _CONTAINER_DEFAULT = '/opt/rce/container'
@@ -141,7 +145,8 @@ def _get_container_ros_release():
     """ Ask for ROS release to deploy in the container.
     """
     opt = _select_option('Enter the ROS release to deploy in the container.',
-                         ('fuerte', 'groovy', 'hydro (experimental)'), 0)
+                         ('fuerte', 'groovy', 'hydro', 'indigo (experimental)'),
+                         3)
     return opt.split()[0]
 
 
@@ -150,7 +155,8 @@ def _get_container_ubuntu_release():
     """
     opt = _select_option('Enter the Ubuntu release to deploy in the container.',
                          ('precise (12.04 LTS)', 'quantal (12.10)',
-                          'raring (13.04)'), 0)
+                          'raring (13.04)', 'saucy (13.10)',
+                          'trusty (14.04 LTS)'), 4)
     return opt.split()[0]
 
 
@@ -314,8 +320,9 @@ def provision_container(config):
     cmds = (_INSTALL.format(_BASE_PREP),
             _ROS_SRC.format(base=get_host_ubuntu_release()),
             _ROS_KEY,
-            _INSTALL.format(host_pkgs),
-            'sudo /etc/init.d/openvswitch-switch start')
+            _INSTALL.format(host_pkgs))
+            # TODO: package openvswitch has changed since 12.04
+            #, 'sudo /etc/init.d/openvswitch-switch start')
 
     for cmd in cmds:
         check_call(cmd, shell=True)
@@ -336,13 +343,15 @@ def provision_container(config):
         _ROS_KEY,
         _INSTALL.format(container_pkgs),
         'mkdir -p /tmp/rapyuta && cd /tmp/rapyuta && sudo rm -rf rce && '
-        'git clone -b master https://github.com/IDSCETHZurich/rce.git && '
+        'git clone -b master https://github.com/rapyuta/rce.git && '
         'cd rce && sudo sh install.sh',
         'echo "source /opt/rce/setup.sh" >> /root/.bashrc',
         'echo "source /opt/rce/setup.sh" >> /etc/profile'
     ]
+
     if config.container_ros_release > 'fuerte':
         cmds.append('cd /root && source .bashrc && rosdep init && rosdep update')
+
     if config.dev_mode:
         cmds.append('echo "root:admin" | chpasswd')
     else:

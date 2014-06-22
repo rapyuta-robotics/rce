@@ -686,6 +686,9 @@ class ContainerClient(Referenceable):
             @return:            Exit status of command.
             @rtype:             twisted.internet.defer.Deferred
         """
+        # TODO: package openvswitch has changed since 12.04
+        raise NotImplementedError
+
         if name in self._bridges:
             raise InternalError('Bridge already exists.')
 
@@ -702,6 +705,9 @@ class ContainerClient(Referenceable):
             @return:            Exit status of command.
             @rtype:             twisted.internet.defer.Deferred
         """
+        # TODO: package openvswitch has changed since 12.04
+        raise NotImplementedError
+
         if name not in self._bridges:
             raise InternalError('Bridge does not exist.')
 
@@ -722,6 +728,9 @@ class ContainerClient(Referenceable):
             @return:            Exit status of command.
             @rtype:             twisted.internet.defer.Deferred
         """
+        # TODO: package openvswitch has changed since 12.04
+        raise NotImplementedError
+
         if name not in self._bridges:
             raise InternalError('Bridge does not exist.')
 
@@ -756,6 +765,9 @@ class ContainerClient(Referenceable):
             @return:            Exit status of command.
             @rtype:             twisted.internet.defer.Deferred
         """
+        # TODO: package openvswitch has changed since 12.04
+        raise NotImplementedError
+
         if name not in self._bridges:
             raise InternalError('Bridge does not exist.')
 
